@@ -7018,11 +7018,6 @@ void checkcommandline(int argc,char **argv)
                         }
 
                         break;
-                    case 'z':
-                    case 'Z':
-			OSD_SetLogFile(c+1);
-                        //memorycheckoveride = 1;	// JBF 20031124: not anymore
-                        break;
                     case 'f':
                     case 'F':
                         c++;
@@ -7708,6 +7703,8 @@ void app_main(int argc,char **argv)
     todd[0] = 'T';
     sixteen[0] = 'D';
     trees[0] = 'I';
+
+	OSD_SetLogFile("consolelog.txt");
 
 #if 0
     setvmode(0x03);
