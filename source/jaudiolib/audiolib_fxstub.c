@@ -365,4 +365,4 @@ int FX_StopAllSounds
    }
 
 
-
+void AudioUpdate(void) { }
