@@ -1,48 +1,155 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<?xml version="1.0" encoding="iso-8859-1" ?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 		<meta name="Author" content="Jonathon Fowler" />
-		<title>Release Notes for JonoF's Duke Nukem 3D Port</title>
+		<title>Release Notes for JFDuke3D</title>
 		<style type="text/css">
-		body { font-family: "Tahoma",sans-serif; font-size: 10pt; }
-		h1 { border-bottom: 2px solid black; }
-		dl { margin-left: 4em; }
-		dt { font-weight: bold; }
-		dd { padding-bottom: 1em; }
+			body {
+				font-family: "Bitstream Vera Sans","Tahoma","Arial",sans-serif;
+				font-size: 10pt;
+				margin: 0.5em;
+				border: 2px dashed #ccc;
+				padding: 1em;
+			}
+			h2,h3,h4 {
+				margin-top: 0;
+				margin-bottom: 0.5em;
+				color: #777;
+			}
+			h1 {
+				margin-top: 0; margin-bottom: 0.5em;
+				padding: 3px;
+				background-color: #ddd;
+				font-size: 170%;
+				color: #444;
+			}
+			h2 { font-size: 145%; }
+			h3 { font-size: 125%; }
+			h4 { font-size: 110%; }
+			p { margin-top: 0.5em; margin-bottom: 0.75em; }
+			pre { margin-left: 0.75em; padding-left: 0.75em; border-left: 2px solid #ddd; }
+
+			dl { margin-left: 3em; }
+			dt { font-weight: bold; }
+			dd { padding-bottom: 1em; margin-left: 2em; }
+			table { margin: 1em; }
+			table.center { margin-left: auto; margin-right: auto; }
+			caption { font-style: oblique; }
+
+			span.warning { color: #f00; }
+
+			address {
+				margin-top: 3em;
+				font-size: 85%;
+				font-style: normal;
+			}
+
+			@media print {
+				body { border: none; margin: 0; }
+			}
 		</style>
 	</head>
 
 	<body>
-		<h1>Release Notes for JonoF's Duke Nukem 3D Port</h1>
-		<p>Release date: 13 October 2004 (interim release)</p>
+		<h1>Release Notes for JFDuke3D</h1>
+		<p>Release date: 14 February 2005 (multiplayer test release)</p>
 
 		<h2>New Features</h2>
 		<ul>
-			<li>Sky boxes. <a href="#skybox">See here for more information</a>.</li>
-			<li>Multiple skins per MD2 model. <a href="#md2skin">See here for more information.</a>.</li>
-			<li>"Map hack" files for tweaking sprites in GL Polymost mode. <a href="#maphack">See here for more
-				information.</a></li>
-			<li>Models can now be flipped x-wise and y-wise.</li>
+			<li>Multiplayer capability. <a href="#multiplayer">See here for more information</a>.</li>
 		</ul>
 			
 		<h2>Known Issues</h2>
 		<ul>
-			<li><strong>IMPORTANT CHANGE:</strong> The definitions in the community high-resolution art packs
-			have tile numbers with zeroes padding their length to four digits. This is a bad thing with this
-			release because a leading zero indicates a number given in octal (base 8) representation. You will
-			have to make sure that there are no extra zeroes before the first non-zero digit of the tile
-			number or else you will see strange things in the game.</li>
-			<li>3D model support is maturing. The evilest of bugs in the code should be fixed
-			(eg. model "limits").</li>
-			<li>The hightile crash caused by BMP files in the community texture pack ought to be
-			fixed now.</li>
-			<li>The multiplayer feature has been completely disabled for the time being. Work is proceeding on
-			it.</li>
-			<li>The existing sound code is the only stuff stable enough to use at the moment. I'm working
-			on the new code still.</li>
+			<li><strong>This version should be considered test-quality only!</strong> There are still things
+			left to do before the port can be given a full official release. Keep that in mind when you come
+			to making modifications that work with this version because certain elements of the mod support
+			will change.</li>
+			<li>Slave players attempting to begin a new game will cause the game to get stuck. Only the master
+			should begin the game.</li>
+			<li>The network code does not display any status information during the joining phase. The game
+			may look as though it has locked up if it is waiting for something. You will have to kill the game
+			in Windows Task Manager if you want to abort the launch. This will become much cleaner and nicer
+			in the near future.</li>
+			<li>You may have instances where the game goes out of sync. The master can often restart the game
+			from the menu without everyone having to restart the game from scratch, and things should be
+			fine.</li>
+			<li>A future version will include my new sound code that supports OggVorbis and other sound
+			formats. For now, the existing AudioLib code is in use.</li>
 		</ul>
+
+		<h3><a name="multiplayer"></a>Multiplayer games</h3>
+
+		<p>Multiplayer games are started via command-line parameters passed to DUKE3D.EXE. This is a short guide
+		to getting a multiplayer game running between these three hypothetical computers:</p>
+		<table class="center" border="1" rules="groups" cellpadding="2">
+			<colgroup><col /></colgroup>
+			<thead>
+				<tr><th>Host name</th><th>IP address</th></tr>
+			</thead>
+			<tbody>
+				<tr><td>faye</td><td>192.168.1.2</td></tr>
+				<tr><td>asuka</td><td>192.168.1.5</td></tr>
+				<tr><td>kaoru</td><td>192.168.1.6</td></tr>
+			</tbody>
+		</table>
+		<p><span class="warning">Keep in mind that the networking features are still being refined and there are
+		certain issues and caveats to be aware of when using it.</span> The basic syntax of the network command
+		line is like so: <code>DUKE3D <em>(normal game parameters)</em> -net <em>(network parameters)</em></code></p>
+		<table border="1" rules="cols" cellpadding="2" class="center">
+			<colgroup>
+				<col valign="top" />
+			</colgroup>
+			<caption>Network parameters</caption>
+			<tr>
+				<td>/nx:y</td>
+				<td>Game comm type. <em>x</em> = 0 for master/slave or 1 for peer-to-peer.<br />
+					If unspecified, <em>y</em> defaults to 2. For more than two players in a
+					master-slave game, you have to indicate the number on the <em>master</em>.
+					eg: /n0 or /n0:4</td>
+			</tr>
+			<tr>
+				<td>/px</td>
+				<td>Overrides the default port (23513) with <em>x</em> being the new port value.</td>
+			</tr>
+			<tr>
+				<td>address:port</td>
+				<td>An address of a machine. See the items below for more information.</td>
+			</tr>
+		</table>
+
+		<h4>Master/Slave mode</h4>
+		<p>This mode is the easiest mode for use with Internet play since it requires only the address of the master
+		of the game (the person hosting the game) be specified by each slave who joins. Here are example command
+		lines each machine must run to join the game hosted by the machine named 'asuka':
+		</p>
+		<table border="1" rules="cols" cellpadding="2">
+			<tr><td>asuka</td><td><code>DUKE3D.EXE -net /n0:3</code></td></tr>
+			<tr><td>faye</td><td><code>DUKE3D.EXE -net /n0 192.168.1.5</code></td></tr>
+			<tr><td>kaoru</td><td><code>DUKE3D.EXE -net /n0 192.168.1.5</code></td></tr>
+		</table>
+
+		<h4>Peer-to-peer mode</h4>
+		<p>This mode is often useful for playing on a LAN where it is easier to coordinate and organise the order of
+		peers in the game. This mode will become simpler to set up in the future but for now this is how to do
+		it. Peer-to-peer mode requires each machine specify the addresses of each other machine in the game in the
+		same order, but indicating its own position in the sequence with the <code>/n1</code> option.</p>
+		<table border="1" rules="cols" cellpadding="2">
+			<tr><td>asuka</td><td><code>DUKE3D.EXE -net /n1 192.168.1.2 192.168.1.6</code></td></tr>
+			<tr><td>faye</td><td><code>DUKE3D.EXE -net 192.168.1.5 /n1 192.168.1.6</code></td></tr>
+			<tr><td>kaoru</td><td><code>DUKE3D.EXE -net 192.168.1.5 192.168.1.2 /n1</code></td></tr>
+		</table>
+
+		<h4>Addresses and ports</h4>
+		<p>The networking code is capable of resolving WINS host names (on Windows) and DNS names to their
+		corresponding addresses, so if your network is configured with such services, instead of having to specify
+		raw IP addresses, you can give the computer's WINS host name or a DNS host name.</p>
+		<p>The default port the game communicates on is 23513. Some users may find it necessary to set up a
+		forward through their Internet firewall in order to get games working when playing across the Internet.
+		You can override the default port via the <code>/p<em>???</em></code> switch where <em>???</em> is the new
+		port number. If a master is running a game on a port other than the default, the slaves will have to
+		specify the alternative port with <code>address:port</code> notation, eg. 192.168.1.5:20000</p>
 
 		<h3><a name="md2sprite"></a>3D Models</h3>
 
@@ -50,7 +157,7 @@
 		face sprite in the game with a 3D model using a declaration in the DUKE3D.DEF file. For more information
 		on the specifics of the DEF-file commands for 3D models, <a href="#deffile">see here</a>.</p>
 		<p>Included in this release is a model of the Pig Cop by Parkar, and the skin by Motionblur. Visit <a
-		href="http://forums.3drealms.com/ubbthreads/showflat.php?Cat=0&Number=538967&page=0&fpart=19&vc=1&nt=21">this
+			href="http://forums.3drealms.com/ubbthreads/showflat.php?Cat=0&amp;Number=538967&amp;page=0&amp;fpart=19&amp;vc=1&amp;nt=21">this
 		thread on the 3D Realms forum</a> for more model information. I shall use this model to demonstrate how to
 		replace the Pig Cop character in Duke.</p>
 
@@ -115,18 +222,171 @@ definemodelframe "dead" 2060 2060</pre>
 			<strong>NOTE:</strong> You may find it convenient to include DEFS.CON or NAMES.H to predefine many
 			of the tile names in the art file.</dd>
 
+			<dt>model <em>filename</em> { ... }</dt>
+			<dd><span class="warning"><strong>Be aware that this syntax is likely to change in the near future
+			in ways that are unlikely to be backwardly compatible. Consider yourself warned!</strong></span>
+			Defines an MD2-format model file to replace certain sprites in the game when running in OpenGL
+			Polymost mode. The brace-enclosed block may contain these directives:
+			<dl>
+				<dt>scale <em>scale</em></dt>
+				<dd><em>scale</em> is a (possibly fractional) value specifying a scaling factor for the 
+				model when it is rendered, eg. 1.5 for one-and-a-half times as big.</dd>
+
+				<dt>shade <em>shade-offset</em></dt>
+				<dd><em>shade-offset</em> is an integer value specifying how much to bias the sprite's
+				shade value by.  A negative value for this makes the model brighter. Conversely, a positive
+				value makes it darker.</dd>
+
+				<dt>skin { ... }</dt>
+				<dd>Defines a skin to be used on the model for all frames declared after this command. The
+				brace-enclosed block may contain these directives:
+				<dl>
+					<dt>pal <em>palnum</em></dt>
+					<dd>Specifies which palette this skin maps to.</dd>
+
+					<dt>file <em>filename</em></dt>
+					<dd><strong>IMPORTANT:</strong> If your model exists in a subdirectory (ie.
+					the model filename includes a path to the .md2) you will need to give the same path
+					to <em>filename</em> if the skin is in the same directory.</dd>
+				</dl></dd>
+
+				<dt>anim { ... }</dt>
+				<dd>Defines an animation from a group of frames in the model. The brace-enclosed block may
+				contain these directives:
+				<dl>
+					<dt>frame0 <em>framename</em><br />
+					frame1 <em>framename</em></dt>
+					<dd>Specifies the names of the start (frame0) and end (frame1) frames of the
+					animation.</dd>
+
+					<dt>fps <em>fps</em></dt>
+					<dd>Specifies the framerate at which the animation should play. This value may be
+					fractional.</dd>
+
+					<dt>flags <em>flags</em></dt>
+					<dd>Specifies any special properties the animation should have, the values of
+					which should be added together to combine multiple options. Valid options are:
+					0 = none (looping animation), 1 = one-shot (plays beginning to end once and stops
+					on the last frame).</dd>
+
+					<!--
+					<dt>name</dt>
+					<dd>Gives the animation a symbolic name. In Duke, this name is equal to the name of
+					the animation in the CON file for the actor for the model to play the animation
+					based on the current state of the actor.</dd>
+					-->
+				</dl></dd>
+
+				<dt>frame { ... }</dt>
+				<dd>Defines a range of ART-file tiles to correspond with the given frame of the model. The
+				brace-enclosed block may contain these directives:
+				<dl>
+					<dt>frame <em>framename</em><br />
+					name <em>framename</em></dt>
+					<dd>If <em>framename</em> is identical to the starting frame of an animation, the
+					engine will play that animation, otherwise the replacement will be static. You can
+					choose to use the 'frame' or 'name' versions of this directive as both are
+					identical.</dd>
+
+					<dt>tile0 <em>tilenum</em><br />
+					tile1 <em>tilenum</em></dt>
+					<dd>These two directives together specifies a range of ART-file tiles which this
+					model frame should replace.</dd>
+				</dl></dd>
+			</dl></dd>
+			
+			<dt>voxel <em>filename</em> { ... }</dt>
+			<dd>Defines a voxel to replace sprites in the game when running in 8-bit classic rendering mode.
+			<em>filename</em> is the name of the .KVX file containing the voxel. The brace-enclosed block may
+			contain these directives:
+			<dl>
+				<dt>tile <em>tilenum</em></dt>
+				<dd>Maps the single tile <em>tilenum</em> to be rendered as a voxel.</dd>
+
+				<dt>tile0 <em>tilenum</em><br />
+				tile1 <em>tilenum</em></dt>
+				<dd>These two directives together define a range of tiles to be rendered as voxels. The
+				'tile0' directive should appear before the 'tile1' directive to define a correct range.</dd>
+			</dl></dd>
+
+			<dt>skybox { ... }</dt>
+			<dd>Defines a skybox that overrides a parallaxing floor or ceiling in OpenGL Polymost rendering
+			mode. The brace-enclosed block may contain these directives:
+			<dl>
+				<dt>tile <em>tilenum</em></dt>
+				<dd>Specifies the ART file tile to override.</dd>
+
+				<dt>pal <em>palnum</em></dt>
+				<dd>Specifies the palette number the skybox should happen for.</dd>
+
+				<dt>*facename* <em>filename</em></dt>
+				<dd>Defines a single face of the skybox where <strong>facename</strong> may be any of
+				these keywords appropriate for the face in question:
+				<table border="1" cellpadding="2" rules="groups" class="center">
+					<colgroup>
+						<col width="16%" />
+						<col width="16%" />
+						<col width="16%" />
+						<col width="16%" />
+						<col width="16%" />
+						<col />
+					</colgroup>
+					<thead>
+						<tr>
+							<th>Front</th><th>Right</th>
+							<th>Back</th><th>Left</th>
+							<th>Top</th><th>Bottom</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr><td>ft</td><td>rt</td><td>bk</td><td>lf</td><td>up</td><td>dn</td></tr>
+						<tr><td>front</td><td>right</td><td>back</td><td>left</td><td>top</td>
+							<td>bottom</td></tr>
+						<tr><td>forward</td><td></td><td></td><td>lt</td><td>ceiling</td>
+							<td>floor</td></tr>
+						<tr><td></td><td></td><td></td><td></td><td>ceil</td><td>down</td></tr>
+					</tbody>
+				</table>
+				<strong>NOTE:</strong> All six faces are required to be specified.
+				</dd>
+			</dl></dd>
+
+			<dt>tint { ... }</dt>
+			<dd>Defines a Hightile texture tint to simulate palette effects normally used on ART-file tiles.
+			The brace-enclosed block may contain these directives:
+			<dl>
+				<dt>pal <em>palnum</em></dt>
+				<dd>The palette number the tint applies to.</dd>
+
+				<dt>red <em>value</em><br />
+				green <em>value</em><br />
+				blue <em>value</em><br />
+				r <em>value</em><br />
+				g <em>value</em><br />
+				b <em>value</em></dt>
+				<dd>Specifies a colour component value, in the range of 0 to 255. Unspecified components
+				are assumed to be 255 and any out of range values are clamped to the maximum or minimum as
+				appropriate.</dd>
+
+				<dt>flags <em>flags</em></dt>
+				<dd>Specifies any special processing effects to use for the tint. The value of
+				<em>flags</em> may be the sum of any of these values:
+				<table class="center" rules="cols" border="1" cellpadding="2">
+					<tr><td>1</td><td>convert to greyscale</td></tr>
+					<tr><td>2</td><td>invert colours</td></tr>
+				</table>
+				</dd>
+			</dl></dd>
+		</dl>
+		
+		<h3>Deprecated DEF file directives</h3>
+		<p>The use of these directives is discouraged for new content.</p>
+		<dl>
 			<dt>definetexture <em>pic-number palette-number x-centre y-centre x-size y-size filename</em></dt>
 			<dd>Defines a Hightile texture to replace an ART-file picture. <em>pic-number</em> may be an
 			number, or a defined label. Use a value of 0 for <em>x-centre</em> and <em>y-centre</em> and a
 			value of -1 for <em>x-size</em> and <em>y-size</em> for now until these values are actually used.
 			<em>filename</em> may be any PNG, JPG, TGA, BMP, GIF or PCX file.</dd>
-
-			<dt>defineskybox <em>pic-number palette-number reserved front-face-filename right-face-filename
-				back-face-filename left-face-filename top-face-filename bottom-face-filename</em></dt>
-			<dd>Defines a sky-box composed of six images mapped onto the faces of a cube to be used when
-			<em>pic-number</em> is set as parallaxing in GL Polymost mode. For information on generating sky box
-			images, <a href="#deffile-skybox">see here</a>. <strong>NOTE:</strong> <em>reserved</em> should be 0
-			for now until its meaning is fully conceived.</dd>
 
 			<dt>definetint <em>palette-number red green blue effects</em></dt>
 			<dd>Defines a Hightile texture tint to simulate palette effects normally used on ART-file tiles.
@@ -134,6 +394,13 @@ definemodelframe "dead" 2060 2060</pre>
 			the colour the tint should look like. <em>effects</em> specifies any processing effects to use.
 			Valid values are: 0 = no effects, 1 = greyscale image, 2 = invert image. These values can be added
 			together to produce a combination of effects.</dd>
+
+			<dt>defineskybox <em>pic-number palette-number reserved front-face-filename right-face-filename
+				back-face-filename left-face-filename top-face-filename bottom-face-filename</em></dt>
+			<dd>Defines a sky-box composed of six images mapped onto the faces of a cube to be used when
+			<em>pic-number</em> is set as parallaxing in GL Polymost mode. For information on generating sky box
+			images, <a href="#deffile-skybox">see here</a>. <strong>NOTE:</strong> <em>reserved</em> should be 0
+			for now until its meaning is fully conceived.</dd>
 
 			<dt>definemodel <em>filename scale shade-offset</em></dt>
 			<dd>Defines an MD2-format model file to replace certain sprites in the game. See
@@ -177,14 +444,6 @@ definemodelframe "dead" 2060 2060</pre>
 			"definevoxel" instruction.</dd>
 		</dl>
 
-		<h3>A note about numeric values</h3>
-
-		<p>Whenever a numeric value is required, it can be specified in three bases: decimal (base 10),
-		hexadecimal (base 16), and octal (base 8). Decimal numbers are obvious, but don't use extra leading zeroes
-		to pad a decimal number to a particular width. A leading zero on a number indicates it is an octal number.
-		To give a number in hexadecimal, use a '0x' prefix. These all represent the same number: 16 (decimal) =
-		020 (octal) = 0x10 (hexadecimal)</p>
-
 		<h3><a name="deffile-skybox"></a>A note about skyboxes</h3>
 
 		<p>Ken has some utilities on his website that can assist you in converting your favourite skybox format to
@@ -210,7 +469,7 @@ definemodelframe "dead" 2060 2060</pre>
 			<dt>sprite <em>number</em></dt>
 			<dd>Begins a sprite definition. <em>number</em> is the sprite number to affect. You can find this in
 			the Build editor by highlighting the sprite in 2D mode and pressing Control+Tab. The next group of
-			commands describe the changes to make to the sprite.</dd>
+			commands describe the changes to make to the sprite.
 			<dl>
 				<dt>notmd2</dt>
 				<dd>Prevents the sprite from being drawn as a model. It gets drawn as a regular sprite
@@ -221,7 +480,7 @@ definemodelframe "dead" 2060 2060</pre>
 				<dd>Adds <em>angle</em> to the angle of the sprite just before it is rendered. This is good
 				for fixing up things like toilet sprites that are facing the wrong way.
 				<strong>angoff</strong> is a synonym for <strong>angleoff</strong>.</dd>
-			</dl>
+			</dl></dd>
 		</dl>
 
 		<p>Here is an example map hack script:</p>
@@ -268,7 +527,7 @@ sprite 478 angoff -512</pre>
 		<p>Polymost is a full 3D implementation of the Build engine renderer, with hardware acceleration capability,
 		and perspective in six degrees of freedom. In Ken's own words (copied from POLYMOST.C in my Build engine
 		source distribution):</p>
-		<blockquote><pre>
+		<pre>
 "POLYMOST" code written by Ken Silverman
 Ken Silverman's official web site: http://www.advsys.net/ken
 
@@ -298,7 +557,7 @@ The original Build engine did hidden surface removal by using a vertical span bu
 and bottoms of walls. This worked nice back in the day, but it it's not suitable for a polygon
 engine. So I decided to write a brand new hidden surface removal algorithm - using the same idea
 as the original Build - but one that worked with vectors instead of already rasterized data.
-		</pre></blockquote>
+		</pre>
 		<p>Polymost is the default renderer choice for any video mode with a colour depth greater than 256
 		colours.</p>
 		<p><strong>NOTE:</strong> If your computer does not have an OpenGL graphics card, Polymost in OpenGL mode
@@ -334,14 +593,14 @@ as the original Build - but one that worked with vectors instead of already rast
 
 			<dt>gltexturemode &lt;mode-number&gt;</dt>
 			<dd>Sets the OpenGL texturing mode. Valid values are:
-			<ol type="1" start="0">
-				<li>GL_NEAREST (looks rather like the original software renderer)</li>
-				<li>GL_LINEAR</li>
-				<li>GL_NEAREST_MIPMAP_NEAREST</li>
-				<li>GL_LINEAR_MIPMAP_NEAREST (bilinear)</li>
-				<li>GL_NEAREST_MIPMAP_LINEAR</li>
-				<li>GL_LINEAR_MIPMAP_LINEAR (trilinear)</li>
-			</ol></dd>
+			<table class="center" cellpadding="2" rules="cols" border="1">
+				<tr><td>0</td><td>GL_NEAREST (looks rather like the original software renderer)</td></tr>
+				<tr><td>1</td><td>GL_LINEAR</td></tr>
+				<tr><td>2</td><td>GL_NEAREST_MIPMAP_NEAREST</td></tr>
+				<tr><td>3</td><td>GL_LINEAR_MIPMAP_NEAREST (bilinear)</td></tr>
+				<tr><td>4</td><td>GL_NEAREST_MIPMAP_LINEAR</td></tr>
+				<tr><td>5</td><td>GL_LINEAR_MIPMAP_LINEAR (trilinear)</td></tr>
+			</table></dd>
 
 			<dt>god</dt>
 			<dd>Enables God mode.</dd>
@@ -422,77 +681,6 @@ as the original Build - but one that worked with vectors instead of already rast
 		<h1>Historical Documentation</h1>
 
 		<p>The content in this section is here for historical reference purposes.</p>
-
-		<h2><a name="network"></a>Network Games</h2>
-
-		<p style="margin:1em;border:1px solid black;padding:1em;"><em>This information is here for reference only.
-			The networking feature is currently under
-			redevelopment. Although the code in this release works, it fails with more than two players trying to
-			join.</em></p>
-
-		<p>Because this feature is still experimental, setting up a network game is not the most streamlined of tasks,
-		but it is achievable. First, some things to note:</p>
-		<ol>
-			<li>Slow computers will fail to negotiate a connection with the game. I do not know where exactly the
-			cut-off lies, but basically, machines which have worked are anywhere from a Pentium 3 1000MHz and
-			upwards, while a Pentium 233MMX failed to achieve synchronisation. If you choose to test the game,
-			your mileage may vary.</li>
-			<li>Slow or laggy networks may prove to be a problem. This means no Internet play because the game
-			quickly goes to crap soon after negotiating the connection, if it even manages that.</li>
-			<li>I have noticed that sometimes at the end of a map, the game jams up at the intermission screen
-			showing the player scores.</li>
-			<li>If the game seems to be stuck waiting, try holding Escape for at least four seconds and hopefully
-			the game will kill itself. If this fails to work, you may have to kill the game using Windows' Task
-			Manager.</li>
-		</ol>
-		<p>So, knowing these particular nuances, this is how to configure a network game.</p>
-		<p><strong>IMPORTANT:</strong> Place two or more blank lines at the end of the configuration files below
-		or the game will start in single-player mode. This is a bug in my script loading code which I have not yet
-		fixed.</p>
-
-		<h3>Hosting a game</h3>
-
-		<p>A machine hosting a game needs to create a configuration file which contains the following information:</p>
-		<ul>
-			<li>The port to communicate on (if omitted, defaults to 19014)</li>
-			<li>The number of players to wait for</li>
-			<li>An indication of whether to host or join a game (in this case, host)</li>
-		</ul>
-		<p>This can be placed in a text file (which for this demonstration I will name <em>player-host.ini</em>) like
-		so:</p>
-		<blockquote><pre>[Network Game]
-IPPort = 19014
-Mode = "Host"
-Players = 2</pre></blockquote>
-
-		<p>To then start the game and wait for players to join, either create a shortcut to DUKE3D.EXE and modify its
-		properties to use a command line like the following, or type the following at a DOS prompt.</p>
-
-		<blockquote><pre>D:\Duke3D&gt; duke3d.exe -net player-host.ini -name JonoF</pre></blockquote>
-
-		<p>The game will then start and wait for players to join.</p>
-
-		<h3>Joining a game</h3>
-
-		<p>A machine joining a game needs to create a configuration file which contains the following information:</p>
-		<ul>
-			<li>The port to communicate on (if omitted, defaults to 19014)</li>
-			<li>The address (and port) of the computer hosting the game</li>
-			<li>An indication of whether to join or host the game (in this case, join)</li>
-		</ul>
-		<p>This can be placed in a text file (which for this demonstration I will name <em>player-join.ini</em>) like
-		so:</p>
-		<blockquote><pre>[Network Game]
-IPPort = 19014
-Mode = "Join"
-Host = "asuka:19014"</pre></blockquote>
-
-		<p>To then start the game and wait until the rest of the players join, either create a shortcut to DUKE3D.EXE
-		and modify its properties to use a command line like the following, or type the following at a DOS prompt.</p>
-
-		<blockquote><pre>D:\Duke3D&gt; duke3d.exe -net player-join.ini -name FonoJ</pre></blockquote>
-
-		<p>The game will then start and wait until enough players have joined.</p>
 
 		<h2>A quick word before we get to 3D Models</h2>
 

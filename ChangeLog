@@ -1,3 +1,6 @@
+NOTE: The dated history of changed in this log is no longer maintained.
+
+
 16 Aug 2004
 
  * Replaced my daft 1.3/1.4 autodetection code in gamedef.c. It was causing

@@ -591,8 +591,26 @@ void getpackets(void)
                 break;
 
             case 4:
-                strcpy(recbuf,packbuf+1);
-                recbuf[packbufleng-1] = 0;
+                   //slaves in M/S mode only send to master
+                if ((!networkmode) && (myconnectindex == connecthead))
+                {
+                   if (packbuf[1] == 255)
+                   {
+                         //Master re-transmits message to all others
+                      for(i=connectpoint2[connecthead];i>=0;i=connectpoint2[i])
+                         if (i != other)
+                            sendpacket(i,packbuf,packbufleng);
+                   }
+                   else if (((long)packbuf[1]) != myconnectindex)
+                   {
+                         //Master re-transmits message not intended for master
+                      sendpacket((long)packbuf[1],packbuf,packbufleng);
+                      break;
+                   }
+                }
+				
+                strcpy(recbuf,packbuf+2);
+                recbuf[packbufleng-2] = 0;
 
                 adduserquote(recbuf);
                 sound(EXITMENUSOUND);
@@ -627,12 +645,23 @@ void getpackets(void)
 
                 break;
             case 6:
-                if (packbuf[1] != BYTEVERSION)
-                    gameexit("\nYou cannot play Duke with different versions.");
-                for (i=2;packbuf[i];i++)
-                    ud.user_name[other][i-2] = packbuf[i];
-                ud.user_name[other][i-2] = 0;
-                break;
+				if (packbuf[2] != BYTEVERSION)
+					gameexit("\nYou cannot play Duke with different versions.");
+
+					//slaves in M/S mode only send to master
+				if ((!networkmode) && (myconnectindex == connecthead))
+				{
+						//Master re-transmits message to all others
+					for(i=connectpoint2[connecthead];i>=0;i=connectpoint2[i])
+						if (i != other)
+							sendpacket(i,packbuf,packbufleng);
+				}
+				other = packbuf[1];
+
+				for (i=3;packbuf[i];i++)
+					ud.user_name[other][i-3] = packbuf[i];
+				ud.user_name[other][i-3] = 0;
+				break;
             case 9:
                 for (i=1;i<packbufleng;i++)
                     ud.wchoice[other][i-1] = packbuf[i];
@@ -2183,7 +2212,7 @@ void typemode(void)
           if(sendmessagecommand != -1 || ud.multimode < 3 || movesperpacket == 4)
           {
                 tempbuf[0] = 4;
-                tempbuf[1] = 0;
+                tempbuf[2] = 0;
                 recbuf[0]  = 0;
 
                 if(ud.multimode < 3)
@@ -2194,20 +2223,27 @@ void typemode(void)
                 strcat(recbuf,typebuf);
                 j = strlen(recbuf);
                 recbuf[j] = 0;
-                strcat(tempbuf+1,recbuf);
+                strcat(tempbuf+2,recbuf);
 
                 if(sendmessagecommand >= ud.multimode || movesperpacket == 4)
                 {
+                     tempbuf[1] = 255;
                      for(ch=connecthead;ch >= 0;ch=connectpoint2[ch])
-                          if (ch != myconnectindex)
-                                sendpacket(ch,tempbuf,j+1);
-
+                     {
+                          if (ch != myconnectindex) sendpacket(ch,tempbuf,j+2);
+                          if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
+                     }
                      adduserquote(recbuf);
                      quotebot += 8;
                      quotebotgoal = quotebot;
                 }
                 else if(sendmessagecommand >= 0)
-                     sendpacket(sendmessagecommand,tempbuf,j+1);
+                {
+                     tempbuf[1] = (char)sendmessagecommand;
+                     if ((!networkmode) && (myconnectindex != connecthead))
+                          sendmessagecommand = connecthead;
+                     sendpacket(sendmessagecommand,tempbuf,j+2);
+                }
 
                 sendmessagecommand = -1;
                 ps[myconnectindex].gm &= ~(MODE_TYPE|MODE_SENDTOWHOM);
@@ -2680,7 +2716,6 @@ void drawbackground(void)
 	}
 
 	y1 = 0; y2 = ydim;
-	OSD_Printf("ready2send = %d, ud.recstat = %d, ud.reccnt = %d\n", ready2send, ud.recstat, ud.reccnt);
 	if( ready2send || ud.recstat == 2 )
 	//if (ud.recstat == 0 || ud.recstat == 1 || (ud.recstat == 2 && ud.reccnt > 0))	// JBF 20040717
 	{
@@ -6504,16 +6539,19 @@ if (VOLUMEALL) {
                 ch = 0;
 
                 tempbuf[ch] = 4;
-                tempbuf[ch+1] = 0;
-                strcat(tempbuf+1,ud.ridecule[i-1]);
+				tempbuf[ch+1] = 255;
+                tempbuf[ch+2] = 0;
+                strcat(tempbuf+2,ud.ridecule[i-1]);
 
-                i = 1+strlen(ud.ridecule[i-1]);
+                i = 2+strlen(ud.ridecule[i-1]);
 
                 if(ud.multimode > 1)
-                    for(ch=connecthead;ch>=0;ch=connectpoint2[ch])
-                        if (ch != myconnectindex)
-                            sendpacket(ch,tempbuf,i);
-
+				for(ch=connecthead;ch>=0;ch=connectpoint2[ch])
+				{
+					if (ch != myconnectindex) sendpacket(ch,tempbuf,i);
+					if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
+				}
+	
                 pus = NUMPAGES;
                 pub = NUMPAGES;
 
@@ -7519,20 +7557,23 @@ void getnames(void)
     for(l=0;myname[l];l++)
     {
         ud.user_name[myconnectindex][l] = Btoupper(myname[l]);
-        buf[l+2] = Btoupper(myname[l]);
+        buf[l+3] = Btoupper(myname[l]);
     }
 
     if(numplayers > 1)
     {
         buf[0] = 6;
-        buf[1] = BYTEVERSION;
+		buf[1] = myconnectindex;
+        buf[2] = BYTEVERSION;
 
-        buf[l+2] = 0;
-        l += 3;
+        buf[l+3] = 0;
+        l += 4;
 
-        for(i=connecthead;i>=0;i=connectpoint2[i])
-            if( i != myconnectindex )
-                sendpacket(i,&buf[0],l);
+		for(i=connecthead;i>=0;i=connectpoint2[i])
+		{
+			if (i != myconnectindex) sendpacket(i,&buf[0],l);
+			if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
+		}
 
   //      getpackets();
 

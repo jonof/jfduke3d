@@ -27,7 +27,7 @@ CFLAGS=$(debug) -W -Wall -Werror-implicit-function-declaration \
 	-I$(INC) -I$(EINC) -I$(SRC)jmact -I$(SRC)jaudiolib -I../jfaud/inc \
 	$(ENGINEOPTS) -DNOCOPYPROTECT \
 	-DUSE_GCC_PRAGMAS
-LIBS=-lm ../jfaud/jfaud.a # -L../jfaud -ljfaud
+LIBS=-lm #../jfaud/jfaud.a # -L../jfaud -ljfaud
 NASMFLAGS=-s #-g
 EXESUFFIX=
 
@@ -62,7 +62,7 @@ GAMEOBJS=$(OBJ)game.$o \
 	$(OBJ)player.$o \
 	$(OBJ)premap.$o \
 	$(OBJ)sector.$o \
-	$(OBJ)jfaud_sounds.$o \
+	$(OBJ)sounds.$o \
 	$(OBJ)rts.$o \
 	$(OBJ)config.$o \
 	$(OBJ)animlib.$o \
@@ -95,7 +95,7 @@ else
 	endif
 endif
 
-#GAMEOBJS+= $(AUDIOLIBOBJ)
+GAMEOBJS+= $(AUDIOLIBOBJ)
 
 .PHONY: clean all engine $(EOBJ)$(ENGINELIB) $(EOBJ)$(EDITORLIB)
 

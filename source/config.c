@@ -353,6 +353,17 @@ void CONFIG_SetDefaults( void )
    Bstrcpy(ud.rtsname, "DUKE.RTS");
    Bstrcpy(myname, "Duke");
 
+   Bstrcpy(ud.ridecule[0], "An inspiration for birth control.");
+   Bstrcpy(ud.ridecule[1], "You're gonna die for that!");
+   Bstrcpy(ud.ridecule[2], "It hurts to be you.");
+   Bstrcpy(ud.ridecule[3], "Lucky Son of a Bitch.");
+   Bstrcpy(ud.ridecule[4], "Hmmm....Payback time.");
+   Bstrcpy(ud.ridecule[5], "You bottom dwelling scum sucker.");
+   Bstrcpy(ud.ridecule[6], "Damn, you're ugly.");
+   Bstrcpy(ud.ridecule[7], "Ha ha ha...Wasted!");
+   Bstrcpy(ud.ridecule[8], "You suck!");
+   Bstrcpy(ud.ridecule[9], "AARRRGHHHHH!!!");
+   
    // JBF 20031211
    memset(KeyboardKeys, 0, sizeof(KeyboardKeys));
    for (i=0; i < (int32)(sizeof(keydefaults)/sizeof(keydefaults[0]))/3; i++) {
