@@ -5188,6 +5188,10 @@ void animatesprites(long x,long y,short a,long smoothratio)
                     t->xrepeat = t->yrepeat = 0;
                 continue;
             case CHAIR3:
+				if (bpp > 8 && usemodels && md2_tilehasmodel(t->picnum)) {
+					t->cstat &= ~4;
+					break;
+				}
 
                 k = (((t->ang+3072+128-a)&2047)>>8)&7;
                 if(k>4)
@@ -5439,6 +5443,11 @@ void animatesprites(long x,long y,short a,long smoothratio)
                 t->picnum = GROWSPARK+( (totalclock>>4)&3 );
                 break;
             case RPG:
+				if (bpp > 8 && usemodels && md2_tilehasmodel(s->picnum)) {
+					t->cstat &= ~4;
+					break;
+				}
+				
                  k = getangle(s->x-x,s->y-y);
                  k = (((s->ang+3072+128-k)&2047)/170);
                  if(k > 6)
@@ -5451,6 +5460,10 @@ void animatesprites(long x,long y,short a,long smoothratio)
                  break;
 
             case RECON:
+				if (bpp > 8 && usemodels && md2_tilehasmodel(s->picnum)) {
+					t->cstat &= ~4;
+					break;
+				}
 
                 k = getangle(s->x-x,s->y-y);
                 if( T1 < 4 )
@@ -5534,13 +5547,18 @@ void animatesprites(long x,long y,short a,long smoothratio)
 
                 if(s->owner == -1)
                 {
-                    k = (((s->ang+3072+128-a)&2047)>>8)&7;
-                    if(k>4)
-                    {
-                        k = 8-k;
-                        t->cstat |= 4;
-                    }
-                    else t->cstat &= ~4;
+					if (bpp > 8 && usemodels && md2_tilehasmodel(s->picnum)) {
+						k = 0;
+						t->cstat &= ~4;
+					} else {
+	                    k = (((s->ang+3072+128-a)&2047)>>8)&7;
+    	                if(k>4)
+        	            {
+            	            k = 8-k;
+                	        t->cstat |= 4;
+                    	}
+	                    else t->cstat &= ~4;
+					}
 
                     if(sector[t->sectnum].lotag == 2) k += 1795-1405;
                     else if( (hittype[i].floorz-s->z) > (64<<8) ) k += 60;
@@ -5651,8 +5669,10 @@ void animatesprites(long x,long y,short a,long smoothratio)
             {
                 l = *(long *)(t4+8);
 
-                switch( l )
-                {
+				if (bpp > 8 && usemodels && md2_tilehasmodel(s->picnum)) {
+					k = 0;
+					t->cstat &= ~4;
+				} else switch( l ) {
                     case 2:
                         k = (((s->ang+3072+128-a)&2047)>>8)&1;
                         break;
@@ -5807,14 +5827,18 @@ void animatesprites(long x,long y,short a,long smoothratio)
                 t->picnum += (s->shade>>1);
                 break;
             case PLAYERONWATER:
-
-                k = (((t->ang+3072+128-a)&2047)>>8)&7;
-                if(k>4)
-                {
-                    k = 8-k;
-                    t->cstat |= 4;
-                }
-                else t->cstat &= ~4;
+				if (bpp > 8 && usemodels && md2_tilehasmodel(s->picnum)) {
+					k = 0;
+					t->cstat &= ~4;
+				} else {
+	                k = (((t->ang+3072+128-a)&2047)>>8)&7;
+    				if(k>4)
+            	    {
+                	    k = 8-k;
+                    	t->cstat |= 4;
+	                }
+    	            else t->cstat &= ~4;
+				}
 
                 t->picnum = s->picnum+k+((T1<4)*5);
                 t->shade = sprite[s->owner].shade;
@@ -5857,6 +5881,11 @@ void animatesprites(long x,long y,short a,long smoothratio)
 
             case CAMERA1:
             case RAT:
+				if (bpp > 8 && usemodels && md2_tilehasmodel(s->picnum)) {
+					t->cstat &= ~4;
+					break;
+				}
+				
                 k = (((t->ang+3072+128-a)&2047)>>8)&7;
                 if(k>4)
                 {
