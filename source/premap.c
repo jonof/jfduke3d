@@ -1313,21 +1313,33 @@ void genspriteremaps(void)
 
 void waitforeverybody()
 {
-    long i;
+	long i;
 
-    if (numplayers < 2) return;
-    packbuf[0] = 250;
-    for(i=connecthead;i>=0;i=connectpoint2[i])
-        if (i != myconnectindex)
-            sendpacket(i,packbuf,1);
+	if (numplayers < 2) return;
+	packbuf[0] = 250;
+	for(i=connecthead;i>=0;i=connectpoint2[i])
+	{
+		if (i != myconnectindex) sendpacket(i,packbuf,1);
+		if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
+	}
+	playerreadyflag[myconnectindex]++;
 
-    playerreadyflag[myconnectindex]++;
-    do
-    {
-        getpackets();
-        for(i=connecthead;i>=0;i=connectpoint2[i])
-            if (playerreadyflag[i] < playerreadyflag[myconnectindex]) break;
-    } while (i >= 0);
+	while (1)
+	{
+		handleevents();
+		AudioUpdate();
+
+		if (quitevent || keystatus[1]) gameexit("");
+
+		getpackets();
+
+		for(i=connecthead;i>=0;i=connectpoint2[i])
+		{
+			if (playerreadyflag[i] < playerreadyflag[myconnectindex]) break;
+			if ((!networkmode) && (myconnectindex != connecthead)) { i = -1; break; } //slaves in M/S mode only wait for master
+		}
+		if (i < 0) return;
+	}
 }
 
 void dofrontscreens(void)

@@ -1617,7 +1617,7 @@ void Keys3d(void)
   usedcount=!usedcount;
 
   count=0;
-  for(i=0;i<numsectors;i++)	// JBF 20040307: was numwalls, thanks Semicharm
+  for(i=0;i<numwalls;i++)
   { if(wall[i].picnum == temppicnum) count++;
         if(wall[i].overpicnum == temppicnum) count++;
   }

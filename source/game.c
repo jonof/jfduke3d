@@ -2680,6 +2680,7 @@ void drawbackground(void)
 	}
 
 	y1 = 0; y2 = ydim;
+	OSD_Printf("ready2send = %d, ud.recstat = %d, ud.reccnt = %d\n", ready2send, ud.recstat, ud.reccnt);
 	if( ready2send || ud.recstat == 2 )
 	//if (ud.recstat == 0 || ud.recstat == 1 || (ud.recstat == 2 && ud.reccnt > 0))	// JBF 20040717
 	{
@@ -7813,7 +7814,7 @@ if (VOLUMEONE) {
 		GAME_getcolumnwidth,
 		GAME_getrowheight,
 		GAME_clearbackground,
-		(int(*)())GetTime,
+		(int(*)(void))GetTime,
 		GAME_onshowosd
     );
     OSD_SetParameters(0,2, 0,0, 4,0);
@@ -8182,8 +8183,8 @@ void record(void)
 
 void closedemowrite(void)
 {
-         if (ud.recstat == 1)
-         {
+    if (ud.recstat == 1)
+    {
         if (ud.reccnt > 0)
         {
             dfwrite(recsync,sizeof(input)*ud.multimode,ud.reccnt/ud.multimode,frecfilep);

@@ -26,6 +26,8 @@
 #include "duke3d.h"
 #include "osd.h"
 
+#include <math.h>
+
 // soundm&1 = loop
 // soundm&2 = musicandsfx
 // soundm&4 = duke speech
@@ -220,13 +222,36 @@ void intomenusounds(void)
 void playmusic(char *fn)
 {
 	jfauderr err;
+	char *dafn, *dotpos;
+	int len, try;
+	const char *extns[] = { ".ogg",".mp3",".mid",NULL };
 
 	if (!inited) return;
 
-	err = JFAud_playmusic(fn, NULL, JFAudPlayMode_playing, 0, NULL);
-	if (err != jfauderr_ok) {
+	dotpos = Bstrrchr(fn,'.');
+	if (dotpos && Bstrcasecmp(dotpos,".mid")) {
+		// has extension but isn't midi
+		err = JFAud_playmusic(fn, NULL, JFAudPlayMode_playing, 0, NULL);
+		if (err != jfauderr_ok) {
+			initprintf("Music playback failed: %s\n", JFAud_errstr(err));
+			return;
+		}
+	} else {
+		len = Bstrlen(fn)+5;	// worst case is it has no '.'
+		dafn = (char *)Bmalloc(len);
+		Bstrcpy(dafn,fn);
+		dotpos = Bstrrchr(dafn,'.');
+		if (!dotpos) dotpos = dafn+strlen(dafn);
+
+		for (try=0; extns[try]; try++) {
+			Bstrcpy(dotpos, extns[try]);
+			err = JFAud_playmusic(dafn, NULL, JFAudPlayMode_playing, 0, NULL);
+			if (err != jfauderr_ok) continue;
+			Bfree(dafn);
+			return;
+		}
+		Bfree(dafn);
 		initprintf("Music playback failed: %s\n", JFAud_errstr(err));
-		return;
 	}
 }
 
@@ -248,7 +273,7 @@ int isspritemakingsound(short i, int num)	// if num<0, check if making any sound
 
 	return -1;
 }
-#include <math.h>
+
 int xyzsound(short num, short i, long x, long y, long z)	// x,y,z is sound origin
 {
 	float pitch=1.0, gain=1.0, rolloff=1.0;
@@ -654,6 +679,5 @@ int MUSIC_StopSong( void )
 void MUSIC_RegisterTimbreBank( unsigned char *timbres )
 {
 }
-
 
 

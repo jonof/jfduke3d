@@ -2253,7 +2253,7 @@ cheat_for_port_credits:
 						const int numlines = sizeof(scroller)/sizeof(char *);
 						for (m=0,i=(totalclock/104)%numlines; m<4; m++,i++) {
 							if (i==numlines) i=0;
-							minitext(160-(Bstrlen(scroller[i])<<1), 100+10+(m*7)-l, scroller[i], 8, 10+16+128);
+							minitext(160-(Bstrlen(scroller[i])<<1), 100+10+(m*7)-l, (char*)scroller[i], 8, 10+16+128);
 						}
 				   }
 
