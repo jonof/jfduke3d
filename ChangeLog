@@ -1,0 +1,278 @@
+31 May 2004
+
+ * Fixed a nasty crash when playing the Merc2 TC. The compiled size of
+   the CON code was too big for the script buffer. Duke Meets Doom TC
+   is still crashing though. Thanks to MMA for bringing this to my
+   attention.
+ * Heavens' knows what else I changed between last release and now.
+   Diff is your friend.
+
+
+20 May 2004
+
+ * Peter Cordes spotted an off-by-one when displaying the month in the
+   User Maps menu.
+
+
+8 May 2004
+
+ * Menus added for network game support.
+
+
+16 Apr 2004
+
+ * Thanks to a great catch by Lauri Liinat, sound crash bugs with the
+   Watcom version of the jaudiolib mixers should be eliminated now.
+
+
+8 Mar 2004
+
+ * Modifications to use the new setpalettefadeclamps() function to
+   eliminate unnecessary texture cache resets in GL mode.
+
+
+13 Feb 2004
+
+ * Joystick axis configuration in-game.
+
+
+12 Feb 2004
+
+ * Restored the usual meaning of ControllerType in the config file,
+   and updated Setup.exe to respect it. Ideally, I'll allow all input
+   devices to be enabled at once and used at will, but it'll mean I
+   need to change the getinputs() function a bit. When that happens
+   ControllerType will be entirely irrelevant.
+ * I forgot to store the current values of the joystick parameters
+   loaded from the configuration file with regards to axes and whatnot.
+   Fixed now.
+
+
+10 Feb 2004
+
+ * Made the [k]?dfread functions in cache1d.c in the engine a tad
+   bulletproof, and applied the armour to anything using those
+   functions so the game won't crash if a corrupted savegame or demo
+   is read.
+
+
+8 Feb 2004
+
+ * Joystick buttons configuration menu added. Axes and whatnot still
+   to come.
+ * Home and End keys in game function selection list move to head and
+   tail of list.
+ * Pressing a number or letter in the user map lists will jump to the
+   first entry in the selected list that matches that character.
+ * Savegame preview picture tile wasn't being reset in GL mode when
+   selecting a game to load.
+
+
+27 Jan 2004
+
+ * Made some extra checks and fixes in the CON parser to handle files
+   that have EOF with no preceeding newline.
+
+
+25 Jan 2004
+
+ * Fixed the CON parser to properly include in any level of source
+   files.
+ * Added CON parser modifications for high-colour tile declarations.
+
+
+24 Jan 2004
+
+ * Added in a small game stats display ala Shadow Warrior.
+
+
+16 Jan 2004
+
+ * Grower no longer selectable when playing with v1.3d data.
+ * Demos from different game data groups won't play with other data
+   groups. Same goes for savegames -- those from one group won't
+   work with others, eg. 1.3d with Atomic.
+ * Version number has been increased due to the changes above.
+
+
+14 Jan 2004
+
+ * Added in the modifications I made to Build to show maps inside
+   the group files in the User maps menu.
+
+
+10 Jan 2004
+
+ * Rearranged the options menus. Things were getting unweildly so
+   some fresh reshuffling keeps things in logical places now.
+ * Modified the way I force the game to redraw the status bar when
+   in GL mode. Instead of continuously redrawing the bar, I redraw
+   it every frame ONLY IF a call to palto() was made.
+
+
+1 Jan 2004
+
+ * Many changes to palette fade handling, and whatnot.
+
+
+23 Dec 2003
+
+ * Modified some palette fades and palto() to use the engine-land
+   palette fading abilities I added to the engine.
+ * Polymost can do 6 degrees of freedom so when using a polymost
+   renderer, screen tilting uses polymost, which is kinda necessary
+   for opengl anyway.
+
+
+20 Dec 2003
+
+ * Screen tilting now uses polymost tilt abilities if a polymost
+   renderer is used.
+ * Some time a couple of weeks ago key setup and mouse setup menus
+   were added.
+
+
+6 Nov 2003
+
+ * Modifying the options menu. Made main menu options go to a sub-
+   menu for picking which options set to change. Added more options
+   sets for video mode changes, key setup and mouse setup, and
+   extended the game options to include another page for some
+   embellishments.
+
+
+20 Nov 2003
+
+ * Voxels now integrated. To use them you need to either make a new
+   CON file and include it from GAME.CON, or add lines like this to
+   something like USER.CON:
+
+	definevoxel QUEBALL PAWN.KVX
+	definevoxel STRIPEBALL ROOK.KVX
+	definevoxel POCKET KNIGHT.KVX
+	definevoxel DESKLAMP DESKLAMP.KVX
+
+   As you can see, the syntax is
+   	definevoxel <tile number or name> <filename>
+
+
+19 Nov 2003
+
+ * Fixed a handful of things in astub.c which were affected by the
+   slightly different operational details of 2D mode, plus added in
+   the necessary nonsense for the additional 2D mode selection.
+
+
+12 Nov 2003
+
+ * Now compiles and runs correctly with OpenWatcom and Visual C.
+ * A handful of changes sprinkled throughout, many due to differences
+   highlighted by the different compilers.
+
+
+14 Sep 2003
+
+ * Made handling of "changelevel" and "map" OSD commands more elegant.
+   They now act in the manner of a cheat code when issued inside a game,
+   or as like a rigged menu action when not. This should make things
+   more seamless and unintrusive. My previous implementation always made
+   me cringe a little.
+ * Added "god" and "noclip" OSD commands. Much more easy to do now that
+   changing "changelevel" and "map" opened the door to the solution.
+
+
+13 Sep 2003
+
+ * Moved the "dumpbuildinfo" OSD function into the engine and out of here.
+ * Fixed the crash upon loading BOBSP2.MAP by adding these lines at line
+   4051 in GAME.C:
+
+   if (sp->hitag && sp->picnum == WATERBUBBLEMAKER) {	// JBF 20030913: Pisses off move(), eg. in bobsp2
+	OSD_Printf("WARNING: WATERBUBBLEMAKER %d @ %d,%d with hitag!=0. Applying fixup.\n",
+			i,sp->x,sp->y);
+	sp->hitag = 0;
+   }
+
+   I don't know whether there's a more elegant solution to this but unless
+   other problems show the same symptoms this solution should suffice.
+
+
+10 Sep 2003
+
+ * Small type issue on GAMEDEF.C:2401 revealed by compiling with OpenWatcom.
+ * Alteration for dirent.h -> direct.h for Watcom.
+ * Change cast from char * to long * in RTS.C:228
+ * Much screwing with audiolib to get it building with Watcom. I'm thinking
+   audiolib might move into its own directory to be shared with any future
+   game ports. Might happen soon.
+
+
+22 Aug 2003
+
+ * Many updates, no changelog :-/
+ * Improved the user map menu.
+ * Fixed a segfault bug in user map menu due to my ignorance.
+ * CON version detection implemented.
+
+
+21 May 2003
+
+ * Fixed a bug in the game where the run-mode was being lost whenever a demo
+   played and the game was exited while the demo was running. The saved mode
+   was the same as the mode the demo was recorded with at the point of exit.
+   Thanks to Ales Klobucar for pointing this out.
+ * Implemented key assignment for Show_Console function in the setup program
+   and the game. Unlike the other functions which can be activated by two
+   keys, Show_Console is special and has only one.
+
+
+15 May 2003
+
+ * Added in-game user map selection menu based off the menu code from the
+   latest version of build.exe.
+
+
+11 May 2003
+
+ * Integrated the new onscreen display facilities present in the latest Build
+   engine version.
+
+
+9 May 2003
+
+ * We now have double-clicked mouse button actions, digital mouse axis support,
+   and mouse axis scaling. Setup program is updated to incorporate these
+   settings.
+ * CONTROL_ButtonState1 |= (0xfffffffful & mask);
+   What the F**K was I thinking!?!
+
+
+1 May 2003
+
+ * Fixed a crash in E4L11 where the engine thought it was supposed to render a
+   certain sprite as a voxel when it really shouldn't have. See the entry in
+   the bugs list below for details.
+
+
+Bugs in original Duke source fixed by this port
+-----------------------------------------------
+
+During my travels over the Duke source I've uncovered and fixed a few bugs
+here and there. This section is for other porters to refer to in order to save
+some time.
+
+(Line numbers refer to the original 3D Realms source distribution)
+
+GAME.C l4851:
+	In E4L11 there is a CRACK1 sprite which is floor-aligned. The game
+	normally forces all crack sprites to be wall-aligned by OR'ing the
+	wall-sprite bit (bit 4) into the sprite's cflags property. Problem is
+	the game doesn't clear the floor-align bit (bit 5) when it does this
+	so when the game is compiled with a voxel-enhanced version of the
+	engine, drawsprite() thinks the sprite is to be drawn as a voxel
+	because bits 4 and 5 are set simultaneously. This replacement line
+	allows crack sprites to align to both the floor and the wall, but not
+	have both flags set at once:
+
+		sp->cstat |= (sp->cstat & 48) ? 1 : 17;
+

@@ -1,0 +1,387 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="Author" content="Jonathon Fowler" />
+		<title>Release Notes for JonoF's Duke Nukem 3D Port</title>
+		<style type="text/css">
+		body { font-family: Tahoma,sans-serif; font-size: 10pt; }
+		h1 { border-bottom: 2px solid black; }
+		dl { margin-left: 4em; }
+		dt { font-weight: bold; }
+		dd { padding-bottom: 1em; }
+		</style>
+	</head>
+
+	<body>
+		<h1>Release Notes for JonoF's Duke Nukem 3D Port</h1>
+		<p>Release date: 5 June 2004 (bugfix release of 3 June version)</p>
+
+		<h2>New Features</h2>
+		<ul>
+			<li>3D Model sprites. <a href="#md2sprite">See here for more information</a>.</li>
+		</ul>
+			
+		<h2>Known Issues</h2>
+		<ul>
+			<li>3D model support is new in this release and is still being tweaked. Any ridiculously silly
+			bugs we'd like to know about however.</li>
+			<li>The multiplayer code is still terrible. It's being redeveloped still. Same rules apply as to
+			last release, ie. only really usable on a fast LAN with fast computers, not terribly reliable but
+			can be stable. Slow machines and connections over the Internet are prone to failure. <strong>Games
+			of more than two players don't seem to work.</strong> <a href="#network">See here for information
+			on using the network features</a>.</li>
+		</ul>
+
+		<h2><a name="md2sprite"></a>A quick word before we get to 3D Models</h2>
+
+		<p>Before I explain the new 3D model support, I need to explain the changes which have been made to how
+		the Hightile enhancements, 3D models, and voxels are described to the game.</p>
+		<p>Users of previous releases of the port would be familiar with the "definetexture" instruction in the
+		CON language which is used to declare Hightile replacement textures. Typically, you would have an extra
+		CON file, often named EXTRA.CON, which you would use to declare textures and whatnot. This file would be
+		passed to the game using a "/x" switch to override the default GAME.CON from executing. In order to provide
+		more generic flexibilty so that the enhancements are not tied to the CON language, I have created a new
+		script loader as a service of the engine which is now used to read a file containing those same definitions
+		which CONs once provided. This script file is named DUKE3D.DEF and its syntax is similar to the CON
+		language.</p>
+		<p>The benefits to come from this change to a separate file arrangement is that the new engine features now
+		work in the Build editor as well as the game. Plus, the script reader is a reusable component of the
+		engine which means any future games, or any modifications based on the engine will have the option of
+		using this feature for themselves.</p>
+
+		<h3>Converting EXTRA.CON to DUKE3D.DEF</h3>
+
+		<p>Since the port now uses the DUKE3D.DEF file to specify replacements and whatnot, the CON features have
+		been disabled and a warning written to the console put in their place, something like:</p>
+		<pre>!!! BEGIN NOTICE !!!
+CON-file definition of Hightile textures has been removed in
+favour of DUKE3D.DEF declarations. Please refer to the release
+notes for details on how to convert your CON definitions into
+DUKE3D.DEF equivalents.
+!!! END NOTICE !!!</pre>
+		<p>Since DUKE3D.DEF has a syntax much like the CON language, conversion is not a difficult task. Refer below
+		to the details on the instructions and their parameters for specifics, but here is the basic changes which
+		you would need to make to an EXTRA.CON file to create DUKE3D.DEF:</p>
+		<ol>
+			<li>If you include GAME.CON in the EXTRA.CON file, you will want to change this to include
+			DEFS.CON instead.</li>
+			<li>If there are "definetint" lines, they must be checked to be sure to show five parameters. If
+			there are only four parameters (which would be palette number, red, green, and blue values), add a
+			0 to the end (which is the effects parameter that was option in the CON language).</li>
+			<li>If any of the "definetexture" lines have filenames that contain whitespace, double quotes need
+			to be placed around the filename. It is best to put quotes around all strings, but for strings
+			with no embedded whitespace, quotes are not mandatory.</li>
+		</ol>
+		<p>Complete reference on the DUKE3D.DEF file is <a href="#deffile">here</a>.</p>
+
+		<h3>3D Models</h3>
+
+		<p>Polymost uses the Quake II MD2 model format for 3D models. You can replace any wall-aligned or
+		face sprite in the game with a 3D model using a declaration in the DUKE3D.DEF file. For more information
+		on the specifics of the DEF-file commands for 3D models, <a href="#deffile">see here</a>.</p>
+		<p>Included in this release is a model of an imp by Cheb and Edmundo Bordeu. See
+		<a href="http://www.doomsdayhq.com/files.php?pro=2&amp;class=4&amp;type=6">here for more info on the model
+		and of from where it came</a>. I shall use this model to demonstrate how to replace the Liztroop character
+		in Duke.</p>
+
+		<p>Here is the definition for the imp which is also included in the sample DUKE3D.DEF file.</p>
+<pre>definemodel "models/imp.md2" 2 4
+definemodelanim "walk1" "walk4" 6 0
+definemodelframe "walk1" 1680 1704
+definemodelanim "atk1" "atk5" 16 1
+definemodelframe "atk1" 1715 1717
+definemodelframe "idle" 1720 1727
+definemodelanim "pain1" "pain2" 8 0
+definemodelframe "pain1" 1730 1730
+definemodelanim "die1" "die6" 8 1
+definemodelframe "die1" 1731 1734
+definemodelframe "pain1" 1738 1738
+definemodelframe "pain2" 1739 1740
+definemodelframe "pain1" 1741 1741
+definemodelframe "pain2" 1742 1742
+definemodelframe "idle" 1744 1751
+definemodelframe "idle" 1754 1755</pre>
+		<p>Without going through every line of the example, here is the basis of how the definitions work.
+		You must put a
+		definemodel line before any other definemodelframe or definemodelanim lines. The frame and anim lines
+		refer the the definemodel line which preceeds them. You can define frames and animations in any order, ie.
+		the animations do not need to be given before the frames, but it is a good convention to keep them
+		together for clarity.</p>
+		<p>The walking loop for the liztroop spans tiles 1680 to 1704. The model contains a four-frame walking
+		animation which we play at six frames per second. The first line of the example specifies the "imp/imp.md2"
+		model should be drawn at two times normal scale and be darkened by a shade offset of four. The first of the
+		definemodelanim lines declares the four frame walking animation at 6fps which should loop (the 0 for the
+		flags parameter says to loop). The definemodelframe line which follows it maps the ART tiles from 1680
+		through to 1704 to play the walking animation. Because the name in the definemodelframe line matches the
+		first frame of the definemodelanim line, the animation will automatically play.</p>
+
+		<p><small>Quake II is a registered trademark of <a href="http://www.idsoftware.com">id Software</a></small></p>
+
+		<h2><a name="deffile">DEF-file Language</h2>
+
+		<p>These are the legal instructions that may be used in the DUKE3D.DEF file.</p>
+
+		<dl>
+			<dt>include <em>filename</em><br>#include <em>filename</em></dt>
+			<dd>Processes the script commands in <em>filename</em> at the point of the "include" call.</dd>
+
+			<dt>define <em>label numeric-integer-value</em><br>
+			#define <em>label numeric-integer-value</em></dt>
+			<dd>Declares <em>label</em> to represent <em>numeric-integer-value</em>.<br><strong>NOTE:</strong>
+			You may find it convenient to include DEFS.CON or NAMES.H to predefine many of the tile names in
+			the art file.</dd>
+
+			<dt>definetexture <em>pic-number palette-number x-center y-center x-size y-size filename</em></dt>
+			<dd>Defines a Hightile texture to replace an ART-file picture. <em>pic-number</em> may be an
+			number, or a defined label. Use a value of 0 for <em>x-center</em> and <em>y-center</em> and a
+			value of -1 for <em>x-size</em> and <em>y-size</em> for now until these values are actually used.
+			<em>filename</em> may be any PNG, JPG, TGA, BMP, GIF or PCX file.</dd>
+
+			<dt>definetint <em>palette-number red green blue effects</em></dt>
+			<dd>Defines a Hightile texture tint to simulate palette effects normally used on ART-file tiles.
+			<em>red</em>, <em>green</em>, and <em>blue</em> are numbers in the range 0 to 255 which specify
+			the colour the tint should look like. <em>effects</em> specifies any processing effects to use.
+			Valid values are: 0 = no effects, 1 = greyscale image, 2 = invert image. These values can be added
+			together to produce a combination of effects.</dd>
+
+			<dt>definemodel <em>filename scale shade-offset</em></dt>
+			<dd>Defines an MD2-format model file to replace certain sprites in the game. See
+			"definemodelframe" and "definemodelanim" for details on how to specify the ART-file tiles to
+			replace. <em>filename</em> is the name of the MD2 model. <em>scale</em> is a (possibly fractional)
+			value specifying a scaling factor for the model when it is rendered, eg. 1.5 for one-and-a-half
+			times as big.  <em>shade-offset</em> is an integer value specifying how much to bias the sprite's
+			shade value by.  A negative value for this makes the model brighter. Conversely, a positive value
+			makes it darker.</dd>
+
+			<dt>definemodelanim <em>start-frame end-frame frame-rate flags</em></dt>
+			<dd>Defines an animation from a group of frames in the model given by the last preceeding
+			"definemodel" instruction. <em>start-frame</em> and <em>end-frame</em> specify the names of the
+			starting and ending frames of the animation. <em>frame-rate</em> is the frame rate at which the
+			animation should play. This value can be fractional. <em>flags</em> specifies any special
+			properties the animation should have. Valid options are: 0 = none (looping animation), 1 =
+			one-shot (plays beginning to end once and stops on the last frame).</dd>
+
+			<dt>definemodelframe <em>frame-name first-tile last-tile</em></dt>
+			<dd>Defines a range of ART-file tiles to correspond with the given frame of the model specified in
+			the last preceeding "definemodel" instruction. <em>frame-name</em> is the name of the frame, which
+			if identical to the starting frame of a "definemodelanim" animation will play that animation. If
+			the frame name is not corresponding with an animation, the replacement will be static.
+			<em>first-tile</em> and <em>last-tile</em> specify a range of ART-file tiles which this model
+			frame should replace.</dd>
+
+			<dt>definevoxel <em>filename</em></dt>
+			<dd>Defines a voxel to replace sprites in the game. See "definevoxeltiles" for details on how to
+			specify the ART-file tiles to replace. <em>filename</em> is the name of the .KVX file containing
+			the voxel.</dd>
+
+			<dt>definevoxeltiles <em>first-tile last-tile</em></dt>
+			<dd>Defines the range of ART-file tiles to replace with the voxel given in the last preceeding
+			"definevoxel" instruction.</dd>
+		</dl>
+		
+		<h2><a name="hightile"></a>Hightile</h2>
+
+		<p>This release features the "Hightile" texturing improvements to Polymost. Hightile allows Polymost to use
+		true-colour textures instead of the artwork in the game's usual .ART file.</p>
+		<p>Replacement textures can be saved as JPEG, PNG (alpha channel supported), TGA, BMP, CEL, GIF, and PCX
+		formats. Hightile uses Ken Silverman's picture library to provide rapid picture file loading.</p>
+		<p>Hightile textures are defined in the DUKE3D.DEF file. See the <a href="#deffile">DEF-file language</a>
+		reference for information on how to specify Hightile textures.</p>
+		
+		<h3>Limitations to Hightile in this release</h3>
+		<ul>
+			<li>Hightile will squash or stretch the replacement to fit in the dimensions of the original tile it replaces. Artists should keep their replacements in the same ratio as the original tile for the art to not look distorted.</li>
+			<li>Hightile does not precache textures yet. You will notice a small delay on occasion as a texture is loaded into memory when it is first seen.</li>
+		</ul>
+		
+		<h2><a name="hightile-zip"></a>ZIP file support</h2>
+
+		<p>Duke (and Build games in general) can load game resources from a ZIP file.</p>
+		<p>ZIP files are used in Duke in the same manner as extra GRP files are specified. Use the "/g" commandline switch to specify the ZIP to load. eg. <code>DUKE3D.EXE /gMYFILE.ZIP</code></p>
+
+		<h2><a name="polymost"></a>Polymost</h2>
+
+		<p>Polymost is a full 3D implementation of the Build engine renderer, with hardware acceleration capability, and perspective in six degrees of freedom. In Ken's own words (copied from POLYMOST.C in my Build engine source distribution):</p>
+		<blockquote><pre>
+"POLYMOST" code written by Ken Silverman
+Ken Silverman's official web site: http://www.advsys.net/ken
+
+Motivation:
+When 3D Realms released the Duke Nukem 3D source code, I thought somebody would do a OpenGL or
+Direct3D port. Well, after a few months passed, I saw no sign of somebody working on a true
+hardware-accelerated port of Build, just people saying it wasn't possible. Eventually, I realized
+the only way this was going to happen was for me to do it myself. First, I needed to port Build to
+Windows. I could have done it myself, but instead I thought I'd ask my Australian buddy, Jonathon
+Fowler, if he would upgrade his Windows port to my favorite compiler (MSVC) - which he did. Once
+that was done, I was ready to start the "POLYMOST" project.
+
+About:
+This source file is basically a complete rewrite of the entire rendering part of the Build engine.
+There are small pieces in ENGINE.C to activate this code, and other minor hacks in other source
+files, but most of it is in here. If you're looking for polymost-related code in the other source
+files, you should find most of them by searching for either "polymost" or "rendmode". Speaking of
+rendmode, there are now 4 rendering modes in Build:
+
+    rendmode 0: The original code I wrote from 1993-1997
+    rendmode 1: Solid-color rendering: my debug code before I did texture mapping
+    rendmode 2: Software rendering before I started the OpenGL code (Note: this is just a quick
+                hack to make testing easier - it's not optimized to my usual standards!)
+    rendmode 3: The OpenGL code
+
+The original Build engine did hidden surface removal by using a vertical span buffer on the tops
+and bottoms of walls. This worked nice back in the day, but it it's not suitable for a polygon
+engine. So I decided to write a brand new hidden surface removal algorithm - using the same idea
+as the original Build - but one that worked with vectors instead of already rasterized data.
+		</pre></blockquote>
+		<p>Polymost is the default renderer choice for any video mode with a colour depth greater than 256
+		colours.</p>
+		<p><strong>NOTE:</strong> If your computer does not have an OpenGL graphics card, Polymost in OpenGL mode will most likely use the default Windows OpenGL rasterising facility which does all rendering in software. This may be extremely slow. If your Windows installation doesn't have any form of OpenGL rendering abililty, Polymost will probably crash.</p>
+		<p><strong>NOTE 2:</strong> OpenGL Polymost has been tested on an nVidia Riva TNT 16MB, an nVidia GeForce2 GTS 32MB, an nVidia GeForce4 Ti4600 128MB, an ATi Radeon Mobility 9000 64MB, and a 3D-Labs Oxygen GVX420 128MB (minor texturing issues).</p>
+
+		<h2>Console Commands</h2>
+
+		<p>This is a list of console commands and variables and their purpose:</p>
+
+		<dl>
+			<dt>changelevel &lt;episode&gt; &lt;level&gt;</dt>
+			<dd>Warps to a new level.</dd>
+			
+			<dt>dumpbuildinfo</dt>
+			<dd>Displays the compilation information for the game when it was built.</dd>
+
+			<dt>echo &lt;text...&gt;</dt>
+			<dd>Displays to the console what is passed as parameters to the command.</dd>
+
+			<dt>fileinfo &lt;filename&gt;</dt>
+			<dd>Displays some information about a given file, eg. size, CRC-32 checksum.</dd>
+
+			<dt>glinfo</dt>
+			<dd>Displays some information about the OpenGL driver.</dd>
+
+			<dt>gltextureanisotropy &lt;level&gt;</dt>
+			<dd>Sets the OpenGL anisotropic filtering level.</dd>
+
+			<dt>god</dt>
+			<dd>Enables God mode.</dd>
+
+			<dt>help &lt;name&gt;</dt>
+			<dd>Displays a help message for a particular console variable or command.</dd>
+
+			<dt>listsymbols</dt>
+			<dd>Displays the names of all commands and variables available in the console.</dd>
+
+			<dt>map &lt;mapname&gt;</dt>
+			<dd>Loads a user map.</dd>
+
+			<dt>noclip</dt>
+			<dd>Disables player collisions with world objects.</dd>
+
+			<dt>quit</dt>
+			<dd>Exits the game.</dd>
+
+			<dt>restartvid</dt>
+			<dd>Resets the video system, reinitialising the video mode.</dd>
+
+			<dt>setrendermode &lt;mode&gt;</dt>
+			<dd>Sets the current Polymost render mode.</dd>
+
+			<dt>vidmode [xres yres] [bpp]</dt>
+			<dd>Changes the current video mode. You may pass either a new resolution (eg 640 480),
+			a new colour depth (eg 32), or both a resolution and colour depth (eg 640 480 32).</dd>
+
+			<dt>bpp &lt;colourdepth&gt;</dt>
+			<dd>Sets the colour depth. Does not apply it immediately though. You need to use 'restartvid'
+			after setting this if you want to apply the change.</dd>
+
+			<dt>glusecds &lt;0 or 1&gt;</dt>
+			<dd>Enables the use of the ChangeDisplaySettings() Windows function to switch the current
+			screen mode. Some video cards require this be set in order for OpenGL to work properly.
+			Intel and Matrox users are in this category.</dd>
+
+			<dt>glusetexcompr &lt;0 or 1&gt;</dt>
+			<dd>Enables or disables the use of OpenGL texture compression for hightile textures. You need
+			to use 'restartvid' to apply any changes to this value.</dd>
+
+			<dt>novoxmips &lt;0 or 1&gt;</dt>
+			<dd>Disables or enables the use of voxel mipmaps to improve voxel visual quality.</dd>
+
+			<dt>osdrows &lt;num&gt;</dt>
+			<dd>Sets the number of visible lines of the console when it is open.</dd>
+
+			<dt>screencaptureformat &lt;0 or 1&gt;</dt>
+			<dd>0 = Targa, 1 = PCX</dd>
+
+			<dt>showfps</dt>
+			<dd>Shows the framerate counter.</dd>
+		</dl>
+			
+		<h2><a name="network"></a>Network Games</h2>
+
+		<p style="margin:1em;border:1px solid black;padding:1em;"><em>This information is here for reference only. The networking feature is currently under
+			redevelopment. Although the code in this release works, it fails with more than two players trying to
+			join.</em></p>
+
+		<p>Because this feature is still experimental, setting up a network game is not the most streamlined of tasks, but it is achievable. First, some things to note:</p>
+		<ol>
+			<li>Slow computers will fail to negotiate a connection with the game. I do not know where exactly the cut-off lies, but basically, machines which have worked are anywhere from a Pentium 3 1000MHz and upwards, while a Pentium 233MMX failed to achieve synchronisation. If you choose to test the game, your mileage may vary.</li>
+			<li>Slow or laggy networks may prove to be a problem. This means no Internet play because the game quickly goes to crap soon after negotiating the connection, if it even manages that.</li>
+			<li>I have noticed that sometimes at the end of a map, the game jams up at the intermission screen showing the player scores.</li>
+			<li>If the game seems to be stuck waiting, try holding Escape for at least four seconds and hopefully the game will kill itself. If this fails to work, you may have to kill the game using Windows' Task Manager.</li>
+		</ol>
+		<p>So, knowing these particular nuances, this is how to configure a network game.</p>
+		<p><strong>IMPORTANT:</strong> Place two or more blank lines at the end of the configuration files below or the game will start in singleplayer mode. This is a bug in my script loading code which I have not yet fixed.</p>
+
+		<h3>Hosting a game</h3>
+
+		<p>A machine hosting a game needs to create a configuration file which contains the following information:</p>
+		<ul>
+			<li>The port to communicate on (if omitted, defaults to 19014)</li>
+			<li>The number of players to wait for</li>
+			<li>An indication of whether to host or join a game (in this case, host)</li>
+		</ul>
+		<p>This can be placed in a text file (which for this demonstration I will name <em>player-host.ini</em>) like so:</p>
+		<blockquote><code>
+			[Network Game]<br />
+			IPPort = 19014<br />
+			Mode = "Host"<br />
+			Players = 2
+		</code></blockquote>
+
+		<p>To then start the game and wait for players to join, either create a shortcut to DUKE3D.EXE and modify its properties to use a command line like the following, or type the following at a DOS prompt.</p>
+
+		<blockquote>
+			D:\Duke3D&gt; duke3d.exe -net player-host.ini -name JonoF
+		</blockquote>
+
+		<p>The game will then start and wait for players to join.</p>
+
+		<h3>Joining a game</h3>
+
+		<p>A machine joining a game needs to create a configuration file which contains the following information:</p>
+		<ul>
+			<li>The port to communicate on (if omitted, defaults to 19014)</li>
+			<li>The address (and port) of the computer hosting the game</li>
+			<li>An indication of whether to join or host the game (in this case, join)</li>
+		</ul>
+		<p>This can be placed in a text file (which for this demonstration I will name <em>player-join.ini</em>) like so:</p>
+		<blockquote><code>
+			[Network Game]<br />
+			IPPort = 19014<br />
+			Mode = "Join"<br />
+			Host = "asuka:19014"
+		</code></blockquote>
+
+		<p>To then start the game and wait until the rest of the players join, either create a shortcut to DUKE3D.EXE and modify its properties to use a command line like the following, or type the following at a DOS prompt.</p>
+
+		<blockquote>
+			D:\Duke3D&gt; duke3d.exe -net player-join.ini -name FonoJ
+		</blockquote>
+
+		<p>The game will then start and wait until enough players have joined.</p>
+
+
+		<address>Happy Duke'ing!<br />Jonathon Fowler (<a href="mailto:jonof@edgenetwork.org">jonof@edgenetwork.org</a>)</address>
+	</body>
+</html>
+

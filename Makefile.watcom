@@ -1,0 +1,169 @@
+# Duke3D Makefile for Watcom Make
+
+SRC=source\
+OBJ=obj\
+EROOT=..\build\
+EINC=$(EROOT)include\
+EOBJ=eobj\
+INC=$(SRC)
+o=obj
+
+ENGINELIB=engine.lib
+EDITORLIB=build.lib
+
+!ifdef __LOADDLL__
+! loaddll wcc386 wccd386
+!endif
+
+DXROOT=c:\sdks\msc\dx7
+
+ENGINEOPTS=-dSUPERBUILD -dPOLYMOST -dUSE_OPENGL
+
+CC=wcc386
+CFLAGS= -5r -s -orb -fp5 -d2 -db &
+	-i=$(INC) -i=$(EINC) -i=$(SRC)jmact -i=$(SRC)jaudiolib &
+	-dNOCOPYPROTECT $(ENGINEOPTS) &
+	-dUSE_WATCOM_PRAGMAS -dUSE_WATCOM_ASSEMBLY
+LIBS=opengl32.lib
+WASMFLAGS=-d1
+EXESUFFIX=.exe
+
+JMACTOBJ=$(OBJ)util_lib.$o &
+	$(OBJ)file_lib.$o &
+	$(OBJ)control.$o &
+	$(OBJ)keyboard.$o &
+	$(OBJ)mouse.$o &
+	$(OBJ)mathutil.$o &
+	$(OBJ)scriplib.$o
+
+#JAUDIOLIB_FX=$(OBJ)jaudiolib_fxstub.$o
+#JAUDIOLIB_MUSIC=$(OBJ)jaudiolib_musicstub.$o
+#JAUDIOLIB_FX=$(OBJ)jaudiolib_fx_fmod.$o
+JAUDIOLIB_FX=$(OBJ)mv_mix.$o &
+	  $(OBJ)mv_mix16.$o &
+	  $(OBJ)mvreverb.$o &
+	  $(OBJ)pitch.$o &
+	  $(OBJ)multivoc.$o &
+	  $(OBJ)ll_man.$o &
+	  $(OBJ)fx_man.$o &
+	  $(OBJ)dsoundout.$o
+JAUDIOLIB_MUSIC=$(OBJ)midi.$o &
+	  $(OBJ)mpu401.$o &
+	  $(OBJ)music.$o
+JAUDIOLIBOBJ=$(JAUDIOLIB_MUSIC) $(JAUDIOLIB_FX)
+
+GAMEOBJS=$(OBJ)game.$o &
+	$(OBJ)actors.$o &
+	$(OBJ)gamedef.$o &
+	$(OBJ)global.$o &
+	$(OBJ)menues.$o &
+	$(OBJ)player.$o &
+	$(OBJ)premap.$o &
+	$(OBJ)sector.$o &
+	$(OBJ)sounds.$o &
+	$(OBJ)rts.$o &
+	$(OBJ)config.$o &
+	$(OBJ)animlib.$o &
+	$(OBJ)testcd.$o &
+	$(OBJ)osdfuncs.$o &
+	$(OBJ)osdcmds.$o &
+	$(OBJ)multiplayer.$o &
+	$(OBJ)winbits.$o &
+	$(JMACTOBJ) &
+	$(JAUDIOLIBOBJ)
+
+EDITOROBJS=$(OBJ)astub.$o
+
+PLATFORM=WINDOWS
+CFLAGS+= -i=$(DXROOT)\include
+LIBS+= winmm.lib wsock32.lib
+!ifndef RENDERTYPE
+RENDERTYPE=WIN
+!endif
+	
+#GAMEOBJS+= $(EOBJ)winlayer.$o
+#EDITOROBJS+= $(EOBJ)winlayer.$o
+		
+CFLAGS+= -dmain=app_main
+LIBS+= dxguid.lib
+
+CFLAGS+= -d$(PLATFORM) -dRENDERTYPE$(RENDERTYPE)=1
+
+# RULES
+.EXTENSIONS: .wasm .res .rc
+
+.wasm:	$(SRC)
+.wasm:	$(SRC)jaudiolib/
+.c:	$(SRC)
+.c:	$(SRC)jmact/
+.c:	$(SRC)jaudiolib/
+.c:	$(SRC)util/
+.rc:	$(SRC)misc/
+
+.wasm.$o:
+	wasm $(WASMFLAGS) -fo=$(OBJ).$o $[@
+
+.c.$o:
+	$(CC) $(CFLAGS) -fo=$(OBJ).$o $[@
+
+.rc.res:
+	wrc -fo=$^*.res -r $[@
+	
+
+# TARGETS
+all: duke3d$(EXESUFFIX) build$(EXESUFFIX) .SYMBOLIC
+	%null
+
+duke3d$(EXESUFFIX): $(GAMEOBJS) $(OBJ)gameres.res $(EOBJ)$(ENGINELIB)
+	%write $@.wlink NAME     $(OBJ)$@
+	%write $@.wlink SYSTEM   WIN95
+	%write $@.wlink DEBUG    ALL
+	%write $@.wlink FILE     { $(GAMEOBJS) $(ENGINEOBJS) }
+	%write $@.wlink RESOURCE $(OBJ)gameres.res
+	%write $@.wlink LIBPATH  $(DXROOT)\lib
+	%write $@.wlink LIBPATH  $(EOBJ)
+	%write $@.wlink LIBFILE  { $(LIBS) $(ENGINELIB) }
+	wlink @$@.wlink
+	copy /y $(OBJ)$@ $@
+	del $@.wlink
+	
+build$(EXESUFFIX): $(EDITOROBJS) $(OBJ)buildres.res $(EOBJ)$(ENGINELIB) $(EOBJ)$(EDITORLIB)
+	%write $@.wlink NAME     $(OBJ)$@
+	%write $@.wlink SYSTEM   WIN95
+	%write $@.wlink DEBUG    ALL
+	%write $@.wlink FILE     { $(EDITOROBJS) }
+	%write $@.wlink RESOURCE $(OBJ)buildres.res
+	%write $@.wlink LIBPATH  $(DXROOT)\lib
+	%write $@.wlink LIBPATH  $(EOBJ)
+	%write $@.wlink LIBFILE  { $(LIBS) $(ENGINELIB) $(EDITORLIB) }
+	wlink @$@.wlink
+	copy /y $(OBJ)$@ $@
+	del $@.wlink
+
+!include Makefile.deps
+
+cwd=$+ $(%cwd) $-
+$(EOBJ)$(ENGINELIB): .SYMBOLIC
+	-mkdir $(EOBJ)
+	%write $(EOBJ)overrides.mak OBJ=$(cwd)\$(EOBJ)
+	%write $(EOBJ)overrides.mak CFLAGS=$(ENGINEOPTS)
+	cd $(EROOT)
+	wmake -f Makefile.watcom OVERRIDES=$(cwd)\$(EOBJ)overrides.mak enginelib
+	cd $(cwd)
+
+$(EOBJ)$(EDITORLIB): .SYMBOLIC
+	-mkdir $(EOBJ)
+	%write $(EOBJ)overrides.mak OBJ=$(cwd)\$(EOBJ)
+	%write $(EOBJ)overrides.mak CFLAGS=$(ENGINEOPTS)
+	cd $(EROOT)
+	wmake -f Makefile.watcom OVERRIDES=$(cwd)\$(EOBJ)overrides.mak editorlib
+	cd $(cwd)
+
+
+
+# PHONIES	
+clean: .SYMBOLIC
+	-del $(OBJ)* duke3d$(EXESUFFIX) duke3d.sym$(EXESUFFIX) build$(EXESUFFIX) build.sym$(EXESUFFIX) core*
+	
+veryclean: clean .SYMBOLIC
+	-del $(EOBJ)*
