@@ -1,11 +1,12 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 		<meta name="Author" content="Jonathon Fowler" />
 		<title>Release Notes for JonoF's Duke Nukem 3D Port</title>
 		<style type="text/css">
-		body { font-family: Tahoma,sans-serif; font-size: 10pt; }
+		body { font-family: "Tahoma",sans-serif; font-size: 10pt; }
 		h1 { border-bottom: 2px solid black; }
 		dl { margin-left: 4em; }
 		dt { font-weight: bold; }
@@ -15,67 +16,35 @@
 
 	<body>
 		<h1>Release Notes for JonoF's Duke Nukem 3D Port</h1>
-		<p>Release date: 5 June 2004 (bugfix release of 3 June version)</p>
+		<p>Release date: 10 October 2004 (interim release)</p>
 
 		<h2>New Features</h2>
 		<ul>
-			<li>3D Model sprites. <a href="#md2sprite">See here for more information</a>.</li>
+			<li>Sky boxes. <a href="#skybox">See here for more information</a>.</li>
+			<li>Multiple skins per MD2 model. <a href="#md2skin">See here for more information.</a>.</li>
+			<li>"Map hack" files for tweaking sprites in GL Polymost mode. <a href="#maphack">See here for more
+				information.</a></li>
+			<li>Models can now be flipped x-wise and y-wise.</li>
 		</ul>
 			
 		<h2>Known Issues</h2>
 		<ul>
-			<li>3D model support is new in this release and is still being tweaked. Any ridiculously silly
-			bugs we'd like to know about however.</li>
-			<li>The multiplayer code is still terrible. It's being redeveloped still. Same rules apply as to
-			last release, ie. only really usable on a fast LAN with fast computers, not terribly reliable but
-			can be stable. Slow machines and connections over the Internet are prone to failure. <strong>Games
-			of more than two players don't seem to work.</strong> <a href="#network">See here for information
-			on using the network features</a>.</li>
+			<li><strong>IMPORTANT CHANGE:</strong> The definitions in the community high-resolution art packs
+			have tile numbers with zeroes padding their length to four digits. This is a bad thing with this
+			release because a leading zero indicates a number given in octal (base 8) representation. You will
+			have to make sure that there are no extra zeroes before the first non-zero digit of the tile
+			number or else you will see strange things in the game.</li>
+			<li>3D model support is maturing. The evilest of bugs in the code should be fixed
+			(eg. model "limits").</li>
+			<li>The hightile crash caused by BMP files in the community texture pack ought to be
+			fixed now.</li>
+			<li>The multiplayer feature has been completely disabled for the time being. Work is proceeding on
+			it.</li>
+			<li>The existing sound code is the only stuff stable enough to use at the moment. I'm working
+			on the new code still.</li>
 		</ul>
 
-		<h2><a name="md2sprite"></a>A quick word before we get to 3D Models</h2>
-
-		<p>Before I explain the new 3D model support, I need to explain the changes which have been made to how
-		the Hightile enhancements, 3D models, and voxels are described to the game.</p>
-		<p>Users of previous releases of the port would be familiar with the "definetexture" instruction in the
-		CON language which is used to declare Hightile replacement textures. Typically, you would have an extra
-		CON file, often named EXTRA.CON, which you would use to declare textures and whatnot. This file would be
-		passed to the game using a "/x" switch to override the default GAME.CON from executing. In order to provide
-		more generic flexibilty so that the enhancements are not tied to the CON language, I have created a new
-		script loader as a service of the engine which is now used to read a file containing those same definitions
-		which CONs once provided. This script file is named DUKE3D.DEF and its syntax is similar to the CON
-		language.</p>
-		<p>The benefits to come from this change to a separate file arrangement is that the new engine features now
-		work in the Build editor as well as the game. Plus, the script reader is a reusable component of the
-		engine which means any future games, or any modifications based on the engine will have the option of
-		using this feature for themselves.</p>
-
-		<h3>Converting EXTRA.CON to DUKE3D.DEF</h3>
-
-		<p>Since the port now uses the DUKE3D.DEF file to specify replacements and whatnot, the CON features have
-		been disabled and a warning written to the console put in their place, something like:</p>
-		<pre>!!! BEGIN NOTICE !!!
-CON-file definition of Hightile textures has been removed in
-favour of DUKE3D.DEF declarations. Please refer to the release
-notes for details on how to convert your CON definitions into
-DUKE3D.DEF equivalents.
-!!! END NOTICE !!!</pre>
-		<p>Since DUKE3D.DEF has a syntax much like the CON language, conversion is not a difficult task. Refer below
-		to the details on the instructions and their parameters for specifics, but here is the basic changes which
-		you would need to make to an EXTRA.CON file to create DUKE3D.DEF:</p>
-		<ol>
-			<li>If you include GAME.CON in the EXTRA.CON file, you will want to change this to include
-			DEFS.CON instead.</li>
-			<li>If there are "definetint" lines, they must be checked to be sure to show five parameters. If
-			there are only four parameters (which would be palette number, red, green, and blue values), add a
-			0 to the end (which is the effects parameter that was option in the CON language).</li>
-			<li>If any of the "definetexture" lines have filenames that contain whitespace, double quotes need
-			to be placed around the filename. It is best to put quotes around all strings, but for strings
-			with no embedded whitespace, quotes are not mandatory.</li>
-		</ol>
-		<p>Complete reference on the DUKE3D.DEF file is <a href="#deffile">here</a>.</p>
-
-		<h3>3D Models</h3>
+		<h3><a name="md2sprite"></a>3D Models</h3>
 
 		<p>Polymost uses the Quake II MD2 model format for 3D models. You can replace any wall-aligned or
 		face sprite in the game with a 3D model using a declaration in the DUKE3D.DEF file. For more information
@@ -105,7 +74,7 @@ definemodelframe "idle" 1754 1755</pre>
 		<p>Without going through every line of the example, here is the basis of how the definitions work.
 		You must put a
 		definemodel line before any other definemodelframe or definemodelanim lines. The frame and anim lines
-		refer the the definemodel line which preceeds them. You can define frames and animations in any order, ie.
+		refer the the definemodel line which precedes them. You can define frames and animations in any order, ie.
 		the animations do not need to be given before the frames, but it is a good convention to keep them
 		together for clarity.</p>
 		<p>The walking loop for the liztroop spans tiles 1680 to 1704. The model contains a four-frame walking
@@ -118,25 +87,35 @@ definemodelframe "idle" 1754 1755</pre>
 
 		<p><small>Quake II is a registered trademark of <a href="http://www.idsoftware.com">id Software</a></small></p>
 
-		<h2><a name="deffile">DEF-file Language</h2>
+		<h2><a name="deffile"></a>DEF-file Language</h2>
 
-		<p>These are the legal instructions that may be used in the DUKE3D.DEF file.</p>
+		<p>These are the legal instructions that may be used in the DUKE3D.DEF file. Comments can be used by
+		prefixing the text with a double forward-slash (C++ style), <code>//</code>, or surrounding the text with
+		<code>/*</code> (comment here) <code>*/</code> (C style).</p>
 
 		<dl>
-			<dt>include <em>filename</em><br>#include <em>filename</em></dt>
+			<dt>include <em>filename</em><br />#include <em>filename</em></dt>
 			<dd>Processes the script commands in <em>filename</em> at the point of the "include" call.</dd>
 
-			<dt>define <em>label numeric-integer-value</em><br>
-			#define <em>label numeric-integer-value</em></dt>
-			<dd>Declares <em>label</em> to represent <em>numeric-integer-value</em>.<br><strong>NOTE:</strong>
-			You may find it convenient to include DEFS.CON or NAMES.H to predefine many of the tile names in
-			the art file.</dd>
+			<dt>define <em>label integer-value</em><br />
+			#define <em>label integer-value</em></dt>
+			<dd>Declares <em>label</em> to represent the numeric value <em>integer-value</em>.
+			<em>integer-value</em> can be a label, in which case the value of the label given is used.<br />
+			<strong>NOTE:</strong> You may find it convenient to include DEFS.CON or NAMES.H to predefine many
+			of the tile names in the art file.</dd>
 
-			<dt>definetexture <em>pic-number palette-number x-center y-center x-size y-size filename</em></dt>
+			<dt>definetexture <em>pic-number palette-number x-centre y-centre x-size y-size filename</em></dt>
 			<dd>Defines a Hightile texture to replace an ART-file picture. <em>pic-number</em> may be an
-			number, or a defined label. Use a value of 0 for <em>x-center</em> and <em>y-center</em> and a
+			number, or a defined label. Use a value of 0 for <em>x-centre</em> and <em>y-centre</em> and a
 			value of -1 for <em>x-size</em> and <em>y-size</em> for now until these values are actually used.
 			<em>filename</em> may be any PNG, JPG, TGA, BMP, GIF or PCX file.</dd>
+
+			<dt>defineskybox <em>pic-number palette-number reserved front-face-filename right-face-filename
+				back-face-filename left-face-filename top-face-filename bottom-face-filename</em></dt>
+			<dd>Defines a sky-box composed of six images mapped onto the faces of a cube to be used when
+			<em>pic-number</em> is set as parallaxing in GL Polymost mode. For information on generating sky box
+			images, <a href="#deffile-skybox">see here</a>. <strong>NOTE:</strong> <em>reserved</em> should be 0
+			for now until its meaning is fully conceived.</dd>
 
 			<dt>definetint <em>palette-number red green blue effects</em></dt>
 			<dd>Defines a Hightile texture tint to simulate palette effects normally used on ART-file tiles.
@@ -154,8 +133,15 @@ definemodelframe "idle" 1754 1755</pre>
 			shade value by.  A negative value for this makes the model brighter. Conversely, a positive value
 			makes it darker.</dd>
 
+			<dt>definemodelskin <em>palette-number filename</em></dt>
+			<dd>Defines a skin to be used on the model for all frames declared after this command, when the
+			sprite palette is equal to <em>palette-number</em>. (This makes more sense when given a
+			demonstration.) <strong>IMPORTANT:</strong> If your model exists in a subdirectory (ie.
+			definemodel includes a path to the .md2) you will need to give the same path to <em>filename</em>
+			if the skin is in the same directory.</dd>
+
 			<dt>definemodelanim <em>start-frame end-frame frame-rate flags</em></dt>
-			<dd>Defines an animation from a group of frames in the model given by the last preceeding
+			<dd>Defines an animation from a group of frames in the model given by the last preceding
 			"definemodel" instruction. <em>start-frame</em> and <em>end-frame</em> specify the names of the
 			starting and ending frames of the animation. <em>frame-rate</em> is the frame rate at which the
 			animation should play. This value can be fractional. <em>flags</em> specifies any special
@@ -164,7 +150,7 @@ definemodelframe "idle" 1754 1755</pre>
 
 			<dt>definemodelframe <em>frame-name first-tile last-tile</em></dt>
 			<dd>Defines a range of ART-file tiles to correspond with the given frame of the model specified in
-			the last preceeding "definemodel" instruction. <em>frame-name</em> is the name of the frame, which
+			the last preceding "definemodel" instruction. <em>frame-name</em> is the name of the frame, which
 			if identical to the starting frame of a "definemodelanim" animation will play that animation. If
 			the frame name is not corresponding with an animation, the replacement will be static.
 			<em>first-tile</em> and <em>last-tile</em> specify a range of ART-file tiles which this model
@@ -176,10 +162,72 @@ definemodelframe "idle" 1754 1755</pre>
 			the voxel.</dd>
 
 			<dt>definevoxeltiles <em>first-tile last-tile</em></dt>
-			<dd>Defines the range of ART-file tiles to replace with the voxel given in the last preceeding
+			<dd>Defines the range of ART-file tiles to replace with the voxel given in the last preceding
 			"definevoxel" instruction.</dd>
 		</dl>
-		
+
+		<h3>A note about numeric values</h3>
+
+		<p>Whenever a numeric value is required, it can be specified in three bases: decimal (base 10),
+		hexadecimal (base 16), and octal (base 8). Decimal numbers are obvious, but don't use extra leading zeroes
+		to pad a decimal number to a particular width. A leading zero on a number indicates it is an octal number.
+		To give a number in hexadecimal, use a '0x' prefix. These all represent the same number: 16 (decimal) =
+		020 (octal) = 0x10 (hexadecimal)</p>
+
+		<h3><a name="deffile-skybox"></a>A note about skyboxes</h3>
+
+		<p>Ken has some utilities on his website that can assist you in converting your favourite skybox format to
+		Polymost format. (<a href="http://advsys.net/ken/kube/kube.htm">http://advsys.net/ken/kube/kube.htm</a>)
+		If your skybox is in Mercator projection, then you'll need to run MERC2KUB.EXE first. Once you have your 6
+		face textures, you can use KUBE.EXE to convert it to Polymost format using the /split option. The face
+		textures can be in almost any configuration - KUBE has fancy autodetection code. For example, typing "kube
+		globe.mov /split" will generate the 6 face textures in the order and orientation that Polymost expects.
+		The output files will be called SPLITCAP0.PNG, SPLITCAP1.PNG, ..., SPLITCAP5.PNG. After conversion, I
+		suggest you rename the files and compress them using PNGOUT or similar utility.</p>
+
+		<h2><a name="maphack"></a>Map Hack scripts</h2>
+
+		<p>"Map Hack" scripts are files that override certain aspects of a map file when it is rendered in OpenGL
+		Polymost mode. Currently they allow for angle adjustment on sprites, and the ability to prevent particular
+		sprites from being drawn as a model. These are useful for making small corrections to ornamental sprites in
+		a way that doesn't require modifying the original map.</p>
+		<p>The game will automatically load a map hack script whenever a map is loaded. The script should have the
+		same base name as the original .MAP file, but with an .MHK extension. The map hack language is described
+		below. It uses the same parser as DEF files, so you can use comments in the same way.</p>
+
+		<dl>
+			<dt>sprite <em>number</em></dt>
+			<dd>Begins a sprite definition. <em>number</em> is the sprite number to affect. You can find this in
+			the Build editor by highlighting the sprite in 2D mode and pressing Control+Tab. The next group of
+			commands describe the changes to make to the sprite.</dd>
+			<dl>
+				<dt>notmd2</dt>
+				<dd>Prevents the sprite from being drawn as a model. It gets drawn as a regular sprite
+				instead.</dd>
+
+				<dt>angleoff <em>angle</em><br />
+				angoff <em>angle</em></dt>
+				<dd>Adds <em>angle</em> to the angle of the sprite just before it is rendered. This is good
+				for fixing up things like toilet sprites that are facing the wrong way.
+				<strong>angoff</strong> is a synonym for <strong>angleoff</strong>.</dd>
+			</dl>
+		</dl>
+
+		<p>Here is an example map hack script:</p>
+<pre>// Map hack file for JFDuke3D
+// Level: E1L2.MAP (Original Atomic Edition version)
+// Prepared by jonof@edgenetwork.org
+
+// Invisible switch behind hand dryer in toilet of porn shop
+sprite 191 notmd2
+
+// Invisible switches on telephones near billiards room in club
+sprite 254 notmd2
+sprite 517 notmd2
+
+// Toilet in restroom in club
+sprite 478 angoff -512</pre>
+
 		<h2><a name="hightile"></a>Hightile</h2>
 
 		<p>This release features the "Hightile" texturing improvements to Polymost. Hightile allows Polymost to use
@@ -191,18 +239,24 @@ definemodelframe "idle" 1754 1755</pre>
 		
 		<h3>Limitations to Hightile in this release</h3>
 		<ul>
-			<li>Hightile will squash or stretch the replacement to fit in the dimensions of the original tile it replaces. Artists should keep their replacements in the same ratio as the original tile for the art to not look distorted.</li>
-			<li>Hightile does not precache textures yet. You will notice a small delay on occasion as a texture is loaded into memory when it is first seen.</li>
+			<li>Hightile will squash or stretch the replacement to fit in the dimensions of the original tile
+			it replaces. Artists should keep their replacements in the same ratio as the original tile for the
+			art to not look distorted.</li>
+			<li>Duke does not precache textures yet with a great level of sophistication, so be aware that you
+			will notice a small delay on occasion as a texture is loaded into memory when it is first seen.</li>
 		</ul>
 		
 		<h2><a name="hightile-zip"></a>ZIP file support</h2>
 
 		<p>Duke (and Build games in general) can load game resources from a ZIP file.</p>
-		<p>ZIP files are used in Duke in the same manner as extra GRP files are specified. Use the "/g" commandline switch to specify the ZIP to load. eg. <code>DUKE3D.EXE /gMYFILE.ZIP</code></p>
+		<p>ZIP files are used in Duke in the same manner as extra GRP files are specified. Use the "/g" command-line
+		switch to specify the ZIP to load. eg. <code>DUKE3D.EXE /gMYFILE.ZIP</code></p>
 
 		<h2><a name="polymost"></a>Polymost</h2>
 
-		<p>Polymost is a full 3D implementation of the Build engine renderer, with hardware acceleration capability, and perspective in six degrees of freedom. In Ken's own words (copied from POLYMOST.C in my Build engine source distribution):</p>
+		<p>Polymost is a full 3D implementation of the Build engine renderer, with hardware acceleration capability,
+		and perspective in six degrees of freedom. In Ken's own words (copied from POLYMOST.C in my Build engine
+		source distribution):</p>
 		<blockquote><pre>
 "POLYMOST" code written by Ken Silverman
 Ken Silverman's official web site: http://www.advsys.net/ken
@@ -236,8 +290,13 @@ as the original Build - but one that worked with vectors instead of already rast
 		</pre></blockquote>
 		<p>Polymost is the default renderer choice for any video mode with a colour depth greater than 256
 		colours.</p>
-		<p><strong>NOTE:</strong> If your computer does not have an OpenGL graphics card, Polymost in OpenGL mode will most likely use the default Windows OpenGL rasterising facility which does all rendering in software. This may be extremely slow. If your Windows installation doesn't have any form of OpenGL rendering abililty, Polymost will probably crash.</p>
-		<p><strong>NOTE 2:</strong> OpenGL Polymost has been tested on an nVidia Riva TNT 16MB, an nVidia GeForce2 GTS 32MB, an nVidia GeForce4 Ti4600 128MB, an ATi Radeon Mobility 9000 64MB, and a 3D-Labs Oxygen GVX420 128MB (minor texturing issues).</p>
+		<p><strong>NOTE:</strong> If your computer does not have an OpenGL graphics card, Polymost in OpenGL mode
+		will most likely use the default Windows OpenGL rasterising facility which does all rendering in software.
+		This may be extremely slow. If your Windows installation doesn't have any form of OpenGL rendering ability,
+		Polymost will probably crash.</p>
+		<p><strong>NOTE 2:</strong> OpenGL Polymost has been tested on an nVidia Riva TNT 16MB, an nVidia GeForce2
+		GTS 32MB, an nVidia GeForce4 Ti4600 128MB, an ATi Radeon Mobility 9000 64MB, and a 3D-Labs Oxygen GVX420
+		128MB (minor texturing issues).</p>
 
 		<h2>Console Commands</h2>
 
@@ -262,6 +321,17 @@ as the original Build - but one that worked with vectors instead of already rast
 			<dt>gltextureanisotropy &lt;level&gt;</dt>
 			<dd>Sets the OpenGL anisotropic filtering level.</dd>
 
+			<dt>gltexturemode &lt;mode-number&gt;</dt>
+			<dd>Sets the OpenGL texturing mode. Valid values are:
+			<ol type="1" start="0">
+				<li>GL_NEAREST (looks rather like the original software renderer)</li>
+				<li>GL_LINEAR</li>
+				<li>GL_NEAREST_MIPMAP_NEAREST</li>
+				<li>GL_LINEAR_MIPMAP_NEAREST (bilinear)</li>
+				<li>GL_NEAREST_MIPMAP_LINEAR</li>
+				<li>GL_LINEAR_MIPMAP_LINEAR (trilinear)</li>
+			</ol></dd>
+
 			<dt>god</dt>
 			<dd>Enables God mode.</dd>
 
@@ -285,6 +355,10 @@ as the original Build - but one that worked with vectors instead of already rast
 
 			<dt>setrendermode &lt;mode&gt;</dt>
 			<dd>Sets the current Polymost render mode.</dd>
+
+			<dt>setstatusbarscale &lt;percent&gt;</dt>
+			<dd>Sets the size of the status bar as a percentage of its original full-width size. Minimum size is
+			10%, maximum 100%.</dd>
 
 			<dt>vidmode [xres yres] [bpp]</dt>
 			<dd>Changes the current video mode. You may pass either a new resolution (eg 640 480),
@@ -312,25 +386,50 @@ as the original Build - but one that worked with vectors instead of already rast
 			<dt>screencaptureformat &lt;0 or 1&gt;</dt>
 			<dd>0 = Targa, 1 = PCX</dd>
 
-			<dt>showfps</dt>
-			<dd>Shows the framerate counter.</dd>
+			<dt>showcoords &lt;0 or 1&gt;</dt>
+			<dd>Same as typing "DNCOORDS" cheat.</dd>
+
+			<dt>showfps &lt;0 or 1&gt;</dt>
+			<dd>Shows/hides the framerate counter. Same as typing "DNRATE" cheat.</dd>
+
+			<dt>usemodels &lt;0 or 1&gt;</dt>
+			<dd>Disables or enables the use of 3D models in GL Polymost mode if any are defined.</dd>
+
+			<dt>usevoxels &lt;0 or 1&gt;</dt>
+			<dd>Disables or enables the use of voxels in the classic renderer if any are defined.</dd>
 		</dl>
-			
+		
+		
+		<h1>Historical Documentation</h1>
+
+		<p>The content in this section is here for historical reference purposes.</p>
+
 		<h2><a name="network"></a>Network Games</h2>
 
-		<p style="margin:1em;border:1px solid black;padding:1em;"><em>This information is here for reference only. The networking feature is currently under
+		<p style="margin:1em;border:1px solid black;padding:1em;"><em>This information is here for reference only.
+			The networking feature is currently under
 			redevelopment. Although the code in this release works, it fails with more than two players trying to
 			join.</em></p>
 
-		<p>Because this feature is still experimental, setting up a network game is not the most streamlined of tasks, but it is achievable. First, some things to note:</p>
+		<p>Because this feature is still experimental, setting up a network game is not the most streamlined of tasks,
+		but it is achievable. First, some things to note:</p>
 		<ol>
-			<li>Slow computers will fail to negotiate a connection with the game. I do not know where exactly the cut-off lies, but basically, machines which have worked are anywhere from a Pentium 3 1000MHz and upwards, while a Pentium 233MMX failed to achieve synchronisation. If you choose to test the game, your mileage may vary.</li>
-			<li>Slow or laggy networks may prove to be a problem. This means no Internet play because the game quickly goes to crap soon after negotiating the connection, if it even manages that.</li>
-			<li>I have noticed that sometimes at the end of a map, the game jams up at the intermission screen showing the player scores.</li>
-			<li>If the game seems to be stuck waiting, try holding Escape for at least four seconds and hopefully the game will kill itself. If this fails to work, you may have to kill the game using Windows' Task Manager.</li>
+			<li>Slow computers will fail to negotiate a connection with the game. I do not know where exactly the
+			cut-off lies, but basically, machines which have worked are anywhere from a Pentium 3 1000MHz and
+			upwards, while a Pentium 233MMX failed to achieve synchronisation. If you choose to test the game,
+			your mileage may vary.</li>
+			<li>Slow or laggy networks may prove to be a problem. This means no Internet play because the game
+			quickly goes to crap soon after negotiating the connection, if it even manages that.</li>
+			<li>I have noticed that sometimes at the end of a map, the game jams up at the intermission screen
+			showing the player scores.</li>
+			<li>If the game seems to be stuck waiting, try holding Escape for at least four seconds and hopefully
+			the game will kill itself. If this fails to work, you may have to kill the game using Windows' Task
+			Manager.</li>
 		</ol>
 		<p>So, knowing these particular nuances, this is how to configure a network game.</p>
-		<p><strong>IMPORTANT:</strong> Place two or more blank lines at the end of the configuration files below or the game will start in singleplayer mode. This is a bug in my script loading code which I have not yet fixed.</p>
+		<p><strong>IMPORTANT:</strong> Place two or more blank lines at the end of the configuration files below
+		or the game will start in single-player mode. This is a bug in my script loading code which I have not yet
+		fixed.</p>
 
 		<h3>Hosting a game</h3>
 
@@ -340,19 +439,17 @@ as the original Build - but one that worked with vectors instead of already rast
 			<li>The number of players to wait for</li>
 			<li>An indication of whether to host or join a game (in this case, host)</li>
 		</ul>
-		<p>This can be placed in a text file (which for this demonstration I will name <em>player-host.ini</em>) like so:</p>
-		<blockquote><code>
-			[Network Game]<br />
-			IPPort = 19014<br />
-			Mode = "Host"<br />
-			Players = 2
-		</code></blockquote>
+		<p>This can be placed in a text file (which for this demonstration I will name <em>player-host.ini</em>) like
+		so:</p>
+		<blockquote><pre>[Network Game]
+IPPort = 19014
+Mode = "Host"
+Players = 2</pre></blockquote>
 
-		<p>To then start the game and wait for players to join, either create a shortcut to DUKE3D.EXE and modify its properties to use a command line like the following, or type the following at a DOS prompt.</p>
+		<p>To then start the game and wait for players to join, either create a shortcut to DUKE3D.EXE and modify its
+		properties to use a command line like the following, or type the following at a DOS prompt.</p>
 
-		<blockquote>
-			D:\Duke3D&gt; duke3d.exe -net player-host.ini -name JonoF
-		</blockquote>
+		<blockquote><pre>D:\Duke3D&gt; duke3d.exe -net player-host.ini -name JonoF</pre></blockquote>
 
 		<p>The game will then start and wait for players to join.</p>
 
@@ -364,24 +461,65 @@ as the original Build - but one that worked with vectors instead of already rast
 			<li>The address (and port) of the computer hosting the game</li>
 			<li>An indication of whether to join or host the game (in this case, join)</li>
 		</ul>
-		<p>This can be placed in a text file (which for this demonstration I will name <em>player-join.ini</em>) like so:</p>
-		<blockquote><code>
-			[Network Game]<br />
-			IPPort = 19014<br />
-			Mode = "Join"<br />
-			Host = "asuka:19014"
-		</code></blockquote>
+		<p>This can be placed in a text file (which for this demonstration I will name <em>player-join.ini</em>) like
+		so:</p>
+		<blockquote><pre>[Network Game]
+IPPort = 19014
+Mode = "Join"
+Host = "asuka:19014"</pre></blockquote>
 
-		<p>To then start the game and wait until the rest of the players join, either create a shortcut to DUKE3D.EXE and modify its properties to use a command line like the following, or type the following at a DOS prompt.</p>
+		<p>To then start the game and wait until the rest of the players join, either create a shortcut to DUKE3D.EXE
+		and modify its properties to use a command line like the following, or type the following at a DOS prompt.</p>
 
-		<blockquote>
-			D:\Duke3D&gt; duke3d.exe -net player-join.ini -name FonoJ
-		</blockquote>
+		<blockquote><pre>D:\Duke3D&gt; duke3d.exe -net player-join.ini -name FonoJ</pre></blockquote>
 
 		<p>The game will then start and wait until enough players have joined.</p>
 
+		<h2>A quick word before we get to 3D Models</h2>
 
-		<address>Happy Duke'ing!<br />Jonathon Fowler (<a href="mailto:jonof@edgenetwork.org">jonof@edgenetwork.org</a>)</address>
+		<p>Before I explain the new 3D model support, I need to explain the changes which have been made to how
+		the Hightile enhancements, 3D models, and voxels are described to the game.</p>
+		<p>Users of previous releases of the port would be familiar with the "definetexture" instruction in the
+		CON language which is used to declare Hightile replacement textures. Typically, you would have an extra
+		CON file, often named EXTRA.CON, which you would use to declare textures and whatnot. This file would be
+		passed to the game using a "/x" switch to override the default GAME.CON from executing. In order to provide
+		more generic flexibility so that the enhancements are not tied to the CON language, I have created a new
+		script loader as a service of the engine which is now used to read a file containing those same definitions
+		which CONs once provided. This script file is named DUKE3D.DEF and its syntax is similar to the CON
+		language.</p>
+		<p>The benefits to come from this change to a separate file arrangement is that the new engine features now
+		work in the Build editor as well as the game. Plus, the script reader is a reusable component of the
+		engine which means any future games, or any modifications based on the engine will have the option of
+		using this feature for themselves.</p>
+
+		<h3>Converting EXTRA.CON to DUKE3D.DEF</h3>
+
+		<p>Since the port now uses the DUKE3D.DEF file to specify replacements and whatnot, the CON features have
+		been disabled and a warning written to the console put in their place, something like:</p>
+		<pre>!!! BEGIN NOTICE !!!
+CON-file definition of Hightile textures has been removed in
+favour of DUKE3D.DEF declarations. Please refer to the release
+notes for details on how to convert your CON definitions into
+DUKE3D.DEF equivalents.
+!!! END NOTICE !!!</pre>
+		<p>Since DUKE3D.DEF has a syntax much like the CON language, conversion is not a difficult task. Refer below
+		to the details on the instructions and their parameters for specifics, but here is the basic changes which
+		you would need to make to an EXTRA.CON file to create DUKE3D.DEF:</p>
+		<ol>
+			<li>If you include GAME.CON in the EXTRA.CON file, you will want to change this to include
+			DEFS.CON instead.</li>
+			<li>If there are "definetint" lines, they must be checked to be sure to show five parameters. If
+			there are only four parameters (which would be palette number, red, green, and blue values), add a
+			0 to the end (which is the effects parameter that was option in the CON language).</li>
+			<li>If any of the "definetexture" lines have filenames that contain whitespace, double quotes need
+			to be placed around the filename. It is best to put quotes around all strings, but for strings
+			with no embedded whitespace, quotes are not mandatory.</li>
+		</ol>
+		<p>Complete reference on the DUKE3D.DEF file is <a href="#deffile">here</a>.</p>
+
+
+		<address>Happy Duke'ing!<br />
+			Jonathon Fowler (<a href="mailto:jonof@edgenetwork.org">jonof@edgenetwork.org</a>)</address>
 	</body>
 </html>
 

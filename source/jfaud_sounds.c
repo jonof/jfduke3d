@@ -1,3 +1,26 @@
+/*
+ * Audio support for JFDuke3D using JFAud
+ * by Jonathon Fowler (jonof@edgenetwork.org)
+ * 
+ * Duke Nukem 3D is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * 
+ * Original Source: 1996 - Todd Replogle
+ * Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
+ */
+
 #include "jfaud.h"
 #include "types.h"
 #include "duke3d.h"
@@ -19,6 +42,7 @@ static int call_seek(int h, int off, int whence) { return klseek(h,off,whence); 
 static int call_tell(int h) { return ktell(h); }
 static void call_logmsg(const char *str) { initprintf("%s\n",str); }
 
+// this whole handle list could probably be done a whole lot more efficiently
 static int inited = 0;
 #define AbsoluteMaxVoices 30	// SBLive cards have 31 hardware voices. Leave a spare.
 static struct _sndtyp {
@@ -211,7 +235,7 @@ int isspritemakingsound(short i, int num)	// if num<0, check if making any sound
 	for (j=AbsoluteMaxVoices-1;j>=0;j--) {
 		if (sfx[j].handle < 0) continue;
 		if (sfx[j].owner == i)
-			if (num < 0 || (num >= 0 && sfx[j].soundnum == num))
+			if (num < 0 || (/*num >= 0 &&*/ sfx[j].soundnum == num))
 				return sfx[j].soundnum;
 	}
 
@@ -233,6 +257,7 @@ int xyzsound(short num, short i, long x, long y, long z)	// x,y,z is sound origi
 	    (ps[myconnectindex].gm & MODE_MENU)
 	   ) return -1;
 
+	// tickle the coordinates into jfaud/openal's representation
 	x = -x;
 	z = (z>>4);	// Z values are 16* finer than the X-Y axes
 
@@ -243,9 +268,9 @@ int xyzsound(short num, short i, long x, long y, long z)	// x,y,z is sound origi
 	}
 
 	if (soundm[num] & 4) {
+		// Duke speech, one at a time only
 		int j;
 		
-		// Duke speech, one at a time only
 		if (VoiceToggle == 0 ||
 		    (ud.multimode > 1 && PN == APLAYER && sprite[i].yvel != screenpeek && ud.coop != 1)
 		   ) return -1;
@@ -258,40 +283,9 @@ int xyzsound(short num, short i, long x, long y, long z)	// x,y,z is sound origi
 		}
 	}
 	
+	// This does the ranging of musicandsfx heard distance
 	//if( i >= 0 && (soundm[num]&16) == 0 && PN == MUSICANDSFX && SLT < 999 && (sector[SECT].lotag&0xff) < 9 )
 	//	sndist = divscale14(sndist,(SHT+1));
-
-	//sndist += soundvo[num];
-	//if(sndist < 0) sndist = 0;
-	//if( sndist && PN != MUSICANDSFX && !cansee(cx,cy,cz-(24<<8),cs,SX,SY,SZ-(24<<8),SECT) )
-	//	sndist += sndist>>5;
-
-	/*
-    	switch(num)
-	{
-		case PIPEBOMB_EXPLODE:
-		case LASERTRIP_EXPLODE:
-		case RPG_EXPLODE:
-			if(sndist > (6144) )
-				sndist = 6144;
-			if(sector[ps[screenpeek].cursectnum].lotag == 2)
-				pitch -= 1024;
-			break;
-		default:
-			if(sector[ps[screenpeek].cursectnum].lotag == 2 && (soundm[num]&4) == 0)
-				pitch = -768;
-			if( sndist > 31444 && PN != MUSICANDSFX)
-				return -1;
-			break;
-	}
-	
-	if( Sound[num].num > 0 && PN != MUSICANDSFX )
-	{
-		if( SoundOwner[num][0].i == i ) stopsound(num);
-		else if( Sound[num].num > 1 ) stopsound(num);
-		else if( badguy(&sprite[i]) && sprite[i].extra <= 0 ) stopsound(num);
-	}
-	*/
 
 	{
 		short pitchvar, pitchbase;
@@ -307,8 +301,46 @@ int xyzsound(short num, short i, long x, long y, long z)	// x,y,z is sound origi
 			pitch = translatepitch(soundps[num]);
 		}
 	}
+	
+	/*
+	gain += (float)soundvo[num]/(150.0*64.0);
+	if (gain < 0.0) gain = 0.0; else if (gain > 1.0) gain = 1.0;
 
-	// FIXME: translate gain adjustment stuff
+	// fake some occlusion
+	if( gain > 0.0 && PN != MUSICANDSFX &&
+	    !cansee(ps[screenpeek].oposx, ps[screenpeek].oposy, ps[screenpeek].oposz-(24<<8), ps[screenpeek].cursectnum,SX,SY,SZ-(24<<8),SECT)
+	  )
+		gain *= 0.8; // I guess what I've got here can somewhat approximate the effect of "sndist += sndist>>5;"
+
+    	switch(num)
+	{
+		case PIPEBOMB_EXPLODE:
+		case LASERTRIP_EXPLODE:
+		case RPG_EXPLODE:
+			//if(sndist > (6144) )	// explosions get no louder than (6144>>6) == 96 (max volume is 150)
+			//	sndist = 6144;
+			if(sector[ps[screenpeek].cursectnum].lotag == 2)
+				pitch *= translatepitch(-1200);
+			break;
+		default:
+			if(sector[ps[screenpeek].cursectnum].lotag == 2 && (soundm[num]&4) == 0)
+				pitch *= translatepitch(-768);
+			//if( sndist > 31444 && PN != MUSICANDSFX)	// sounds really far away never play
+			//	return -1;
+			break;
+	}
+	
+	if( Sound[num].num > 0 && PN != MUSICANDSFX )
+	{
+		if( SoundOwner[num][0].i == i ) stopsound(num);
+		else if( Sound[num].num > 1 ) stopsound(num);
+		else if( badguy(&sprite[i]) && sprite[i].extra <= 0 ) stopsound(num);
+	}
+	*/
+
+	// I think this is just here to set the minimum volume of any playing sound...
+	//if(sndist < ((255-LOUDESTVOLUME)<<6) )
+        //	sndist = ((255-LOUDESTVOLUME)<<6);
 
 	if (soundm[num] & 1) loop = 1;
 	if (soundm[num] & 16) global = 1;
@@ -412,7 +444,8 @@ void stopenvsound(short num, short i)
 
 void pan3dsound(void)
 {
-	int i;
+	int j;
+	short i;
 	long cx, cy, cz;
 	short ca,cs;
 
@@ -447,26 +480,42 @@ void pan3dsound(void)
 			0.0,0.0,1.0	// up
 		    );
 
-	for (i=AbsoluteMaxVoices-1;i>=0;i--) {
-		if (sfx[i].owner < 0) continue;
+	for (j=AbsoluteMaxVoices-1;j>=0;j--) {
+		float gain=1.0;
+		
+		if (sfx[j].owner < 0) continue;
 
-		cx = sprite[sfx[i].owner].x;
-		cy = sprite[sfx[i].owner].y;
-		cz = sprite[sfx[i].owner].z;
+		i = sfx[j].owner;
+
+		cx = sprite[i].x;
+		cy = sprite[i].y;
+		cz = sprite[i].z;
 
 		cx = -cx;
 		cz = (cz>>4);
 
 		// A sound may move from player-relative 3D if the viewpoint shifts from the player
 		// through a viewscreen or viewpoint switching
-		if (sprite[ sfx[i].owner ].picnum == APLAYER && sprite[ sfx[i].owner ].yvel == screenpeek)
+		if (PN == APLAYER && sprite[i].yvel == screenpeek) {
 			jfaud_movesound(sfx[i].handle,
 				0.0,0.0,0.0,
 				0.0,0.0,0.0, 1);
-		else
+		} else {
 			jfaud_movesound(sfx[i].handle,
 				(float)cx/UNITSPERMETRE,(float)cy/UNITSPERMETRE,(float)cz/UNITSPERMETRE,
 				0.0,0.0,0.0, 0);
+
+			// This does the ranging of musicandsfx heard distance
+			//if( i >= 0 && (soundm[num]&16) == 0 && PN == MUSICANDSFX && SLT < 999 && (sector[SECT].lotag&0xff) < 9 )
+			//	sndist = divscale14(sndist,(SHT+1));
+/*			gain += (float)soundvo[num]/(150.0*64.0);
+			if (gain < 0.0) gain = 0.0; else if (gain > 1.0) gain = 1.0;
+
+			// fake some occlusion
+			if( gain > 0.0 && PN != MUSICANDSFX && !cansee(cx,cy,cz-(24<<8),cs,SX,SY,SZ-(24<<8),SECT) )
+				gain *= 0.8; // I guess what I've got here can somewhat approximate the effect of "sndist += sndist>>5;"
+				*/
+		}
 	}
 }
 

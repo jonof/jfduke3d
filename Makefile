@@ -65,7 +65,7 @@ GAMEOBJS=$(OBJ)game.$o \
 	$(OBJ)player.$o \
 	$(OBJ)premap.$o \
 	$(OBJ)sector.$o \
-	$(OBJ)jfaud_sounds.$o \
+	$(OBJ)sounds.$o \
 	$(OBJ)rts.$o \
 	$(OBJ)config.$o \
 	$(OBJ)animlib.$o \
@@ -114,7 +114,7 @@ else
 	endif
 endif
 
-GAMEOBJS+= $(OBJ)jfaud_sounds.$o #$(AUDIOLIBOBJ)
+GAMEOBJS+= $(AUDIOLIBOBJ)
 CFLAGS+= -D$(PLATFORM) -DRENDERTYPE$(RENDERTYPE)=1
 
 .PHONY: clean all engine $(EOBJ)$(ENGINELIB) $(EOBJ)$(EDITORLIB)

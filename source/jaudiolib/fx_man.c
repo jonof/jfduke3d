@@ -1070,4 +1070,4 @@ void FX_StopRecord
    }
 #endif
 
-
+void AudioUpdate(void) { }

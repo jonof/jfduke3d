@@ -67,7 +67,6 @@ GAMEOBJS=$(OBJ)game.$o &
 	$(OBJ)testcd.$o &
 	$(OBJ)osdfuncs.$o &
 	$(OBJ)osdcmds.$o &
-	$(OBJ)multiplayer.$o &
 	$(OBJ)winbits.$o &
 	$(JMACTOBJ) &
 	$(JAUDIOLIBOBJ)
