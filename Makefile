@@ -1,6 +1,7 @@
 # Duke3D Makefile for GNU Make
 
 SRC=source/
+RSRC=rsrc/
 OBJ=obj/
 EROOT=../build/
 EINC=$(EROOT)include/
@@ -89,6 +90,8 @@ endif
 ifeq ($(RENDERTYPE),SDL)
 	override CFLAGS+= $(subst -Dmain=SDL_main,,$(shell sdl-config --cflags))
 	AUDIOLIBOBJ=$(AUDIOLIB_MUSIC_STUB) $(AUDIOLIB_FX_STUB)
+	GAMEOBJS+= $(OBJ)game_icon.$o
+	EDITOROBJS+= $(OBJ)build_icon.$o
 else
 	ifeq ($(RENDERTYPE),WIN)
 		AUDIOLIBOBJ=$(AUDIOLIB_MUSIC) $(AUDIOLIB_FX)
@@ -143,6 +146,8 @@ $(OBJ)%.$o: $(SRC)misc/%.rc
 $(OBJ)%.$o: $(SRC)util/%.c
 	$(CC) $(CFLAGS) -c $< -o $@ 2>&1
 
+$(OBJ)%.$o: $(RSRC)%.c
+	$(CC) $(CFLAGS) -c $< -o $@ 2>&1
 
 # PHONIES	
 clean:

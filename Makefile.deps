@@ -20,6 +20,9 @@ $(OBJ)osdcmds.$o: $(SRC)osdcmds.c $(INC)osdcmds.h $(EINC)osd.h $(duke3d_h)
 
 $(OBJ)astub.$o: $(SRC)astub.c $(EINC)build.h $(EINC)pragmas.h $(EINC)compat.h $(EINC)editor.h
 
+$(OBJ)game_icon.$o: $(RSRC)game_icon.c
+$(OBJ)build_icon.$o: $(RSRC)build_icon.c
+
 # jMACT objects
 $(OBJ)util_lib.$o: $(SRC)jmact/util_lib.c $(SRC)jmact/util_lib.h $(INC)types.h $(EINC)compat.h
 $(OBJ)file_lib.$o: $(SRC)jmact/file_lib.c $(SRC)jmact/file_lib.h $(INC)types.h
