@@ -1070,4 +1070,5 @@ void FX_StopRecord
    }
 #endif
 
-void AudioUpdate(void) { }
+extern void MUSIC_Update(void);
+void AudioUpdate(void) { MUSIC_Update(); }
