@@ -2422,10 +2422,6 @@ if (!VOLUMEALL) {
             menutext(c,67+16+16+16+16+16,SHX(-6),PHX(-6),"CREDITS");
 
             menutext(c,67+16+16+16+16+16+16,SHX(-7),PHX(-7),"QUIT");
-
-	    // JBF: self-pimpage
-	    minitext(1,200-6,"by JonoF  http://jonof.edgenetwork.org/buildport/duke3d/",0,10+16+128);
-
             break;
 // CTW END - MODIFICATION
 
