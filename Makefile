@@ -78,9 +78,11 @@ include $(EROOT)Makefile.shared
 ifeq ($(PLATFORM),LINUX)
 	NASMFLAGS+= -f elf
 else
-	ifeq ($(PLATFORM),WIN)
-		CFLAGS+= -DUNDERSCORES -I$(DXROOT)/include
+	ifeq ($(PLATFORM),WINDOWS)
+		override CFLAGS+= -DUNDERSCORES -I$(DXROOT)/include
 		NASMFLAGS+= -DUNDERSCORES -f win32
+		GAMEOBJS+= $(OBJ)gameres.$o $(OBJ)winbits.$o
+		EDITOROBJS+= $(OBJ)buildres.$o
 	endif
 endif
 	
