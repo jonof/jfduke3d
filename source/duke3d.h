@@ -551,7 +551,6 @@ extern long numfreezebounces,rpgblastradius,pipebombblastradius,tripbombblastrad
 // extern char stereo,eightytwofifty,playerswhenstarted,playonten,everyothertime;
 extern char stereo,eightytwofifty,playerswhenstarted,everyothertime;
 // CTW END - MODIFICATION
-extern char *netparam;	// JBF 20031029
 extern long myminlag[MAXPLAYERS], mymaxlag, otherminlag, bufferjitter;
 
 extern long numinterpolations, startofdynamicinterpolations;

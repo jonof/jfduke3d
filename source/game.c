@@ -85,6 +85,9 @@ char confilename[128] = {"GAME.CON"},boardfilename[MAX_PATH] = {0};
 char waterpal[768], slimepal[768], titlepal[768], drealms[768], endingpal[768];
 char firstdemofile[80] = { '\0' };
 
+static int netparamcount = 0;
+static char **netparam = NULL;
+
 #if 0
 #define patchstatusbar(x1,y1,x2,y2)                                        \
 {                                                                          \
@@ -445,6 +448,7 @@ void adduserquote(char *daquote)
         user_quote_time[i] = user_quote_time[i-1];
     }
     strcpy(user_quote[0],daquote);
+	OSD_Printf("%s\n", daquote);
     user_quote_time[0] = 180;
     pub = NUMPAGES;
 }
@@ -6898,6 +6902,7 @@ void checkcommandline(int argc,char **argv)
 {
     short i, j;
     char *c;
+	int firstnet = 0;
 
     i = 1;
 
@@ -6919,14 +6924,30 @@ void checkcommandline(int argc,char **argv)
         while(i < argc)
         {
             c = argv[i];
-			if (isvalidipaddress(c)) { i++; continue; }
             if(*c == '-')
             {
-				if (!Bstrcasecmp(c+1,"net")) break;
-                if( *(c+1) == '8' ) eightytwofifty = 1;
+				if (!Bstrcasecmp(c+1,"net")) {
+					firstnet = i;
+					netparamcount = argc - i - 1;
+					netparam = (char **)calloc(netparamcount, sizeof(char**));
+				}
+                //if( *(c+1) == '8' ) eightytwofifty = 1;
                 i++;
                 continue;
             }
+
+			if (firstnet > 0) {
+				if (*c == '-' || *c == '/') {
+					c++;
+					if      (((c[0] == 'n') || (c[0] == 'N')) && (c[1] == '0'))
+						{ networkmode = 0; initprintf("Network mode: master/slave\n"); }
+					else if (((c[0] == 'n') || (c[0] == 'N')) && (c[1] == '1'))
+						{ networkmode = 1; initprintf("Network mode: peer-to-peer\n"); }
+				}
+				netparam[i-firstnet-1] = argv[i];
+				i++;
+				continue;
+			}
 
             if(*c == '?')
             {
@@ -6996,9 +7017,6 @@ void checkcommandline(int argc,char **argv)
                             CommandMusicToggleOff = 1;
                             initprintf("Music off.\n");
                         }
-						else if (*c == '0') { networkmode = 0; initprintf("Network Mode %d\n",networkmode); }
-						else if (*c == '1') { networkmode = 1; initprintf("Network Mode %d\n",networkmode); }
-						else if (!Bstrcasecmp("et",c)) ; //Consume "-net"
                         else
                         {
                             comlinehelp(argv);
@@ -7502,7 +7520,9 @@ if (VOLUMEONE) {
 
    for(i=0;i<MAXPLAYERS;i++) playerreadyflag[i] = 0;
 
-   initmultiplayers(_buildargc,_buildargv, 0,0,0);
+   initmultiplayers(netparamcount,netparam, 0,0,0);
+   if (netparam) free(netparam);
+   netparam = NULL; netparamcount = 0;
 
    if(numplayers > 1)
     initprintf("Multiplayer initialized.\n");
@@ -7781,6 +7801,7 @@ void app_main(int argc,char **argv)
     ud.multimode = 1;
 
     checkcommandline(argc,argv);
+	if (netparamcount > 0) _buildargc = (argc -= netparamcount+1);	// crop off the net parameters
 
 /* JBF: Kinda unnecessary now wouldn't you agree?
     totalmemory = Z_AvailHeap();
@@ -7828,14 +7849,14 @@ if (VOLUMEONE) {
 #endif
 
     OSD_SetFunctions(
-	GAME_drawosdchar,
-	GAME_drawosdstr,
-	GAME_drawosdcursor,
-	GAME_getcolumnwidth,
-	GAME_getrowheight,
-	GAME_clearbackground,
-	(int(*)())GetTime,
-	GAME_onshowosd
+		GAME_drawosdchar,
+		GAME_drawosdstr,
+		GAME_drawosdcursor,
+		GAME_getcolumnwidth,
+		GAME_getrowheight,
+		GAME_clearbackground,
+		(int(*)())GetTime,
+		GAME_onshowosd
     );
     OSD_SetParameters(0,2, 0,0, 4,0);
     registerosdcommands();
