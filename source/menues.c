@@ -3349,16 +3349,18 @@ if (PLUTOPAK) {
 
 			strcpy(tempbuf, p);
 			for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
-	    	    minitext(80-4,30+l*8,tempbuf,(m+l == probey)?0:16,10+16);
+			minitext(70,30+l*8,tempbuf,(m+l == probey)?0:16,10+16);
 
-		    strcpy(tempbuf, KB_ScanCodeToString(KeyboardKeys[m+l][0]));
+		    //strcpy(tempbuf, KB_ScanCodeToString(KeyboardKeys[m+l][0]));
+			strcpy(tempbuf, keynames[KeyboardKeys[m+l][0]]);
 		    if (!tempbuf[0]) strcpy(tempbuf, "  -");
-		    minitext(80-4+120,30+l*8,tempbuf,
+		    minitext(70+100,30+l*8,tempbuf,
 				    (m+l == probey && !currentlist?21:10),10+16);
 
-		    strcpy(tempbuf, KB_ScanCodeToString(KeyboardKeys[m+l][1]));
+		    //strcpy(tempbuf, KB_ScanCodeToString(KeyboardKeys[m+l][1]));
+			strcpy(tempbuf, keynames[KeyboardKeys[m+l][1]]);
 		    if (!tempbuf[0]) strcpy(tempbuf, "  -");
-		    minitext(80-4+120+30,30+l*8,tempbuf,
+		    minitext(70+120+34,30+l*8,tempbuf,
 				    (m+l == probey && currentlist?21:10),10+16);
 	    }
 
