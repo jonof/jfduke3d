@@ -214,7 +214,7 @@ char *Help3d[MAXHELP3D]=
     " ' W = TOGGLE SPRITE DISPLAY",
     " ' G = GRAPHIC TOGGLE",
     " ' Y = TOGGLE PURPLE BACKGROUND",
-        " ' ENTER = COPY GRAPHIC ONLY",
+    " ' ENTER = COPY GRAPHIC ONLY",
     " ' T = CHANGE LOTAG",
     " ' H = CHANGE HITAG",
     " ' S = CHANGE SHADE",
@@ -278,76 +278,70 @@ void kensetpalette(char *vgapal);
 
 void ExtLoadMap(char *mapname)
 {
-
-
- long i;
- long sky=0;
- int j;
+	long i;
+	long sky=0;
+	int j;
 
 	char title[256];
 	Bsprintf(title, "BUILD Editor for JFDuke3D - %s", mapname);
 	wm_setapptitle(title);
 
- // PreCache Wall Tiles
-    for(j=0;j<numwalls;j++)
-        if(waloff[wall[j].picnum] == 0)
-            loadtile(wall[j].picnum);
+	// PreCache Wall Tiles
+	for(j=0;j<numwalls;j++)
+		if(waloff[wall[j].picnum] == 0)
+			loadtile(wall[j].picnum);
 
 
- // Presize Sprites
-    for(j=0;j<MAXSPRITES;j++)
-        {
-        if(tilesizx[sprite[j].picnum]==0 || tilesizy[sprite[j].picnum]==0)
-        sprite[j].picnum=0;
+	// Presize Sprites
+	for(j=0;j<MAXSPRITES;j++)
+	{
+		if(tilesizx[sprite[j].picnum]==0 || tilesizy[sprite[j].picnum]==0)
+			sprite[j].picnum=0;
 
-        if(sprite[j].picnum>=20 && sprite[j].picnum<=59)
-        {
-            if(sprite[j].picnum==26) {sprite[j].xrepeat = 8; sprite[j].yrepeat = 8;}
-            else {sprite[j].xrepeat = 32; sprite[j].yrepeat = 32;}
-        }
+		if(sprite[j].picnum>=20 && sprite[j].picnum<=59)
+		{
+			if(sprite[j].picnum==26) {sprite[j].xrepeat = 8; sprite[j].yrepeat = 8;}
+			else {sprite[j].xrepeat = 32; sprite[j].yrepeat = 32;}
+		}
+	}
 
-    }
+	levelname=mapname;
+	pskyoff[0]=0;
+	for(i=0;i<8;i++) pskyoff[i]=0;
 
+	for(i=0;i<numsectors;i++)
+	{
+		switch(sector[i].ceilingpicnum)
+		{
+			case MOONSKY1 :
+			case BIGORBIT1 : // orbit
+			case LA : // la city
+				sky=sector[i].ceilingpicnum;
+				break;
+		}
+	}
 
+	switch(sky)
+	{
+		case MOONSKY1 :
+			//        earth          mountian   mountain         sun
+			pskyoff[6]=1; pskyoff[1]=2; pskyoff[4]=2; pskyoff[2]=3;
+			break;
 
-    levelname=mapname;
-    pskyoff[0]=0;
-    for(i=0;i<8;i++) pskyoff[i]=0;
+		case BIGORBIT1 : // orbit
+			//       earth1         2           3           moon/sun
+			pskyoff[5]=1; pskyoff[6]=2; pskyoff[7]=3; pskyoff[2]=4;
+			break;
 
-    for(i=0;i<numsectors;i++)
-    {
-        switch(sector[i].ceilingpicnum)
-        {
-            case MOONSKY1 :
-            case BIGORBIT1 : // orbit
-            case LA : // la city
-                sky=sector[i].ceilingpicnum;
-            break;
-        }
-    }
+		case LA : // la city
+			//       earth1         2           3           moon/sun
+			pskyoff[0]=1; pskyoff[1]=2; pskyoff[2]=1; pskyoff[3]=3;
+			pskyoff[4]=4; pskyoff[5]=0; pskyoff[6]=2; pskyoff[7]=3;
+			break;
+	}
 
-    switch(sky)
-    {
-        case MOONSKY1 :
-    //        earth          mountian   mountain         sun
-            pskyoff[6]=1; pskyoff[1]=2; pskyoff[4]=2; pskyoff[2]=3;
-            break;
-
-        case BIGORBIT1 : // orbit
-    //       earth1         2           3           moon/sun
-            pskyoff[5]=1; pskyoff[6]=2; pskyoff[7]=3; pskyoff[2]=4;
-        break;
-
-        case LA : // la city
-    //       earth1         2           3           moon/sun
-            pskyoff[0]=1; pskyoff[1]=2; pskyoff[2]=1; pskyoff[3]=3;
-            pskyoff[4]=4; pskyoff[5]=0; pskyoff[6]=2; pskyoff[7]=3;
-        break;
-    }
-
-    pskybits=3;
-    parallaxtype=0;
-
+	pskybits=3;
+	parallaxtype=0;
 }
 
 void overwritesprite (long thex, long they, short tilenum,signed char shade, char stat, char dapalnum)
@@ -367,37 +361,33 @@ void putsprite (long thex, long they, long zoom, short rot, short tilenum, signe
 
 void ExtSaveMap(const char *mapname)
 {
-         saveboard("backup.map",&posx,&posy,&posz,&ang,&cursectnum);
+	saveboard("backup.map",&posx,&posy,&posz,&ang,&cursectnum);
 }
 
 const char *ExtGetSectorCaption(short sectnum)
 {
+	if(!(onnames==1 || onnames==4))
+	{
+		tempbuf[0] = 0;
+		return(tempbuf);
+	}
 
-    if(!(onnames==1 || onnames==4))
-    {
-        tempbuf[0] = 0;
-        return(tempbuf);
-    }
-
-
-        if ((sector[sectnum].lotag|sector[sectnum].hitag) == 0)
-        {
-                  tempbuf[0] = 0;
-        }
-        else
-        {
-                switch((unsigned short)sector[sectnum].lotag)
-                {
+	if ((sector[sectnum].lotag|sector[sectnum].hitag) == 0)
+	{
+		tempbuf[0] = 0;
+	}
+	else
+	{
+		switch((unsigned short)sector[sectnum].lotag)
+		{
 //       case 1 : Bsprintf(lo,"WATER"); break;
 //       case 2 : Bsprintf(lo,"UNDERWATER"); break;
 //       case 3 : Bsprintf(lo,"EARTHQUAKE"); break;
-                 default : Bsprintf(lo,"%hu",(unsigned short)sector[sectnum].lotag); break;
-                }
-        Bsprintf(tempbuf,"%hu,%s",
-                (unsigned short)sector[sectnum].hitag,
-                lo);
+			default : Bsprintf(lo,"%hu",(unsigned short)sector[sectnum].lotag); break;
+		}
+		Bsprintf(tempbuf,"%hu,%s", (unsigned short)sector[sectnum].hitag, lo);
         }
-         return(tempbuf);
+	return(tempbuf);
 }
 
 const char *ExtGetWallCaption(short wallnum)
@@ -1379,346 +1369,342 @@ void ReadPaletteTable()
 
 void Keys3d(void)
 {
-    long i,count,rate,nexti;
-    short statnum=0;
+	long i,count,rate,nexti;
+	short statnum=0;
 
+//	DoWater(horiz);
 
-
-//  DoWater(horiz);
-
-        i = totalclock;
-        if (i != clockval[clockcnt])
-        {
-     rate=(120<<4)/(i-clockval[clockcnt]);
-     if(framerateon)
-     {
-                Bsprintf(tempbuf,"%ld",rate);
+	i = totalclock;
+	if (i != clockval[clockcnt])
+	{
+		rate=(120<<4)/(i-clockval[clockcnt]);
+		if(framerateon)
+		{
+			Bsprintf(tempbuf,"%ld",rate);
 #ifdef VULGARITY
-        if(rate<MinRate)
-                { Bsprintf(tempbuf,"%ld WARNING : %s",rate,Slow[rate/MinD]);
-		  begindrawing(); printext256(0*8,0*8,255,-1,tempbuf,1); enddrawing();
-                }
-                else
+			if(rate<MinRate)
+			{
+				Bsprintf(tempbuf,"%ld WARNING : %s",rate,Slow[rate/MinD]);
+				begindrawing(); printext256(0*8,0*8,255,-1,tempbuf,1); enddrawing();
+			}
+			else
 #endif
-        {Bsprintf(tempbuf,"%ld",rate); begindrawing(); printext256(0*8,0*8,15,-1,tempbuf,1); enddrawing(); }
-     }
-        }
-        clockval[clockcnt] = i; 
-        clockcnt = ((clockcnt+1)&15);
+			{
+				Bsprintf(tempbuf,"%ld",rate);
+				begindrawing(); printext256(0*8,0*8,15,-1,tempbuf,1); enddrawing();
+			}
+		}
+	}
+	clockval[clockcnt] = i; 
+	clockcnt = ((clockcnt+1)&15);
 
- if(helpon==1)
- {
-  for(i=0;i<MAXHELP3D;i++)
-  {begindrawing(); printext256(0*8,8+(i*8),15,-1,Help3d[i],1); enddrawing();
-   switch(i)
-   {
-        case 3: Bsprintf(tempbuf,"%d",framerateon); break;
-        case 4: Bsprintf(tempbuf,"%s",SKILLMODE[skill]); break;
-        case 5: Bsprintf(tempbuf,"%s",ALPHABEASTLOADOMAGA1[nosprites]); break;
-        case 6: Bsprintf(tempbuf,"%d",tabgraphic); break;
-        case 7: Bsprintf(tempbuf,"%d",purpleon); break;
-        default : sprintf(tempbuf," "); break;
-   }
-   begindrawing();
-   printext256(20*8,8+(i*8),15,-1,tempbuf,1);
-   enddrawing();
-  }
-  Ver();
- }
+	if(helpon==1)
+	{
+		begindrawing();
+		for(i=0;i<MAXHELP3D;i++)
+		{
+			printext256(0*8,8+(i*8),15,-1,Help3d[i],1);
+			switch(i)
+			{
+				case 3: Bsprintf(tempbuf,"%d",framerateon); break;
+				case 4: Bsprintf(tempbuf,"%s",SKILLMODE[skill]); break;
+				case 5: Bsprintf(tempbuf,"%s",ALPHABEASTLOADOMAGA1[nosprites]); break;
+				case 6: Bsprintf(tempbuf,"%d",tabgraphic); break;
+				case 7: Bsprintf(tempbuf,"%d",purpleon); break;
+				default : sprintf(tempbuf," "); break;
+			}
+			printext256(20*8,8+(i*8),15,-1,tempbuf,1);
+		}
+		enddrawing();
+		Ver();
+	}
 
- if(purpleon) { begindrawing(); printext256(1*4,1*8,11,-1,"Purple ON",0); enddrawing(); }
+	if(purpleon) { begindrawing(); printext256(1*4,1*8,11,-1,"Purple ON",0); enddrawing(); }
 
- if(sector[cursectnum].lotag==2)
- { if(sector[cursectnum].floorpal==8) SetBOSS1Palette();
-   else SetWATERPalette();
- }
- else SetGAMEPalette();
-
+	if(sector[cursectnum].lotag==2)
+	{
+		if(sector[cursectnum].floorpal==8) SetBOSS1Palette();
+		else SetWATERPalette();
+	}
+	else SetGAMEPalette();
 
 //Stick this in 3D part of ExtCheckKeys
 //Also choose your own key scan codes
 
-
-
- if(keystatus[0x28]==1 && keystatus[0x20]==1) // ' d
-
-    {
-        ShowHelpText("SectorEffector");
-    }
+	if(keystatus[0x28]==1 && keystatus[0x20]==1) // ' d
+	{
+		ShowHelpText("SectorEffector");
+	}
 /*
-    {
-        keystatus[0x20] = 0;
-        skill++; if(skill>4) skill=0;
-        sprintf(tempbuf,"%s",SKILLMODE[skill]);
-        printext256(1*4,1*8,11,-1,tempbuf,0);
-    }
+	{
+		keystatus[0x20] = 0;
+		skill++; if(skill>4) skill=0;
+		sprintf(tempbuf,"%s",SKILLMODE[skill]);
+		printext256(1*4,1*8,11,-1,tempbuf,0);
+	}
 */
 	begindrawing();
- if(keystatus[0x28]==1 && keystatus[0x22]==1) // ' g
-    {
-        keystatus[0x22] = 0;
-        tabgraphic=!tabgraphic;
-        if(tabgraphic) printext256(1*4,1*8,11,-1,"Graphics ON",0);
-        else printext256(1*4,1*8,11,-1,"Graphics OFF",0);
-    }
+	if(keystatus[0x28]==1 && keystatus[0x22]==1) // ' g
+	{
+		keystatus[0x22] = 0;
+		tabgraphic=!tabgraphic;
+		if(tabgraphic) printext256(1*4,1*8,11,-1,"Graphics ON",0);
+		else printext256(1*4,1*8,11,-1,"Graphics OFF",0);
+	}
 
- if(keystatus[0x28]==1 && keystatus[0x13]==1) // ' r
-    {
-        keystatus[0x13] = 0;
-        framerateon=!framerateon;
-        if(framerateon) printext256(1*4,1*8,11,-1,"Framerate ON",0);
-        else printext256(1*4,1*8,11,-1,"Framerate OFF",0);
-    }
+	if(keystatus[0x28]==1 && keystatus[0x13]==1) // ' r
+	{
+		keystatus[0x13] = 0;
+		framerateon=!framerateon;
+		if(framerateon) printext256(1*4,1*8,11,-1,"Framerate ON",0);
+		else printext256(1*4,1*8,11,-1,"Framerate OFF",0);
+	}
 
- if(keystatus[0x28]==1 && keystatus[0x11]==1) // ' w
-    {
-        keystatus[0x11] = 0;
-        nosprites++; if(nosprites>3) nosprites=0;
-        Bsprintf(tempbuf,"%s",ALPHABEASTLOADOMAGA1[nosprites]);
-        printext256(1*4,1*8,11,-1,tempbuf,0);
-    }
+	if(keystatus[0x28]==1 && keystatus[0x11]==1) // ' w
+	{
+		keystatus[0x11] = 0;
+		nosprites++; if(nosprites>3) nosprites=0;
+		Bsprintf(tempbuf,"%s",ALPHABEASTLOADOMAGA1[nosprites]);
+		printext256(1*4,1*8,11,-1,tempbuf,0);
+	}
 
- if(keystatus[0x28]==1 && keystatus[0x15]==1) // ' y
-    {
-        keystatus[0x15] = 0;
-        purpleon=!purpleon; if(nosprites>3) nosprites=0;
-        if(purpleon) printext256(1*4,1*8,11,-1,"Purple ON",0);
-        else printext256(1*4,1*8,11,-1,"Purple OFF",0);
-    }
+	if(keystatus[0x28]==1 && keystatus[0x15]==1) // ' y
+	{
+		keystatus[0x15] = 0;
+		purpleon=!purpleon; if(nosprites>3) nosprites=0;
+		if(purpleon) printext256(1*4,1*8,11,-1,"Purple ON",0);
+		else printext256(1*4,1*8,11,-1,"Purple OFF",0);
+	}
 	enddrawing();
- if(keystatus[0x28]==1 && keystatus[0x2e]==1) // ' C
-          {
-         keystatus[0x2e] = 0;
-                 switch (searchstat)
-                 {
-                        case 0: case 4:
-                for(i=0;i<MAXWALLS;i++)
-                {
-                 if(wall[i].picnum==temppicnum) {wall[i].shade=tempshade;}
-                }
-                                break;
-                        case 1: case 2:
-                for(i=0;i<MAXSECTORS;i++)
-                {
-                if(searchstat==1)
-                 if(sector[i].ceilingpicnum==temppicnum) {sector[i].ceilingshade=tempshade;}
-                if(searchstat==2)
-                 if(sector[i].floorpicnum==temppicnum) {sector[i].floorshade=tempshade;}
-                }
-                                break;
-                        case 3:
-                for(i=0;i<MAXSPRITES;i++)
-                {
-                 if(sprite[i].picnum==temppicnum) {sprite[i].shade=tempshade;}
-                }
-                                break;
-                 }
-      }
+	if(keystatus[0x28]==1 && keystatus[0x2e]==1) // ' C
+	{
+		keystatus[0x2e] = 0;
+		switch (searchstat)
+		{
+			case 0: case 4:
+				for(i=0;i<MAXWALLS;i++)
+				{
+					if(wall[i].picnum==temppicnum) {wall[i].shade=tempshade;}
+				}
+				break;
+			case 1: case 2:
+				for(i=0;i<MAXSECTORS;i++)
+				{
+					if(searchstat==1)
+						if(sector[i].ceilingpicnum==temppicnum) {sector[i].ceilingshade=tempshade;}
+					if(searchstat==2)
+						if(sector[i].floorpicnum==temppicnum) {sector[i].floorshade=tempshade;}
+				}
+				break;
+			case 3:
+				for(i=0;i<MAXSPRITES;i++)
+				{
+					if(sprite[i].picnum==temppicnum) {sprite[i].shade=tempshade;}
+				}
+				break;
+		}
+	}
 
- if(keystatus[0x28]==1 && keystatus[0x14]==1) // ' T
-          {
-                 keystatus[0x14] = 0;
-                 switch (searchstat)
-                 {
-                        case 0: case 4:
-                                Bstrcpy(tempbuf,"Wall lotag: ");
-                                wall[searchwall].lotag =
-                                getnumber256(tempbuf,wall[searchwall].lotag,65536L,0);
-                                break;
-                        case 1: case 2:
-                                Bstrcpy(tempbuf,"Sector lotag: ");
-                                sector[searchsector].lotag =
-                                getnumber256(tempbuf,sector[searchsector].lotag,65536L,0);
-                                break;
-                        case 3:
-                                Bstrcpy(tempbuf,"Sprite lotag: ");
-                                sprite[searchwall].lotag =
-                                getnumber256(tempbuf,sprite[searchwall].lotag,65536L,0);
-                                break;
-                 }
-          }
+	if(keystatus[0x28]==1 && keystatus[0x14]==1) // ' T
+	{
+		keystatus[0x14] = 0;
+		switch (searchstat)
+		{
+			case 0: case 4:
+				Bstrcpy(tempbuf,"Wall lotag: ");
+				wall[searchwall].lotag =
+					getnumber256(tempbuf,wall[searchwall].lotag,65536L,0);
+				break;
+			case 1: case 2:
+				Bstrcpy(tempbuf,"Sector lotag: ");
+				sector[searchsector].lotag =
+					getnumber256(tempbuf,sector[searchsector].lotag,65536L,0);
+				break;
+			case 3:
+				Bstrcpy(tempbuf,"Sprite lotag: ");
+				sprite[searchwall].lotag =
+					getnumber256(tempbuf,sprite[searchwall].lotag,65536L,0);
+				break;
+		}
+	}
 
- if(keystatus[0x28]==1 && keystatus[0x23]==1) // ' H
-          {
-                 keystatus[0x23] = 0;
-                 switch (searchstat)
-                 {
-                        case 0: case 4:
-                                Bstrcpy(tempbuf,"Wall hitag: ");
-                                wall[searchwall].hitag =
-                                getnumber256(tempbuf,wall[searchwall].hitag,65536L,0);
-                                break;
-                        case 1: case 2:
-                                Bstrcpy(tempbuf,"Sector hitag: ");
-                                sector[searchsector].hitag =
-                                getnumber256(tempbuf,sector[searchsector].hitag,65536L,0);
-                                break;
-                        case 3:
-                                Bstrcpy(tempbuf,"Sprite hitag: ");
-                                sprite[searchwall].hitag =
-                                getnumber256(tempbuf,sprite[searchwall].hitag,65536L,0);
-                                break;
-                 }
-          }
+	if(keystatus[0x28]==1 && keystatus[0x23]==1) // ' H
+	{
+		keystatus[0x23] = 0;
+		switch (searchstat)
+		{
+			case 0: case 4:
+				Bstrcpy(tempbuf,"Wall hitag: ");
+				wall[searchwall].hitag =
+					getnumber256(tempbuf,wall[searchwall].hitag,65536L,0);
+				break;
+			case 1: case 2:
+				Bstrcpy(tempbuf,"Sector hitag: ");
+				sector[searchsector].hitag =
+					getnumber256(tempbuf,sector[searchsector].hitag,65536L,0);
+				break;
+			case 3:
+				Bstrcpy(tempbuf,"Sprite hitag: ");
+				sprite[searchwall].hitag =
+					getnumber256(tempbuf,sprite[searchwall].hitag,65536L,0);
+				break;
+		}
+	}
 
- if(keystatus[0x28]==1 && keystatus[0x1f]==1) // ' S
-          {
-         keystatus[0x1f] = 0;
-                 switch (searchstat)
-                 {
-                        case 0: case 4:
-                Bstrcpy(tempbuf,"Wall shade: ");
-                wall[searchwall].shade =
-                getnumber256(tempbuf,wall[searchwall].shade,65536L,1);
-                                break;
-                        case 1: case 2:
-                Bstrcpy(tempbuf,"Sector shade: ");
-                if(searchstat==1)
-                 sector[searchsector].ceilingshade =
-                 getnumber256(tempbuf,sector[searchsector].ceilingshade,65536L,1);
-                if(searchstat==2)
-                 sector[searchsector].floorshade =
-                 getnumber256(tempbuf,sector[searchsector].floorshade,65536L,1);
-                                break;
-                        case 3:
-                Bstrcpy(tempbuf,"Sprite shade: ");
-                sprite[searchwall].shade =
-                getnumber256(tempbuf,sprite[searchwall].shade,65536L,1);
-                                break;
-                 }
-      }
+	if(keystatus[0x28]==1 && keystatus[0x1f]==1) // ' S
+	{
+		keystatus[0x1f] = 0;
+		switch (searchstat)
+		{
+			case 0: case 4:
+				Bstrcpy(tempbuf,"Wall shade: ");
+				wall[searchwall].shade =
+					getnumber256(tempbuf,wall[searchwall].shade,65536L,1);
+				break;
+			case 1: case 2:
+				Bstrcpy(tempbuf,"Sector shade: ");
+				if(searchstat==1)
+					sector[searchsector].ceilingshade =
+						getnumber256(tempbuf,sector[searchsector].ceilingshade,65536L,1);
+				if(searchstat==2)
+					sector[searchsector].floorshade =
+						getnumber256(tempbuf,sector[searchsector].floorshade,65536L,1);
+				break;
+			case 3:
+				Bstrcpy(tempbuf,"Sprite shade: ");
+				sprite[searchwall].shade =
+					getnumber256(tempbuf,sprite[searchwall].shade,65536L,1);
+				break;
+		}
+	}
 
- if(keystatus[0x28]==1 && keystatus[0x2f]==1) // ' V
-          {
-         keystatus[0x2f] = 0;
-                 switch (searchstat)
-                 {
-                        case 1: case 2:
-                Bstrcpy(tempbuf,"Sector visibility: ");
-                sector[searchsector].visibility =
-                 getnumber256(tempbuf,sector[searchsector].visibility,65536L,0);
-                                break;
-                 }
-      }
+	if(keystatus[0x28]==1 && keystatus[0x2f]==1) // ' V
+	{
+		keystatus[0x2f] = 0;
+		switch (searchstat)
+		{
+			case 1: case 2:
+				Bstrcpy(tempbuf,"Sector visibility: ");
+				sector[searchsector].visibility =
+					getnumber256(tempbuf,sector[searchsector].visibility,65536L,0);
+				break;
+		}
+	}
 
- if(keystatus[0x28]==1 && keystatus[0x0e]==1) // ' del
-          {
-                 keystatus[0x23] = 0;
-                 switch (searchstat)
-                 {
-            case 0: case 4: wall[searchwall].cstat = 0; break;
-//            case 1: case 2: sector[searchsector].cstat = 0; break;
-            case 3: sprite[searchwall].cstat = 0; break;
-                 }
-      }
+	if(keystatus[0x28]==1 && keystatus[0x0e]==1) // ' del
+	{
+		keystatus[0x23] = 0;
+		switch (searchstat)
+		{
+			case 0: case 4: wall[searchwall].cstat = 0; break;
+//			case 1: case 2: sector[searchsector].cstat = 0; break;
+			case 3: sprite[searchwall].cstat = 0; break;
+		}
+	}
 
+	if(keystatus[0x0f]>0) // TAB : USED
+	{
+		usedcount=!usedcount;
 
+		count=0;
+		for(i=0;i<numwalls;i++)
+		{
+			if(wall[i].picnum == temppicnum) count++;
+			if(wall[i].overpicnum == temppicnum) count++;
+		}
+		for(i=0;i<numsectors;i++)	// JBF 20040307: was numwalls, thanks Semicharm
+		{
+			if(sector[i].ceilingpicnum == temppicnum) count++;
+			if(sector[i].floorpicnum == temppicnum) count++;
+		}
+		statnum = 0;        //status 1
+		i = headspritestat[statnum];
+		while (i != -1)
+		{
+			nexti = nextspritestat[i];
 
+			//your code goes here
+			//ex: printf("Sprite %d has a status of 1 (active)\n",i,statnum);
 
- if(keystatus[0x0f]>0) // TAB : USED
- {
-  usedcount=!usedcount;
+			if(sprite[i].picnum == temppicnum) count++;
+			i = nexti;
+		}
 
-  count=0;
-  for(i=0;i<numwalls;i++)
-  { if(wall[i].picnum == temppicnum) count++;
-        if(wall[i].overpicnum == temppicnum) count++;
-  }
-  for(i=0;i<numsectors;i++)	// JBF 20040307: was numwalls, thanks Semicharm
-  { if(sector[i].ceilingpicnum == temppicnum) count++;
-        if(sector[i].floorpicnum == temppicnum) count++;
-  }
-        statnum = 0;        //status 1
-        i = headspritestat[statnum];
-                while (i != -1)
-                {
-                        nexti = nextspritestat[i];
+	}
 
-                        //your code goes here
-                        //ex: printf("Sprite %d has a status of 1 (active)\n",i,statnum);
+	if(keystatus[0x3b]==1) // F1
+	{
+		helpon=!helpon; keystatus[0x23]=0;
+		keystatus[0x3b]=0;
+	}
 
-        if(sprite[i].picnum == temppicnum) count++;
-                        i = nexti;
-                }
+	if(keystatus[0x28]==1 && keystatus[0x1c]==1) // ' ENTER
+	{
+		begindrawing();
+		printext256(0,0,15,0,"Put Graphic ONLY",0);
+		enddrawing();
+		keystatus[0x1c]=0;
+		switch(searchstat)
+		{
+			case 0 : wall[searchwall].picnum = temppicnum; break;
+			case 1 : sector[searchsector].ceilingpicnum = temppicnum; break;
+			case 2 : sector[searchsector].floorpicnum = temppicnum; break;
+			case 3 : sprite[searchwall].picnum = temppicnum; break;
+			case 4 : wall[searchwall].overpicnum = temppicnum; break;
+		}
+	}
 
- }
-
-
- if(keystatus[0x3b]==1) // F1
- { helpon=!helpon; keystatus[0x23]=0;
-   keystatus[0x3b]=0;
- }
-
-
-
-
- if(keystatus[0x28]==1 && keystatus[0x1c]==1) // ' ENTER
- {
-	 begindrawing();
-  printext256(0,0,15,0,"Put Graphic ONLY",0);
-  enddrawing();
-  keystatus[0x1c]=0;
-  switch(searchstat)
-  {
-        case 0 : wall[searchwall].picnum = temppicnum; break;
-        case 1 : sector[searchsector].ceilingpicnum = temppicnum; break;
-        case 2 : sector[searchsector].floorpicnum = temppicnum; break;
-        case 3 : sprite[searchwall].picnum = temppicnum; break;
-        case 4 : wall[searchwall].overpicnum = temppicnum; break;
-  }
- }
-
- if(keystatus[0x0f]==1) //TAB
- {
-  switch(searchstat)
-  {
-        case 0 :
-         temppicnum = wall[searchwall].picnum;
-         tempshade = wall[searchwall].shade;
-         tempxrepeat = wall[searchwall].xrepeat;
-         tempyrepeat = wall[searchwall].yrepeat;
-         tempcstat = wall[searchwall].cstat;
-         temphitag = wall[searchwall].hitag;
-         templotag = wall[searchwall].lotag;
-         break;
-        case 1 :
-         temppicnum = sector[searchsector].ceilingpicnum;
-         tempshade = sector[searchsector].ceilingshade;
-         tempxrepeat = sector[searchsector].ceilingxpanning;
-         tempyrepeat = sector[searchsector].ceilingypanning;
-         tempcstat = sector[searchsector].ceilingstat;
-     temphitag = sector[searchsector].hitag; //wall
-     templotag = sector[searchsector].lotag; //wall
-         break;
-        case 2 :
-         temppicnum = sector[searchsector].floorpicnum;
-         tempshade = sector[searchsector].floorshade;
-         tempxrepeat = sector[searchsector].floorxpanning;
-         tempyrepeat = sector[searchsector].floorypanning;
-         tempcstat = sector[searchsector].floorstat;
-     temphitag = sector[searchsector].hitag; //wall
-     templotag = sector[searchsector].lotag; //wall
-         break;
-        case 3 :
-         temppicnum = sprite[searchwall].picnum;
-         tempshade = sprite[searchwall].shade;
-         tempxrepeat = sprite[searchwall].xrepeat;
-         tempyrepeat = sprite[searchwall].yrepeat;
-         tempcstat = sprite[searchwall].cstat;
-         temphitag = sprite[searchwall].hitag;
-         templotag = sprite[searchwall].lotag;
-         break;
-        case 4 :
-         temppicnum = wall[searchwall].overpicnum;
-         tempshade = wall[searchwall].shade;
-         tempxrepeat = wall[searchwall].xrepeat;
-         tempyrepeat = wall[searchwall].yrepeat;
-         tempcstat = wall[searchwall].cstat;
-         temphitag = wall[searchwall].hitag;
-         templotag = wall[searchwall].lotag;
-  }// end switch
- }// end TAB
-
+	if(keystatus[0x0f]==1) //TAB
+	{
+		switch(searchstat)
+		{
+			case 0 :
+				temppicnum = wall[searchwall].picnum;
+				tempshade = wall[searchwall].shade;
+				tempxrepeat = wall[searchwall].xrepeat;
+				tempyrepeat = wall[searchwall].yrepeat;
+				tempcstat = wall[searchwall].cstat;
+				temphitag = wall[searchwall].hitag;
+				templotag = wall[searchwall].lotag;
+				break;
+			case 1 :
+				temppicnum = sector[searchsector].ceilingpicnum;
+				tempshade = sector[searchsector].ceilingshade;
+				tempxrepeat = sector[searchsector].ceilingxpanning;
+				tempyrepeat = sector[searchsector].ceilingypanning;
+				tempcstat = sector[searchsector].ceilingstat;
+				temphitag = sector[searchsector].hitag; //wall
+				templotag = sector[searchsector].lotag; //wall
+				break;
+			case 2 :
+				temppicnum = sector[searchsector].floorpicnum;
+				tempshade = sector[searchsector].floorshade;
+				tempxrepeat = sector[searchsector].floorxpanning;
+				tempyrepeat = sector[searchsector].floorypanning;
+				tempcstat = sector[searchsector].floorstat;
+				temphitag = sector[searchsector].hitag; //wall
+				templotag = sector[searchsector].lotag; //wall
+				break;
+			case 3 :
+				temppicnum = sprite[searchwall].picnum;
+				tempshade = sprite[searchwall].shade;
+				tempxrepeat = sprite[searchwall].xrepeat;
+				tempyrepeat = sprite[searchwall].yrepeat;
+				tempcstat = sprite[searchwall].cstat;
+				temphitag = sprite[searchwall].hitag;
+				templotag = sprite[searchwall].lotag;
+				break;
+			case 4 :
+				temppicnum = wall[searchwall].overpicnum;
+				tempshade = wall[searchwall].shade;
+				tempxrepeat = wall[searchwall].xrepeat;
+				tempyrepeat = wall[searchwall].yrepeat;
+				tempcstat = wall[searchwall].cstat;
+				temphitag = wall[searchwall].hitag;
+				templotag = wall[searchwall].lotag;
+				break;
+		}// end switch
+	}// end TAB
 }// end 3d
 
 
@@ -2123,87 +2109,87 @@ int intro=0;
 
 void ExtCheckKeys(void)
 {
- long i,count,nexti;
- short statnum=0;
-        if (qsetmode == 200)    //In 3D mode
-        {
-                if (sidemode != 0)
-                {
-                        setviewback();
-                        rotatesprite(320<<15,200<<15,65536,(horiz-100)<<2,4094,0,0,2+4,0,0,0,0);
-                        lockbyte4094 = 0;
-                        searchx = ydim-1-searchx;
-                        searchx ^= searchy; searchy ^= searchx; searchx ^= searchy;
+	long i,count,nexti;
+	short statnum=0;
+	if (qsetmode == 200)    //In 3D mode
+	{
+		if (sidemode != 0)
+		{
+			setviewback();
+			rotatesprite(320<<15,200<<15,65536,(horiz-100)<<2,4094,0,0,2+4,0,0,0,0);
+			lockbyte4094 = 0;
+			searchx = ydim-1-searchx;
+			searchx ^= searchy; searchy ^= searchx; searchx ^= searchy;
 
-//      overwritesprite(160L,170L,1153,0,1+2,0);
-            rotatesprite(160<<16,170<<16,65536,(100-horiz+1024)<<3,1153,0,0,2,0,0,0,0);
+//			overwritesprite(160L,170L,1153,0,1+2,0);
+			rotatesprite(160<<16,170<<16,65536,(100-horiz+1024)<<3,1153,0,0,2,0,0,0,0);
+		}
 
-        }
+		if(intro<100)
+		{
+			intro++;
+//			rotatesprite((160-8)<<16,(100-8)<<16,(200-intro)<<9,0,SPINNINGNUKEICON+(((4-totalclock>>3))&7),0,0,0,0,0,xdim-1,ydim-1);
+			Ver();
+		}
 
-    if(intro<100)
-        {
-        intro++;
-//        rotatesprite((160-8)<<16,(100-8)<<16,(200-intro)<<9,0,SPINNINGNUKEICON+(((4-totalclock>>3))&7),0,0,0,0,0,xdim-1,ydim-1);
-        Ver();
-        }
+		Keys3d();
+		if (sidemode != 1) editinput();
+		if(usedcount)
+		{
+			if(tabgraphic)
+				rotatesprite((320-32)<<16,(64)<<16,64<<9,0,temppicnum,0,0,0,0,0,xdim-1,ydim-1);
+			if(searchstat!=3)
+			{
+				count=0;
+				for(i=0;i<numwalls;i++)
+				{
+					if(wall[i].picnum == temppicnum) count++;
+					if(wall[i].overpicnum == temppicnum) count++;
+					if(sector[i].ceilingpicnum == temppicnum) count++;
+					if(sector[i].floorpicnum == temppicnum) count++;
+				}
+			}
 
-                  Keys3d();
-                if (sidemode != 1) editinput();
-                if(usedcount)
-        {
-          if(tabgraphic)
-           rotatesprite((320-32)<<16,(64)<<16,64<<9,0,temppicnum,0,0,0,0,0,xdim-1,ydim-1);
-          if(searchstat!=3)
-          {
-           count=0;
-           for(i=0;i<numwalls;i++)
-           { if(wall[i].picnum == temppicnum) count++;
-             if(wall[i].overpicnum == temppicnum) count++;
-             if(sector[i].ceilingpicnum == temppicnum) count++;
-             if(sector[i].floorpicnum == temppicnum) count++;
-           }
-          }
+			if(searchstat==3)
+			{
+				count=0;
+				statnum=0;
+				i = headspritestat[statnum];
+				while (i != -1)
+				{
+					nexti = nextspritestat[i];
+					if(sprite[i].picnum == temppicnum) count++;
+					i = nexti;
+				}
+			}
 
-      if(searchstat==3)
-          {
-           count=0;
-       statnum=0;
-           i = headspritestat[statnum];
-           while (i != -1)
-            {
-             nexti = nextspritestat[i];
-             if(sprite[i].picnum == temppicnum) count++;
-             i = nexti;
-            }
-          }
+			begindrawing();
+			printext256(70*8+1,0*8+1,0,-1,names[temppicnum],1);
+			printext256(70*8+1,0*8,15,-1,names[temppicnum],1);
 
-      begindrawing();
-            printext256(70*8+1,0*8+1,0,-1,names[temppicnum],1);
-            printext256(70*8+1,0*8,15,-1,names[temppicnum],1);
+			Bsprintf(tempbuf,"lo = %ld",templotag);
+			printext256(70*8+1,1*8+1,0,-1,tempbuf,1);
+			printext256(70*8,1*8,15,-1,tempbuf,1);
 
-            Bsprintf(tempbuf,"lo = %ld",templotag);
-            printext256(70*8+1,1*8+1,0,-1,tempbuf,1);
-            printext256(70*8,1*8,15,-1,tempbuf,1);
+			Bsprintf(tempbuf,"hi = %ld",temphitag);
+			printext256(70*8+1,2*8+1,0,-1,tempbuf,1);
+			printext256(70*8,2*8,15,-1,tempbuf,1);
 
-            Bsprintf(tempbuf,"hi = %ld",temphitag);
-        printext256(70*8+1,2*8+1,0,-1,tempbuf,1);
-        printext256(70*8,2*8,15,-1,tempbuf,1);
+			Bsprintf(tempbuf,"USED = %ld",count);
+			printext256(70*8+1,3*8+1,0,-1,tempbuf,1);
+			printext256(70*8,3*8,15,-1,tempbuf,1);
 
-                        Bsprintf(tempbuf,"USED = %ld",count);
-        printext256(70*8+1,3*8+1,0,-1,tempbuf,1);
-        printext256(70*8,3*8,15,-1,tempbuf,1);
-
-        count=ActorMem(temppicnum);
-                        Bsprintf(tempbuf,"MEM  = %ld",count);
-        printext256(70*8+1,4*8+1,0,-1,tempbuf,1);
-        printext256(70*8,4*8,15,-1,tempbuf,1);
-	enddrawing();
-                }// end if usedcount
-        }
-        else
-        {
-                  Keys2d();
-        }
+			count=ActorMem(temppicnum);
+			Bsprintf(tempbuf,"MEM  = %ld",count);
+			printext256(70*8+1,4*8+1,0,-1,tempbuf,1);
+			printext256(70*8,4*8,15,-1,tempbuf,1);
+			enddrawing();
+		}// end if usedcount
+	}
+	else
+	{
+		Keys2d();
+	}
 }
 
 void faketimerhandler(void)
@@ -2281,13 +2267,16 @@ void faketimerhandler(void)
 
 void Ver()
 {
- Bsprintf(tempbuf,"DUKE NUKEM BUILD: V032696");
- if (qsetmode == 200)    //In 3D mode
- { begindrawing(); printext256(60*8,24*8,11,-1,tempbuf,1); enddrawing();
-   rotatesprite((320-8)<<16,(200-8)<<16,64<<9,0,SPINNINGNUKEICON+(((4-(totalclock>>3)))&7),0,0,0,0,0,xdim-1,ydim-1);
- }else
- { begindrawing(); printext16(0,ydim16+0,15,-1,tempbuf,0); enddrawing();
- }
+	Bsprintf(tempbuf,"DUKE NUKEM BUILD: V032696");
+	if (qsetmode == 200)    //In 3D mode
+	{
+		begindrawing(); printext256(60*8,24*8,11,-1,tempbuf,1); enddrawing();
+		rotatesprite((320-8)<<16,(200-8)<<16,64<<9,0,SPINNINGNUKEICON+(((4-(totalclock>>3)))&7),0,0,0,0,0,xdim-1,ydim-1);
+	}
+	else
+	{
+		begindrawing(); printext16(0,ydim16+0,15,-1,tempbuf,0); enddrawing();
+	}
 }
 
 int ActorMem(int i)

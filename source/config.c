@@ -780,25 +780,6 @@ void CONFIG_ReadSetup( void )
 
    SCRIPT_GetString( scripthandle, "Comm Setup","PlayerName",&myname[0]);
 
-   dummy = CheckParm("NAME");
-   if( dummy ) strcpy(myname,_buildargv[dummy+1]);
-   dummy = CheckParm("MAP");
-if (!VOLUMEONE) {
-   if( dummy )
-   {
-       Bstrcpy(boardfilename,_buildargv[dummy+1]);
-       if( Bstrchr(boardfilename,'.') == 0)
-           Bstrcat(boardfilename,".map");
-       initprintf("Using level: '%s'.\n",boardfilename);
-   }
-   else
-       boardfilename[0] = 0;
-} else {
-    if( dummy )
-        initprintf("The -map option is available in the registered version only!\n");
-       boardfilename[0] = 0;
-}
-
    SCRIPT_GetString( scripthandle, "Comm Setup","RTSName",&ud.rtsname[0]);
 
    SCRIPT_GetNumber( scripthandle, "Screen Setup", "Shadows",&ud.shadows);

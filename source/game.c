@@ -50,14 +50,6 @@ Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
 
 #define HEAD   "Duke Nukem 3D Unregistered Shareware v"VERSION" "
 
-/* JBF 20030804: We detect by the version of the CON files we parse
-#ifdef PLUTOPAK
-#define HEAD2  "Duke Nukem 3D v"VERSION" - Atomic Edition"
-#else
-#define HEAD2  "Duke Nukem 3D Full Version v"VERSION
-#endif
-*/
-
 #define HEAD2P "Duke Nukem 3D v"VERSION" - Atomic Edition"
 #define HEAD2S "Duke Nukem 3D Full Version v"VERSION
 #define HEAD2  "Duke Nukem 3D v"VERSION
@@ -65,9 +57,8 @@ Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
 #define HEADA  "Duke Nukem 3D AUSSIE Unregistered Shareware v"VERSION
 #define HEAD2A "Duke Nukem 3D AUSSIE Full Version v"VERSION
 
+// for Atomic edition "copy protection"
 #define IDFSIZE 479985668
-// #define IDFSIZE 9961476
-// #define IDFSIZE 16384
 #define IDFILENAME "DUKE3D.IDF"
 
 
@@ -77,8 +68,10 @@ long cameradist = 0, cameraclock = 0;
 char playerswhenstarted;
 char qe,cp;
 
-int32 CommandSoundToggleOff = 0;
-int32 CommandMusicToggleOff = 0;
+static int32 CommandSoundToggleOff = 0;
+static int32 CommandMusicToggleOff = 0;
+static char *CommandMap = NULL;
+static char *CommandName = NULL;
 
 char confilename[128] = {"GAME.CON"},boardfilename[BMAX_PATH] = {0};
 char waterpal[768], slimepal[768], titlepal[768], drealms[768], endingpal[768];
@@ -130,8 +123,6 @@ void patchstatusbar(long x1, long y1, long x2, long y2)
 
 	rotatesprite(tx,ty,scl,0,BOTTOMSTATUSBAR,4,0,10+16+64+128,clx1+clofx,cly1+clofy,clx2+clofx-1,cly2+clofy-1);
 }
-
-//void __interrupt __far newint24( int errval, int ax, int bp, int si );
 
 int recfilep,totalreccnt;
 char debug_on = 0,actor_tog = 0,*rtsptr,memorycheckoveride=0;
@@ -6959,13 +6950,31 @@ void checkcommandline(int argc,char **argv)
         while(i < argc)
         {
             c = argv[i];
-			if (((*c == '/') || (*c == '-')) && (!firstnet) && (!Bstrcasecmp(c+1,"net")))
+			if (((*c == '/') || (*c == '-')) && (!firstnet))
             {
-				firstnet = i;
-				netparamcount = argc - i - 1;
-				netparam = (char **)calloc(netparamcount, sizeof(char**));
-                i++;
-                continue;
+				if (!Bstrcasecmp(c+1,"net")) {
+					firstnet = i;
+					netparamcount = argc - i - 1;
+					netparam = (char **)calloc(netparamcount, sizeof(char**));
+            	    i++;
+                	continue;
+				}
+				if (!Bstrcasecmp(c+1,"name")) {
+					if (argc > i+1) {
+						CommandName = argv[i+1];
+						i++;
+					}
+					i++;
+					continue;
+				}
+				if (!Bstrcasecmp(c+1,"map")) {
+					if (argc > i+1) {
+						CommandMap = argv[i+1];
+						i++;
+					}
+					i++;
+					continue;
+				}
             }
 
 			if (firstnet > 0) {
@@ -7495,87 +7504,102 @@ void compilecons(void)
 
 void Startup(void)
 {
-   int i;
+	int i;
 
-   //KB_Startup();	JBF
+	//KB_Startup();	JBF
 
-   CONFIG_GetSetupFilename();
-   CONFIG_ReadSetup();
+	CONFIG_GetSetupFilename();
+	CONFIG_ReadSetup();
 
-   compilecons();	// JBF 20040116: Moved to below setup reading, because otherwise blown
-   			// cons blow the configuration file.
+	compilecons();	// JBF 20040116: Moved to below setup reading, because otherwise blown
+			// cons blow the configuration file.
 
 #ifdef AUSTRALIA
-  ud.lockout = 1;
+	ud.lockout = 1;
 #endif
 
-   if(CommandSoundToggleOff) SoundToggle = 0;
-   if(CommandMusicToggleOff) MusicToggle = 0;
+	if (CommandSoundToggleOff) SoundToggle = 0;
+	if (CommandMusicToggleOff) MusicToggle = 0;
+	if (CommandName) strcpy(myname,CommandName);
+	if (CommandMap) {
+	   if (VOLUMEONE) {
+		   initprintf("The -map option is available in the registered version only!\n");
+		   boardfilename[0] = 0;
+	   } else {
+		   char *dot, *slash;
 
-if (VOLUMEONE) {
-   initprintf("*** You have run Duke Nukem 3D %ld times. ***\n\n",ud.executions);
-   if(ud.executions >= 50) initprintf("IT IS NOW TIME TO UPGRADE TO THE COMPLETE VERSION!!!\n");
-}
+		   Bstrcpy(boardfilename, CommandMap);
 
-   if (initengine()) {
-	   wm_msgbox("Build Engine Initialisation Error", "There was a problem initialising the Build engine: %s", engineerrstr);
+		   dot = Bstrrchr(boardfilename,'.');
+		   slash = Bstrrchr(boardfilename,'/');
+		   if (!slash) slash = Bstrrchr(boardfilename,'\\');
+		   
+		   if ((!slash && !dot) || (slash && dot < slash))
+			   Bstrcat(boardfilename,".map");
+
+		   initprintf("Using level: '%s'.\n",boardfilename);
+	   }
+	}
+
+	if (VOLUMEONE) {
+	   initprintf("*** You have run Duke Nukem 3D %ld times. ***\n\n",ud.executions);
+	   if(ud.executions >= 50) initprintf("IT IS NOW TIME TO UPGRADE TO THE COMPLETE VERSION!!!\n");
+	}
+
+	if (initengine()) {
+	   wm_msgbox("Build Engine Initialisation Error",
+			   "There was a problem initialising the Build engine: %s", engineerrstr);
 	   exit(1);
-   }
+	}
 
-   CONTROL_Startup( ControllerType, &GetTime, TICRATE );
+	CONTROL_Startup( ControllerType, &GetTime, TICRATE );
 
-   // JBF 20040215: evil and nasty place to do this, but joysticks are evil and nasty too
-   if (ControllerType == controltype_keyboardandjoystick ||
+	// JBF 20040215: evil and nasty place to do this, but joysticks are evil and nasty too
+	if (ControllerType == controltype_keyboardandjoystick ||
 	ControllerType == controltype_keyboardandgamepad ||
 	ControllerType == controltype_keyboardandflightstick ||
 	ControllerType == controltype_keyboardandthrustmaster) {
-	   int axof[] = { 0, 1, 5, 2 };
-	for (i=0;i<4;i++)
-		setjoydeadzone(axof[i],JoystickAnalogueDead[i],JoystickAnalogueSaturate[i]);
-   }
+		int axof[] = { 0, 1, 5, 2 };
+		for (i=0;i<4;i++)
+			setjoydeadzone(axof[i],JoystickAnalogueDead[i],JoystickAnalogueSaturate[i]);
+	}
 
-   inittimer(TICRATE);
+	inittimer(TICRATE);
 
-   //initprintf("* Hold Esc to Abort. *\n");
-   initprintf("Loading art header.\n");
-   if (loadpics("tiles000.art",32*1048576) < 0)
-	   gameexit("Failed loading art.");
+	//initprintf("* Hold Esc to Abort. *\n");
+	initprintf("Loading art header.\n");
+	if (loadpics("tiles000.art",32*1048576) < 0)
+		gameexit("Failed loading art.");
 
-   readsavenames();
+	readsavenames();
 
-   tilesizx[MIRROR] = tilesizy[MIRROR] = 0;
+	tilesizx[MIRROR] = tilesizy[MIRROR] = 0;
 
-   for(i=0;i<MAXPLAYERS;i++) playerreadyflag[i] = 0;
+	for(i=0;i<MAXPLAYERS;i++) playerreadyflag[i] = 0;
 
-   //initmultiplayers(netparamcount,netparam, 0,0,0);
-   if (initmultiplayersparms(netparamcount,netparam)) {
-	   initprintf("Waiting for players...\n");
-	   while (initmultiplayerscycle()) {
-		   handleevents();
-		   if (quitevent) {
-			   Shutdown();
-			   return;
-		   }
-	   }
-   }
-   if (netparam) free(netparam);
-   netparam = NULL; netparamcount = 0;
+	//initmultiplayers(netparamcount,netparam, 0,0,0);
+	if (initmultiplayersparms(netparamcount,netparam)) {
+		initprintf("Waiting for players...\n");
+		while (initmultiplayerscycle()) {
+			handleevents();
+			if (quitevent) {
+				Shutdown();
+				return;
+			}
+		}
+	}
+	if (netparam) free(netparam);
+	netparam = NULL; netparamcount = 0;
 
-   if(numplayers > 1)
-    initprintf("Multiplayer initialized.\n");
+	if(numplayers > 1)
+	initprintf("Multiplayer initialized.\n");
 
 	screenpeek = myconnectindex;
-   ps[myconnectindex].palette = (char *) &palette[0];
-   SetupGameButtons();
+	ps[myconnectindex].palette = (char *) &palette[0];
+	SetupGameButtons();
 
-   if(networkmode == 255)
-       networkmode = 1;
-
-   //initprintf("Checking music inits.\n");
-   //MusicStartup();
-   //initprintf("Checking sound inits.\n");
-   //SoundStartup();
-   //loadtmb();
+	if(networkmode == 255)
+	   networkmode = 1;
 }
 
 
@@ -7836,24 +7860,6 @@ void app_main(int argc,char **argv)
     checkcommandline(argc,argv);
 	if (netparamcount > 0) _buildargc = (argc -= netparamcount+1);	// crop off the net parameters
 
-/* JBF: Kinda unnecessary now wouldn't you agree?
-    totalmemory = Z_AvailHeap();
-
-    if(memorycheckoveride == 0)
-    {
-        if(totalmemory < (3162000-350000))
-        {
-            puts("You don't have enough free memory to run Duke Nukem 3D.");
-            puts("The DOS \"mem\" command should report 6,800K (or 6.8 megs)");
-            puts("of \"total memory free\".\n");
-            printf("Duke Nukem 3D requires %ld more bytes to run.\n",3162000-350000-totalmemory);
-            exit(0);
-        }
-    }
-    else
-        printf("Using %ld bytes for heap.\n",totalmemory);
-*/
-    
     RegisterShutdownFunction( Shutdown );
 
 if (VOLUMEONE) {
@@ -7870,8 +7876,6 @@ if (VOLUMEONE) {
     puts("International distribution rights are reserved.\n");
     puts("Please read LICENSE.DOC for further information about this special version.");
     puts("NOTE: DUKE NUKEM 3D CONTAINS MATURE CONTENT.\n");
-    puts("Press any key to continue.");
-    //getch();
 #endif
 
     OSD_SetFunctions(
