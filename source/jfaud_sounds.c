@@ -394,10 +394,10 @@ int xyzsound(short num, short i, long x, long y, long z)	// x,y,z is sound origi
 
 void sound(short num)
 {
-#if 0
 	float pitch=1.0;
 	char loop=0;
 	int handl;
+	JFAudProp props[6];
 	jfauderr err;
 	
 	if (!inited ||
@@ -424,19 +424,30 @@ void sound(short num)
 
 	if (soundm[num] & 1) loop = 1;
 
+	props[0].prop = JFAudProp_pitch;
+	props[0].val.f = pitch;
+	props[1].prop = JFAudProp_gain;
+	props[1].val.f = 1.0;
+	props[2].prop = JFAudProp_fx;
+	props[2].val.i = 1|2;	// 1=nearest, 2=stereo2mono
+	props[3].prop = JFAudProp_rolloff;
+	props[3].val.f = 0.0;
+	props[4].prop = JFAudProp_posrel;
+	props[4].val.i = 0;	// player-relative
+	props[5].prop = JFAudProp_position;
+	props[5].val.v[0] = 0.0;
+	props[5].val.v[1] = 0.0;
+	props[5].val.v[2] = 0.0;
+	
 	initprintf("Playing %s pitch=%f loop=%d\n", sounds[num], pitch,loop);
-	err = jfaud_playsound(&handl, sounds[num], 1.0/*gain*/, pitch, loop,
-			0.0,0.0,0.0,	// pos
-			0.0,0.0,0.0,	// vel
-			1, 0/*threed*/, soundpr[num], jfaud_playing);
+	err = JFAud_playsound(&handl, sounds[num], NULL, soundpr[num], JFAudPlayMode_playing, sizeof(props)/sizeof(JFAudProp), props);
 	if (err != jfauderr_ok) {
-		initprintf("Playback of sound %s failed: %s\n",sounds[num], jfauderr_getstring(err));
+		initprintf("Playback of sound %s failed: %s\n",sounds[num], JFAud_errstr(err));
 		return;
 	}
 
 	keephandle(handl, num, -1);
 	Sound[num].num++;
-#endif
 }
 
 int spritesound(unsigned short num, short i)
