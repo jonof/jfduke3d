@@ -785,12 +785,13 @@ void SCRIPT_PutString
 	char *raw;
 	if (!string) string = "";
 
-	raw = Balloca(strlen(string)+3);
+	raw = Bmalloc(strlen(string)+3);
 	strcpy(raw,"\"");
 	strcat(raw,string);
 	strcat(raw,"\"");
 	
 	SCRIPT_AddEntry(scripthandle, sectionname, entryname, raw);
+	Bfree(raw);
 }
 
 void SCRIPT_PutDoubleString
@@ -806,7 +807,7 @@ void SCRIPT_PutDoubleString
 	if (!string1) string1 = "";
 	if (!string2) string2 = "";
 
-	raw = Balloca(strlen(string1)+strlen(string2)+6);
+	raw = Bmalloc(strlen(string1)+strlen(string2)+6);
 	strcpy(raw,"\"");
 	strcat(raw,string1);
 	strcat(raw,"\" \"");
@@ -814,6 +815,7 @@ void SCRIPT_PutDoubleString
 	strcat(raw,"\"");
 
 	SCRIPT_AddEntry(scripthandle, sectionname, entryname, raw);
+	Bfree(raw);
 }
 
 void SCRIPT_PutNumber
