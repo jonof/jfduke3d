@@ -2,9 +2,9 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "JFDuke3D"
-!define PRODUCT_VERSION "20040807"
+!define PRODUCT_VERSION "20041013"
 !define PRODUCT_PUBLISHER "JonoF"
-!define PRODUCT_WEB_SITE "http://jonof.edgenetwork.org/buildport/duke3d/"
+!define PRODUCT_WEB_SITE "http://jonof.edgenetwork.org/index.php?p=jfduke3d"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
@@ -25,7 +25,7 @@ SetCompressor lzma
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
 ; License page
-!insertmacro MUI_PAGE_LICENSE "E:\ports\duke3d\GNU.TXT"
+!insertmacro MUI_PAGE_LICENSE "..\GNU.TXT"
 ; Components page
 !insertmacro MUI_PAGE_COMPONENTS
 ; Directory page
@@ -68,13 +68,13 @@ ShowUnInstDetails show
 Section "!Game" SEC_GAME
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-  File "E:\ports\duke3d\duke3d.exe"
+  File "..\duke3d.exe"
   CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\JFDuke3D.lnk" "$INSTDIR\duke3d.exe"
-  File "E:\ports\duke3d\GNU.TXT"
-  File "E:\ports\duke3d\readme.txt"
-  File "E:\ports\duke3d\releasenotes.html"
-  File "E:\ports\duke3d\setup.exe"
+  File "..\GNU.TXT"
+  File "..\readme.txt"
+  File "..\releasenotes.html"
+  File "..\setup.exe"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Setup.lnk" "$INSTDIR\setup.exe"
   File "E:\ports\datainst\datainst.exe"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Game Data Installer.lnk" "$INSTDIR\datainst.exe"
@@ -83,8 +83,8 @@ SectionEnd
 Section "Editor" SEC_EDITOR
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-  File "E:\ports\duke3d\build.cfg"
-  File "E:\ports\duke3d\build.exe"
+  File "..\build.cfg"
+  File "..\build.exe"
   CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Build Editor.lnk" "$INSTDIR\build.exe"
 SectionEnd
@@ -92,10 +92,11 @@ SectionEnd
 Section /o "Samples" SEC_SAMPLES
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-  File "E:\ports\duke3d\duke3d.def.sample"
+  File "..\duke3d.def.sample"
   SetOutPath "$INSTDIR\models"
-  File "E:\ports\duke3d\models\imp.md2"
-  File "E:\ports\duke3d\models\imp_skin.pcx"
+  File "..\models\pigcop.md2"
+  File "..\models\pigcop.jpg"
+  SetOutPath "$INSTDIR"
 SectionEnd
 
 Section -AdditionalIcons
@@ -138,8 +139,8 @@ Section Uninstall
   ReadRegStr $ICONS_GROUP ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "${PRODUCT_STARTMENU_REGVAL}"
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
   Delete "$INSTDIR\uninst.exe"
-  Delete "$INSTDIR\models\imp_skin.pcx"
-  Delete "$INSTDIR\models\imp.md2"
+  Delete "$INSTDIR\models\pigcop.md2"
+  Delete "$INSTDIR\models\pigcop.jpg"
   Delete "$INSTDIR\duke3d.def.sample"
   Delete "$INSTDIR\build.exe"
   Delete "$INSTDIR\build.cfg"
