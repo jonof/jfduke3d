@@ -1930,12 +1930,7 @@ int ExtInit(void)
     	"Thank You!\n"
     	//"------------------------------------------------------------------------------\n"
 	;
-#ifdef RENDERTYPEWIN    
     wm_msgbox("Build Editor for Duke Nukem 3D", msg);
-#else
-    puts(msg);
-    getch();
-#endif
     */
     
 
@@ -1959,10 +1954,8 @@ int ExtInit(void)
 	memcpy((void *)buildkeys,(void *)keys,NUMKEYS);   //Trick to make build use setup.dat keys
 
         if (initengine()) {
-#ifdef RENDERTYPEWIN
 		wm_msgbox("Build Engine Initialisation Error",
 				"There was a problem initialising the Build engine: %s", engineerrstr);
-#endif
 		return -1;
 	}
 	initinput();

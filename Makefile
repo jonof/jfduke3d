@@ -8,9 +8,6 @@ EOBJ=eobj/
 INC=$(SRC)
 o=o
 
-ENGINELIB=libengine.a
-EDITORLIB=libbuild.a
-
 # debugging enabled
 debug=-ggdb
 # debugging disabled
@@ -76,46 +73,27 @@ GAMEOBJS=$(OBJ)game.$o \
 
 EDITOROBJS=$(OBJ)astub.$o
 
-uname=$(strip $(shell uname -s))
-ifeq ($(findstring Linux,$(uname)),Linux)
-	PLATFORM=LINUX
-	RENDERTYPE=SDL
+include $(EROOT)Makefile.shared
+
+ifeq ($(PLATFORM),LINUX)
 	NASMFLAGS+= -f elf
-	LIBS+= -lGL
 else
-	ifeq ($(findstring MINGW32,$(uname)),MINGW32)
-		PLATFORM=WINDOWS
-		EXESUFFIX=.exe
+	ifeq ($(PLATFORM),WIN)
 		CFLAGS+= -DUNDERSCORES -I$(DXROOT)/include
-		LIBS+= -lmingwex -lwinmm -mwindows -ldxguid -L$(DXROOT)/lib -lwsock32 -lopengl32
-		NASMFLAGS+= -DUNDERSCORES
-		GAMEOBJS+= $(OBJ)gameres.$o $(OBJ)winbits.$o
-		EDITOROBJS+= $(OBJ)buildres.$o
-		RENDERTYPE ?= WIN
-		NASMFLAGS+= -f win32
-	else
-		PLATFORM=UNKNOWN
+		NASMFLAGS+= -DUNDERSCORES -f win32
 	endif
 endif
 	
 ifeq ($(RENDERTYPE),SDL)
-	#GAMEOBJS+= $(EOBJ)sdlayer.$o
-	#EDITOROBJS+= $(EOBJ)sdlayer.$o
-
 	override CFLAGS+= $(subst -Dmain=SDL_main,,$(shell sdl-config --cflags))
-	LIBS+= $(shell sdl-config --libs)
 	AUDIOLIBOBJ=$(AUDIOLIB_MUSIC_STUB) $(AUDIOLIB_FX_STUB)
 else
 	ifeq ($(RENDERTYPE),WIN)
-		#GAMEOBJS+= $(EOBJ)winlayer.$o
-		#EDITOROBJS+= $(EOBJ)winlayer.$o
-		
 		AUDIOLIBOBJ=$(AUDIOLIB_MUSIC) $(AUDIOLIB_FX)
 	endif
 endif
 
 GAMEOBJS+= $(AUDIOLIBOBJ)
-CFLAGS+= -D$(PLATFORM) -DRENDERTYPE$(RENDERTYPE)=1
 
 .PHONY: clean all engine $(EOBJ)$(ENGINELIB) $(EOBJ)$(EDITORLIB)
 

@@ -2116,10 +2116,7 @@ void gameexit(char *t)
 //            if(*t == ' ' && *(t+1) == 0) *t = 0;
             //printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 		if (!(t[0] == ' ' && t[1] == 0)) {
-#ifdef RENDERTYPEWIN
 			wm_msgbox("Duke Nukem 3D", t);
-#endif
-			puts(t);
 		}
         }
 // CTW END - MODIFICATION
@@ -6894,11 +6891,7 @@ void comlinehelp(char **argv)
 		"-map FILE\tUse a map FILE\n"
 		"-name NAME\tFoward NAME\n"
 		"-net\t\tNet mode game";
-#ifdef RENDERTYPEWIN
 	wm_msgbox(apptitle,s);
-#else
-	puts(s);
-#endif
 }
 
 void checkcommandline(int argc,char **argv)
@@ -7475,9 +7468,7 @@ if (VOLUMEONE) {
 }
 
    if (initengine()) {
-#ifdef RENDERTYPEWIN
 	   wm_msgbox("Build Engine Initialisation Error", "There was a problem initialising the Build engine: %s", engineerrstr);
-#endif
 	   exit(1);
    }
 
