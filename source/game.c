@@ -2680,8 +2680,8 @@ void drawbackground(void)
 	}
 
 	y1 = 0; y2 = ydim;
-	//if( ready2send || ud.recstat == 2 )
-	if (ud.recstat == 0 || ud.recstat == 1 || (ud.recstat == 2 && ud.reccnt > 0))	// JBF 20040717
+	if( ready2send || ud.recstat == 2 )
+	//if (ud.recstat == 0 || ud.recstat == 1 || (ud.recstat == 2 && ud.reccnt > 0))	// JBF 20040717
 	{
 		if (ud.screen_size == 8)
 			y1 = scale(ydim,200-scale(tilesizy[BOTTOMSTATUSBAR],ud.statusbarscale,100),200);
@@ -8221,7 +8221,6 @@ long playback(void)
 
     if(numplayers < 2) foundemo = opendemoread(which_demo);
 
-    ud.recstat = 2;	// JBF 20040717: I believe any attempt at playing a demo should put recstat into playback mode
     if(foundemo == 0)
     {
         if(which_demo > 1)
@@ -8241,7 +8240,7 @@ long playback(void)
     }
     else
     {
-        //ud.recstat = 2;	// JBF 20040717
+        ud.recstat = 2;
         which_demo++;
         if(which_demo == 10) which_demo = 1;
         enterlevel(MODE_DEMO);
