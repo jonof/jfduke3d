@@ -266,6 +266,10 @@ void kensetpalette(char *vgapal);
         modify [edx]\
 */
 
+void ExtPreLoadMap(void)
+{
+}
+
 void ExtLoadMap(char *mapname)
 {
 	long i;
@@ -348,6 +352,10 @@ void putsprite (long thex, long they, long zoom, short rot, short tilenum, signe
                 windowx1,windowy1,windowx2,windowy2);
 }
 
+
+void ExtPreSaveMap(void)
+{
+}
 
 void ExtSaveMap(const char *mapname)
 {
@@ -1281,8 +1289,8 @@ void ExtEditWallData(short wallnum)       //F8
     curwallnum = 0;
     curspritenum = 0;
     cursectornum = 0;
-    search_lotag=getnumber16("Enter Wall Search Lo-Tag : ", search_lotag, 65536L);
-    search_hitag=getnumber16("Enter Wall Search Hi-Tag : ", search_hitag, 65536L);
+    search_lotag=getnumber16("Enter Wall Search Lo-Tag : ", search_lotag, 65536L,0);
+    search_hitag=getnumber16("Enter Wall Search Hi-Tag : ", search_hitag, 65536L,0);
     Bsprintf(tempbuf,"Current Wall %d lo=%d hi=%d",
         curwall,search_lotag,search_hitag);
     printmessage16(tempbuf);
@@ -1297,8 +1305,8 @@ void ExtEditSpriteData(short spritenum)   //F8
     curwallnum = 0;
     curspritenum = 0;
     cursectornum = 0;
-    search_lotag=getnumber16("Enter Sprite Search Lo-Tag : ", search_lotag, 65536L);
-    search_hitag=getnumber16("Enter Sprite Search Hi-Tag : ", search_hitag, 65536L);
+    search_lotag=getnumber16("Enter Sprite Search Lo-Tag : ", search_lotag, 65536L,0);
+    search_hitag=getnumber16("Enter Sprite Search Hi-Tag : ", search_hitag, 65536L,0);
     Bsprintf(tempbuf,"Current Sprite %d %s lo=%d hi=%d",
         cursprite,names[sprite[cursprite].picnum],search_lotag,search_hitag);
     printmessage16(tempbuf);
@@ -1736,7 +1744,7 @@ void Keys2d(void)
     curwallnum = 0;
     curspritenum = 0;
     cursectornum=0;
-    cursector_lotag=getnumber16("Enter Sector Lo-Tag : ", cursector_lotag, 65536L);
+    cursector_lotag=getnumber16("Enter Sector Lo-Tag : ", cursector_lotag, 65536L,0);
     Bsprintf(tempbuf,"Current Sector Lo-Tag %d",cursector_lotag);
     printmessage16(tempbuf);
  }
@@ -1744,7 +1752,7 @@ void Keys2d(void)
 
  if(keystatus[0x28]==1 && keystatus[0x2c]==1) // ' z
  { keystatus[0x2c]=0;
-    sprite[cursprite].z=getnumber16("Sprite Zpos :    ",sprite[cursprite].z, 0x7fffffff);
+    sprite[cursprite].z=getnumber16("Sprite Zpos :    ",sprite[cursprite].z, 0x7fffffff,0);
  }
 
 
@@ -1818,7 +1826,7 @@ void Keys2d(void)
  if(keystatus[0x28]==1 && keystatus[0x05]==1) // ' 4
  {
         keystatus[0x05]=0;
-    MinRate=getnumber16("Enter Min Frame Rate : ", MinRate, 65536L);
+    MinRate=getnumber16("Enter Min Frame Rate : ", MinRate, 65536L,0);
     printmessage16("");
     /*
         if(MinRate==40)
