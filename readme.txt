@@ -1,7 +1,7 @@
 README for JonoF's Duke Nukem 3D Port
 With contributions by Ken Silverman
 
-16 February 2005
+28 February 2005
 
 
 This is a work-in-progress release of my port of Duke Nukem 3D using my
