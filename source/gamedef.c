@@ -452,7 +452,7 @@ char parsecommand(void)
     int fp;
     char parentcompilefile[255];	// JBF 20031130
 
-    if ((unsigned)((scriptptr-script)<<2) > sizeof(script)) {
+    if ((unsigned)(scriptptr-script) > MAXSCRIPTSIZE) {
 	Bsprintf(tempbuf,"FATAL ERROR: Compiled size of CON code exceeds maximum size!\n"
 			"Please notify JonoF so the maximum may be increased in a future release.");
 	gameexit(tempbuf);
