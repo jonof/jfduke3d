@@ -605,7 +605,7 @@ void hitradius( short i, long  r, long  hp1, long  hp2, long  hp3, long  hp4 )
 }
 
 
-movesprite(short spritenum, long xchange, long ychange, long zchange, unsigned long cliptype)
+int movesprite(short spritenum, long xchange, long ychange, long zchange, unsigned long cliptype)
 {
     long daz,h, oldx, oldy;
     short retval, dasectnum, a, cd;
@@ -1275,7 +1275,9 @@ void moveplayers(void) //Players
                 s->xvel = 128;
                 s->ang = p->ang;
                 s->extra++;
-                IFMOVING;
+                //IFMOVING;		// JBF 20040825: is really "if (ssp(i,CLIPMASK0)) ;" which is probably
+		ssp(i,CLIPMASK0);	// not the safest of ideas because a zealous optimiser probably sees
+					// it as redundant, so I'll call the "ssp(i,CLIPMASK0)" explicitly.
             }
             else
             {
@@ -1453,7 +1455,7 @@ void movefallers(void)
                 s->lotag-=3;
                 if(s->lotag <= 0)
                 {
-                    s->xvel = (32+TRAND&63);
+                    s->xvel = (32+(TRAND&63));
                     s->zvel = -(1024+(TRAND&1023));
                 }
             }
@@ -1497,8 +1499,8 @@ void movefallers(void)
 
 void movestandables(void)
 {
-    short i, j, k, m, nexti, nextj, nextk, p, q, sect;
-    long l, x, *t, x1, y1;
+    short i, j, k, m, nexti, nextj, nextk, p=0, q, sect;
+    long l=0, x, *t, x1, y1;
     spritetype *s;
 
     i = headspritestat[6];
@@ -1551,7 +1553,8 @@ void movestandables(void)
                     s->picnum = CRANE+1;
                     s->xvel += 8;
                 }
-                IFMOVING;
+                //IFMOVING;	// JBF 20040825: see my rant above about this
+		ssp(i,CLIPMASK0);
                 if(sect == t[1])
                     t[0]++;
             }
@@ -1646,7 +1649,8 @@ void movestandables(void)
                 if( s->xvel < 192 )
                     s->xvel += 8;
                 s->ang = getangle(msx[t[4]]-s->x,msy[t[4]]-s->y);
-                IFMOVING;
+                //IFMOVING;	// JBF 20040825: see my rant above about this
+		ssp(i,CLIPMASK0);
                 if( ((s->x-msx[t[4]])*(s->x-msx[t[4]])+(s->y-msy[t[4]])*(s->y-msy[t[4]]) ) < (128*128) )
                     t[0]++;
             }
@@ -2123,6 +2127,7 @@ void movestandables(void)
                     camsprite = -1;
                     T1 = 0;
                     loadtile(s->picnum);
+		    invalidatetile(s->picnum,-1,-1);
                 }
 
                 goto BOLT;
@@ -3547,6 +3552,9 @@ void moveactors(void)
                     else s->z -= 1024;
                 }
 
+		// JBF 20040906 FIXME: maybe this should see if a sound is already
+		// playing for this guy so that we can have multiple cars each
+		// making engine sounds
                 if(Sound[RECO_ROAM].num == 0 )
                     spritesound(RECO_ROAM,i);
 
@@ -4910,7 +4918,7 @@ void moveexplosions(void)  // STATNUM 5
 
 void moveeffectors(void)   //STATNUM 3
 {
-    long q, l, m, x, st, j, *t;
+    long q=0, l, m, x, st, j, *t;
     short i, k, nexti, nextk, p, sh, nextj;
     spritetype *s;
     sectortype *sc;
@@ -6718,7 +6726,7 @@ void moveeffectors(void)   //STATNUM 3
                     {
                         if(cansee(s->x,s->y,s->z,SECT,ps[p].posx,ps[p].posy,ps[p].posz,ps[p].cursectnum))
                         {
-                            if(x < (unsigned)sh)
+                            if(x < (long)((unsigned)sh))
                             {
                                 ud.camerasprite = i;
                                 t[0] = 999;

@@ -60,6 +60,7 @@ Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
 
 #define HEAD2P "Duke Nukem 3D v"VERSION" - Atomic Edition"
 #define HEAD2S "Duke Nukem 3D Full Version v"VERSION
+#define HEAD2  "Duke Nukem 3D v"VERSION
 
 #define HEADA  "Duke Nukem 3D AUSSIE Unregistered Shareware v"VERSION
 #define HEAD2A "Duke Nukem 3D AUSSIE Full Version v"VERSION
@@ -80,7 +81,7 @@ char qe,cp;
 int32 CommandSoundToggleOff = 0;
 int32 CommandMusicToggleOff = 0;
 
-char confilename[128] = {"GAME.CON"},boardfilename[128] = {0};
+char confilename[128] = {"GAME.CON"},boardfilename[MAX_PATH] = {0};
 char waterpal[768], slimepal[768], titlepal[768], drealms[768], endingpal[768];
 char firstdemofile[80] = { '\0' };
 
@@ -97,16 +98,16 @@ void setstatusbarscale(long sc)
 	ud.statusbarscale = min(100,max(10,sc));
 	vscrn();
 }
-static long inline sbarx(long x)
+static inline long sbarx(long x)
 {
 	if (ud.screen_size == 4) return scale(x<<16,ud.statusbarscale,100);
 	return (((320l<<16) - scale(320l<<16,ud.statusbarscale,100)) >> 1) + scale(x<<16,ud.statusbarscale,100);
 }
-static long inline sbary(long y)
+static inline long sbary(long y)
 {
 	return ((200l<<16) - scale(200l<<16,ud.statusbarscale,100) + scale(y<<16,ud.statusbarscale,100));
 }
-static long inline sbarsc(long sc)
+static inline long sbarsc(long sc)
 {
 	return scale(sc,ud.statusbarscale,100);
 }
@@ -150,14 +151,6 @@ static char *duke3dgrp = "duke3d.grp";	// JBF 20030925
 //task *TimerPtr=NULL;
 
 extern long lastvisinc;
-
-// JBF 20031221: These ought to disappear when things mature
-extern int showmultidiags;
-extern int netmode, nethostplayers;
-extern char netjoinhost[64];
-extern multiaddr netjoinhostaddr;
-int startupnetworkgame(void);
-int processnetworkrequests(void);
 
 /* JBF: We use the winlayer/sdlayer versions of these now
 void timerhandler()
@@ -408,7 +401,7 @@ void gamenumber(long x,long y,long n,char s)
 {
     char b[10];
     //ltoa(n,b,10);
-	Bsnprintf(b,10,"%d",n);
+	Bsnprintf(b,10,"%ld",n);
     gametext(x,y,b,s,2+8+16);
 }
 
@@ -471,9 +464,7 @@ void getpackets(void)
 	    }
     }
 
-    MusicUpdate();	    
-
-    processnetworkrequests();	// JBF 20031221: find a better place for this I think
+    AudioUpdate();	    
 
     // only dispatch commands here when not in a game
     if( !(ps[myconnectindex].gm&MODE_GAME) ) { OSD_DispatchQueued(); }
@@ -740,6 +731,7 @@ void getpackets(void)
     }
 }
 
+extern void computergetinput(long snum, input *syn);
 void faketimerhandler()
 {
     long i, j, k, l;
@@ -1043,7 +1035,7 @@ void caches(void)
      for(i=0;i<cacnum;i++)
           if ((*cac[i].lock) >= 200)
           {
-                sprintf(tempbuf,"Locked- %ld: Leng:%ld, Lock:%ld",i,cac[i].leng,*cac[i].lock);
+                sprintf(tempbuf,"Locked- %d: Leng:%ld, Lock:%d",i,cac[i].leng,*cac[i].lock);
                 printext256(0L,k,31,-1,tempbuf,1); k += 6;
           }
 
@@ -1052,7 +1044,7 @@ void caches(void)
      for(i=1;i<11;i++)
           if (lumplockbyte[i] >= 200)
           {
-                sprintf(tempbuf,"RTS Locked %ld:",i);
+                sprintf(tempbuf,"RTS Locked %d:",i);
                 printext256(0L,k,31,-1,tempbuf,1); k += 6;
           }
 
@@ -1311,7 +1303,7 @@ void myospal(long x, long y, short tilenum, signed char shade, char orientation,
 void invennum(long x,long y,char num1,char ha,char sbits)
 {
     char dabuf[80] = {0};
-    sprintf(dabuf,"%ld",num1);
+    sprintf(dabuf,"%d",num1);
     if(num1 > 99)
     {
         rotatesprite(sbarx(x-4),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[0]-'0',ha,0,sbits,0,0,xdim-1,ydim-1);
@@ -1410,14 +1402,14 @@ void weapon_amounts(struct player_struct *p,long x,long y,long u)
 
 	 if (u&4)
 	 {
-		  if (u != 0xffffffff) patchstatusbar(88,178,88+37,178+6); //original code: (96,178,96+12,178+6);
+		  if (u != -1) patchstatusbar(88,178,88+37,178+6); //original code: (96,178,96+12,178+6);
 		  weaponnum999(PISTOL_WEAPON,x,y,
 						  p->ammo_amount[PISTOL_WEAPON],max_ammo_amount[PISTOL_WEAPON],
 						  12-20*(cw == PISTOL_WEAPON) );
 	 }
 	 if (u&8)
 	 {
-		  if (u != 0xffffffff) patchstatusbar(88,184,88+37,184+6); //original code: (96,184,96+12,184+6);
+		  if (u != -1) patchstatusbar(88,184,88+37,184+6); //original code: (96,184,96+12,184+6);
 		  weaponnum999(SHOTGUN_WEAPON,x,y+6,
 						  p->ammo_amount[SHOTGUN_WEAPON],max_ammo_amount[SHOTGUN_WEAPON],
 						  (!p->gotweapon[SHOTGUN_WEAPON]*9)+12-18*
@@ -1425,7 +1417,7 @@ void weapon_amounts(struct player_struct *p,long x,long y,long u)
 	 }
 	 if (u&16)
 	 {
-		  if (u != 0xffffffff) patchstatusbar(88,190,88+37,190+6); //original code: (96,190,96+12,190+6);
+		  if (u != -1) patchstatusbar(88,190,88+37,190+6); //original code: (96,190,96+12,190+6);
 		  weaponnum999(CHAINGUN_WEAPON,x,y+12,
 							p->ammo_amount[CHAINGUN_WEAPON],max_ammo_amount[CHAINGUN_WEAPON],
 							(!p->gotweapon[CHAINGUN_WEAPON]*9)+12-18*
@@ -1433,7 +1425,7 @@ void weapon_amounts(struct player_struct *p,long x,long y,long u)
 	 }
 	 if (u&32)
 	 {
-		  if (u != 0xffffffff) patchstatusbar(127,178,127+29,178+6); //original code: (135,178,135+8,178+6);
+		  if (u != -1) patchstatusbar(127,178,127+29,178+6); //original code: (135,178,135+8,178+6);
 		  weaponnum(RPG_WEAPON,x+39,y,
 					  p->ammo_amount[RPG_WEAPON],max_ammo_amount[RPG_WEAPON],
 					  (!p->gotweapon[RPG_WEAPON]*9)+12-19*
@@ -1441,7 +1433,7 @@ void weapon_amounts(struct player_struct *p,long x,long y,long u)
 	 }
 	 if (u&64)
 	 {
-		  if (u != 0xffffffff) patchstatusbar(127,184,127+29,184+6); //original code: (135,184,135+8,184+6);
+		  if (u != -1) patchstatusbar(127,184,127+29,184+6); //original code: (135,184,135+8,184+6);
 		  weaponnum(HANDBOMB_WEAPON,x+39,y+6,
 						  p->ammo_amount[HANDBOMB_WEAPON],max_ammo_amount[HANDBOMB_WEAPON],
 						  (((!p->ammo_amount[HANDBOMB_WEAPON])|(!p->gotweapon[HANDBOMB_WEAPON]))*9)+12-19*
@@ -1449,7 +1441,7 @@ void weapon_amounts(struct player_struct *p,long x,long y,long u)
 	 }
 	 if (u&128)
 	 {
-		  if (u != 0xffffffff) patchstatusbar(127,190,127+29,190+6); //original code: (135,190,135+8,190+6);
+		  if (u != -1) patchstatusbar(127,190,127+29,190+6); //original code: (135,190,135+8,190+6);
 
 if (VOLUMEONE) {
 			orderweaponnum(SHRINKER_WEAPON,x+39,y+12,
@@ -1471,7 +1463,7 @@ if (VOLUMEONE) {
 	  }
 	  if (u&256)
 	  {
-			if (u != 0xffffffff) patchstatusbar(158,178,162+29,178+6); //original code: (166,178,166+8,178+6);
+			if (u != -1) patchstatusbar(158,178,162+29,178+6); //original code: (166,178,166+8,178+6);
 
 if (VOLUMEONE) {
 		  orderweaponnum(DEVISTATOR_WEAPON,x+70,y,
@@ -1487,7 +1479,7 @@ if (VOLUMEONE) {
 	  }
 	  if (u&512)
 	  {
-			if (u != 0xffffffff) patchstatusbar(158,184,162+29,184+6); //original code: (166,184,166+8,184+6);
+			if (u != -1) patchstatusbar(158,184,162+29,184+6); //original code: (166,184,166+8,184+6);
 if (VOLUMEONE) {
 			orderweaponnum(TRIPBOMB_WEAPON,x+70,y+6,
 							p->ammo_amount[TRIPBOMB_WEAPON],max_ammo_amount[TRIPBOMB_WEAPON],
@@ -1503,7 +1495,7 @@ if (VOLUMEONE) {
 
 	  if (u&65536L)
 	  {
-			if (u != 0xffffffff) patchstatusbar(158,190,162+29,190+6); //original code: (166,190,166+8,190+6);
+			if (u != -1) patchstatusbar(158,190,162+29,190+6); //original code: (166,190,166+8,190+6);
 if (VOLUMEONE) {
 		  orderweaponnum(-1,x+70,y+12,
 							p->ammo_amount[FREEZE_WEAPON],max_ammo_amount[FREEZE_WEAPON],
@@ -1525,7 +1517,7 @@ void digitalnumber(long x,long y,long n,char s,char cs)
     char b[10];
 
     //ltoa(n,b,10);
-	Bsnprintf(b,10,"%d",n);
+	Bsnprintf(b,10,"%ld",n);
     i = strlen(b);
     j = 0;
 
@@ -1726,7 +1718,7 @@ void coolgaugetext(short snum)
 				}
 				invennum(284-30-o,200-6,(char)i,0,10+permbit);
 				if (j > 0) minitext(288-30-o,180,"ON",0,10+16+permbit + 256);
-				else if (j != 0x80000000) minitext(284-30-o,180,"OFF",2,10+16+permbit + 256);
+				else if ((unsigned long)j != 0x80000000) minitext(284-30-o,180,"OFF",2,10+16+permbit + 256);
 				if (p->inven_icon >= 6) minitext(284-35-o,180,"AUTO",2,10+16+permbit + 256);
 		  }
 		  return;
@@ -1734,7 +1726,7 @@ void coolgaugetext(short snum)
 
 		  //DRAW/UPDATE FULL STATUS BAR:
 
-	 if (pus) { pus = 0; u = 0xffffffff; } else u = 0;
+	 if (pus) { pus = 0; u = -1; } else u = 0;
 
 	 if (sbar.frag[myconnectindex] != p->frag) { sbar.frag[myconnectindex] = p->frag; u |= 32768; }
 	 if (sbar.got_access != p->got_access) { sbar.got_access = p->got_access; u |= 16384; }
@@ -1779,7 +1771,7 @@ void coolgaugetext(short snum)
 	 //15 - update kills
 	 //16 - update FREEZE_WEAPON ammo
 
-	 if (u == 0xffffffff)
+	 if (u == -1)
 	 {
 		  patchstatusbar(0,0,320,200);
 		  if (ud.multimode > 1 && ud.coop != 1)
@@ -1789,7 +1781,7 @@ void coolgaugetext(short snum)
 	 {
 		  if (u&32768)
 		  {
-				if (u != 0xffffffff) patchstatusbar(276,183,299,193);
+				if (u != -1) patchstatusbar(276,183,299,193);
 				digitalnumber(287,200-17,max(p->frag-p->fraggedself,0),-16,10+16+128);
 		  }
 	 }
@@ -1797,7 +1789,7 @@ void coolgaugetext(short snum)
 	 {
 		  if (u&16384)
 		  {
-				if (u != 0xffffffff) patchstatusbar(275,182,299,194);
+				if (u != -1) patchstatusbar(275,182,299,194);
 				if (p->got_access&4) rotatesprite(sbarx(275),sbary(182),sbarsc(65536L),0,ACCESS_ICON,0,23,10+16+128,0,0,xdim-1,ydim-1);
 				if (p->got_access&2) rotatesprite(sbarx(288),sbary(182),sbarsc(65536L),0,ACCESS_ICON,0,21,10+16+128,0,0,xdim-1,ydim-1);
 				if (p->got_access&1) rotatesprite(sbarx(281),sbary(189),sbarsc(65536L),0,ACCESS_ICON,0,0,10+16+128,0,0,xdim-1,ydim-1);
@@ -1807,20 +1799,20 @@ void coolgaugetext(short snum)
 
 	 if (u&1)
 	 {
-		  if (u != 0xffffffff) patchstatusbar(20,183,43,194); //Original code:(20,183,43,193);
+		  if (u != -1) patchstatusbar(20,183,43,194); //Original code:(20,183,43,193);
 		  if (sprite[p->i].pal == 1 && p->last_extra < 2)
 				 digitalnumber(32,200-17,1,-16,10+16+128);
 		  else digitalnumber(32,200-17,p->last_extra,-16,10+16+128);
 	 }
 	 if (u&2)
 	 {
-		  if (u != 0xffffffff) patchstatusbar(52,183,75,194); //Original code:(52,183,75,193);
+		  if (u != -1) patchstatusbar(52,183,75,194); //Original code:(52,183,75,193);
 		  digitalnumber(64,200-17,p->shield_amount,-16,10+16+128);
 	 }
 
 	 if (u&1024)
 	 {
-		  if (u != 0xffffffff) patchstatusbar(196,183,219,194); //Original code:(196,183,219,193);
+		  if (u != -1) patchstatusbar(196,183,219,194); //Original code:(196,183,219,193);
 		  if (p->curr_weapon != KNEE_WEAPON)
 		  {
 				if (p->curr_weapon == HANDREMOTE_WEAPON) i = HANDBOMB_WEAPON; else i = p->curr_weapon;
@@ -1830,7 +1822,7 @@ void coolgaugetext(short snum)
 
 	 if (u&(2048+4096+8192))
 	 {
-		  if (u != 0xffffffff)
+		  if (u != -1)
 		  {
 				if (u&(2048+4096)) { patchstatusbar(231,179,265,197); }
 								  else { patchstatusbar(250,190,261,196); } //Original code:(250,190,261,195);
@@ -1865,7 +1857,7 @@ void coolgaugetext(short snum)
 						  default: j = 0x80000000;
 					 }
 					 if (j > 0) minitext(288-30-o,180,"ON",0,10+16+permbit + 256);
-					 else if (j != 0x80000000) minitext(284-30-o,180,"OFF",2,10+16+permbit + 256);
+					 else if ((unsigned long)j != 0x80000000) minitext(284-30-o,180,"OFF",2,10+16+permbit + 256);
 				}
 				if (u&8192)
 				{
@@ -1923,21 +1915,21 @@ void coords(short snum)
     printext256(250L,y+7L,31,-1,tempbuf,1);
     sprintf(tempbuf,"Z= %ld",ps[snum].posz);
     printext256(250L,y+14L,31,-1,tempbuf,1);
-    sprintf(tempbuf,"A= %ld",ps[snum].ang);
+    sprintf(tempbuf,"A= %d",ps[snum].ang);
     printext256(250L,y+21L,31,-1,tempbuf,1);
     sprintf(tempbuf,"ZV= %ld",ps[snum].poszv);
     printext256(250L,y+28L,31,-1,tempbuf,1);
-    sprintf(tempbuf,"OG= %ld",ps[snum].on_ground);
+    sprintf(tempbuf,"OG= %d",ps[snum].on_ground);
     printext256(250L,y+35L,31,-1,tempbuf,1);
-    sprintf(tempbuf,"AM= %ld",ps[snum].ammo_amount[GROW_WEAPON]);
+    sprintf(tempbuf,"AM= %d",ps[snum].ammo_amount[GROW_WEAPON]);
     printext256(250L,y+43L,31,-1,tempbuf,1);
-    sprintf(tempbuf,"LFW= %ld",ps[snum].last_full_weapon);
+    sprintf(tempbuf,"LFW= %d",ps[snum].last_full_weapon);
     printext256(250L,y+50L,31,-1,tempbuf,1);
-    sprintf(tempbuf,"SECTL= %ld",sector[ps[snum].cursectnum].lotag);
+    sprintf(tempbuf,"SECTL= %d",sector[ps[snum].cursectnum].lotag);
     printext256(250L,y+57L,31,-1,tempbuf,1);
     sprintf(tempbuf,"SEED= %ld",randomseed);
     printext256(250L,y+64L,31,-1,tempbuf,1);
-    sprintf(tempbuf,"THOLD= %ld",ps[snum].transporter_hold);
+    sprintf(tempbuf,"THOLD= %d",ps[snum].transporter_hold);
     printext256(250L,y+64L+7,31,-1,tempbuf,1);
 }
 
@@ -2265,7 +2257,7 @@ void typemode(void)
                      }
                      else
                      {
-                         sprintf(buf,"      %ld - %s",i+1,ud.user_name[i]);
+                         sprintf(buf,"      %d - %s",i+1,ud.user_name[i]);
                          minitextshade((320>>1)-40-6+1,j+1,buf,26,0,2+8+16);
                          minitext((320>>1)-40-6,j,buf,0,2+8+16); j += 7;
                      }
@@ -2360,7 +2352,7 @@ static void tintage(char *pal)
 void displayrest(long smoothratio)
 {
     long a, i, j;
-    char cr,cg,cb,cf,dotint=0;
+    char cr=0,cg=0,cb=0,cf=0,dotint=0;
 
     struct player_struct *pp;
     walltype *wal;
@@ -2583,7 +2575,7 @@ void displayrest(long smoothratio)
     if(ud.levelstats && (ps[myconnectindex].gm&MODE_MENU) == 0) {
 	i = (ud.screen_size <= 4)?0:scale(tilesizy[BOTTOMSTATUSBAR],ud.statusbarscale,100);
 	
-	sprintf(tempbuf,"Time: %d:%02d",
+	sprintf(tempbuf,"Time: %ld:%02ld",
 		(ps[myconnectindex].player_par/(26*60)),
 		(ps[myconnectindex].player_par/26)%60);
 	minitext(320-5*12,200-i-6-6-6,tempbuf,0,26);
@@ -2713,8 +2705,14 @@ void drawbackground(void)
 		case 2:dapicnum = BIGHOLE;break;
 	}
 
+	if (tilesizx[dapicnum] == 0 || tilesizy[dapicnum] == 0) {
+		pus = pub = NUMPAGES;
+		return;
+	}
+
 	y1 = 0; y2 = ydim;
-	if( ready2send || ud.recstat == 2 )
+	//if( ready2send || ud.recstat == 2 )
+	if (ud.recstat == 0 || ud.recstat == 1 || (ud.recstat == 2 && ud.reccnt > 0))	// JBF 20040717
 	{
 		if (ud.screen_size == 8)
 			y1 = scale(ydim,200-scale(tilesizy[BOTTOMSTATUSBAR],ud.statusbarscale,100),200);
@@ -2724,7 +2722,7 @@ void drawbackground(void)
             if (ud.multimode > 4) y1 += scale(ydim,8,200);
         }
 	} else {
-		// when not in a game, fullscreen wipe
+		// when not rendering a game, fullscreen wipe
 		for(y=y1;y<y2;y+=tilesizy[dapicnum])
 			for(x=0;x<xdim;x+=tilesizx[dapicnum])
 				rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,0,0,xdim-1,ydim-1);
@@ -2970,7 +2968,7 @@ void displayrooms(short snum,long smoothratio)
     struct player_struct *p;
     long tposx,tposy,tposz,dx,dy,thoriz,i;
     short tang;
-    long tiltcx,tiltcy,tiltcs;	// JBF 20030807
+    long tiltcx,tiltcy,tiltcs=0;	// JBF 20030807
 
     p = &ps[snum];
 
@@ -3029,8 +3027,8 @@ void displayrooms(short snum,long smoothratio)
         {
             walock[MAXTILES-1] = 254;
             if (waloff[MAXTILES-1] == 0)
-                allocache((long *)&waloff[MAXTILES-1],100*160,&walock[MAXTILES-1]);
-            setviewtotile(MAXTILES-1,100L,160L);
+                allocache((long *)&waloff[MAXTILES-1],200*320,&walock[MAXTILES-1]);
+            setviewtotile(MAXTILES-1,200L,320L);
         }
         else if( getrendermode() == 0 && ( ( ud.screen_tilting && p->rotscrnang ) || ud.detail==0 ) )
         {
@@ -3291,6 +3289,8 @@ short EGS(short whatsect,long s_x,long s_y,long s_z,short s_pn,signed char s_s,s
 
     if (show2dsector[SECT>>3]&(1<<(SECT&7))) show2dsprite[i>>3] |= (1<<(i&7));
     else show2dsprite[i>>3] &= ~(1<<(i&7));
+
+	clearbufbyte(&spriteext[i], sizeof(spriteexttype), 0);
 /*
     if(s->sectnum < 0)
     {
@@ -3354,7 +3354,7 @@ char wallswitchcheck(short i)
 long tempwallptr;
 short spawn( short j, short pn )
 {
-    short i, s, startwall, endwall, sect, clostest;
+    short i, s, startwall, endwall, sect, clostest=0;
     long x, y, d;
     spritetype *sp;
 
@@ -4169,7 +4169,7 @@ short spawn( short j, short pn )
                 break;
 
             case WATERDRIP:
-                if(j >= 0 && sprite[j].statnum == 10 || sprite[j].statnum == 1)
+                if(j >= 0 && (sprite[j].statnum == 10 || sprite[j].statnum == 1))
                 {
                     sp->shade = 32;
                     if(sprite[j].pal != 1)
@@ -5156,7 +5156,8 @@ short spawn( short j, short pn )
 #ifdef _MSC_VER
 // Visual C thought this was a bit too hard to optimise so we'd better
 // tell it not to try... such a pussy it is.
-#pragma auto_inline( off )
+//#pragma auto_inline( off )
+#pragma optimize("g",off)
 #endif
 void animatesprites(long x,long y,short a,long smoothratio)
 {
@@ -5873,7 +5874,8 @@ void animatesprites(long x,long y,short a,long smoothratio)
     }
 }
 #ifdef _MSC_VER
-#pragma auto_inline( on )
+//#pragma auto_inline( )
+#pragma optimize("",on)
 #endif
 
 
@@ -5911,7 +5913,7 @@ char cheatquotes[NUMCHEATCODES][14] = {
 char cheatbuf[10],cheatbuflen;
 void cheats(void)
 {
-    short ch, i, j, k, keystate, weapon;
+    short ch, i, j, k=0, keystate, weapon;
     static char z=0;
     char consolecheat = 0;	// JBF 20030914
 
@@ -7421,8 +7423,7 @@ void compilecons(void)
 
 void Startup(void)
 {
-   int i,j;
-   char value[64];
+   int i;
 
    //KB_Startup();	JBF
 
@@ -7470,56 +7471,7 @@ if (VOLUMEONE) {
 
    for(i=0;i<MAXPLAYERS;i++) playerreadyflag[i] = 0;
 
-   //initmultiplayers(0,0,0);
-
-   // JBF 20031221: set up the network game
-   if (netparam) {
-	i = SCRIPT_Load( netparam );
-	if (i >= 0) {
-		initprintf("Multiplayer game configuration loaded.\n");
-		SCRIPT_GetNumber( i, "Network Game", "IPPort", &ipport);
-		initprintf(" - Using UDP port %d\n", ipport);
-		
-		value[0] = 0;
-		SCRIPT_GetString( i, "Network Game", "Mode", value );
-		if (!Bstrncasecmp(value,"host",64)) {
-			netmode = 0;
-			initprintf(" - This machine will host the game\n");
-			
-			SCRIPT_GetNumber( i, "Network Game", "Players", &nethostplayers );
-			if (nethostplayers < 2) {
-				initprintf(" - Must specify a minimum of 2 players! Aborting.\n");
-				netparam = NULL;
-			}
-		} else if (!Bstrncasecmp(value,"join",64)) {
-			netmode = 1;
-			SCRIPT_GetString( i, "Network Game", "Host", netjoinhost );
-			if (netjoinhost[0] == 0) {
-				initprintf(" - No join host specified! Aborting.\n");
-			} else {
-				initprintf(" - Joining game at %s\n", netjoinhost);
-			}
-		} else {
-			initprintf(" - No mode specified! Aborting.\n");
-		   	netparam = NULL;
-		}
-	} else {
-		initprintf("Multiplayer game configuration not found!\n");
-		netparam = NULL;
-	}
-   }
-   initmultiplayers((netparam!=NULL),TICSPERFRAME,0);
-   if (netparam) {
-	if (netmode == 1) {
-		if (multistringtoaddr(netjoinhost, &netjoinhostaddr)) {
-			initprintf(" - Failed resolving host! Aborting.\n");
-			netparam = NULL;
-		}
-	}
-	if (!netparam || startupnetworkgame() < 0)
-		initmultiplayers(0,TICSPERFRAME,0);
-	else networkmode = 0;	// m/s
-   }
+   initmultiplayers(_buildargc,_buildargv, 0,0,0);
 
    if(numplayers > 1)
     initprintf("Multiplayer initialized.\n");
@@ -7530,11 +7482,11 @@ if (VOLUMEONE) {
    if(networkmode == 255)
        networkmode = 1;
 
-   initprintf("Checking music inits.\n");
-   MusicStartup();
-   initprintf("Checking sound inits.\n");
+   //initprintf("Checking music inits.\n");
+   //MusicStartup();
+   //initprintf("Checking sound inits.\n");
    //SoundStartup();
-   loadtmb();
+   //loadtmb();
 }
 
 
@@ -7624,7 +7576,7 @@ void writestring(long a1,long a2,long a3,short a4,long vx,long vy,long vz)
 
     fp = (FILE *)fopen("debug.txt","rt+");
 
-    fprintf(fp,"%ld %ld %ld %ld %ld %ld %ld\n",a1,a2,a3,a4,vx,vy,vz);
+    fprintf(fp,"%ld %ld %ld %d %ld %ld %ld\n",a1,a2,a3,a4,vx,vy,vz);
 
     fclose(fp);
 
@@ -7788,19 +7740,8 @@ void app_main(int argc,char **argv)
     
     copyprotect();
 
-if (VOLUMEALL) {
-    #ifdef AUSTRALIA
-        strcpy(apptitle,HEAD2A);
-    #else
-	strcpy(apptitle,HEAD2S);
-    #endif
-} else {
-    #ifdef AUSTRALIA
-        strcpy(apptitle,HEADA);
-    #else
-        strcpy(apptitle,HEAD);
-    #endif
-}
+	if (VOLUMEALL) strcpy(apptitle,HEAD2);
+	else strcpy(apptitle,HEAD);
 
     initprintf("%s\n",apptitle);
     initprintf("Copyright (c) 1996 3D Realms Entertainment\n");
@@ -7862,7 +7803,7 @@ if (VOLUMEONE) {
 	GAME_getcolumnwidth,
 	GAME_getrowheight,
 	GAME_clearbackground,
-	GetTime,
+	(int(*)())GetTime,
 	GAME_onshowosd
     );
     OSD_SetParameters(0,2, 0,0, 4,0);
@@ -7945,7 +7886,11 @@ if (VOLUMEALL) {
         setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP);
     }
 
-	SoundStartup();
+   initprintf("Checking music inits.\n");
+   MusicStartup();
+   initprintf("Checking sound inits.\n");
+   SoundStartup();
+   loadtmb();
     
     genspriteremaps();
 
@@ -7956,7 +7901,7 @@ if (VOLUMEONE) {
 
     setbrightness(ud.brightness>>2,&ps[myconnectindex].palette[0],0);
 
-    ESCESCAPE;
+    //ESCESCAPE;
 
     FX_StopAllSounds();
     clearsoundlocks();
@@ -8016,7 +7961,7 @@ if (VOLUMEONE) {
 		    }
 	    }
 
-	    MusicUpdate();
+	    AudioUpdate();
 
 	    OSD_DispatchQueued();
 	    
@@ -8137,6 +8082,7 @@ char opendemoread(char which_demo) // 0 = mine
 	else if (ver == BYTEVERSION_JF+2) OSD_Printf("Demo %s is for Shareware version.\n", d);
 	else OSD_Printf("Demo %s is of an incompatible version (%d).\n", d, ver);
         kclose(recfilep);
+		ud.reccnt = 0;
         return 0;
      }
 
@@ -8279,6 +8225,7 @@ long playback(void)
 
     if(numplayers < 2) foundemo = opendemoread(which_demo);
 
+    ud.recstat = 2;	// JBF 20040717: I believe any attempt at playing a demo should put recstat into playback mode
     if(foundemo == 0)
     {
         if(which_demo > 1)
@@ -8298,7 +8245,7 @@ long playback(void)
     }
     else
     {
-        ud.recstat = 2;
+        //ud.recstat = 2;	// JBF 20040717
         which_demo++;
         if(which_demo == 10) which_demo = 1;
         enterlevel(MODE_DEMO);
@@ -9445,20 +9392,20 @@ void dobonus(char bonusonly)
             {
                 if(i == y)
                 {
-                    sprintf(tempbuf,"%-4ld",ps[y].fraggedself);
+                    sprintf(tempbuf,"%-4d",ps[y].fraggedself);
                     minitext(92+(y*23),90+t,tempbuf,2,2+8+16+128);
                     xfragtotal -= ps[y].fraggedself;
                 }
                 else
                 {
-                    sprintf(tempbuf,"%-4ld",frags[i][y]);
+                    sprintf(tempbuf,"%-4d",frags[i][y]);
                     minitext(92+(y*23),90+t,tempbuf,0,2+8+16+128);
                     xfragtotal += frags[i][y];
                 }
 
                 if(myconnectindex == connecthead)
                 {
-                    sprintf(tempbuf,"stats %ld killed %ld %ld\n",i+1,y+1,frags[i][y]);
+                    sprintf(tempbuf,"stats %ld killed %ld %d\n",i+1,y+1,frags[i][y]);
                     sendscore(tempbuf);
                 }
             }
@@ -9533,7 +9480,7 @@ void dobonus(char bonusonly)
     while( 1 )
     {
 	    handleevents();
-	    MusicUpdate();
+	    AudioUpdate();
 	    
         if(ps[myconnectindex].gm&MODE_EOL)
         {
@@ -9645,7 +9592,7 @@ void dobonus(char bonusonly)
                         bonuscnt++;
                         sound(PIPEBOMB_EXPLODE);
                     }
-                    sprintf(tempbuf,"%-3ld",ps[myconnectindex].actors_killed);
+                    sprintf(tempbuf,"%-3d",ps[myconnectindex].actors_killed);
                     gametext((320>>2)+70,93+9,tempbuf,0,2+8+16);
                     if(ud.player_skill > 3 )
                     {
@@ -9655,8 +9602,8 @@ void dobonus(char bonusonly)
                     else
                     {
                         if( (ps[myconnectindex].max_actors_killed-ps[myconnectindex].actors_killed) < 0 )
-                            sprintf(tempbuf,"%-3ld",0);
-                        else sprintf(tempbuf,"%-3ld",ps[myconnectindex].max_actors_killed-ps[myconnectindex].actors_killed);
+                            sprintf(tempbuf,"%-3d",0);
+                        else sprintf(tempbuf,"%-3d",ps[myconnectindex].max_actors_killed-ps[myconnectindex].actors_killed);
                         gametext((320>>2)+70,99+4+9,tempbuf,0,2+8+16);
                     }
                 }
@@ -9674,11 +9621,11 @@ void dobonus(char bonusonly)
                         bonuscnt++;
                         sound(PIPEBOMB_EXPLODE);
                     }
-                    sprintf(tempbuf,"%-3ld",ps[myconnectindex].secret_rooms);
+                    sprintf(tempbuf,"%-3d",ps[myconnectindex].secret_rooms);
                     gametext((320>>2)+70,120+9,tempbuf,0,2+8+16);
                     if( ps[myconnectindex].secret_rooms > 0 )
-                        sprintf(tempbuf,"%-3ld%%",(100*ps[myconnectindex].secret_rooms/ps[myconnectindex].max_secret_rooms));
-                    sprintf(tempbuf,"%-3ld",ps[myconnectindex].max_secret_rooms-ps[myconnectindex].secret_rooms);
+                        sprintf(tempbuf,"%-3d%%",(100*ps[myconnectindex].secret_rooms/ps[myconnectindex].max_secret_rooms));
+                    sprintf(tempbuf,"%-3d",ps[myconnectindex].max_secret_rooms-ps[myconnectindex].secret_rooms);
                     gametext((320>>2)+70,130+9,tempbuf,0,2+8+16);
                 }
             }

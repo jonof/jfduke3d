@@ -38,6 +38,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <fcntl.h>
 #include "types.h"
 #include "file_lib.h"
+#include "util_lib.h"
+#include "compat.h"
 
 #ifndef O_BINARY
 #define  O_BINARY 0

@@ -28,7 +28,7 @@ ENGINEOPTS=/DSUPERBUILD /DPOLYMOST /DUSE_OPENGL
 
 CC=cl
 AS=ml
-LINK=link /opt:nowin98 /nologo
+LINK=link /opt:nowin98 /nologo /opt:ref
 CFLAGS= /MD /J /nologo $(flags_cl)  \
 	/I$(INC) /I$(EINC) /I$(SRC)jmact /I$(SRC)jaudiolib \
 	/DNOCOPYPROTECT $(ENGINEOPTS) /DUSE_MSC_PRAGMAS /DUSE_MSC_ASSEMBLY
@@ -75,7 +75,6 @@ GAMEOBJS=$(OBJ)game.$o \
 	$(OBJ)testcd.$o \
 	$(OBJ)osdfuncs.$o \
 	$(OBJ)osdcmds.$o \
-	$(OBJ)multiplayer.$o \
 	$(JMACTOBJ) \
 	$(JAUDIOLIBOBJ)
 

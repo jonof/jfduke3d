@@ -28,6 +28,8 @@ Windows-specific hooks for JonoF's Duke3D port.
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <stdarg.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #include "winlayer.h"
 
@@ -62,6 +64,7 @@ int Win_MsgBox(char *name, char *fmt, ...)
 
 
 // this replaces the Error() function in jmact/util_lib.c
+extern void Shutdown(void );
 void Error(char *error, ...)
 {
 	char buf[1000];

@@ -59,4 +59,8 @@ void MPU_SetDivision(int division);
 void MPU_SetVolume(int volume);
 int  MPU_GetVolume(void);
 
+void MPU_BeginPlayback( void );
+void MPU_Pause(void);
+void MPU_Unpause(void);
+
 #endif

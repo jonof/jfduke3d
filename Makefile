@@ -17,19 +17,20 @@ debug=-ggdb
 #debug=-ggdb -fomit-frame-pointer
 
 
-DXROOT=c:/sdks/mingw32/dx6
+DXROOT=c:/sdks/msc/dx61
 #FMODROOT=c:/mingw32/fmodapi360win32/api
 
-ENGINEOPTS=-DSUPERBUILD -DPOLYMOST -DUSE_OPENGL
+ENGINEOPTS=-DSUPERBUILD -DPOLYMOST -DUSE_OPENGL -DDYNAMIC_OPENGL
 
 CC=gcc
 # -Werror-implicit-function-declaration
-CFLAGS=$(debug) -W -Wall -march=pentium -Dmain=app_main \
-	-funsigned-char -DNO_GCC_BUILTINS \
-	-I$(INC) -I$(EINC) -I$(SRC)jmact -I$(SRC)jaudiolib \
+CFLAGS=$(debug) -W -Wall -Werror-implicit-function-declaration \
+	-Wno-char-subscripts -Wno-unused \
+	-march=pentium -funsigned-char -Dmain=app_main -DNO_GCC_BUILTINS \
+	-I$(INC) -I$(EINC) -I$(SRC)jmact -I$(SRC)jaudiolib -I../jfaud/inc \
 	$(ENGINEOPTS) -DNOCOPYPROTECT \
 	-DUSE_GCC_PRAGMAS
-LIBS=-lm
+LIBS=-lm -L../jfaud -ljfaud
 NASMFLAGS=-s #-g
 EXESUFFIX=
 
@@ -64,14 +65,13 @@ GAMEOBJS=$(OBJ)game.$o \
 	$(OBJ)player.$o \
 	$(OBJ)premap.$o \
 	$(OBJ)sector.$o \
-	$(OBJ)sounds.$o \
+	$(OBJ)jfaud_sounds.$o \
 	$(OBJ)rts.$o \
 	$(OBJ)config.$o \
 	$(OBJ)animlib.$o \
 	$(OBJ)testcd.$o \
 	$(OBJ)osdfuncs.$o \
 	$(OBJ)osdcmds.$o \
-	$(OBJ)multiplayer.$o \
 	$(JMACTOBJ)
 
 EDITOROBJS=$(OBJ)astub.$o
@@ -114,7 +114,7 @@ else
 	endif
 endif
 
-GAMEOBJS+= $(AUDIOLIBOBJ)
+GAMEOBJS+= $(OBJ)jfaud_sounds.$o #$(AUDIOLIBOBJ)
 CFLAGS+= -D$(PLATFORM) -DRENDERTYPE$(RENDERTYPE)=1
 
 .PHONY: clean all engine $(EOBJ)$(ENGINELIB) $(EOBJ)$(EDITORLIB)

@@ -7,11 +7,11 @@ include DEFS.CON
 
 // These entries define Hightile tints
 // definetint <pal> <r> <g> <b> <effects>
-definetint 1 110 110 255 0
-definetint 2 255 110 80 0
+definetint 1 110 110 255 1
+definetint 2 255 110 80 1
 definetint 4 0 0 0 0
 definetint 6 192 255 138 3
-definetint 7 255 255 60 0
+definetint 7 172 157 140 0
 definetint 8 180 255 200 0
 
 // This entry defines a texture replacement

@@ -163,7 +163,7 @@ void getangplayers(short snum)
     }
 }
 
-loadpheader(char spot,int32 *vn,int32 *ln,int32 *psk,int32 *nump)
+int loadpheader(char spot,int32 *vn,int32 *ln,int32 *psk,int32 *nump)
 {
 
      long i;
@@ -194,9 +194,9 @@ loadpheader(char spot,int32 *vn,int32 *ln,int32 *psk,int32 *nump)
          if (kdfread(ln,sizeof(int32),1,fil) != 1) goto corrupt;
      if (kdfread(psk,sizeof(int32),1,fil) != 1) goto corrupt;
 
-     if (waloff[MAXTILES-3] == 0) allocache(&waloff[MAXTILES-3],160*100,&walock[MAXTILES-3]);
-     tilesizx[MAXTILES-3] = 100; tilesizy[MAXTILES-3] = 160;
-     if (kdfread((char *)waloff[MAXTILES-3],160,100,fil) != 100) goto corrupt;
+     if (waloff[MAXTILES-3] == 0) allocache(&waloff[MAXTILES-3],320*200,&walock[MAXTILES-3]);
+     tilesizx[MAXTILES-3] = 200; tilesizy[MAXTILES-3] = 320;
+     if (kdfread((char *)waloff[MAXTILES-3],320,200,fil) != 200) goto corrupt;
 	 invalidatetile(MAXTILES-3,0,255);
 
          kclose(fil);
@@ -208,7 +208,7 @@ corrupt:
 }
 
 
-loadplayer(signed char spot)
+int loadplayer(signed char spot)
 {
      short k,music_changed;
      char fn[13];
@@ -304,9 +304,9 @@ loadplayer(signed char spot)
 
                  //Fake read because lseek won't work with compression
      walock[MAXTILES-3] = 1;
-     if (waloff[MAXTILES-3] == 0) allocache(&waloff[MAXTILES-3],160*100,&walock[MAXTILES-3]);
-     tilesizx[MAXTILES-3] = 100; tilesizy[MAXTILES-3] = 160;
-     if (kdfread((char *)waloff[MAXTILES-3],160,100,fil) != 100) goto corrupt;
+     if (waloff[MAXTILES-3] == 0) allocache(&waloff[MAXTILES-3],320*200,&walock[MAXTILES-3]);
+     tilesizx[MAXTILES-3] = 200; tilesizy[MAXTILES-3] = 320;
+     if (kdfread((char *)waloff[MAXTILES-3],320,200,fil) != 200) goto corrupt;
 	 invalidatetile(MAXTILES-3,0,255);
 
          if (kdfread(&numwalls,2,1,fil) != 1) goto corrupt;
@@ -534,7 +534,7 @@ corrupt:
 	 return -1;
 }
 
-saveplayer(signed char spot)
+int saveplayer(signed char spot)
 {
      long i, j;
      char fn[13];
@@ -585,7 +585,7 @@ saveplayer(signed char spot)
          dfwrite(&ud.volume_number,sizeof(ud.volume_number),1,fil);
      dfwrite(&ud.level_number,sizeof(ud.level_number),1,fil);
          dfwrite(&ud.player_skill,sizeof(ud.player_skill),1,fil);
-     dfwrite((char *)waloff[MAXTILES-1],160,100,fil);
+     dfwrite((char *)waloff[MAXTILES-1],320,200,fil);
 
          dfwrite(&numwalls,2,1,fil);
      dfwrite(&wall[0],sizeof(walltype),MAXWALLS,fil);
@@ -1294,7 +1294,7 @@ int getfilenames(char *path, char kind[])
 		else {
 			numfiles++;
 			d->size = fileinfo->size;
-			memcpy(&d->mtime, localtime(&fileinfo->mtime), sizeof(struct tm));
+			memcpy(&d->mtime, localtime((time_t*)&fileinfo->mtime), sizeof(struct tm));
 		}
 	}
 
@@ -1363,7 +1363,7 @@ void menus(void)
 	struct _directoryitem *dir;
     short c,x,i;
     long l,m;
-	char *p;
+	char *p = NULL;
 // CTW - REMOVED
 //  int tenerr;
 // CTW END - REMOVED
@@ -1812,6 +1812,7 @@ if (VOLUMEALL) {
             if(  KB_KeyPressed(sc_Space) || KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Y) || LMB )
             {
                 KB_FlushKeyboardQueue();
+				KB_ClearKeysDown();
                 FX_StopAllSounds();
 
                 if(ud.multimode > 1)
@@ -1941,14 +1942,14 @@ if (VOLUMEALL) {
             rotatesprite(160<<16,200<<15,65536L,0,MENUSCREEN,16,0,10+64,0,0,xdim-1,ydim-1);
             rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(160,24,0,0,"LOAD GAME");
-            rotatesprite(101<<16,97<<16,65536,512,MAXTILES-3,-32,0,4+10+64,0,0,xdim-1,ydim-1);
+            rotatesprite(101<<16,97<<16,65536>>1,512,MAXTILES-3,-32,0,4+10+64,0,0,xdim-1,ydim-1);
 
             dispnames();
 
-            sprintf(tempbuf,"PLAYERS: %-2d                      ",numplr);
+            sprintf(tempbuf,"PLAYERS: %-2ld                      ",numplr);
             gametext(160,158,tempbuf,0,2+8+16);
 
-            sprintf(tempbuf,"EPISODE: %-2d / LEVEL: %-2d / SKILL: %-2d",1+volnum,1+levnum,plrskl);
+            sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+volnum,1+levnum,plrskl);
             gametext(160,170,tempbuf,0,2+8+16);
 
             gametext(160,90,"LOAD game:",0,2+8+16);
@@ -1961,6 +1962,7 @@ if (VOLUMEALL) {
                 lastsavedpos = current_menu-1000;
 
                 KB_FlushKeyboardQueue();
+				KB_ClearKeysDown();
                 if(ud.multimode < 2 && ud.recstat != 2)
                 {
                     ready2send = 1;
@@ -2060,11 +2062,11 @@ if (VOLUMEALL) {
             rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(160,24,0,0,"SAVE GAME");
 
-            rotatesprite(101<<16,97<<16,65536L,512,MAXTILES-3,-32,0,4+10+64,0,0,xdim-1,ydim-1);
-            sprintf(tempbuf,"PLAYERS: %-2d                      ",ud.multimode);
+            rotatesprite(101<<16,97<<16,65536L>>1,512,MAXTILES-3,-32,0,4+10+64,0,0,xdim-1,ydim-1);
+            sprintf(tempbuf,"PLAYERS: %-2ld                      ",ud.multimode);
             gametext(160,158,tempbuf,0,2+8+16);
 
-            sprintf(tempbuf,"EPISODE: %-2d / LEVEL: %-2d / SKILL: %-2d",1+ud.volume_number,1+ud.level_number,ud.player_skill);
+            sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+ud.volume_number,1+ud.level_number,ud.player_skill);
             gametext(160,170,tempbuf,0,2+8+16);
 
             dispnames();
@@ -2625,7 +2627,7 @@ if (PLUTOPAK) {
             menutext(160,24,0,0,"SELECT A USER MAP");
 
 	    // black translucent background underneath file lists
-	    rotatesprite(0<<16, 0<<16, 65536l<<5, 0, BLANK, 0, 0, 10+16+64+1+32,
+	    rotatesprite(0<<16, 0<<16, 65536l<<5, 0, BLANK, 0, 0, 10+16+1+32,
 			    scale(40-4,xdim,320),scale(12+32-2,ydim,200),
 			    scale(320-40+4,xdim,320)-1,scale(12+32+112+4,ydim,200)-1);
 
@@ -2672,7 +2674,7 @@ if (PLUTOPAK) {
 			l = (boardfilename[0]=='G' && boardfilename[1]=='R' && boardfilename[2]=='P' && boardfilename[3]==':');
 		    if (dir == filehighlight) c=21; else c=10;
 		    minitext(40,(8+32+8*5)+8*(6-i),dir->name,c,26);
-		    sprintf(tempbuf,"%d",dir->size);
+		    sprintf(tempbuf,"%ld",dir->size);
 		    minitext(40+132,(8+32+8*5)+8*(6-i),tempbuf,c,26);
 			if (l)
 			sprintf(tempbuf,"(IN GROUP FILE)");
@@ -3027,9 +3029,9 @@ if (PLUTOPAK) {
 					} else
 						vidsets[dax++] = 0x20000|validmodebpp[day]|((validmodefs[day]&1)<<16);
 				}
-				for (dax = 0; dax < sizeof(vidsets)/sizeof(vidsets[1]) && vidsets[dax] != -1; dax++)
+				for (dax = 0; dax < (long)(sizeof(vidsets)/sizeof(vidsets[1])) && vidsets[dax] != -1; dax++)
 					if (vidsets[dax] == (((getrendermode()>=2)<<17)|(fullscreen<<16)|bpp)) break;
-				if (dax < sizeof(vidsets)/sizeof(vidsets[1])) newvidset = dax;
+				if (dax < (long)(sizeof(vidsets)/sizeof(vidsets[1]))) newvidset = dax;
 				curvidset = newvidset;
 				
 				cmenu(203);
@@ -3071,13 +3073,18 @@ if (PLUTOPAK) {
 
 	    c = (320>>1)-120;
 
+#if defined(POLYMOST) && defined(USE_OPENGL)
+		x = 7;
+#else
+		x = 5;
+#endif
 	    onbar = (probey == 4);
 		if (probey == 0 || probey == 1 || probey == 2)
-		    x = probe(c+6,50,16,7);
+		    x = probe(c+6,50,16,x);
 		else if (probey == 3)
-			x = probe(c+6,50+16+16+22,0,7);
+			x = probe(c+6,50+16+16+22,0,x);
 		else
-			x = probe(c+6,50+62-16-16-16,16,7);
+			x = probe(c+6,50+62-16-16-16,16,x);
 
 		if (probey==0 && (KB_KeyPressed(sc_LeftArrow) || KB_KeyPressed(sc_RightArrow))) {
 			sound(PISTOL_BODYHIT);
@@ -3241,6 +3248,7 @@ if (PLUTOPAK) {
 		case 4:
 			break;
 
+#if defined(POLYMOST) && defined(USE_OPENGL)
 		case 5:
 			if (bpp==8) break;
 			switch (gltexfiltermode) {
@@ -3258,10 +3266,11 @@ if (PLUTOPAK) {
 			if (glanisotropy > glinfo.maxanisotropy) glanisotropy = 1;
 			gltexapplyprops();
 			break;
+#endif
 	    }
 
 	    menutext(c,50,0,0,"RESOLUTION");
-	    sprintf(tempbuf,"%d x %d",
+	    sprintf(tempbuf,"%ld x %ld",
 			    (newvidmode==validmodecnt)?xdim:validmodexdim[newvidmode],
 			    (newvidmode==validmodecnt)?ydim:validmodeydim[newvidmode]);
             gametext(c+154,50-8,tempbuf,0,2+8+16);
@@ -3279,6 +3288,7 @@ if (PLUTOPAK) {
             bar(c+167,50+62+16,(short *)&ud.brightness,8,x==4,SHX(-6),PHX(-6));
             if(x==4) setbrightness(ud.brightness>>2,&ps[myconnectindex].palette[0],0);
 
+#if defined(POLYMOST) && defined(USE_OPENGL)
 		menutext(c,50+62+16+16,0,bpp==8,"FILTERING");
 			switch (gltexfiltermode) {
 				case 0: strcpy(tempbuf,"NEAREST"); break;
@@ -3290,9 +3300,9 @@ if (PLUTOPAK) {
 
 		menutext(c,50+62+16+16+16,0,bpp==8,"ANISOTROPY");
 			if (glanisotropy == 1) strcpy(tempbuf,"NONE");
-			else sprintf(tempbuf,"%d-tap",glanisotropy);
+			else sprintf(tempbuf,"%ld-tap",glanisotropy);
 			menutext(c+154,50+62+16+16+16,0,bpp==8,tempbuf);
-
+#endif
 	    break;
 
 	case 204:
@@ -3783,7 +3793,7 @@ if (PLUTOPAK) {
 	    
 		for (l=0; l<min(13,c); l++) {
 			if (m+l < 2*joynumbuttons) {
-				sprintf(tempbuf, "%sButton %d", ((l+m)&1)?"Double ":"", ((l+m)>>1)+1);
+				sprintf(tempbuf, "%sButton %ld", ((l+m)&1)?"Double ":"", ((l+m)>>1)+1);
 				x = JoystickFunctions[(l+m)>>1][(l+m)&1];
 			} else {
 				static char *directions[] = { "Up", "Right", "Down", "Left" };
@@ -3963,7 +3973,7 @@ if (PLUTOPAK) {
 			}
 
 			for (m=0;m<4;m++) {
-				unsigned short odx,dx,ody,dy,ax;
+				unsigned short odx,dx,ody,dy,ax=0;
 				switch (m) {
 					case 0: p = "X-AXIS"; ax = 0; break;
 					case 1: p = "Y-AXIS"; ax = 1; break;
@@ -4146,9 +4156,9 @@ if (PLUTOPAK) {
 
             if(current_menu >= 360 && current_menu <= 369 )
             {
-                sprintf(tempbuf,"PLAYERS: %-2d                      ",ud.multimode);
+                sprintf(tempbuf,"PLAYERS: %-2ld                      ",ud.multimode);
                 gametext(160,158,tempbuf,0,2+8+16);
-                sprintf(tempbuf,"EPISODE: %-2d / LEVEL: %-2d / SKILL: %-2d",1+ud.volume_number,1+ud.level_number,ud.player_skill);
+                sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+ud.volume_number,1+ud.level_number,ud.player_skill);
                 gametext(160,170,tempbuf,0,2+8+16);
 
                 x = strget((320>>1),184,&ud.savegame[current_menu-360][0],19, 999 );
@@ -4185,12 +4195,14 @@ if (PLUTOPAK) {
                             ready2send = 1;
                             totalclock = ototalclock;
                         }
-                        KB_ClearKeyDown(sc_Escape);
+				KB_FlushKeyboardQueue();
+				KB_ClearKeysDown();
+                        //KB_ClearKeyDown(sc_Escape);
                         sound(EXITMENUSOUND);
                     }
                 }
 
-                rotatesprite(101<<16,97<<16,65536,512,MAXTILES-1,-32,0,2+4+8+64,0,0,xdim-1,ydim-1);
+                rotatesprite(101<<16,97<<16,65536>>1,512,MAXTILES-1,-32,0,2+4+8+64,0,0,xdim-1,ydim-1);
                 dispnames();
                 rotatesprite((c+67+strlen(&ud.savegame[current_menu-360][0])*4)<<16,(50+12*probey)<<16,32768L-10240,0,SPINNINGNUKEICON+(((totalclock)>>3)%7),0,0,10,0,0,xdim-1,ydim-1);
                 break;
@@ -4210,10 +4222,10 @@ if (PLUTOPAK) {
                      lastprobey = probey;
                   }
 
-                  rotatesprite(101<<16,97<<16,65536L,512,MAXTILES-3,-32,0,4+10+64,0,0,xdim-1,ydim-1);
-                  sprintf(tempbuf,"PLAYERS: %-2d                      ",numplr);
+                  rotatesprite(101<<16,97<<16,65536L>>1,512,MAXTILES-3,-32,0,4+10+64,0,0,xdim-1,ydim-1);
+                  sprintf(tempbuf,"PLAYERS: %-2ld                      ",numplr);
                   gametext(160,158,tempbuf,0,2+8+16);
-                  sprintf(tempbuf,"EPISODE: %-2d / LEVEL: %-2d / SKILL: %-2d",1+volnum,1+levnum,plrskl);
+                  sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+volnum,1+levnum,plrskl);
                   gametext(160,170,tempbuf,0,2+8+16);
               }
               else menutext(69,70,0,0,"EMPTY");
@@ -4225,12 +4237,12 @@ if (PLUTOPAK) {
                   if(lastprobey != probey)
                       loadpheader(probey,&volnum,&levnum,&plrskl,&numplr);
                   lastprobey = probey;
-                  rotatesprite(101<<16,97<<16,65536L,512,MAXTILES-3,-32,0,4+10+64,0,0,xdim-1,ydim-1);
+                  rotatesprite(101<<16,97<<16,65536L>>1,512,MAXTILES-3,-32,0,4+10+64,0,0,xdim-1,ydim-1);
               }
               else menutext(69,70,0,0,"EMPTY");
-              sprintf(tempbuf,"PLAYERS: %-2d                      ",ud.multimode);
+              sprintf(tempbuf,"PLAYERS: %-2ld                      ",ud.multimode);
               gametext(160,158,tempbuf,0,2+8+16);
-              sprintf(tempbuf,"EPISODE: %-2d / LEVEL: %-2d / SKILL: %-2d",1+ud.volume_number,1+ud.level_number,ud.player_skill);
+              sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+ud.volume_number,1+ud.level_number,ud.player_skill);
               gametext(160,170,tempbuf,0,2+8+16);
           }
 
@@ -4865,7 +4877,7 @@ void palto(char r,char g,char b,long e)
 
 void drawoverheadmap(long cposx, long cposy, long czoom, short cang)
 {
-        long i, j, k, l, x1, y1, x2, y2, x3, y3, x4, y4, ox, oy, xoff, yoff;
+        long i, j, k, l, x1, y1, x2=0, y2=0, x3, y3, x4, y4, ox, oy, xoff, yoff;
         long dax, day, cosang, sinang, xspan, yspan, sprx, spry;
         long xrepeat, yrepeat, z1, z2, startwall, endwall, tilenum, daang;
         long xvect, yvect, xvect2, yvect2;

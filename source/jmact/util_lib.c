@@ -67,11 +67,11 @@ void Error(char *error, ...)
 
 char CheckParm(char *check)
 {
-	char c;
+	int c;
 
 	for (c=1;c<_buildargc;c++) {
-		if (_buildargv[c][0] != '/' && _buildargv[c][0] != '-') continue;
-		if (!Bstrcasecmp(&_buildargv[c][1], check)) return c;
+		if (_buildargv[c][0] == '/' || _buildargv[c][0] == '-')
+			if (!Bstrcasecmp(&_buildargv[c][1], check)) return c;
 	}
 
 	return 0;
@@ -82,7 +82,7 @@ void *SafeMalloc (int32 size)
 	void *p;
 
 	p = malloc(size);
-	if (!p) Error("Couldn't allocate %d bytes.");
+	if (!p) Error("Couldn't allocate %d bytes.",size);
 
 	return p;
 }
@@ -100,7 +100,7 @@ void SafeRealloc (void ** ptr, int32 newsize)
 	if (!ptr || !(*ptr)) Error("Tried reallocating a NULL pointer.");
 
 	p = realloc(*ptr, newsize);
-	if (!p) Error("Couldn't reallocate %d bytes.");
+	if (!p) Error("Couldn't reallocate %d bytes.",newsize);
 
 	*ptr = p;
 }

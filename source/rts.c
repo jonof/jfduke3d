@@ -93,10 +93,10 @@ void RTS_AddFile (char *filename)
 //
 // Fill in lumpinfo
 //
-   SafeRealloc(&lumpinfo,numlumps*sizeof(lumpinfo_t));
+   SafeRealloc((void**)&lumpinfo,numlumps*sizeof(lumpinfo_t));
    lump_p = &lumpinfo[startlump];
 
-   for (i=startlump ; i<numlumps ; i++,lump_p++, fileinfo++)
+   for (i=startlump ; i<(uint32)numlumps ; i++,lump_p++, fileinfo++)
       {
       lump_p->handle = handle;
       lump_p->position = IntelLong(fileinfo->filepos);
@@ -219,7 +219,7 @@ void RTS_ReadLump (int32 lump, void *dest)
 void *RTS_GetSound (int32 lump)
 {
    lump++;
-   if ((uint32)lump >= numlumps)
+   if ((uint32)lump >= (uint32)numlumps)
       Error ("RTS_GetSound: %i >= %i\n",lump,numlumps);
 
    if (lumpcache[lump] == NULL)

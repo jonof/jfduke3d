@@ -60,15 +60,17 @@ void GAME_onshowosd(int shown)
 //#define BGTILE 1156
 #define BGTILE 1141	// BIGHOLE
 #define BORDTILE 3250	// VIEWBORDER
-//#define BITS 1+32+8+16+64	// high translucency
-//#define BITS 1+8+16+64	// low translucency
+#define BITSTH 1+32+8+16	// high translucency
+#define BITSTL 1+8+16	// low translucency
 #define BITS 8+16+64		// solid
 #define SHADE 16
 #define PALETTE 0
 void GAME_clearbackground(int c, int r)
 {
 	long x, y, xsiz, ysiz, tx2, ty2;
-	long daydim;
+	long daydim, bits;
+
+	if (getrendermode() < 3) bits = BITS; else bits = BITSTL;
 	
 	daydim = r<<3;
 
@@ -77,7 +79,7 @@ void GAME_clearbackground(int c, int r)
 
 	for(x=0;x<=tx2;x++)
 		for(y=0;y<=ty2;y++)
-			rotatesprite(x*xsiz<<16,y*ysiz<<16,65536L,0,BGTILE,SHADE,PALETTE,BITS,0,0,xdim,daydim);
+			rotatesprite(x*xsiz<<16,y*ysiz<<16,65536L,0,BGTILE,SHADE,PALETTE,bits,0,0,xdim,daydim);
 
 	xsiz = tilesizy[BORDTILE]; tx2 = xdim/xsiz;
 	ysiz = tilesizx[BORDTILE];

@@ -568,7 +568,7 @@ void CONTROL_KeyEvent(kb_scancode scancode, boolean keypressed)
 
 void CONTROL_MouseEvent(int32 button, boolean keypressed)
 {
-	int i;
+	int i=0;
 	uint32 mask,bmask;
 	int32 b,c;
 	int32 thetime;
@@ -654,7 +654,7 @@ void CONTROL_MouseEvent(int32 button, boolean keypressed)
 
 void CONTROL_JoyEvent(int32 button, boolean keypressed)
 {
-	int i;
+	int i=0;
 	uint32 mask,bmask;
 	int32 b,c;
 	int32 thetime;

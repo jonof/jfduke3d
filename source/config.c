@@ -355,7 +355,7 @@ void CONFIG_SetDefaults( void )
 
    // JBF 20031211
    memset(KeyboardKeys, 0, sizeof(KeyboardKeys));
-   for (i=0; i < (sizeof(keydefaults)/sizeof(keydefaults[0]))/3; i++) {
+   for (i=0; i < (int32)(sizeof(keydefaults)/sizeof(keydefaults[0]))/3; i++) {
       f = CONFIG_FunctionNameToNum( keydefaults[3*i+0] );
       if (f == -1) continue;
       k1 = KB_StringToScanCode( keydefaults[3*i+1] );
@@ -788,14 +788,6 @@ if (!VOLUMEONE) {
        boardfilename[0] = 0;
 }
 
-   // JBF 20031029: Look for the players config file if the net parameter is passed
-   dummy = CheckParm("NET");
-   if (dummy && dummy+1<_buildargc) {
-	   netparam = _buildargv[dummy+1];
-	   if (!SafeFileExists(netparam))
-		   netparam = NULL;
-   }
-
    SCRIPT_GetString( scripthandle, "Comm Setup","RTSName",&ud.rtsname[0]);
 
    SCRIPT_GetNumber( scripthandle, "Screen Setup", "Shadows",&ud.shadows);
@@ -814,7 +806,7 @@ if (!VOLUMEONE) {
    if (ScreenBPP < 8) ScreenBPP = 8;
 
 #ifdef RENDERTYPEWIN
-   SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLUseCDS", &glusecds);
+   SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLUseCDS", (int32*)&glusecds);
    if (glusecds) glusecds = 1;
 #endif
 

@@ -1276,13 +1276,13 @@ void displaymasks(short snum)
 	 {
         if(ud.screen_size > 4)
         {
-            rotatesprite(43<<16,(200-8-(tilesizy[SCUBAMASK])<<16),65536,0,SCUBAMASK,0,p,2+16,windowx1,windowy1,windowx2,windowy2);
-            rotatesprite((320-43)<<16,(200-8-(tilesizy[SCUBAMASK])<<16),65536,1024,SCUBAMASK,0,p,2+4+16,windowx1,windowy1,windowx2,windowy2);
+            rotatesprite(43<<16,(200-8-tilesizy[SCUBAMASK])<<16,65536,0,SCUBAMASK,0,p,2+16,windowx1,windowy1,windowx2,windowy2);
+            rotatesprite((320-43)<<16,(200-8-tilesizy[SCUBAMASK])<<16,65536,1024,SCUBAMASK,0,p,2+4+16,windowx1,windowy1,windowx2,windowy2);
         }
         else
         {
-            rotatesprite(43<<16,(200-(tilesizy[SCUBAMASK])<<16),65536,0,SCUBAMASK,0,p,2+16,windowx1,windowy1,windowx2,windowy2);
-            rotatesprite((320-43)<<16,(200-(tilesizy[SCUBAMASK])<<16),65536,1024,SCUBAMASK,0,p,2+4+16,windowx1,windowy1,windowx2,windowy2);
+            rotatesprite(43<<16,(200-tilesizy[SCUBAMASK])<<16,65536,0,SCUBAMASK,0,p,2+16,windowx1,windowy1,windowx2,windowy2);
+            rotatesprite((320-43)<<16,(200-tilesizy[SCUBAMASK])<<16,65536,1024,SCUBAMASK,0,p,2+4+16,windowx1,windowy1,windowx2,windowy2);
         }
 	 }
 }
@@ -1471,7 +1471,7 @@ void displayweapon(short snum)
             else pal = sector[p->cursectnum].floorpal;
 
             weapon_xoffset -= sintable[(768+((*kb)<<7))&2047]>>11;
-            gun_pos += sintable[(768+((*kb)<<7)&2047)]>>11;
+            gun_pos += sintable[(768+((*kb)<<7))&2047]>>11;
 
             if(*kb > 0)
             {
@@ -2575,12 +2575,12 @@ void processinput(short snum)
                     {
                         if(snum == screenpeek)
                         {
-                            sprintf(&fta_quotes[115][0],"KILLED BY PLAYER %ld",1+p->frag_ps);
+                            sprintf(&fta_quotes[115][0],"KILLED BY PLAYER %d",1+p->frag_ps);
                             FTA(115,p);
                         }
                         else
                         {
-                            sprintf(&fta_quotes[116][0],"KILLED PLAYER %ld",1+snum);
+                            sprintf(&fta_quotes[116][0],"KILLED PLAYER %d",1+snum);
                             FTA(116,&ps[p->frag_ps]);
                         }
                     }
@@ -3186,8 +3186,12 @@ void processinput(short snum)
 
         k = sintable[p->bobcounter&2047]>>12;
 
-        if(truefdist < PHEIGHT+(8<<8) )
-            if( k == 1 || k == 3 )
+        /* JBF 20040825: Todd had this. I've changed it according to what I think
+		 * he intended to do judging by the indentation
+		 * if(truefdist < PHEIGHT+(8<<8) )
+         *   if( k == 1 || k == 3 )
+		 */
+        if(truefdist < PHEIGHT+(8<<8) && ( k == 1 || k == 3 ))
         {
             if(p->spritebridge == 0 && p->walking_snd_toggle == 0 && p->on_ground)
             {
@@ -3973,7 +3977,7 @@ void processinput(short snum)
 
 
 //UPDATE THIS FILE OVER THE OLD GETSPRITESCORE/COMPUTERGETINPUT FUNCTIONS
-getspritescore(long snum, long dapicnum)
+int getspritescore(long snum, long dapicnum)
 {
     switch(dapicnum)
     {
@@ -4015,18 +4019,18 @@ getspritescore(long snum, long dapicnum)
 static long fdmatrix[12][12] =
 {
  //KNEE PIST SHOT CHAIN RPG PIPE SHRI DEVI WALL FREE HAND EXPA
-     128,  -1,  -1,  -1, 128,  -1,  -1,  -1, 128,  -1, 128,  -1,   //KNEE
-    1024,1024,1024,1024,2560, 128,2560,2560,1024,2560,2560,2560,   //PIST
-     512, 512, 512, 512,2560, 128,2560,2560,1024,2560,2560,2560,   //SHOT
-     512, 512, 512, 512,2560, 128,2560,2560,1024,2560,2560,2560,   //CHAIN
-    2560,2560,2560,2560,2560,2560,2560,2560,2560,2560,2560,2560,   //RPG
-     512, 512, 512, 512,2048, 512,2560,2560, 512,2560,2560,2560,   //PIPE
-     128, 128, 128, 128,2560, 128,2560,2560, 128, 128, 128, 128,   //SHRI
-    1536,1536,1536,1536,2560,1536,1536,1536,1536,1536,1536,1536,   //DEVI
-      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,   //WALL
-     128, 128, 128, 128,2560, 128,2560,2560, 128, 128, 128, 128,   //FREE
-    2560,2560,2560,2560,2560,2560,2560,2560,2560,2560,2560,2560,   //HAND
-     128, 128, 128, 128,2560, 128,2560,2560, 128, 128, 128, 128,   //EXPA
+  {  128,  -1,  -1,  -1, 128,  -1,  -1,  -1, 128,  -1, 128,  -1 },   //KNEE
+  { 1024,1024,1024,1024,2560, 128,2560,2560,1024,2560,2560,2560 },   //PIST
+  {  512, 512, 512, 512,2560, 128,2560,2560,1024,2560,2560,2560 },   //SHOT
+  {  512, 512, 512, 512,2560, 128,2560,2560,1024,2560,2560,2560 },   //CHAIN
+  { 2560,2560,2560,2560,2560,2560,2560,2560,2560,2560,2560,2560 },   //RPG
+  {  512, 512, 512, 512,2048, 512,2560,2560, 512,2560,2560,2560 },   //PIPE
+  {  128, 128, 128, 128,2560, 128,2560,2560, 128, 128, 128, 128 },   //SHRI
+  { 1536,1536,1536,1536,2560,1536,1536,1536,1536,1536,1536,1536 },   //DEVI
+  {   -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1 },   //WALL
+  {  128, 128, 128, 128,2560, 128,2560,2560, 128, 128, 128, 128 },   //FREE
+  { 2560,2560,2560,2560,2560,2560,2560,2560,2560,2560,2560,2560 },   //HAND
+  {  128, 128, 128, 128,2560, 128,2560,2560, 128, 128, 128, 128 }    //EXPA
 };
 
 static long goalx[MAXPLAYERS], goaly[MAXPLAYERS], goalz[MAXPLAYERS];
@@ -4406,3 +4410,6 @@ void computergetinput(long snum, input *syn)
     }
 }
 
+/*
+ * vim:ts=4:
+ */

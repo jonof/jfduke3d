@@ -64,6 +64,7 @@ int32 FindDistance3D(int32 dx, int32 dy, int32 dz)
 
 #else
 
+#include <stdlib.h>
 
 // This extracted from the Rise of the Triad source RT_UTIL.C :-|
 

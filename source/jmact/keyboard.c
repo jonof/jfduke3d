@@ -35,6 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "compat.h"
 #include "types.h"
 #include "keyboard.h"
+#include "control.h"
 
 
 kb_scancode KB_LastScan;
@@ -229,6 +230,8 @@ void KB_FlushKeyboardQueue( void )
 
 void KB_ClearKeysDown( void )
 {
+	int i;
+	for (i=0;i<256;i++) KB_KeyEvent(i,0);	// JBF 20040717: Hopefully this fixes problems with stuck functions once and for all
 	memset(keystatus, 0, sizeof(keystatus));
 	keyfifoplc = keyfifoend = 0;
 }

@@ -246,7 +246,7 @@ char loadsound(unsigned short num)
     fp = kopen4load(sounds[num],loadfromgrouponly);
     if(fp == -1)
     {
-        sprintf(&fta_quotes[113][0],"Sound %s(#%ld) not found.",sounds[num],num);
+        sprintf(&fta_quotes[113][0],"Sound %s(#%d) not found.",sounds[num],num);
         FTA(113,&ps[myconnectindex]);
         return 0;
     }
@@ -580,7 +580,7 @@ void testcallback(unsigned long num)
 {
     short tempi,tempj,tempk;
 
-        if(num < 0)
+        if((long)num < 0)
         {
             if(lumplockbyte[-num] >= 200)
                 lumplockbyte[-num]--;

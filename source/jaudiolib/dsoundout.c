@@ -385,7 +385,8 @@ static DWORD WINAPI isr(LPVOID parm)
 	LPVOID lockptr; DWORD lockbytes;
 	LPVOID lockptr2; DWORD lockbytes2;
 
-	handles = (HANDLE *)alloca(sizeof(HANDLE)*(1+_DSOUND_NumBuffers));
+	handles = (HANDLE *)malloc(sizeof(HANDLE)*(1+_DSOUND_NumBuffers));
+	if (!handles) return 1;
 	
 	handles[0] = isrfinish;
 	for (p=0; p<_DSOUND_NumBuffers; p++)

@@ -30,13 +30,18 @@ Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
 extern char everyothertime;
 short which_palookup = 9;
 
+static char precachehightile[MAXTILES][2][256>>3];	// [tilenum][(0)wall/(1)sprite][palette]
+static void jloadhightile(short tilenume, char type, char palnume)
+{
+    precachehightile[tilenume][type][palnume>>3] |= (1<<(palnume&7));
+}
 
-tloadtile(short tilenume)
+void tloadtile(short tilenume)
 {
     gotpic[tilenume>>3] |= (1<<(tilenume&7));
 }
 
-void cachespritenum(short i)
+void cachespritenum(short i, char pal)
 {
     char maxc;
     short j;
@@ -48,19 +53,25 @@ void cachespritenum(short i)
     switch(PN)
     {
         case HYDRENT:
-            tloadtile(BROKEFIREHYDRENT);
-            for(j = TOILETWATER; j < (TOILETWATER+4); j++)
+            tloadtile(BROKEFIREHYDRENT); jloadhightile(BROKEFIREHYDRENT,1,pal);
+            for(j = TOILETWATER; j < (TOILETWATER+4); j++) {
                 if(waloff[j] == 0) tloadtile(j);
+		jloadhightile(j,1,pal);
+	    }
             break;
         case TOILET:
-            tloadtile(TOILETBROKE);
-            for(j = TOILETWATER; j < (TOILETWATER+4); j++)
+            tloadtile(TOILETBROKE); jloadhightile(TOILETBROKE,1,pal);
+            for(j = TOILETWATER; j < (TOILETWATER+4); j++) {
                 if(waloff[j] == 0) tloadtile(j);
+		jloadhightile(j,1,pal);
+	    }
             break;
         case STALL:
-            tloadtile(STALLBROKE);
-            for(j = TOILETWATER; j < (TOILETWATER+4); j++)
+            tloadtile(STALLBROKE); jloadhightile(STALLBROKE,1,pal);
+            for(j = TOILETWATER; j < (TOILETWATER+4); j++) {
                 if(waloff[j] == 0) tloadtile(j);
+		jloadhightile(j,1,pal);
+	    }
             break;
         case RUBBERCAN:
             maxc = 2;
@@ -77,19 +88,25 @@ void cachespritenum(short i)
         case LIZTROOPJETPACK:
         case LIZTROOPONTOILET:
         case LIZTROOPDUCKING:
-            for(j = LIZTROOP; j < (LIZTROOP+72); j++)
+            for(j = LIZTROOP; j < (LIZTROOP+72); j++) {
                 if(waloff[j] == 0)
                     tloadtile(j);
-            for(j=HEADJIB1;j<LEGJIB1+3;j++)
+		jloadhightile(j,1,pal);
+	    }
+            for(j=HEADJIB1;j<LEGJIB1+3;j++) {
                 if(waloff[j] == 0)
                     tloadtile(j);
+		jloadhightile(j,1,pal);
+	    }
             maxc = 0;
             break;
         case WOODENHORSE:
             maxc = 5;
-            for(j = HORSEONSIDE; j < (HORSEONSIDE+4); j++)
+            for(j = HORSEONSIDE; j < (HORSEONSIDE+4); j++) {
                 if(waloff[j] == 0)
                     tloadtile(j);
+		jloadhightile(j,1,pal);
+	    }
             break;
         case NEWBEAST:
         case NEWBEASTSTAYPUT:
@@ -120,9 +137,11 @@ void cachespritenum(short i)
         case LIZMANSPITTING:
         case LIZMANFEEDING:
         case LIZMANJUMP:
-            for(j=LIZMANHEAD1;j<LIZMANLEG1+3;j++)
+            for(j=LIZMANHEAD1;j<LIZMANLEG1+3;j++) {
                 if(waloff[j] == 0)
                     tloadtile(j);
+		jloadhightile(j,1,pal);
+	    }
             maxc = 80;
             break;
         case APLAYER:
@@ -130,9 +149,11 @@ void cachespritenum(short i)
             if(ud.multimode > 1)
             {
                 maxc = 5;
-                for(j = 1420;j < 1420+106; j++)
+                for(j = 1420;j < 1420+106; j++) {
                     if(waloff[j] == -1)
                         tloadtile(j);
+		    jloadhightile(j,1,pal);
+		}
             }
             break;
         case ATOMICHEALTH:
@@ -152,83 +173,102 @@ void cachespritenum(short i)
             break;
     }
 
-    for(j = PN; j < (PN+maxc); j++)
+    for(j = PN; j < (PN+maxc); j++) {
         if(waloff[j] == 0)
             tloadtile(j);
+	jloadhightile(j, 1, pal);
+    }
 }
 
+#define jtloadtile(i) tloadtile(i); jloadhightile(i,1,0);
 void cachegoodsprites(void)
 {
     short i;
 
     if(ud.screen_size >= 8)
     {
-        if(waloff[BOTTOMSTATUSBAR] == 0)
-            tloadtile(BOTTOMSTATUSBAR);
+        if(waloff[BOTTOMSTATUSBAR] == 0) {
+            jtloadtile(BOTTOMSTATUSBAR);
+	}
         if( ud.multimode > 1)
         {
-            if(waloff[FRAGBAR] == 0)
-                tloadtile(FRAGBAR);
-            for(i=MINIFONT;i<MINIFONT+63;i++)
+            if(waloff[FRAGBAR] == 0) {
+                jtloadtile(FRAGBAR);
+	    }
+            for(i=MINIFONT;i<MINIFONT+63;i++) {
                 if(waloff[i] == 0)
-                    tloadtile(i);
+                    jtloadtile(i);
+	    }
         }
     }
 
-    tloadtile(VIEWSCREEN);
+    jtloadtile(VIEWSCREEN);
 
-    for(i=STARTALPHANUM;i<ENDALPHANUM+1;i++)
+    for(i=STARTALPHANUM;i<ENDALPHANUM+1;i++) {
         if (waloff[i] == 0)
-            tloadtile(i);
+            jtloadtile(i);
+    }
 
-    for(i=FOOTPRINTS;i<FOOTPRINTS+3;i++)
+    for(i=FOOTPRINTS;i<FOOTPRINTS+3;i++) {
         if (waloff[i] == 0)
-            tloadtile(i);
+            jtloadtile(i);
+    }
 
-    for( i = BIGALPHANUM; i < BIGALPHANUM+82; i++)
+    for( i = BIGALPHANUM; i < BIGALPHANUM+82; i++) {
         if(waloff[i] == 0)
-            tloadtile(i);
+            jtloadtile(i);
+    }
 
-    for( i = BURNING; i < BURNING+14; i++)
+    for( i = BURNING; i < BURNING+14; i++) {
         if(waloff[i] == 0)
-            tloadtile(i);
+            jtloadtile(i);
+    }
 
-    for( i = BURNING2; i < BURNING2+14; i++)
+    for( i = BURNING2; i < BURNING2+14; i++) {
         if(waloff[i] == 0)
-            tloadtile(i);
+            jtloadtile(i);
+    }
 
-    for( i = CRACKKNUCKLES; i < CRACKKNUCKLES+4; i++)
+    for( i = CRACKKNUCKLES; i < CRACKKNUCKLES+4; i++) {
         if(waloff[i] == 0)
-            tloadtile(i);
+            jtloadtile(i);
+    }
 
-    for( i = FIRSTGUN; i < FIRSTGUN+3 ; i++ )
+    for( i = FIRSTGUN; i < FIRSTGUN+3 ; i++ ) {
         if(waloff[i] == 0)
-            tloadtile(i);
+            jtloadtile(i);
+    }
 
-    for( i = EXPLOSION2; i < EXPLOSION2+21 ; i++ )
+    for( i = EXPLOSION2; i < EXPLOSION2+21 ; i++ ) {
         if(waloff[i] == 0)
-            tloadtile(i);
+            jtloadtile(i);
+    }
 
-    tloadtile(BULLETHOLE);
+    jtloadtile(BULLETHOLE);
 
-    for( i = FIRSTGUNRELOAD; i < FIRSTGUNRELOAD+8 ; i++ )
+    for( i = FIRSTGUNRELOAD; i < FIRSTGUNRELOAD+8 ; i++ ) {
         if(waloff[i] == 0)
-            tloadtile(i);
+            jtloadtile(i);
+    }
 
-    tloadtile(FOOTPRINTS);
+    jtloadtile(FOOTPRINTS);
 
-    for( i = JIBS1; i < (JIBS5+5); i++)
+    for( i = JIBS1; i < (JIBS5+5); i++) {
         if(waloff[i] == 0)
-            tloadtile(i);
+            jtloadtile(i);
+    }
 
-    for( i = SCRAP1; i < (SCRAP1+19); i++)
+    for( i = SCRAP1; i < (SCRAP1+19); i++) {
         if(waloff[i] == 0)
-            tloadtile(i);
+            jtloadtile(i);
+    }
 
-    for( i = SMALLSMOKE; i < (SMALLSMOKE+4); i++)
+    for( i = SMALLSMOKE; i < (SMALLSMOKE+4); i++) {
         if(waloff[i] == 0)
-            tloadtile(i);
+            jtloadtile(i);
+    }
 }
+#undef jtloadtile
 
 char getsound(unsigned short num)
 {
@@ -274,12 +314,6 @@ void precachenecessarysounds(void)
         }
 }
 
-static char precachehightile[MAXTILES][256>>3];
-static void jloadhightile(short tilenume, char palnume)
-{
-    precachehightile[tilenume][palnume>>3] |= (1<<(palnume&7));
-}
-
 void cacheit(void)
 {
     short i,j;
@@ -296,13 +330,13 @@ void cacheit(void)
         if(waloff[wall[i].picnum] == 0)
             tloadtile(wall[i].picnum);
 
-	jloadhightile(wall[i].picnum, wall[i].pal);
+	jloadhightile(wall[i].picnum, 0, wall[i].pal);
 	
         if(wall[i].overpicnum >= 0) {
 		if ( waloff[wall[i].overpicnum] == 0 )
 	            tloadtile(wall[i].overpicnum);
 
-		jloadhightile(wall[i].overpicnum, wall[i].pal);
+		jloadhightile(wall[i].overpicnum, 0, wall[i].pal);
 	}
     }
 
@@ -311,7 +345,7 @@ void cacheit(void)
         if( waloff[sector[i].floorpicnum] == 0 )
             tloadtile( sector[i].floorpicnum );
 
-	jloadhightile(sector[i].floorpicnum, sector[i].floorpal);
+	jloadhightile(sector[i].floorpicnum, 0, sector[i].floorpal);
 	
         if( waloff[sector[i].ceilingpicnum] == 0 )
         {
@@ -323,10 +357,10 @@ void cacheit(void)
             }
         }
 
-	jloadhightile(sector[i].ceilingpicnum, sector[i].ceilingpal);
+	jloadhightile(sector[i].ceilingpicnum, 0, sector[i].ceilingpal);
 	if (sector[i].ceilingpicnum == LA) {
-		jloadhightile(sector[i].ceilingpicnum+1, sector[i].ceilingpal);
-		jloadhightile(sector[i].ceilingpicnum+1, sector[i].ceilingpal);
+		jloadhightile(sector[i].ceilingpicnum+1, 0, sector[i].ceilingpal);
+		jloadhightile(sector[i].ceilingpicnum+2, 0, sector[i].ceilingpal);
 	}
 
         j = headspritesect[i];
@@ -334,7 +368,7 @@ void cacheit(void)
         {
             if(sprite[j].xrepeat != 0 && sprite[j].yrepeat != 0 && (sprite[j].cstat&32768) == 0)
                 if(waloff[sprite[j].picnum] == 0)
-                    cachespritenum(j);
+                    cachespritenum(j,sprite[j].pal);
             j = nextspritesect[j];
         }
     }
@@ -353,8 +387,10 @@ void docacheit(void)
 		    loadtile((short)i);
 
 		for (k=0; k<256; k++) {
-			if (precachehightile[i][k>>3] & (1<<(k&7)))
+			if (precachehightile[i][0][k>>3] & (1<<(k&7)))
 				polymost_precache(i,k,0);
+			if (precachehightile[i][1][k>>3] & (1<<(k&7)))
+				polymost_precache(i,k,1);
 		}
 	}
 
@@ -379,6 +415,7 @@ void xyzmirror(short i,short wn)
 
 	setviewback();
 	squarerotatetile(wn);
+	invalidatetile(wn,-1,-1);
 }
 
 void vscrn(void)
@@ -1277,8 +1314,6 @@ void genspriteremaps(void)
 void waitforeverybody()
 {
     long i;
-    char deathknell = 0;
-    long deathbegan;
 
     if (numplayers < 2) return;
     packbuf[0] = 250;
@@ -1286,20 +1321,10 @@ void waitforeverybody()
         if (i != myconnectindex)
             sendpacket(i,packbuf,1);
 
-    KB_ClearKeysDown();
     playerreadyflag[myconnectindex]++;
     do
     {
         getpackets();
-	if (KB_KeyPressed(sc_Escape)) {	// JBF 20031221: Added a 4-second escape abort to kill game if stuck waiting
-		if (!deathknell) {
-			deathbegan = totalclock;
-			deathknell = 1;
-		}
-		else if (totalclock - deathbegan > TICRATE*4) gameexit(" ");
-	} else {
-		deathknell = 0;
-	}
         for(i=connecthead;i>=0;i=connectpoint2[i])
             if (playerreadyflag[i] < playerreadyflag[myconnectindex]) break;
     } while (i >= 0);
@@ -1398,7 +1423,7 @@ void enterlevel(char g)
 {
     short i,j;
     long l;
-    char levname[256];
+    char levname[MAX_PATH];
 
     if( (g&MODE_DEMO) != MODE_DEMO ) ud.recstat = ud.m_recstat;
     ud.respawn_monsters = ud.m_respawn_monsters;
@@ -1430,12 +1455,26 @@ if (!VOLUMEONE) {
         {
             sprintf(tempbuf,"Map %s not found!",boardfilename);
             gameexit(tempbuf);
-        }
+        } else {
+            char *p;
+            strcpy(levname, boardfilename);
+	    p = Bstrrchr(levname,'.');
+	    if (!p) strcat(levname,".mhk");
+	    else { p[1]='m'; p[2]='h'; p[3]='k'; p[4]=0; }
+	    loadmaphack(levname);
+	}
     }
     else if ( loadboard( level_file_names[ (ud.volume_number*11)+ud.level_number],0,&ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum ) == -1)
     {
         sprintf(tempbuf,"Map %s not found!",level_file_names[(ud.volume_number*11)+ud.level_number]);
         gameexit(tempbuf);
+    } else {
+        char *p;
+        strcpy(levname, level_file_names[ (ud.volume_number*11)+ud.level_number]);
+	p = Bstrrchr(levname,'.');
+	if (!p) strcat(levname,".mhk");
+	else { p[1]='m'; p[2]='h'; p[3]='k'; p[4]=0; }
+	loadmaphack(levname);
     }
 
 } else {
@@ -1449,6 +1488,12 @@ if (!VOLUMEONE) {
     {
         sprintf(tempbuf,"Map %s not found!",level_file_names[(ud.volume_number*11)+ud.level_number]);
         gameexit(tempbuf);
+    } else {
+        char *p;
+	p = Bstrrchr(levname,'.');
+	if (!p) strcat(levname,".mhk");
+	else { p[1]='m'; p[2]='h'; p[3]='k'; p[4]=0; }
+	loadmaphack(levname);
     }
 }
 

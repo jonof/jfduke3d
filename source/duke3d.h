@@ -70,7 +70,7 @@ extern int shareware;
 #define BYTEVERSION_13	27
 #define BYTEVERSION_14	116
 #define BYTEVERSION_15	117
-#define BYTEVERSION_JF	120	// increase by 3, because atomic GRP adds 1, and Shareware adds 2
+#define BYTEVERSION_JF	123	// increase by 3, because atomic GRP adds 1, and Shareware adds 2
 
 #define BYTEVERSION (BYTEVERSION_JF+(PLUTOPAK?1:(VOLUMEONE<<1)))	// JBF 20040116: different data files give different versions
 
@@ -88,6 +88,7 @@ extern int shareware;
 #include "gamedefs.h"
 #include "keyboard.h"
 #include "util_lib.h"
+#include "mathutil.h"
 #include "function.h"
 #include "fx_man.h"
 #include "config.h"
@@ -457,8 +458,8 @@ extern input loc;
 extern input recsync[RECSYNCBUFSIZ];
 extern long avgfvel, avgsvel, avgavel, avghorz, avgbits;
 
-extern short numplayers, myconnectindex;
-extern short connecthead, connectpoint2[MAXPLAYERS];   //Player linked list variables (indeces, not connection numbers)
+extern long numplayers, myconnectindex;	// JBF 20040716: was short until now
+extern long connecthead, connectpoint2[MAXPLAYERS];   //Player linked list variables (indeces, not connection numbers)
 extern short screenpeek;
 
 extern int current_menu;
@@ -502,7 +503,7 @@ extern char restorepalette;
 
 extern short buttonstat;
 extern long cachecount;
-extern char boardfilename[128],waterpal[768],slimepal[768],titlepal[768],drealms[768],endingpal[768];
+extern char boardfilename[MAX_PATH],waterpal[768],slimepal[768],titlepal[768],drealms[768],endingpal[768];
 extern char betaname[80];
 extern char cachedebug,earthquaketime;
 extern char networkmode;

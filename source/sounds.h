@@ -50,6 +50,6 @@ void SoundStartup( void );
 void SoundShutdown( void );
 void MusicStartup( void );
 void MusicShutdown( void );
-void MusicUpdate(void);
+void AudioUpdate(void);
 
 #endif

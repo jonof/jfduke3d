@@ -1229,7 +1229,7 @@ int MIDI_PlaySong
       }
 
    _MIDI_TrackMemSize = _MIDI_NumTracks  * sizeof( track );
-   status = USRHOOKS_GetMem( &_MIDI_TrackPtr, _MIDI_TrackMemSize );
+   status = USRHOOKS_GetMem( (void**)&_MIDI_TrackPtr, _MIDI_TrackMemSize );
    if ( status != USRHOOKS_Ok )
       {
       return( MIDI_NoMemory );
@@ -1609,13 +1609,13 @@ void MIDI_SetSongPosition
 
    pos = RELATIVE_BEAT( measure, beat, tick );
 
-   if ( pos < RELATIVE_BEAT( _MIDI_Measure, _MIDI_Beat, _MIDI_Tick ) )
+   if ( pos < (unsigned long)RELATIVE_BEAT( _MIDI_Measure, _MIDI_Beat, _MIDI_Tick ) )
       {
       _MIDI_ResetTracks();
       MIDI_Reset();
       }
 
-   while( RELATIVE_BEAT( _MIDI_Measure, _MIDI_Beat, _MIDI_Tick ) < pos )
+   while( (unsigned long)RELATIVE_BEAT( _MIDI_Measure, _MIDI_Beat, _MIDI_Tick ) < pos )
       {
       if ( _MIDI_ProcessNextTick() )
          {

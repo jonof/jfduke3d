@@ -45,9 +45,9 @@ static char compilefile[255] = "(none)";	// file we're currently compiling
 
 static char noticebits=0;
 
-#define NUMKEYWORDS     115
+#define NUMKEYWORDS     (sizeof(keyw)/sizeof(keyw[0]))	//115
 
-char *keyw[NUMKEYWORDS] =
+static char *keyw[/*NUMKEYWORDS*/] =
 {
     "definelevelname",  // 0
     "actor",            // 1    [#]
@@ -452,7 +452,7 @@ char parsecommand(void)
     int fp;
     char parentcompilefile[255];	// JBF 20031130
 
-    if ((long)((scriptptr-script)<<2) > sizeof(script)) {
+    if ((unsigned)((scriptptr-script)<<2) > sizeof(script)) {
 	Bsprintf(tempbuf,"FATAL ERROR: Compiled size of CON code exceeds maximum size!\n"
 			"Please notify JonoF so the maximum may be increased in a future release.");
 	gameexit(tempbuf);
@@ -725,7 +725,7 @@ char parsecommand(void)
             if(fp < 0)
             {
                 error++;
-                initprintf("  * ERROR!(L%ld %s) Could not find '%s'.\n",line_number,compilefile,label+(labelcnt<<6));
+                initprintf("  * ERROR!(L%ld %s) Could not find '%s'.\n",line_number,compilefile,tempbuf);
                 return 0;
             }
 
@@ -956,7 +956,10 @@ char parsecommand(void)
                 {
                     if(keyword() >= 0)
                     {
-                        scriptptr += (4-j);
+                        //scriptptr += (4-j);
+			for (i=4-j; i; i--) *(scriptptr++) = 0;	// JBF 20040829: this instead of above fixes
+								//   a crash in JJDuke and potentially elsewhere
+								//   too.
                         break;
                     }
                     transnum();
@@ -1349,79 +1352,26 @@ char parsecommand(void)
         case 106:
             return 0;
         case 60:
-            j = 0;
-	    while(j < 30)
-            {
-                transnum();
-                scriptptr--;
+	    {
+		long params[30];
 
-                switch(j)
-                {
-                    case 0:
-                        ud.const_visibility = *scriptptr;
-                        break;
-                    case 1:
-                        impact_damage = *scriptptr;
-                        break;
-                    case 2:
-                        max_player_health = *scriptptr;
-                        break;
-                    case 3:
-                        max_armour_amount = *scriptptr;
-                        break;
-                    case 4:
-                        respawnactortime = *scriptptr;break;
-                    case 5:
-                        respawnitemtime = *scriptptr;break;
-                    case 6:
-                        dukefriction = *scriptptr;break;
+		scriptptr--;
+		for(j = 0; j < 30; j++)
+        	{
+			transnum();
+			scriptptr--;
+			params[j] = *scriptptr;
 
-//		    case 7:	// JBF: Plutonium pak only
-//                        gc = *scriptptr;break;
+			if (j != 25) continue;
 
-		    case 7:rpgblastradius = *scriptptr;break;		// 8 in pp
-                    case 8:pipebombblastradius = *scriptptr;break;	// 9
-                    case 9:shrinkerblastradius = *scriptptr; break;	// 10
-                    case 10:tripbombblastradius = *scriptptr; break;	// 11
-                    case 11:morterblastradius = *scriptptr;break;	// 12
-                    case 12:bouncemineblastradius = *scriptptr;break;	// 13
-                    case 13:seenineblastradius = *scriptptr;break;	// 14
-
-                    case 14:	// PISTOL				// 15
-                    case 15:	// SHOTGUN				// 16
-                    case 16:	// CHAINGUN				// 17
-                    case 17:	// RPG					// 18
-                    case 18:	// PIPEBOMB				// 19
-                    case 19:	// SHRINKER				// 20
-                    case 20:	// DEVASTATOR				// 21
-                    case 21:	// TRIPMINE				// 22
-                    case 22:	// FREEZER				// 23
-
-//		    case 24:	// JBF: Plutonium pak only (microwave gun)
-//                        if(j == 24)
-//                            max_ammo_amount[11] = *scriptptr;
-//                        else max_ammo_amount[j-14] = *scriptptr;
-
-			max_ammo_amount[j-13] = *scriptptr;
-                        break;
-                    case 23:	// 25 in pp
-                        camerashitable = *scriptptr;
-                        break;
-                    case 24:	// 26 in pp
-                        numfreezebounces = *scriptptr;
-                        break;
-                    case 25:	// 27 in pp
-                        freezerhurtowner = *scriptptr;
-
-			// now, if the next token is a number it means we're plutonium pak,
-			// so we need to fix up some stuff before we can continue the compilation
 			if (keyword() != -1) {
 				initprintf("Looks like Standard CON files.\n");
-				j=30;
 				break;
+			} else {
+				conversion = 14;
+				initprintf("Looks like Atomic Edition CON files.\n");
 			}
-			conversion = 14;
-			initprintf("Looks like Plutonium Pak CON files.\n");
+		}
 
 /*
 v1.3d			v1.5
@@ -1456,47 +1406,44 @@ FREEZERHURTOWNER	CAMERASDESTRUCTABLE
 			QSIZE
 			TRIPBOMBLASERMODE
 */
-
-			// I know it's ugly
-			gc = rpgblastradius;
-			rpgblastradius = pipebombblastradius;
-			pipebombblastradius = shrinkerblastradius;
-			shrinkerblastradius = tripbombblastradius;
-			tripbombblastradius = morterblastradius;
-			morterblastradius = bouncemineblastradius;
-			bouncemineblastradius = seenineblastradius;
-			seenineblastradius = max_ammo_amount[14-13];		// (pistol)
-			max_ammo_amount[14-13] = max_ammo_amount[15-13];	// shotgun -> pistol
-			max_ammo_amount[15-13] = max_ammo_amount[16-13];	// chaingun -> shotgun
-			max_ammo_amount[16-13] = max_ammo_amount[17-13];	// rpg -> chaingun
-			max_ammo_amount[17-13] = max_ammo_amount[18-13];	// pipebomp -> rpg
-			max_ammo_amount[18-13] = max_ammo_amount[19-13];	// shrinker -> pipebomb
-			max_ammo_amount[19-13] = max_ammo_amount[20-13];	// devastator -> shrinker
-			max_ammo_amount[20-13] = max_ammo_amount[21-13];	// tripmine -> devastator
-			max_ammo_amount[21-13] = max_ammo_amount[22-13];	// freezer -> tripmine
-			max_ammo_amount[22-13] = camerashitable;		// expander -> freezer
-			max_ammo_amount[11] = numfreezebounces;			// (expander)
-			camerashitable = freezerhurtowner;
-			break;
-
-                    case 26:
-                        numfreezebounces = *scriptptr;
-                        break;
-                    case 27:
-                        freezerhurtowner = *scriptptr;
-
-		    case 28:
-                        spriteqamount = *scriptptr;
-                        if(spriteqamount > 1024) spriteqamount = 1024;
-                        else if(spriteqamount < 0) spriteqamount = 0;
-                        break;
-                    case 29:
-                        lasermode = *scriptptr;
-                        break;
+		
+		j = 0;
+		ud.const_visibility = params[j++];
+		impact_damage = params[j++];
+		max_player_health = params[j++];
+		max_armour_amount = params[j++];
+		respawnactortime = params[j++];
+		respawnitemtime = params[j++];
+		dukefriction = params[j++];
+		if (conversion == 14) gc = params[j++];
+		rpgblastradius = params[j++];
+		pipebombblastradius = params[j++];
+		shrinkerblastradius = params[j++];
+		tripbombblastradius = params[j++];
+		morterblastradius = params[j++];
+		bouncemineblastradius = params[j++];
+		seenineblastradius = params[j++];
+		max_ammo_amount[PISTOL_WEAPON] = params[j++];
+		max_ammo_amount[SHOTGUN_WEAPON] = params[j++];
+		max_ammo_amount[CHAINGUN_WEAPON] = params[j++];
+		max_ammo_amount[RPG_WEAPON] = params[j++];
+		max_ammo_amount[HANDBOMB_WEAPON] = params[j++];
+		max_ammo_amount[SHRINKER_WEAPON] = params[j++];
+		max_ammo_amount[DEVISTATOR_WEAPON] = params[j++];
+		max_ammo_amount[TRIPBOMB_WEAPON] = params[j++];
+		max_ammo_amount[FREEZE_WEAPON] = params[j++];
+		if (conversion == 14) max_ammo_amount[GROW_WEAPON] = params[j++];
+		camerashitable = params[j++];
+		numfreezebounces = params[j++];
+		freezerhurtowner = params[j++];
+		if (conversion == 14) {
+			spriteqamount = params[j++];
+			if(spriteqamount > 1024) spriteqamount = 1024;
+			else if(spriteqamount < 0) spriteqamount = 0;
+			
+			lasermode = params[j++];
 		}
-                j++;
             }
-            scriptptr++;
             return 0;
 	case 112:	// JBF 20031118: voxel loading
             scriptptr--;
@@ -1776,7 +1723,7 @@ char dodge(spritetype *s)
 
 short furthestangle(short i,short angs)
 {
-    short j, hitsect,hitwall,hitspr,furthest_angle, angincs;
+    short j, hitsect,hitwall,hitspr,furthest_angle=0, angincs;
     long hx, hy, hz, d, greatestd;
     spritetype *s = &sprite[i];
 

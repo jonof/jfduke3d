@@ -335,7 +335,7 @@ void doanimations(void)
 	}
 }
 
-getanimationgoal(long *animptr)
+int getanimationgoal(long *animptr)
 {
 	long i, j;
 
@@ -349,7 +349,7 @@ getanimationgoal(long *animptr)
 	return(j);
 }
 
-setanimation(short animsect,long *animptr, long thegoal, long thevel)
+int setanimation(short animsect,long *animptr, long thegoal, long thevel)
 {
 	long i, j;
 
@@ -548,7 +548,7 @@ char activatewarpelevators(short s,short d) //Parm = sectoreffectornum
 
 void operatesectors(short sn,short ii)
 {
-    long j, l, q, startwall, endwall;
+    long j=0, l, q, startwall, endwall;
     short i;
     char sect_error;
     sectortype *sptr;
@@ -2593,7 +2593,7 @@ void cheatkeys(short snum)
                     {
 			if(k == GROW_WEAPON)	// JBF: this is handling next/previous with the grower selected
                         {
-                            if(j == -1)
+                            if(j == (unsigned long)-1)
                                 k = 5;
                             else k = 7;
 
@@ -2692,7 +2692,7 @@ void cheatkeys(short snum)
                     sb_snum |= 1<<19;
                     p->weapon_pos = -9;
                 }
-                else if( p->gotweapon[j] && p->curr_weapon != j ) switch(j)
+                else if( p->gotweapon[j] && (unsigned long)p->curr_weapon != j ) switch(j)
                 {
                     case KNEE_WEAPON:
                         addweapon( p, KNEE_WEAPON );
@@ -2834,7 +2834,7 @@ void cheatkeys(short snum)
             {
                 j = max_player_health-sprite[p->i].extra;
 
-                if(p->firstaid_amount > j)
+                if((unsigned long)p->firstaid_amount > j)
                 {
                     p->firstaid_amount -= j;
                     sprite[p->i].extra = max_player_health;

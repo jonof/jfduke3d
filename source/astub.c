@@ -66,6 +66,7 @@ Duke Lookup Table
 
 #include "compat.h"
 #include "build.h"
+#include "editor.h"
 #include "pragmas.h"
 #include "baselayer.h"
 #include "names.h"
@@ -349,14 +350,14 @@ void ExtLoadMap(char *mapname)
 void overwritesprite (long thex, long they, short tilenum,signed char shade, char stat, char dapalnum)
 {
         rotatesprite(thex<<16,they<<16,65536L,(stat&8)<<7,tilenum,shade,dapalnum,
-                ((stat&1^1)<<4)+(stat&2)+((stat&4)>>2)+((stat&16)>>2)^((stat&8)>>1),
+                (((stat&1)^1)<<4)+(stat&2)+((stat&4)>>2)+(((stat&16)>>2)^((stat&8)>>1)),
                 windowx1,windowy1,windowx2,windowy2);
 }
 
 void putsprite (long thex, long they, long zoom, short rot, short tilenum, signed char shade, char dapalnum)
 {char stat=0;
     rotatesprite(thex<<16,they<<16,65536L-zoom,(rot+(stat&8))<<7,tilenum,shade,dapalnum,
-                ((stat&1^1)<<4)+(stat&2)+((stat&4)>>2)+((stat&16)>>2)^((stat&8)>>1),
+                (((stat&1)^1)<<4)+(stat&2)+((stat&4)>>2)+(((stat&16)>>2)^((stat&8)>>1)),
                 windowx1,windowy1,windowx2,windowy2);
 }
 
@@ -410,7 +411,7 @@ const char *ExtGetWallCaption(short wallnum)
     if(keystatus[0x57]>0) // f11   Grab pic 0x4e +
     {
         wallpicnum = wall[curwall].picnum;
-        Bsprintf(tempbuf,"Grabed Wall Picnum %ld",wallpicnum);
+        Bsprintf(tempbuf,"Grabbed Wall Picnum %d",wallpicnum);
         printmessage16(tempbuf);
     }
 
@@ -1168,7 +1169,7 @@ void ExtShowWallData(short wallnum)       //F6
 void Show2dText(char *name)
 {
  int i,fp;
- char t;
+ int t;
  char x=0,y=4,xmax=0,xx=0,col=0;
  clearmidstatbar16();
  if((fp=kopen4load(name,0)) == -1)
@@ -1182,11 +1183,11 @@ void Show2dText(char *name)
  begindrawing();
  while(t!=EOF && col<5)
  {
-  kread(fp,&t,1);
+  t = 0; if (kread(fp,&t,1)<=0) t = EOF;
   while(t!=EOF && t!='\n' && x<250)
   {
      tempbuf[x]=t;
-     kread(fp,&t,1);
+     t = 0; if (kread(fp,&t,1)<=0) t = EOF;
      x++; if(x>xmax) xmax=x;
   }
   tempbuf[x]=0;
@@ -1203,7 +1204,8 @@ void Show2dText(char *name)
 void Show3dText(char *name)
 {
  int i,fp;
- char x=0,y=4,xmax=0,xx=0,col=0,t;
+ char x=0,y=4,xmax=0,xx=0,col=0;
+ int t;
  if((fp=kopen4load(name,0)) == -1)
  {
 	 begindrawing();
@@ -1215,11 +1217,11 @@ void Show3dText(char *name)
  begindrawing();
  while(t!=EOF && col<5)
  {
-  kread(fp,&t,1);
+  t = 0; if (kread(fp,&t,1)<=0) t = EOF;
   while(t!=EOF && t!='\n' && x<250)
   {
     tempbuf[x]=t;
-    kread(fp,&t,1);
+    t = 0; if (kread(fp,&t,1)<=0) t = EOF;
         x++; if(x>xmax) xmax=x;
   }
   tempbuf[x]=0;
@@ -1296,7 +1298,7 @@ void ExtEditWallData(short wallnum)       //F8
     cursectornum = 0;
     search_lotag=getnumber16("Enter Wall Search Lo-Tag : ", search_lotag, 65536L);
     search_hitag=getnumber16("Enter Wall Search Hi-Tag : ", search_hitag, 65536L);
-    Bsprintf(tempbuf,"Current Wall %ld lo=%ld hi=%ld",
+    Bsprintf(tempbuf,"Current Wall %d lo=%d hi=%d",
         curwall,search_lotag,search_hitag);
     printmessage16(tempbuf);
 
@@ -1312,7 +1314,7 @@ void ExtEditSpriteData(short spritenum)   //F8
     cursectornum = 0;
     search_lotag=getnumber16("Enter Sprite Search Lo-Tag : ", search_lotag, 65536L);
     search_hitag=getnumber16("Enter Sprite Search Hi-Tag : ", search_hitag, 65536L);
-    Bsprintf(tempbuf,"Current Sprite %ld %s lo=%ld hi=%ld",
+    Bsprintf(tempbuf,"Current Sprite %d %s lo=%d hi=%d",
         cursprite,names[sprite[cursprite].picnum],search_lotag,search_hitag);
     printmessage16(tempbuf);
 
@@ -1516,17 +1518,17 @@ void Keys3d(void)
                         case 0: case 4:
                                 Bstrcpy(tempbuf,"Wall lotag: ");
                                 wall[searchwall].lotag =
-                                getnumber256(tempbuf,wall[searchwall].lotag,65536L);
+                                getnumber256(tempbuf,wall[searchwall].lotag,65536L,0);
                                 break;
                         case 1: case 2:
                                 Bstrcpy(tempbuf,"Sector lotag: ");
                                 sector[searchsector].lotag =
-                                getnumber256(tempbuf,sector[searchsector].lotag,65536L);
+                                getnumber256(tempbuf,sector[searchsector].lotag,65536L,0);
                                 break;
                         case 3:
                                 Bstrcpy(tempbuf,"Sprite lotag: ");
                                 sprite[searchwall].lotag =
-                                getnumber256(tempbuf,sprite[searchwall].lotag,65536L);
+                                getnumber256(tempbuf,sprite[searchwall].lotag,65536L,0);
                                 break;
                  }
           }
@@ -1539,17 +1541,17 @@ void Keys3d(void)
                         case 0: case 4:
                                 Bstrcpy(tempbuf,"Wall hitag: ");
                                 wall[searchwall].hitag =
-                                getnumber256(tempbuf,wall[searchwall].hitag,65536L);
+                                getnumber256(tempbuf,wall[searchwall].hitag,65536L,0);
                                 break;
                         case 1: case 2:
                                 Bstrcpy(tempbuf,"Sector hitag: ");
                                 sector[searchsector].hitag =
-                                getnumber256(tempbuf,sector[searchsector].hitag,65536L);
+                                getnumber256(tempbuf,sector[searchsector].hitag,65536L,0);
                                 break;
                         case 3:
                                 Bstrcpy(tempbuf,"Sprite hitag: ");
                                 sprite[searchwall].hitag =
-                                getnumber256(tempbuf,sprite[searchwall].hitag,65536L);
+                                getnumber256(tempbuf,sprite[searchwall].hitag,65536L,0);
                                 break;
                  }
           }
@@ -1562,21 +1564,21 @@ void Keys3d(void)
                         case 0: case 4:
                 Bstrcpy(tempbuf,"Wall shade: ");
                 wall[searchwall].shade =
-                getnumber256(tempbuf,wall[searchwall].shade,65536L);
+                getnumber256(tempbuf,wall[searchwall].shade,65536L,1);
                                 break;
                         case 1: case 2:
                 Bstrcpy(tempbuf,"Sector shade: ");
                 if(searchstat==1)
                  sector[searchsector].ceilingshade =
-                 getnumber256(tempbuf,sector[searchsector].ceilingshade,65536L);
+                 getnumber256(tempbuf,sector[searchsector].ceilingshade,65536L,1);
                 if(searchstat==2)
                  sector[searchsector].floorshade =
-                 getnumber256(tempbuf,sector[searchsector].floorshade,65536L);
+                 getnumber256(tempbuf,sector[searchsector].floorshade,65536L,1);
                                 break;
                         case 3:
                 Bstrcpy(tempbuf,"Sprite shade: ");
                 sprite[searchwall].shade =
-                getnumber256(tempbuf,sprite[searchwall].shade,65536L);
+                getnumber256(tempbuf,sprite[searchwall].shade,65536L,1);
                                 break;
                  }
       }
@@ -1589,7 +1591,7 @@ void Keys3d(void)
                         case 1: case 2:
                 Bstrcpy(tempbuf,"Sector visibility: ");
                 sector[searchsector].visibility =
-                 getnumber256(tempbuf,sector[searchsector].visibility,65536L);
+                 getnumber256(tempbuf,sector[searchsector].visibility,65536L,0);
                                 break;
                  }
       }
@@ -1752,7 +1754,7 @@ void Keys2d(void)
     curspritenum = 0;
     cursectornum=0;
     cursector_lotag=getnumber16("Enter Sector Lo-Tag : ", cursector_lotag, 65536L);
-    Bsprintf(tempbuf,"Current Sector Lo-Tag %ld",cursector_lotag);
+    Bsprintf(tempbuf,"Current Sector Lo-Tag %d",cursector_lotag);
     printmessage16(tempbuf);
  }
 
@@ -1900,7 +1902,7 @@ void Keys2d(void)
 }// end key2d
 
 
-void ExtInit(void)
+int ExtInit(void)
 {
     long fil;
     char *duke3dgrp = "duke3d.grp";
@@ -1948,7 +1950,10 @@ void ExtInit(void)
 	if (loadsetup("build.cfg") < 0) printOSD("Configuration file not found, using defaults.\n");
 	memcpy((void *)buildkeys,(void *)keys,NUMKEYS);   //Trick to make build use setup.dat keys
 
-        initengine();
+        if (initengine()) {
+		initprintf("There was a problem initialising the engine.\n");
+		return -1;
+	}
 	initinput();
 	// if (option[3] != 0) moustat =
                 initmouse();
@@ -1962,6 +1967,7 @@ void ExtInit(void)
 
         ReadPaletteTable();
 //  InitWater();
+	return 0;
 }
 
 void ExtUnInit(void)
@@ -2082,8 +2088,8 @@ void ExtAnalyzeSprites(void)
                                 }
         }
 
-        if(frames==2) tspr->picnum+=((((4-totalclock>>6))&1)*5);
-                if(frames==4) tspr->picnum+=((((4-totalclock>>6))&3)*5);
+        if(frames==2) tspr->picnum+=((((4-(totalclock>>6)))&1)*5);
+                if(frames==4) tspr->picnum+=((((4-(totalclock>>6)))&3)*5);
         if(frames==5) tspr->picnum+=(((totalclock>>6)%5))*5;
 
                 if(tilesizx[tspr->picnum] == 0)
@@ -2266,7 +2272,7 @@ void Ver()
  Bsprintf(tempbuf,"DUKE NUKEM BUILD: V032696");
  if (qsetmode == 200)    //In 3D mode
  { begindrawing(); printext256(60*8,24*8,11,-1,tempbuf,1); enddrawing();
-   rotatesprite((320-8)<<16,(200-8)<<16,64<<9,0,SPINNINGNUKEICON+(((4-totalclock>>3))&7),0,0,0,0,0,xdim-1,ydim-1);
+   rotatesprite((320-8)<<16,(200-8)<<16,64<<9,0,SPINNINGNUKEICON+(((4-(totalclock>>3)))&7),0,0,0,0,0,xdim-1,ydim-1);
  }else
  { begindrawing(); printext16(0,ydim16+0,15,-1,tempbuf,0); enddrawing();
  }

@@ -9,6 +9,7 @@ $(OBJ)player.$o: $(SRC)player.c $(duke3d_h)
 $(OBJ)premap.$o: $(SRC)premap.c $(duke3d_h)
 $(OBJ)sector.$o: $(SRC)sector.c $(duke3d_h)
 $(OBJ)sounds.$o: $(SRC)sounds.c $(duke3d_h)
+$(OBJ)jfaud_sounds.$o: $(SRC)jfaud_sounds.c $(duke3d_h)
 $(OBJ)rts.$o: $(SRC)rts.c $(duke3d_h)
 $(OBJ)config.$o: $(SRC)config.c $(duke3d_h) $(SRC)jmact/scriplib.h $(INC)_functio.h
 $(OBJ)animlib.$o: $(SRC)animlib.c $(INC)types.h $(INC)develop.h $(SRC)jmact/util_lib.h $(INC)_animlib.h $(INC)animlib.h $(EINC)compat.h
@@ -18,7 +19,7 @@ $(OBJ)osdfuncs.$o: $(SRC)names.h $(EINC)build.h
 $(OBJ)osdcmds.$o: $(SRC)osdcmds.c $(INC)osdcmds.h $(EINC)osd.h $(duke3d_h)
 $(OBJ)multiplayer.$o: $(SRC)multiplayer.c $(duke3d_h)
 
-$(OBJ)astub.$o: $(SRC)astub.c $(EINC)build.h $(EINC)pragmas.h $(EINC)compat.h
+$(OBJ)astub.$o: $(SRC)astub.c $(EINC)build.h $(EINC)pragmas.h $(EINC)compat.h $(EINC)editor.h
 
 # jMACT objects
 $(OBJ)util_lib.$o: $(SRC)jmact/util_lib.c $(SRC)jmact/util_lib.h $(INC)types.h $(EINC)compat.h
