@@ -135,7 +135,7 @@ extern void processinput(short snum);
 extern void cmenu(short cm);
 extern void savetemp(char *fn,long daptr,long dasiz);
 extern void getangplayers(short snum);
-extern int loadpheader(char spot,int32 *vn,int32 *ln,int32 *psk,int32 *numplr);
+//extern int loadpheader(char spot,int32 *vn,int32 *ln,int32 *psk,char *bfn,int32 *numplr);
 extern int loadplayer(signed char spot);
 extern int saveplayer(signed char spot);
 extern void sendgameinfo(void );

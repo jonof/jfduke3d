@@ -505,7 +505,7 @@ extern char restorepalette;
 
 extern short buttonstat;
 extern long cachecount;
-extern char boardfilename[MAX_PATH],waterpal[768],slimepal[768],titlepal[768],drealms[768],endingpal[768];
+extern char boardfilename[BMAX_PATH],waterpal[768],slimepal[768],titlepal[768],drealms[768],endingpal[768];
 extern char betaname[80];
 extern char cachedebug,earthquaketime;
 extern char networkmode;

@@ -1423,7 +1423,7 @@ void enterlevel(char g)
 {
     short i,j;
     long l;
-    char levname[MAX_PATH];
+    char levname[BMAX_PATH];
 
     if( (g&MODE_DEMO) != MODE_DEMO ) ud.recstat = ud.m_recstat;
     ud.respawn_monsters = ud.m_respawn_monsters;

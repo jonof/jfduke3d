@@ -31,6 +31,13 @@ Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
 #include "osd.h"
 #include <sys/stat.h>
 
+
+struct savehead {
+	char name[19];
+	int32 numplr,volnum,levnum,plrskl;
+	char boardfn[BMAX_PATH];
+};
+
 extern char inputloc;
 extern int recfilep;
 //extern char vgacompatible;
@@ -55,7 +62,7 @@ static int changesmade, newvidmode, curvidmode, newfullscreen;
 static int vidsets[16] = { -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 }, curvidset, newvidset = 0;
 
 static char *mousebuttonnames[] = { "Left", "Right", "Middle", "Thumb", "Wheel Down", "Wheel Up" };
-		
+
 
 void cmenu(short cm)
 {
@@ -106,48 +113,46 @@ void getangplayers(short snum)
     }
 }
 
-int loadpheader(char spot,int32 *vn,int32 *ln,int32 *psk,int32 *nump)
+int loadpheader(char spot,struct savehead *saveh)
 {
+	long i;
+	char fn[13];
+	long fil;
+	long bv;
 
-     long i;
-         char fn[13];
-         long fil;
-     long bv;
+	strcpy(fn, "game0.sav");
+    fn[4] = spot+'0';
 
-     strcpy(fn, "game0.sav");
+	if ((fil = kopen4load(fn,0)) == -1) return(-1);
 
-         fn[4] = spot+'0';
+	walock[MAXTILES-3] = 255;
 
-     if ((fil = kopen4load(fn,0)) == -1) return(-1);
+	if (kdfread(&bv,4,1,fil) != 1) goto corrupt;
+	if(bv != BYTEVERSION) {
+		FTA(114,&ps[myconnectindex]);
+		kclose(fil);
+		return 1;
+	}
 
-     walock[MAXTILES-3] = 255;
+	if (kdfread(&saveh->numplr,sizeof(int32),1,fil) != 1) goto corrupt;
 
-     if (kdfread(&bv,4,1,fil) != 1) goto corrupt;
-     if(bv != BYTEVERSION)
-     {
-        FTA(114,&ps[myconnectindex]);
-        kclose(fil);
-        return 1;
-     }
+	if (kdfread(saveh->name,19,1,fil) != 1) goto corrupt;
+	if (kdfread(&saveh->volnum,sizeof(int32),1,fil) != 1) goto corrupt;
+	if (kdfread(&saveh->levnum,sizeof(int32),1,fil) != 1) goto corrupt;
+	if (kdfread(&saveh->plrskl,sizeof(int32),1,fil) != 1) goto corrupt;
+	if (kdfread(saveh->boardfn,BMAX_PATH,1,fil) != 1) goto corrupt;
 
-     if (kdfread(nump,sizeof(int32),1,fil) != 1) goto corrupt;
+	if (waloff[MAXTILES-3] == 0) allocache(&waloff[MAXTILES-3],320*200,&walock[MAXTILES-3]);
+	tilesizx[MAXTILES-3] = 200; tilesizy[MAXTILES-3] = 320;
+	if (kdfread((char *)waloff[MAXTILES-3],320,200,fil) != 200) goto corrupt;
+	invalidatetile(MAXTILES-3,0,255);
 
-     if (kdfread(tempbuf,19,1,fil) != 1) goto corrupt;
-         if (kdfread(vn,sizeof(int32),1,fil) != 1) goto corrupt;
-         if (kdfread(ln,sizeof(int32),1,fil) != 1) goto corrupt;
-     if (kdfread(psk,sizeof(int32),1,fil) != 1) goto corrupt;
+	kclose(fil);
 
-     if (waloff[MAXTILES-3] == 0) allocache(&waloff[MAXTILES-3],320*200,&walock[MAXTILES-3]);
-     tilesizx[MAXTILES-3] = 200; tilesizy[MAXTILES-3] = 320;
-     if (kdfread((char *)waloff[MAXTILES-3],320,200,fil) != 200) goto corrupt;
-	 invalidatetile(MAXTILES-3,0,255);
-
-         kclose(fil);
-
-         return(0);
+	return(0);
 corrupt:
-		 kclose(fil);
-		 return 1;
+	kclose(fil);
+	return 1;
 }
 
 
@@ -240,6 +245,7 @@ int loadplayer(signed char spot)
          if (kdfread(&ud.volume_number,sizeof(ud.volume_number),1,fil) != 1) goto corrupt;
          if (kdfread(&ud.level_number,sizeof(ud.level_number),1,fil) != 1) goto corrupt;
          if (kdfread(&ud.player_skill,sizeof(ud.player_skill),1,fil) != 1) goto corrupt;
+     if (kdfread(&boardfilename[0],BMAX_PATH,1,fil) != 1) goto corrupt;
 
          ud.m_level_number = ud.level_number;
          ud.m_volume_number = ud.volume_number;
@@ -280,7 +286,6 @@ int loadplayer(signed char spot)
      if (kdfread(&mirrorsector[0],sizeof(short),64,fil) != 64) goto corrupt;
      if (kdfread(&show2dsector[0],sizeof(char),MAXSECTORS>>3,fil) != (MAXSECTORS>>3)) goto corrupt;
      if (kdfread(&actortype[0],sizeof(char),MAXTILES,fil) != MAXTILES) goto corrupt;
-     if (kdfread(&boardfilename[0],sizeof(boardfilename),1,fil) != 1) goto corrupt;
 
      if (kdfread(&numclouds,sizeof(numclouds),1,fil) != 1) goto corrupt;
      if (kdfread(&clouds[0],sizeof(short)<<7,1,fil) != 1) goto corrupt;
@@ -529,6 +534,7 @@ int saveplayer(signed char spot)
          dfwrite(&ud.volume_number,sizeof(ud.volume_number),1,fil);
      dfwrite(&ud.level_number,sizeof(ud.level_number),1,fil);
          dfwrite(&ud.player_skill,sizeof(ud.player_skill),1,fil);
+     dfwrite(&boardfilename[0],BMAX_PATH,1,fil);
      dfwrite((char *)waloff[MAXTILES-1],320,200,fil);
 
          dfwrite(&numwalls,2,1,fil);
@@ -559,7 +565,6 @@ int saveplayer(signed char spot)
          dfwrite(&mirrorsector[0],sizeof(short),64,fil);
      dfwrite(&show2dsector[0],sizeof(char),MAXSECTORS>>3,fil);
      dfwrite(&actortype[0],sizeof(char),MAXTILES,fil);
-     dfwrite(&boardfilename[0],sizeof(boardfilename),1,fil);
 
      dfwrite(&numclouds,sizeof(numclouds),1,fil);
      dfwrite(&clouds[0],sizeof(short)<<7,1,fil);
@@ -1083,7 +1088,9 @@ void bar(int x,int y,short *p,short dainc,char damodify,short s, short pa)
 #define MWINXY(X,OX,OY) rotatesprite( ( 320+(OX) )<<15, ( 200+(OY) )<<15,X,0,MENUSCREEN,-16,0,10+64,0,0,xdim-1,ydim-1)
 
 
-int32 volnum,levnum,plrskl,numplr;
+static struct savehead savehead;
+//static int32 volnum,levnum,plrskl,numplr;
+//static char brdfn[BMAX_PATH];
 short lastsavedpos = -1;
 
 void dispnames(void)
@@ -1855,12 +1862,15 @@ if (VOLUMEALL) {
 
             dispnames();
 
-            sprintf(tempbuf,"PLAYERS: %-2ld                      ",numplr);
-            gametext(160,158,tempbuf,0,2+8+16);
+            sprintf(tempbuf,"PLAYERS: %-2ld                      ",savehead.numplr);
+            gametext(160,156,tempbuf,0,2+8+16);
 
-            sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+volnum,1+levnum,plrskl);
-            gametext(160,170,tempbuf,0,2+8+16);
+            sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+savehead.volnum,1+savehead.levnum,savehead.plrskl);
+            gametext(160,168,tempbuf,0,2+8+16);
 
+			if (savehead.volnum == 0 && savehead.levnum == 7)
+				gametext(160,180,savehead.boardfn,0,2+8+16);
+			
             gametext(160,90,"LOAD game:",0,2+8+16);
             sprintf(tempbuf,"\"%s\"",ud.savegame[current_menu-1000]);
             gametext(160,99,tempbuf,0,2+8+16);
@@ -1973,12 +1983,15 @@ if (VOLUMEALL) {
 
             rotatesprite(101<<16,97<<16,65536L>>1,512,MAXTILES-3,-32,0,4+10+64,0,0,xdim-1,ydim-1);
             sprintf(tempbuf,"PLAYERS: %-2ld                      ",ud.multimode);
-            gametext(160,158,tempbuf,0,2+8+16);
+            gametext(160,156,tempbuf,0,2+8+16);
 
             sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+ud.volume_number,1+ud.level_number,ud.player_skill);
-            gametext(160,170,tempbuf,0,2+8+16);
+            gametext(160,168,tempbuf,0,2+8+16);
 
-            dispnames();
+			if (ud.volume_number == 0 && ud.level_number == 7)
+				gametext(160,180,boardfilename,0,2+8+16);
+
+		  	dispnames();
 
             gametext(160,90,"OVERWRITE previous SAVED game?",0,2+8+16);
             gametext(160,90+9,"(Y/N)",0,2+8+16);
@@ -2207,7 +2220,7 @@ cheat_for_port_credits:
 				   minitext(160-(Bstrlen(p)<<1), 92-l, p, 12, 10+16+128);
 
 				   {
-						const char *gpl[] = {
+						const char *scroller[] = {
 							"This program is free software; you can redistribute it",
 							"and/or modify it under the terms of the GNU General",
 							"Public License as published by the Free Software",
@@ -2223,16 +2236,24 @@ cheat_for_port_credits:
 							"",
 							"",
 							"",
+							"Thanks to these people for their input and contributions:",
+							"",
+							"Richard \"TerminX\" Gobeille, Ben \"ProAsm\" Smit,",
+							"",
+							"and all those who submitted bug reports and ",
+							"supported the project financially!",
+							"",
+							"",
 							"--x--",
 							"",
 							"",
 							"",
 							""
 						};
-						const int numlines = sizeof(gpl)/sizeof(char *);
+						const int numlines = sizeof(scroller)/sizeof(char *);
 						for (m=0,i=(totalclock/104)%numlines; m<4; m++,i++) {
 							if (i==numlines) i=0;
-							minitext(160-(Bstrlen(gpl[i])<<1), 100+10+(m*7)-l, gpl[i], 8, 10+16+128);
+							minitext(160-(Bstrlen(scroller[i])<<1), 100+10+(m*7)-l, scroller[i], 8, 10+16+128);
 						}
 				   }
 
@@ -4057,9 +4078,11 @@ if (PLUTOPAK) {
             if(current_menu >= 360 && current_menu <= 369 )
             {
                 sprintf(tempbuf,"PLAYERS: %-2ld                      ",ud.multimode);
-                gametext(160,158,tempbuf,0,2+8+16);
+                gametext(160,156,tempbuf,0,2+8+16);
                 sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+ud.volume_number,1+ud.level_number,ud.player_skill);
-                gametext(160,170,tempbuf,0,2+8+16);
+                gametext(160,168,tempbuf,0,2+8+16);
+				if (ud.volume_number == 0 && ud.level_number == 7)
+					gametext(160,180,boardfilename,0,2+8+16);
 
                 x = strget((320>>1),184,&ud.savegame[current_menu-360][0],19, 999 );
 
@@ -4118,15 +4141,17 @@ if (PLUTOPAK) {
               {
                   if( lastprobey != probey )
                   {
-                     loadpheader(probey,&volnum,&levnum,&plrskl,&numplr);
+                     loadpheader(probey,&savehead);
                      lastprobey = probey;
                   }
 
                   rotatesprite(101<<16,97<<16,65536L>>1,512,MAXTILES-3,-32,0,4+10+64,0,0,xdim-1,ydim-1);
-                  sprintf(tempbuf,"PLAYERS: %-2ld                      ",numplr);
-                  gametext(160,158,tempbuf,0,2+8+16);
-                  sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+volnum,1+levnum,plrskl);
-                  gametext(160,170,tempbuf,0,2+8+16);
+                  sprintf(tempbuf,"PLAYERS: %-2ld                      ",savehead.numplr);
+                  gametext(160,156,tempbuf,0,2+8+16);
+                  sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+savehead.volnum,1+savehead.levnum,savehead.plrskl);
+                  gametext(160,168,tempbuf,0,2+8+16);
+				  if (savehead.volnum == 0 && savehead.levnum == 7)
+					  gametext(160,180,savehead.boardfn,0,2+8+16);
               }
               else menutext(69,70,0,0,"EMPTY");
           }
@@ -4135,15 +4160,17 @@ if (PLUTOPAK) {
               if( ud.savegame[probey][0] )
               {
                   if(lastprobey != probey)
-                      loadpheader(probey,&volnum,&levnum,&plrskl,&numplr);
+                      loadpheader(probey,&savehead);
                   lastprobey = probey;
                   rotatesprite(101<<16,97<<16,65536L>>1,512,MAXTILES-3,-32,0,4+10+64,0,0,xdim-1,ydim-1);
               }
               else menutext(69,70,0,0,"EMPTY");
               sprintf(tempbuf,"PLAYERS: %-2ld                      ",ud.multimode);
-              gametext(160,158,tempbuf,0,2+8+16);
+              gametext(160,156,tempbuf,0,2+8+16);
               sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+ud.volume_number,1+ud.level_number,ud.player_skill);
-              gametext(160,170,tempbuf,0,2+8+16);
+              gametext(160,168,tempbuf,0,2+8+16);
+			  if (ud.volume_number == 0 && ud.level_number == 7)
+				  gametext(160,180,boardfilename,0,2+8+16);
           }
 
             switch( x )

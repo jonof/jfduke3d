@@ -219,28 +219,35 @@ static int osdcmd_restartvid(const osdfuncparm_t *parm)
 
 static int osdcmd_vidmode(const osdfuncparm_t *parm)
 {
+	int newbpp = ScreenBPP, newwidth = ScreenWidth,
+		newheight = ScreenHeight, newfs = ScreenMode;
 	if (parm->numparms < 1 || parm->numparms > 4) return OSDCMD_SHOWHELP;
 
 	switch (parm->numparms) {
 		case 1:	// bpp switch
-			ScreenBPP = Batol(parm->parms[0]);
+			newbpp = Batol(parm->parms[0]);
 			break;
 		case 2: // res switch
-			ScreenWidth = Batol(parm->parms[0]);
-			ScreenHeight = Batol(parm->parms[1]);
+			newwidth = Batol(parm->parms[0]);
+			newheight = Batol(parm->parms[1]);
 			break;
 		case 3:	// res & bpp switch
 		case 4:
-			ScreenWidth = Batol(parm->parms[0]);
-			ScreenHeight = Batol(parm->parms[1]);
-			ScreenBPP = Batol(parm->parms[2]);
+			newwidth = Batol(parm->parms[0]);
+			newheight = Batol(parm->parms[1]);
+			newbpp = Batol(parm->parms[2]);
 			if (parm->numparms == 4)
-				ScreenMode = (Batol(parm->parms[3]) != 0);
+				newfs = (Batol(parm->parms[3]) != 0);
 			break;
 	}
 
-	if (setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP))
-		gameexit("vidmode: Mode change failed!\n");
+	if (setgamemode(newfs,newwidth,newheight,newbpp)) {
+		initprintf("vidmode: Mode change failed!\n");
+		if (setgamemode(ScreenMode, ScreenWidth, ScreenHeight, ScreenBPP))
+			gameexit("vidmode: Reset failed!\n");
+	}
+	ScreenBPP = newbpp; ScreenWidth = newwidth; ScreenHeight = newheight;
+	ScreenMode = newfs;
 	onvideomodechange(ScreenBPP>8);
 	vscrn();
 	return OSDCMD_OK;

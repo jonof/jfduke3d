@@ -80,7 +80,7 @@ char qe,cp;
 int32 CommandSoundToggleOff = 0;
 int32 CommandMusicToggleOff = 0;
 
-char confilename[128] = {"GAME.CON"},boardfilename[MAX_PATH] = {0};
+char confilename[128] = {"GAME.CON"},boardfilename[BMAX_PATH] = {0};
 char waterpal[768], slimepal[768], titlepal[768], drealms[768], endingpal[768];
 char firstdemofile[80] = { '\0' };
 
@@ -9092,6 +9092,7 @@ void dobonus(char bonusonly)
     long i, y,xfragtotal,yfragtotal;
     short bonuscnt;
 	int clockpad = 2;
+	char *lastmapname;
 
     long breathe[] =
     {
@@ -9111,6 +9112,12 @@ void dobonus(char bonusonly)
        350, 380,VICTORY1+8,86,59
     };
 
+	if (ud.volume_number == 0 && ud.last_level == 8 && boardfilename[0]) {
+		lastmapname = Bstrrchr(boardfilename,'\\');
+		if (!lastmapname) lastmapname = Bstrrchr(boardfilename,'/');
+		if (!lastmapname) lastmapname = boardfilename;
+	} else lastmapname = level_names[(ud.volume_number*11)+ud.last_level-1];
+	
     bonuscnt = 0;
 
     IFISSOFTMODE for(t=0;t<64;t+=7) palto(0,0,0,t);
@@ -9460,7 +9467,7 @@ void dobonus(char bonusonly)
 
     rotatesprite(0,0,65536L,0,BONUSSCREEN+gfx_offset,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
 
-    menutext(160,20-6,0,0,&level_names[(ud.volume_number*11)+ud.last_level-1][0]);
+	menutext(160,20-6,0,0,lastmapname);
     menutext(160,36-6,0,0,"COMPLETED");
 
     gametext(160,192,"PRESS ANY KEY TO CONTINUE",16,2+8+16);
@@ -9545,7 +9552,7 @@ void dobonus(char bonusonly)
                 }
             }
 
-            menutext(160,20-6,0,0,&level_names[(ud.volume_number*11)+ud.last_level-1][0]);
+            menutext(160,20-6,0,0,lastmapname);
             menutext(160,36-6,0,0,"COMPLETED");
 
             gametext(160,192,"PRESS ANY KEY TO CONTINUE",16,2+8+16);

@@ -27,7 +27,7 @@ CFLAGS=$(debug) -W -Wall -Werror-implicit-function-declaration \
 	-I$(INC) -I$(EINC) -I$(SRC)jmact -I$(SRC)jaudiolib -I../jfaud/inc \
 	$(ENGINEOPTS) -DNOCOPYPROTECT \
 	-DUSE_GCC_PRAGMAS
-LIBS=-lm -L../jfaud -ljfaud
+LIBS=-lm ../jfaud/jfaud.a # -L../jfaud -ljfaud
 NASMFLAGS=-s #-g
 EXESUFFIX=
 
