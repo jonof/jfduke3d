@@ -95,123 +95,6 @@ int32 ScreenBPP = 8;
 static char setupfilename[256]={SETUPFILENAME};
 static int32 scripthandle = -1;
 static int32 setupread=0;
-/*
-===================
-=
-= CONFIG_GetSetupFilename
-=
-===================
-*/
-#if 0
-#define MAXSETUPFILES 20
-void CONFIG_GetSetupFilename( void )
-   {
-   struct find_t fblock;
-   char extension[10];
-   char * src;
-   char * filenames[MAXSETUPFILES];
-   int32 numfiles;
-   int32 i;
-
-   strcpy(setupfilename,SETUPFILENAME);
-
-   // determine extension
-
-   src = setupfilename + strlen(setupfilename) - 1;
-
-   while (*src != '.')
-      {
-      src--;
-      }
-   strcpy (&extension[1],src);
-   extension[0] = '*';
-
-   numfiles=0;
-   if (_dos_findfirst(extension,0,&fblock)==0)
-      {
-      do
-         {
-         filenames[numfiles]=SafeMalloc(128);
-         strcpy(filenames[numfiles],fblock.name);
-         numfiles++;
-         if (numfiles == MAXSETUPFILES)
-            break;
-         }
-      while(!_dos_findnext(&fblock));
-      }
-   i = CheckParm (SETUPNAMEPARM);
-   if (i!=0)
-      {
-      numfiles = 0;
-      strcpy(setupfilename,_argv[i+1]);
-      }
-   if (numfiles>1)
-      {
-      int32 time;
-      int32 oldtime;
-      int32 count;
-
-      printf("\nMultiple Configuration Files Encountered\n");
-      printf("========================================\n");
-      printf("Please choose a configuration file from the following list by pressing its\n");
-      printf("corresponding letter:\n");
-      for (i=0;i<numfiles;i++)
-         {
-         if (strcmpi(filenames[i],SETUPFILENAME))
-            {
-            printf("%c. %s\n",'a'+(char)i,filenames[i]);
-            }
-         else
-            {
-            printf("%c. %s <DEFAULT>\n",'a'+(char)i,filenames[i]);
-            }
-         }
-      printf("\n");
-      printf("(%s will be used if no selection is made within 10 seconds.)\n\n",SETUPFILENAME);
-      KB_FlushKeyboardQueue();
-      KB_ClearKeysDown();
-      count = 9;
-      oldtime = clock();
-      time=clock()+(10*CLOCKS_PER_SEC);
-      while (clock()<time)
-         {
-         if (clock()>oldtime)
-            {
-            printf("%ld seconds left. \r",count);
-            fflush(stdout);
-            oldtime = clock()+CLOCKS_PER_SEC;
-            count--;
-            }
-         if (KB_KeyWaiting())
-            {
-            int32 ch = KB_Getch();
-            ch -='a';
-            if (ch>=0 && ch<numfiles)
-               {
-               strcpy (setupfilename, filenames[ch]);
-               break;
-               }
-            }
-         }
-      printf("\n\n");
-      }
-   if (numfiles==1)
-      strcpy (setupfilename, filenames[0]);
-   printf("Using Setup file: '%s'\n",setupfilename);
-   i=clock()+(3*CLOCKS_PER_SEC/4);
-   while (clock()<i)
-      {
-      ;
-      }
-   for (i=0;i<numfiles;i++)
-      {
-      SafeFree(filenames[i]);
-      }
-   }
-#endif
-void CONFIG_GetSetupFilename( void )
-{
-}
 
 
 /*
@@ -246,13 +129,13 @@ int32 CONFIG_FunctionNameToNum( char * func )
 
 char * CONFIG_FunctionNumToName( int32 func )
    {
-   if (func >= 0 && func < NUMGAMEFUNCTIONS)
+   if ((unsigned)func >= (unsigned)NUMGAMEFUNCTIONS)
       {
-      return gamefunctions[func];
+      return NULL;
       }
    else
       {
-      return NULL;
+      return gamefunctions[func];
       }
    }
 
@@ -798,8 +681,6 @@ void CONFIG_ReadSetup( void )
    if (ScreenBPP < 8) ScreenBPP = 8;
 
 #ifdef RENDERTYPEWIN
-   SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLUseCDS", (int32*)&glusecds);
-   if (glusecds) glusecds = 1;
    SCRIPT_GetNumber( scripthandle, "Screen Setup", "MaxRefreshFreq", (int32*)&maxrefreshfreq);
 #endif
 
@@ -845,19 +726,6 @@ void CONFIG_ReadSetup( void )
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "NumChannels",&NumChannels);
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "NumBits",&NumBits);
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "MixRate",&MixRate);
-   //SCRIPT_GetNumber( scripthandle, "Sound Setup", "MidiPort",&MidiPort);
-   //SCRIPT_GetNumber( scripthandle, "Sound Setup", "BlasterAddress",&dummy);
-   //BlasterConfig.Address = dummy;
-   //SCRIPT_GetNumber( scripthandle, "Sound Setup", "BlasterType",&dummy);
-   //BlasterConfig.Type = dummy;
-   //SCRIPT_GetNumber( scripthandle, "Sound Setup", "BlasterInterrupt",&dummy);
-   //BlasterConfig.Interrupt = dummy;
-   //SCRIPT_GetNumber( scripthandle, "Sound Setup", "BlasterDma8",&dummy);
-   //BlasterConfig.Dma8 = dummy;
-   //SCRIPT_GetNumber( scripthandle, "Sound Setup", "BlasterDma16",&dummy);
-   //BlasterConfig.Dma16 = dummy;
-   //SCRIPT_GetNumber( scripthandle, "Sound Setup", "BlasterEmu",&dummy);
-   //BlasterConfig.Emu = dummy;
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "ReverseStereo",&ReverseStereo);
 
    SCRIPT_GetNumber( scripthandle, "Controls","ControllerType",&ControllerType);
@@ -872,23 +740,9 @@ void CONFIG_ReadSetup( void )
 
    CONFIG_ReadKeys();
 
-   /*switch (ControllerType)
-      {
-      case controltype_keyboardandmouse:*/
-         CONFIG_SetupMouse(scripthandle);
-/*         break;
-      default:
-         CONFIG_SetupMouse(scripthandle);
-      case controltype_keyboardandjoystick:
-      case controltype_keyboardandflightstick:
-      case controltype_keyboardandthrustmaster:*/
-         CONFIG_SetupJoystick(scripthandle);
-/*         break;
-      case controltype_keyboardandgamepad:
-         CONFIG_SetupGamePad(scripthandle);
-         break;
+   CONFIG_SetupMouse(scripthandle);
+   CONFIG_SetupJoystick(scripthandle);
 
-      }*/
    setupread = 1;
    }
 
@@ -919,7 +773,6 @@ void CONFIG_WriteSetup( void )
    SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenMode",ScreenMode,false,false);	// JBF 20031206
    SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenBPP",ScreenBPP,false,false);	// JBF 20040523
 #ifdef RENDERTYPEWIN
-   SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLUseCDS",glusecds,false,false);
    SCRIPT_PutNumber( scripthandle, "Screen Setup", "MaxRefreshFreq",maxrefreshfreq,false,false);
 #endif
    SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLTextureMode",gltexfiltermode,false,false);

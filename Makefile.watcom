@@ -83,7 +83,6 @@ RENDERTYPE=WIN
 #GAMEOBJS+= $(EOBJ)winlayer.$o
 #EDITOROBJS+= $(EOBJ)winlayer.$o
 		
-CFLAGS+= -dmain=app_main
 LIBS+= dxguid.lib
 
 CFLAGS+= -d$(PLATFORM) -dRENDERTYPE$(RENDERTYPE)=1

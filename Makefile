@@ -24,7 +24,7 @@ CC=gcc
 # -Werror-implicit-function-declaration
 CFLAGS=$(debug) -W -Wall -Werror-implicit-function-declaration \
 	-Wno-char-subscripts -Wno-unused \
-	-march=pentium -funsigned-char -Dmain=app_main -DNO_GCC_BUILTINS \
+	-march=pentium -funsigned-char -DNO_GCC_BUILTINS \
 	-I$(INC) -I$(EINC) -I$(SRC)jmact -I$(SRC)jaudiolib -I../jfaud/inc \
 	$(ENGINEOPTS) -DNOCOPYPROTECT \
 	-DUSE_GCC_PRAGMAS
@@ -106,13 +106,13 @@ GAMEOBJS+= $(AUDIOLIBOBJ)
 all: duke3d$(EXESUFFIX) build$(EXESUFFIX)
 
 duke3d$(EXESUFFIX): $(GAMEOBJS) $(EOBJ)$(ENGINELIB)
-	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS) -Wl,-Map=$@.map
 #	-rm duke3d.sym$(EXESUFFIX)
 #	cp duke3d$(EXESUFFIX) duke3d.sym$(EXESUFFIX)
 #	strip duke3d$(EXESUFFIX)
 	
 build$(EXESUFFIX): $(EDITOROBJS) $(EOBJ)$(EDITORLIB) $(EOBJ)$(ENGINELIB)
-	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS) -Wl,-Map=$@.map
 #	-rm build.sym$(EXESUFFIX)
 #	cp build$(EXESUFFIX) build.sym$(EXESUFFIX)
 #	strip build$(EXESUFFIX)

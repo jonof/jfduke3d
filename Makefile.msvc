@@ -13,7 +13,7 @@ EDITORLIB=build.lib
 
 !if 0
 # debugging options
-flags_cl=/G5 /Ot /Z7
+flags_cl=/G6 /Ot /Z7
 flags_link=/DEBUG
 !else
 # release options
@@ -92,7 +92,6 @@ RENDERTYPE=WIN
 #GAMEOBJS=$(GAMEOBJS) $(EOBJ)winlayer.$o
 #EDITOROBJS=$(EDITOROBJS) $(EOBJ)winlayer.$o
 		
-CFLAGS=$(CFLAGS) /Dmain=app_main
 LIBS=$(LIBS) dxguid.lib winmm.lib wsock32.lib
 
 CFLAGS=$(CFLAGS) /D$(PLATFORM) /DRENDERTYPE$(RENDERTYPE)=1

@@ -2616,6 +2616,8 @@ void displayrest(long smoothratio)
 }
 
 
+#if 0
+// JBF: Now in the engine
 void updatesectorz(long x, long y, long z, short *sectnum)
 {
     walltype *wal;
@@ -2653,6 +2655,7 @@ void updatesectorz(long x, long y, long z, short *sectnum)
 
     *sectnum = -1;
 }
+#endif
 
 void view(struct player_struct *pp, long *vx, long *vy,long *vz,short *vsectnum, short ang, short horiz)
 {
@@ -7508,7 +7511,6 @@ void Startup(void)
 
 	//KB_Startup();	JBF
 
-	CONFIG_GetSetupFilename();
 	CONFIG_ReadSetup();
 
 	compilecons();	// JBF 20040116: Moved to below setup reading, because otherwise blown
@@ -10301,6 +10303,6 @@ Programming:   ( the functions I need )
 // move 1 in player???
 
 /*
- * vim:ts=4:tw=4:sw=4:
+ * vim:ts=4:sw=4:
  */
 
