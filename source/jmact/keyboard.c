@@ -153,6 +153,7 @@ static struct {
 };
 
 // translation table for turning scancode into ascii characters
+/*
 static char sctoasc[2][256] = {
 	{
 //      0    1    2    3    4    5    6    7    8    9    a    b    c    d    e    f
@@ -193,6 +194,7 @@ static char sctoasc[2][256] = {
 	0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0    // 0xf0
 	}
 };
+*/
 
 void KB_KeyEvent( kb_scancode scancode, boolean keypressed )
 {
@@ -202,11 +204,13 @@ void KB_KeyEvent( kb_scancode scancode, boolean keypressed )
 
 boolean KB_KeyWaiting( void )
 {
-	return (keyfifoplc != keyfifoend);
+	return bkbhit();
+//	return (keyfifoplc != keyfifoend);
 }
 
 char KB_Getch( void )
 {
+/*
 	unsigned char ch;
 	char shifted;
 	if (keyfifoplc == keyfifoend) return 0;
@@ -217,6 +221,8 @@ char KB_Getch( void )
 	if (ch >= 0x47 && ch <= 0x52) shifted = numpad;
 	
 	return sctoasc[shifted][ch];
+*/
+	return (char)bgetchar();
 }
 
 void KB_Addch( char ch )
@@ -225,7 +231,8 @@ void KB_Addch( char ch )
 
 void KB_FlushKeyboardQueue( void )
 {
-	keyfifoplc = keyfifoend = 0;
+	//keyfifoplc = keyfifoend = 0;
+	bflushchars();
 }
 
 void KB_ClearKeysDown( void )
@@ -233,7 +240,8 @@ void KB_ClearKeysDown( void )
 	int i;
 	for (i=0;i<256;i++) KB_KeyEvent(i,0);	// JBF 20040717: Hopefully this fixes problems with stuck functions once and for all
 	memset(keystatus, 0, sizeof(keystatus));
-	keyfifoplc = keyfifoend = 0;
+	//keyfifoplc = keyfifoend = 0;
+	bflushchars();
 }
 
 char *KB_ScanCodeToString( kb_scancode scancode )
