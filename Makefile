@@ -24,7 +24,7 @@ CC=gcc
 # -Werror-implicit-function-declaration
 CFLAGS=$(debug) -W -Wall -Werror-implicit-function-declaration \
 	-Wno-char-subscripts -Wno-unused \
-	-march=pentium -funsigned-char -DNO_GCC_BUILTINS \
+	-march=pentium -funsigned-char -fno-strict-aliasing -DNO_GCC_BUILTINS \
 	-I$(INC) -I$(EINC) -I$(SRC)jmact -I$(SRC)jaudiolib -I../jfaud/inc \
 	$(ENGINEOPTS) -DNOCOPYPROTECT \
 	-DUSE_GCC_PRAGMAS

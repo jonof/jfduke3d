@@ -467,59 +467,6 @@ void CONFIG_SetupMouse( int32 scripthandle )
 /*
 ===================
 =
-= CONFIG_SetupGamePad
-=
-===================
-*/
-
-void CONFIG_SetupGamePad( int32 scripthandle )
-   {
-   int32 i;
-   char str[80];
-   char temp[80];
-   int32 function;
-
-
-   for (i=0;i<MAXJOYBUTTONS;i++)
-      {
-      Bsprintf(str,"JoystickButton%ld",i);
-      Bmemset(temp,0,sizeof(temp));
-      SCRIPT_GetString( scripthandle,"Controls", str,temp);
-      function = CONFIG_FunctionNameToNum(temp);
-      if (function != -1)
-         CONTROL_MapButton( function, i, false, controldevice_gamepad );
-	  
-      Bsprintf(str,"JoystickButtonClicked%ld",i);
-      Bmemset(temp,0,sizeof(temp));
-      SCRIPT_GetString( scripthandle,"Controls", str,temp);
-      function = CONFIG_FunctionNameToNum(temp);
-      if (function != -1)
-         CONTROL_MapButton( function, i, true, controldevice_gamepad );
-      }
-   // map over the axes
-   for (i=0;i<MAXGAMEPADAXES;i++)
-      {
-      Bsprintf(str,"GamePadDigitalAxes%ld_0",i);
-      Bmemset(temp,0,sizeof(temp));
-      SCRIPT_GetString(scripthandle, "Controls", str,temp);
-      function = CONFIG_FunctionNameToNum(temp);
-      if (function != -1)
-         CONTROL_MapDigitalAxis( i, function, 0, controldevice_gamepad );
-	  
-      Bsprintf(str,"GamePadDigitalAxes%ld_1",i);
-      Bmemset(temp,0,sizeof(temp));
-      SCRIPT_GetString(scripthandle, "Controls", str,temp);
-      function = CONFIG_FunctionNameToNum(temp);
-      if (function != -1)
-         CONTROL_MapDigitalAxis( i, function, 1, controldevice_gamepad );
-      }
-   SCRIPT_GetNumber( scripthandle, "Controls","JoystickPort",&function);
-   CONTROL_JoystickPort = function;
-   }
-
-/*
-===================
-=
 = CONFIG_SetupJoystick
 =
 ===================
@@ -600,11 +547,6 @@ void CONFIG_SetupJoystick( int32 scripthandle )
       SCRIPT_GetNumber(scripthandle, "Controls", str,&scale);
       JoystickAnalogueSaturate[i] = scale;
 	  }
-   // read in JoystickPort
-   SCRIPT_GetNumber( scripthandle, "Controls","JoystickPort",&function);
-   CONTROL_JoystickPort = function;
-   // read in rudder state
-   SCRIPT_GetNumber( scripthandle, "Controls","EnableRudder",&CONTROL_RudderEnabled);
    }
 
 void readsavenames(void)
@@ -811,9 +753,6 @@ void CONFIG_WriteSetup( void )
        SCRIPT_PutNumber( scripthandle, "Misc",buf,ud.wchoice[myconnectindex][dummy],false,false);
    }
 
-   //switch (ControllerType)
-   //   {
-   //   case controltype_keyboardandmouse:
 	for (dummy=0;dummy<MAXMOUSEBUTTONS;dummy++) {
 		Bsprintf(buf,"MouseButton%ld",dummy);
 		SCRIPT_PutString( scripthandle,"Controls", buf, CONFIG_FunctionNumToName( MouseFunctions[dummy][0] ));
@@ -865,8 +804,6 @@ void CONFIG_WriteSetup( void )
 		Bsprintf(buf,"JoystickAnalogSaturate%ld",dummy);
 		SCRIPT_PutNumber(scripthandle, "Controls", buf, JoystickAnalogueSaturate[dummy], false, false);
 	}
-	//     break;
-    //  }
 
    SCRIPT_PutString( scripthandle, "Comm Setup","PlayerName",&myname[0]);
 

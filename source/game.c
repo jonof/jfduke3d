@@ -7509,8 +7509,6 @@ void Startup(void)
 {
 	int i;
 
-	//KB_Startup();	JBF
-
 	CONFIG_ReadSetup();
 
 	compilecons();	// JBF 20040116: Moved to below setup reading, because otherwise blown
@@ -7554,16 +7552,15 @@ void Startup(void)
 	   exit(1);
 	}
 
-	CONTROL_Startup( ControllerType, &GetTime, TICRATE );
+	if (CONTROL_Startup( ControllerType, &GetTime, TICRATE )) {
+		uninitengine();
+		exit(1);
+	}
 
 	// JBF 20040215: evil and nasty place to do this, but joysticks are evil and nasty too
-	if (ControllerType == controltype_keyboardandjoystick ||
-	ControllerType == controltype_keyboardandgamepad ||
-	ControllerType == controltype_keyboardandflightstick ||
-	ControllerType == controltype_keyboardandthrustmaster) {
-		int axof[] = { 0, 1, 5, 2 };
-		for (i=0;i<4;i++)
-			setjoydeadzone(axof[i],JoystickAnalogueDead[i],JoystickAnalogueSaturate[i]);
+	if (ControllerType == controltype_keyboardandjoystick) {
+		for (i=0;i<joynumaxes;i++)
+			setjoydeadzone(i,JoystickAnalogueDead[i],JoystickAnalogueSaturate[i]);
 	}
 
 	inittimer(TICRATE);
@@ -7952,7 +7949,8 @@ if (VOLUMEALL) {
 
     if( setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP) < 0 )
     {
-        initprintf("VESA driver for ( %i * %i ) not found/supported!\n",xdim,ydim);
+        initprintf("Failure setting video mode %dx%dx%d %s! Attempting safer mode...",
+				ScreenWidth,ScreenHeight,ScreenBPP,ScreenMode?"fullscreen":"windowed");
         ScreenMode = 0;		// JBF: was 2
         ScreenWidth = 320;
         ScreenHeight = 240;	// JBF: was 200

@@ -281,8 +281,6 @@ boolean KB_KeypadActive( void )
 
 void KB_Startup( void )
 {
-	initinput();
-
 	numpad = 0;
 }
 

@@ -2962,7 +2962,7 @@ if (PLUTOPAK) {
 		    currentlist = 0;
 		case 4:
 		case 5:
-			if (x==5 && (!CONTROL_JoystickEnabled || !CONTROL_JoysPresent[0])) break;
+			if (x==5 && (!CONTROL_JoystickEnabled || !CONTROL_JoyPresent)) break;
 		    cmenu(204+x-3);
 		    break;
 
@@ -2978,7 +2978,7 @@ if (PLUTOPAK) {
 	    menutext(160,c-18,      0,0,"VIDEO SETTINGS");
 	    menutext(160,c,         0,0,"KEYS SETUP");
 	    menutext(160,c+18,      0,0,"MOUSE SETUP");
-		menutext(160,c+18+18,   0,CONTROL_JoysPresent[0]==0 || CONTROL_JoystickEnabled==0,"JOYSTICK SETUP");
+		menutext(160,c+18+18,   0,CONTROL_JoyPresent==0 || CONTROL_JoystickEnabled==0,"JOYSTICK SETUP");
 #ifndef AUSTRALIA
 		menutext(160,c+18+18+18,0,0,"PARENTAL LOCK");
 #else

@@ -270,7 +270,7 @@ void ExtPreLoadMap(void)
 {
 }
 
-void ExtLoadMap(char *mapname)
+void ExtLoadMap(const char *mapname)
 {
 	long i;
 	long sky=0;
@@ -1951,7 +1951,7 @@ int ExtInit(void)
 				"There was a problem initialising the Build engine: %s", engineerrstr);
 		return -1;
 	}
-	initinput();
+	if (initinput()) return -1;
 	// if (option[3] != 0) moustat =
                 initmouse();
 

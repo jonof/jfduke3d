@@ -44,7 +44,6 @@ extern "C" {
 //
 //***************************************************************************
 
-#define MaxJoys             1
 #define MAXGAMEBUTTONS      64
 
 #define BUTTON(x) \
@@ -125,19 +124,14 @@ typedef enum
    {
    controltype_keyboard,
    controltype_keyboardandmouse,
-   controltype_keyboardandjoystick,
-   controltype_keyboardandexternal,
-   controltype_keyboardandgamepad,
-   controltype_keyboardandflightstick,
-   controltype_keyboardandthrustmaster
+   controltype_keyboardandjoystick
    } controltype;
 
 typedef enum
    {
    controldevice_keyboard,
    controldevice_mouse,
-   controldevice_joystick,
-   controldevice_gamepad
+   controldevice_joystick
    } controldevice;
 
 
@@ -147,12 +141,10 @@ typedef enum
 //
 //***************************************************************************
 
-extern boolean  CONTROL_RudderEnabled;
 extern boolean  CONTROL_MousePresent;
-extern boolean  CONTROL_JoysPresent[ MaxJoys ];
+extern boolean  CONTROL_JoyPresent;
 extern boolean  CONTROL_MouseEnabled;
 extern boolean  CONTROL_JoystickEnabled;
-extern byte     CONTROL_JoystickPort;
 extern uint32   CONTROL_ButtonState1;
 extern uint32   CONTROL_ButtonHeldState1;
 extern uint32   CONTROL_ButtonState2;
@@ -192,7 +184,7 @@ void CONTROL_CenterJoystick
    );
 int32 CONTROL_GetMouseSensitivity( void );
 void CONTROL_SetMouseSensitivity( int32 newsensitivity );
-void CONTROL_Startup
+int32 CONTROL_Startup
    (
    controltype which,
    int32 ( *TimeFunction )( void ),

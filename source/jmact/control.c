@@ -39,12 +39,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "osd.h"
 
-boolean  CONTROL_RudderEnabled;
 boolean  CONTROL_MousePresent;
-boolean  CONTROL_JoysPresent[ MaxJoys ];
+boolean  CONTROL_JoyPresent;
 boolean  CONTROL_MouseEnabled;
 boolean  CONTROL_JoystickEnabled;
-byte     CONTROL_JoystickPort;
 uint32   CONTROL_ButtonState1;
 uint32   CONTROL_ButtonHeldState1;
 uint32   CONTROL_ButtonState2;
@@ -124,7 +122,6 @@ void CONTROL_MapButton
 			else mousebuttonfunctions[whichbutton] = 1+whichfunction;
 			break;
 		case controldevice_joystick:
-		case controldevice_gamepad:
 			if (whichbutton >= MAXJOYBUTTONS) break;
 			if (doubleclicked) joydblbuttonfunctions[whichbutton] = 1+whichfunction;
 			else joybuttonfunctions[whichbutton] = 1+whichfunction;
@@ -195,6 +192,20 @@ void CONTROL_GetUserInput( UserInput *info )
 	info->button0 = 0;
 	info->button1 = 0;
 	info->dir = dir_None;
+
+	if (KB_KeyDown[sc_kpad_8] || KB_KeyDown[sc_UpArrow])
+		info->dir = dir_North;
+	else if (KB_KeyDown[sc_kpad_2] || KB_KeyDown[sc_DownArrow])
+		info->dir = dir_South;
+	else if (KB_KeyDown[sc_kpad_4] || KB_KeyDown[sc_LeftArrow])
+		info->dir = dir_West;
+	else if (KB_KeyDown[sc_kpad_6] || KB_KeyDown[sc_RightArrow])
+		info->dir = dir_East;
+
+	if (KB_KeyDown[sc_Space] || KB_KeyDown[sc_Enter] || KB_KeyDown[sc_kpad_Enter])
+		info->button0 = 1;
+	if (KB_KeyDown[sc_Escape])
+		info->button1 = 1;
 }
 
 
@@ -258,7 +269,7 @@ void CONTROL_GetInput( ControlInfo *info )
 		}
 	}
 
-	if (CONTROL_JoystickEnabled && CONTROL_JoysPresent[0]) {
+	if (CONTROL_JoystickEnabled && CONTROL_JoyPresent) {
 		for (j=0; j<MAXJOYAXES && j<joynumaxes; j++) {
 			if (joyaxismapping[j])
 				axisvalue[joyaxismapping[j]-1] += ((joyaxis[j]>>5) * joyaxisscaling[j]) >> 16;
@@ -378,7 +389,7 @@ void CONTROL_SetMouseSensitivity( int32 newsensitivity )
 }
 
 
-void CONTROL_Startup
+int32 CONTROL_Startup
    (
    controltype which,
    int32 ( *TimeFunction )( void ),
@@ -391,31 +402,27 @@ void CONTROL_Startup
 	timetics = ticspersecond;
 	timedbldelay = DoubleClickDelay/(1000/timetics);
 	
-	CONTROL_RudderEnabled = 0;
 	CONTROL_MousePresent = 0;
-	for (i=0; i<MaxJoys; i++) CONTROL_JoysPresent[i] = 0;
+	CONTROL_JoyPresent = 0;
 	CONTROL_MouseEnabled = 0;
 	CONTROL_JoystickEnabled = 0;
-	CONTROL_JoystickPort = 0;
 	CONTROL_ButtonState1 = 0;
 	CONTROL_ButtonHeldState1 = 0;
 	CONTROL_ButtonState2 = 0;
 	CONTROL_ButtonHeldState2 = 0;
 //	CONTROL_ClearAssignments();
 
-	initinput();
+	if (initinput()) return -1;
 	setkeypresscallback((KeyPressCallback)KB_KeyEvent);		// JBF 20030910: little stricter on the typing
 	setmousepresscallback((MousePressCallback)CONTROL_MouseEvent);
 	setjoypresscallback((JoyPressCallback)CONTROL_JoyEvent);
 
 	CONTROL_MousePresent = MOUSE_Init();
 	CONTROL_MouseEnabled = (CONTROL_MousePresent && which == controltype_keyboardandmouse);
-	CONTROL_JoysPresent[0] = ((inputdevices&4) == 4);
-	CONTROL_JoystickEnabled = (CONTROL_JoysPresent[0] && 
-			(which == controltype_keyboardandjoystick ||
-			 which == controltype_keyboardandgamepad ||
-			 which == controltype_keyboardandflightstick ||
-			 which == controltype_keyboardandthrustmaster));
+	CONTROL_JoyPresent = ((inputdevices&4) == 4);
+	CONTROL_JoystickEnabled = (CONTROL_JoyPresent && which == controltype_keyboardandjoystick);
+
+	return 0;
 }
 
 
@@ -452,7 +459,6 @@ void CONTROL_MapAnalogAxis
 			mouseaxismapping[whichaxis] = whichanalog+1;
 			break;
 		case controldevice_joystick:
-		case controldevice_gamepad:
 			if (whichaxis >= MAXJOYAXES) break;
 			joyaxismapping[whichaxis] = whichanalog+1;
 			break;
@@ -478,7 +484,6 @@ void CONTROL_MapDigitalAxis
 			mousedigitalfunctions[whichaxis][direction] = whichfunction+1;
 			break;
 		case controldevice_joystick:
-		case controldevice_gamepad:
 			if (whichaxis >= MAXJOYAXES) break;
 			if (direction >= 2) break;
 			joydigitalfunctions[whichaxis][direction] = whichfunction+1;
@@ -503,7 +508,6 @@ void CONTROL_SetAnalogAxisScale
 			mouseaxisscaling[whichaxis] = axisscale;
 			break;
 		case controldevice_joystick:
-		case controldevice_gamepad:
 			if (whichaxis >= MAXJOYAXES) break;
 			joyaxisscaling[whichaxis] = axisscale;
 			break;
