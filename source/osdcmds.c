@@ -35,11 +35,15 @@ int osdcmd_changelevel(const osdfuncparm_t *parm)
 	char *p;
 
 	if (!VOLUMEONE) {
+		if (parm->numparms != 2) return OSDCMD_SHOWHELP;
+
 		volume = strtol(parm->parms[0], &p, 10) - 1;
 		if (p[0]) return OSDCMD_SHOWHELP;
 		level = strtol(parm->parms[1], &p, 10) - 1;
 		if (p[0]) return OSDCMD_SHOWHELP;
 	} else {
+		if (parm->numparms != 1) return OSDCMD_SHOWHELP;
+
 		level = strtol(parm->parms[0], &p, 10) - 1;
 		if (p[0]) return OSDCMD_SHOWHELP;
 	}
@@ -104,6 +108,8 @@ int osdcmd_map(const osdfuncparm_t *parm)
 	int i;
 	char filename[256];
 
+	if (parm->numparms != 1) return OSDCMD_SHOWHELP;
+	
 	strcpy(filename,parm->parms[0]);
 	if( strchr(filename,'.') == 0)
         	strcat(filename,".map");
@@ -172,6 +178,8 @@ int osdcmd_fileinfo(const osdfuncparm_t *parm)
 	int i,j;
 	char buf[256];
 
+	if (parm->numparms != 1) return OSDCMD_SHOWHELP;
+	
 	if ((i = kopen4load((char *)parm->parms[0],0)) < 0) {
 		OSD_Printf("Error: File \"%s\" does not exist.\n", parm->parms[0]);
 		return OSDCMD_OK;
@@ -202,7 +210,8 @@ static int osdcmd_restartvid(const osdfuncparm_t *parm)
 	
 	resetvideomode();
 	if (setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP))
-		OSD_Printf("restartvid: Reset failed...\n");
+		gameexit("restartvid: Reset failed...\n");
+	onvideomodechange(ScreenBPP>8);
 	vscrn();
 
 	return OSDCMD_OK;
@@ -210,7 +219,7 @@ static int osdcmd_restartvid(const osdfuncparm_t *parm)
 
 static int osdcmd_vidmode(const osdfuncparm_t *parm)
 {
-	if (parm->numparms < 1 || parm->numparms > 3) return OSDCMD_SHOWHELP;
+	if (parm->numparms < 1 || parm->numparms > 4) return OSDCMD_SHOWHELP;
 
 	switch (parm->numparms) {
 		case 1:	// bpp switch
@@ -221,14 +230,18 @@ static int osdcmd_vidmode(const osdfuncparm_t *parm)
 			ScreenHeight = Batol(parm->parms[1]);
 			break;
 		case 3:	// res & bpp switch
+		case 4:
 			ScreenWidth = Batol(parm->parms[0]);
 			ScreenHeight = Batol(parm->parms[1]);
 			ScreenBPP = Batol(parm->parms[2]);
+			if (parm->numparms == 4)
+				ScreenMode = (Batol(parm->parms[3]) != 0);
 			break;
 	}
 
-	if (setgamemode(fullscreen,ScreenWidth,ScreenHeight,ScreenBPP))
-		OSD_Printf("vidmode: Mode change failed!\n");
+	if (setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP))
+		gameexit("vidmode: Mode change failed!\n");
+	onvideomodechange(ScreenBPP>8);
 	vscrn();
 	return OSDCMD_OK;
 }
@@ -246,17 +259,7 @@ static int osdcmd_setstatusbarscale(const osdfuncparm_t *parm)
 }
 
 
-int osdcmd_validatebool(void *a)
-{
-	int *i = (int *)a;
-
-	if (*i>0) *i = 1;
-	else *i = 0;
-
-	return 1;
-}
-
-static void onvideomodechange(int newmode)
+void onvideomodechange(int newmode)
 {
 	char *pal;
 
@@ -279,31 +282,30 @@ int registerosdcommands(void)
 {
 	osdcmd_cheatsinfo_stat.cheatnum = -1;
 
-	OSD_RegisterFunction("echo",0,"echo [text]: echoes text to the console", osdcmd_echo);
+	OSD_RegisterFunction("echo","echo [text]: echoes text to the console", osdcmd_echo);
 
 if (VOLUMEONE) {
-	OSD_RegisterFunction("changelevel",1,"changelevel <level>: warps to the given level", osdcmd_changelevel);
+	OSD_RegisterFunction("changelevel","changelevel <level>: warps to the given level", osdcmd_changelevel);
 } else {
-	OSD_RegisterFunction("changelevel",2,"changelevel <volume> <level>: warps to the given level", osdcmd_changelevel);
-	OSD_RegisterFunction("map",1,"map <mapfile>: loads the given user map", osdcmd_map);
+	OSD_RegisterFunction("changelevel","changelevel <volume> <level>: warps to the given level", osdcmd_changelevel);
+	OSD_RegisterFunction("map","map <mapfile>: loads the given user map", osdcmd_map);
 }
-	OSD_RegisterFunction("god",0,"god: toggles god mode", osdcmd_god);
-	OSD_RegisterFunction("noclip",0,"noclip: toggles clipping mode", osdcmd_noclip);
+	OSD_RegisterFunction("god","god: toggles god mode", osdcmd_god);
+	OSD_RegisterFunction("noclip","noclip: toggles clipping mode", osdcmd_noclip);
 
-	OSD_RegisterFunction("setstatusbarscale",0,"setstatusbarscale [percent]: changes the status bar scale", osdcmd_setstatusbarscale);
+	OSD_RegisterFunction("setstatusbarscale","setstatusbarscale [percent]: changes the status bar scale", osdcmd_setstatusbarscale);
 	
-	OSD_RegisterFunction("fileinfo",1,"fileinfo <file>: gets a file's information", osdcmd_fileinfo);
-	OSD_RegisterFunction("quit",0,"quit: exits the game immediately", osdcmd_quit);
+	OSD_RegisterFunction("fileinfo","fileinfo <file>: gets a file's information", osdcmd_fileinfo);
+	OSD_RegisterFunction("quit","quit: exits the game immediately", osdcmd_quit);
 
 	OSD_RegisterVariable("myname",OSDVAR_STRING,myname,32,NULL);
-	OSD_RegisterVariable("showfps",OSDVAR_INTEGER,&ud.tickrate,1,osdcmd_validatebool);
-	OSD_RegisterVariable("showcoords",OSDVAR_INTEGER,&ud.coords,1,osdcmd_validatebool);
+	OSD_RegisterVariable("showfps",OSDVAR_INTEGER,&ud.tickrate,1,osd_internal_validate_boolean);
+	OSD_RegisterVariable("showcoords",OSDVAR_INTEGER,&ud.coords,1,osd_internal_validate_boolean);
 
-	OSD_RegisterVariable("bpp", OSDVAR_INTEGER, &ScreenBPP, 0, osd_internal_validate_integer);
-	OSD_RegisterFunction("restartvid",0,"restartvid: reinitialised the video mode",osdcmd_restartvid);
-	OSD_RegisterFunction("vidmode",1,"vidmode [xdim ydim] [bpp]: immediately change the video mode",osdcmd_vidmode);
+	OSD_RegisterFunction("restartvid","restartvid: reinitialised the video mode",osdcmd_restartvid);
+	OSD_RegisterFunction("vidmode","vidmode [xdim ydim] [bpp] [fullscreen]: immediately change the video mode",osdcmd_vidmode);
 	
-	baselayer_onvideomodechange = onvideomodechange;
+	//baselayer_onvideomodechange = onvideomodechange;
 
 	return 0;
 }

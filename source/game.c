@@ -6919,6 +6919,7 @@ void checkcommandline(int argc,char **argv)
         while(i < argc)
         {
             c = argv[i];
+			if (isvalidipaddress(c)) { i++; continue; }
             if(*c == '-')
             {
 				if (!Bstrcasecmp(c+1,"net")) break;
@@ -6995,6 +6996,9 @@ void checkcommandline(int argc,char **argv)
                             CommandMusicToggleOff = 1;
                             initprintf("Music off.\n");
                         }
+						else if (*c == '0') { networkmode = 0; initprintf("Network Mode %d\n",networkmode); }
+						else if (*c == '1') { networkmode = 1; initprintf("Network Mode %d\n",networkmode); }
+						else if (!Bstrcasecmp("et",c)) ; //Consume "-net"
                         else
                         {
                             comlinehelp(argv);
@@ -7836,6 +7840,9 @@ if (VOLUMEONE) {
     OSD_SetParameters(0,2, 0,0, 4,0);
     registerosdcommands();
     Startup();
+
+	// KJS: Hack to make sure ps[*].palette is never NULL!
+    //for(i=connecthead;i>=0;i=connectpoint2[i]) ps[i].palette = palette;
 
     if (!loaddefinitionsfile("duke3d.def")) initprintf("Definitions file loaded.\n");
 

@@ -314,6 +314,7 @@ int loadplayer(signed char spot)
          if (kdfread(&numsectors,2,1,fil) != 1) goto corrupt;
      if (kdfread(&sector[0],sizeof(sectortype),MAXSECTORS,fil) != MAXSECTORS) goto corrupt;
          if (kdfread(&sprite[0],sizeof(spritetype),MAXSPRITES,fil) != MAXSPRITES) goto corrupt;
+		 if (kdfread(&spriteext[0],sizeof(spriteexttype),MAXSPRITES,fil) != MAXSPRITES) goto corrupt;
          if (kdfread(&headspritesect[0],2,MAXSECTORS+1,fil) != MAXSECTORS+1) goto corrupt;
          if (kdfread(&prevspritesect[0],2,MAXSPRITES,fil) != MAXSPRITES) goto corrupt;
          if (kdfread(&nextspritesect[0],2,MAXSPRITES,fil) != MAXSPRITES) goto corrupt;
@@ -592,6 +593,7 @@ int saveplayer(signed char spot)
          dfwrite(&numsectors,2,1,fil);
      dfwrite(&sector[0],sizeof(sectortype),MAXSECTORS,fil);
          dfwrite(&sprite[0],sizeof(spritetype),MAXSPRITES,fil);
+		 dfwrite(&spriteext[0],sizeof(spriteexttype),MAXSPRITES,fil);
          dfwrite(&headspritesect[0],2,MAXSECTORS+1,fil);
          dfwrite(&prevspritesect[0],2,MAXSPRITES,fil);
          dfwrite(&nextspritesect[0],2,MAXSPRITES,fil);
@@ -3250,8 +3252,8 @@ if (PLUTOPAK) {
 		    		if (setgamemode(pfs, pxdim, pydim, pbpp) < 0) {
 						setrendermode(prend);
 						gameexit("Failed restoring old video mode.");
-					}
-				}
+					} else onvideomodechange(pbpp > 8);
+				} else onvideomodechange(nbpp > 8);
 				vscrn();
 				setrendermode(nrend);
 

@@ -35,11 +35,18 @@
 
 #define UNITSPERMETRE 512.0
 
-static int call_open(const char *fn) { return kopen4load(fn,0); }
-static int call_close(int h) { kclose(h); return 0; }
-static int call_read(int h, void *buf, int len) { return kread(h,buf,len); }
-static int call_seek(int h, int off, int whence) { return klseek(h,off,whence); }
-static int call_tell(int h) { return ktell(h); }
+static int call_open(const char *fn, const char *subfn, JFAudFH *h, JFAudRawFormat **raw)
+{
+	*raw = NULL;
+	memset(h, 0, sizeof(JFAudFH));
+	h->fh = kopen4load(fn,0);
+	return h->fh;
+}
+static int call_close(JFAudFH *h) { kclose(h->fh); return 0; }
+static int call_read(JFAudFH *h, void *buf, int len) { return kread(h->fh,buf,len); }
+static int call_seek(JFAudFH *h, int off, int whence) { return klseek(h->fh,off,whence); }
+static int call_tell(JFAudFH *h) { return ktell(h->fh); }
+static int call_filelen(JFAudFH *h) { return kfilelength(h->fh); }
 static void call_logmsg(const char *str) { initprintf("%s\n",str); }
 
 // this whole handle list could probably be done a whole lot more efficiently
@@ -109,10 +116,10 @@ static float translatepitch(int p)
 
 void SoundStartup(void)
 {
-	struct jfaud_init_params parms = {
+	JFAudCfg parms = {
 		"", "", "",	// wave, midi, cda
-		0, 0,		// #chans, fxsamplerate
-		call_open, call_close, call_read, call_seek, call_tell, call_logmsg
+		0, 0, 1,	// #chans, fxsamplerate, synchronous
+		call_open, call_close, call_read, call_seek, call_tell, call_filelen, call_logmsg
 	};
 	int i;
 	jfauderr err;
@@ -123,13 +130,13 @@ void SoundStartup(void)
 	parms.maxvoices = min(AbsoluteMaxVoices,NumVoices);
 	inited = 0;
 
-	err = jfaud_init(&parms);
+	JFAud_setdebuglevel(0);//DEBUGLVL_ALL);
+	
+	err = JFAud_init(&parms);
 	if (err != jfauderr_ok) {
-		initprintf("Audio initialisation error: %s\n", jfauderr_getstring(err));
+		initprintf("Audio initialisation error: %s\n", JFAud_errstr(err));
 		return;
 	}
-
-	jfaud_simulateaudiolib(1);
 
 	inited = 1;
 	
@@ -142,9 +149,9 @@ void SoundShutdown(void)
 
 	if (!inited) return;
 
-	err = jfaud_uninit();
+	err = JFAud_uninit();
 	if (err != jfauderr_ok) {
-		initprintf("Audio uninitialisation error: %s\n", jfauderr_getstring(err));
+		initprintf("Audio uninitialisation error: %s\n", JFAud_errstr(err));
 		return;
 	}
 
@@ -162,20 +169,20 @@ void MusicShutdown(void)
 void AudioUpdate(void)
 {
 	int i;
-	jfaudplaymode pm;
+	JFAudPlayMode pm;
 	
 	if (!inited) return;
 
-	jfaud_update();
+	JFAud_update();
 	
 	for (i=AbsoluteMaxVoices-1;i>=0;i--) {
 		if (sfx[i].handle < 0) continue;
 
-		if (jfaud_getsoundplaymode(sfx[i].handle, &pm) != jfauderr_ok) continue;
+		if (JFAud_getsoundplaymode(sfx[i].handle, &pm) != jfauderr_ok) continue;
 		//OSD_Printf("sfx(%s) handle=%d playmode=%d\n",sounds[ sfx[i].soundnum ],sfx[i].handle,pm);
-		if (pm != jfaud_stopped) continue;
+		if (pm != JFAudPlayMode_stopped) continue;
 
-		jfaud_setsoundplaymode(sfx[i].handle, jfaud_stopped);	// release the channel
+		JFAud_killsound(sfx[i].handle);	// release the channel
 		sfx[i].handle = -1;
 		Sound[sfx[i].soundnum].num--;
 	}
@@ -216,9 +223,9 @@ void playmusic(char *fn)
 
 	if (!inited) return;
 
-	err = jfaud_playmusic(fn, 1.0, 1, jfaud_playing);
+	err = JFAud_playmusic(fn, NULL, JFAudPlayMode_playing, 0, NULL);
 	if (err != jfauderr_ok) {
-		initprintf("Music playback failed: %s\n", jfauderr_getstring(err));
+		initprintf("Music playback failed: %s\n", JFAud_errstr(err));
 		return;
 	}
 }
@@ -241,12 +248,13 @@ int isspritemakingsound(short i, int num)	// if num<0, check if making any sound
 
 	return -1;
 }
-
+#include <math.h>
 int xyzsound(short num, short i, long x, long y, long z)	// x,y,z is sound origin
 {
-	float pitch=1.0, gain=1.0;
+	float pitch=1.0, gain=1.0, rolloff=1.0;
 	char loop=0, global=0;
 	int handl;
+	JFAudProp props[6];
 	jfauderr err;
 	
 	if (!inited ||
@@ -284,8 +292,8 @@ int xyzsound(short num, short i, long x, long y, long z)	// x,y,z is sound origi
 	}
 	
 	// This does the ranging of musicandsfx heard distance
-	//if( i >= 0 && (soundm[num]&16) == 0 && PN == MUSICANDSFX && SLT < 999 && (sector[SECT].lotag&0xff) < 9 )
-	//	sndist = divscale14(sndist,(SHT+1));
+	if( i >= 0 && (soundm[num]&16) == 0 && PN == MUSICANDSFX && SLT < 999 && (sector[SECT].lotag&0xff) < 9 )
+		rolloff = (powf(10,1.0/20.0) - 1) / (((float)(SHT+1)/UNITSPERMETRE - 1.0)/1.0);
 
 	{
 		short pitchvar, pitchbase;
@@ -302,7 +310,6 @@ int xyzsound(short num, short i, long x, long y, long z)	// x,y,z is sound origi
 		}
 	}
 	
-	/*
 	gain += (float)soundvo[num]/(150.0*64.0);
 	if (gain < 0.0) gain = 0.0; else if (gain > 1.0) gain = 1.0;
 
@@ -317,8 +324,7 @@ int xyzsound(short num, short i, long x, long y, long z)	// x,y,z is sound origi
 		case PIPEBOMB_EXPLODE:
 		case LASERTRIP_EXPLODE:
 		case RPG_EXPLODE:
-			//if(sndist > (6144) )	// explosions get no louder than (6144>>6) == 96 (max volume is 150)
-			//	sndist = 6144;
+			global = 1;
 			if(sector[ps[screenpeek].cursectnum].lotag == 2)
 				pitch *= translatepitch(-1200);
 			break;
@@ -336,34 +342,47 @@ int xyzsound(short num, short i, long x, long y, long z)	// x,y,z is sound origi
 		else if( Sound[num].num > 1 ) stopsound(num);
 		else if( badguy(&sprite[i]) && sprite[i].extra <= 0 ) stopsound(num);
 	}
-	*/
-
-	// I think this is just here to set the minimum volume of any playing sound...
-	//if(sndist < ((255-LOUDESTVOLUME)<<6) )
-        //	sndist = ((255-LOUDESTVOLUME)<<6);
 
 	if (soundm[num] & 1) loop = 1;
 	if (soundm[num] & 16) global = 1;
 
+	if (global) rolloff=0.0;
+
+	props[0].prop = JFAudProp_pitch;
+	props[0].val.f = pitch;
+	props[1].prop = JFAudProp_gain;
+	props[1].val.f = gain;
+	props[2].prop = JFAudProp_fx;
+	props[2].val.i = 1|2;	// 1=nearest, 2=stereo2mono
+	
 	if (PN == APLAYER && sprite[i].yvel == screenpeek) {
+		props[3].prop = JFAudProp_rolloff;
+		props[3].val.f = 0.0;
+		props[4].prop = JFAudProp_posrel;
+		props[4].val.i = 0;	// player-relative
+		props[5].prop = JFAudProp_position;
+		props[5].val.v[0] = 0.0;
+		props[5].val.v[1] = 0.0;
+		props[5].val.v[2] = 0.0;
 		initprintf("Playing %s player-relative gain=%f pitch=%f loop=%d\n",
 				sounds[num], gain,pitch,loop);
-		err = jfaud_playsound(&handl, sounds[num], gain, pitch, loop,
-				0.0,0.0,0.0,
-				0.0,0.0,0.0,	//vel
-				1, !global, soundpr[num], jfaud_playing);
 	} else {
-		initprintf("Playing %s 3D gain=%f pitch=%f loop=%d global=%d at %f,%f,%f\n",
-				sounds[num], gain,pitch,loop,global,
+		props[3].prop = JFAudProp_rolloff;
+		props[3].val.f = rolloff;
+		props[4].prop = JFAudProp_posrel;
+		props[4].val.i = 1;	// world-relative
+		props[5].prop = JFAudProp_position;
+		props[5].val.v[0] = (float)x/UNITSPERMETRE;
+		props[5].val.v[1] = (float)y/UNITSPERMETRE;
+		props[5].val.v[2] = (float)z/UNITSPERMETRE;
+		initprintf("Playing %s 3D gain=%f pitch=%f rolloff=%f loop=%d global=%d at %f,%f,%f\n",
+				sounds[num], gain,pitch,rolloff,loop,global,
 				(float)x/UNITSPERMETRE,(float)y/UNITSPERMETRE,(float)z/UNITSPERMETRE
 		    );
-		err = jfaud_playsound(&handl, sounds[num], gain, pitch, loop,
-				(float)x/UNITSPERMETRE,(float)y/UNITSPERMETRE,(float)z/UNITSPERMETRE,
-				0.0,0.0,0.0,	//vel
-				0, !global, soundpr[num], jfaud_playing);
 	}
+	err = JFAud_playsound(&handl, sounds[num], NULL, soundpr[num], JFAudPlayMode_playing, sizeof(props)/sizeof(JFAudProp), props);
 	if (err != jfauderr_ok) {
-		initprintf("Playback of sound %s failed: %s\n",sounds[num], jfauderr_getstring(err));
+		initprintf("Playback of sound %s failed: %s\n",sounds[num], JFAud_errstr(err));
 		return -1;
 	}
 
@@ -375,6 +394,7 @@ int xyzsound(short num, short i, long x, long y, long z)	// x,y,z is sound origi
 
 void sound(short num)
 {
+#if 0
 	float pitch=1.0;
 	char loop=0;
 	int handl;
@@ -416,6 +436,7 @@ void sound(short num)
 
 	keephandle(handl, num, -1);
 	Sound[num].num++;
+#endif
 }
 
 int spritesound(unsigned short num, short i)
@@ -436,7 +457,7 @@ void stopenvsound(short num, short i)
 		if (sfx[j].handle < 0) continue;
 		if (sfx[j].owner != i) continue;
 
-		jfaud_setsoundplaymode(sfx[j].handle, jfaud_stopped);	// release the channel
+		JFAud_killsound(sfx[j].handle);	// release the channel
 		sfx[j].handle = -1;
 		Sound[sfx[j].soundnum].num--;
 	}
@@ -448,6 +469,8 @@ void pan3dsound(void)
 	short i;
 	long cx, cy, cz;
 	short ca,cs;
+	JFAudProp props[2];
+	jfauderr err;
 
 	if (!inited) return;
 
@@ -468,22 +491,33 @@ void pan3dsound(void)
 	cx = -cx;
 	cz = (cz>>4);
 
+	props[0].prop = JFAudProp_position;
+	props[0].val.v[0] = (float)cx/UNITSPERMETRE;
+	props[0].val.v[1] = (float)cy/UNITSPERMETRE;
+	props[0].val.v[2] = (float)cz/UNITSPERMETRE;
+	props[1].prop = JFAudProp_orient;
+	props[1].val.v2[0] = (float)sintable[(ca-512)&2047]/16384.0;
+	props[1].val.v2[1] = (float)sintable[ca&2047]/16384.0;
+	props[1].val.v2[2] = 0.0;
+	props[1].val.v2[3] = 0.0;
+	props[1].val.v2[4] = 0.0;
+	props[1].val.v2[5] = 1.0;
+
 	/*
 	initprintf("Player at %f,%f,%f facing %f,%f,%f\n",
 			(float)cx/UNITSPERMETRE,(float)cy/UNITSPERMETRE,(float)cz/UNITSPERMETRE,
 			(float)sintable[ca]/16384.0, (float)sintable[(ca+512)&2047]/16384.0, 0.0
 		    );
 	*/
-	jfaud_setpos((float)cx/UNITSPERMETRE,(float)cy/UNITSPERMETRE,(float)cz/UNITSPERMETRE,
-			0.0,0.0,0.0,	// vel
-			(float)sintable[(ca-512)&2047]/16384.0, (float)sintable[ca&2047]/16384.0, 0.0,	// at
-			0.0,0.0,1.0	// up
-		    );
+	err = JFAud_setlistenerprops(sizeof(props)/sizeof(JFAudProp), props);
+	if (err != jfauderr_ok) {
+		OSD_Printf("JFAud_setlistenerprops() error %s\n", JFAud_errstr(err));
+	}
 
 	for (j=AbsoluteMaxVoices-1;j>=0;j--) {
 		float gain=1.0;
 		
-		if (sfx[j].owner < 0) continue;
+		if (sfx[j].owner < 0 || sfx[j].handle < 0) continue;
 
 		i = sfx[j].owner;
 
@@ -497,24 +531,29 @@ void pan3dsound(void)
 		// A sound may move from player-relative 3D if the viewpoint shifts from the player
 		// through a viewscreen or viewpoint switching
 		if (PN == APLAYER && sprite[i].yvel == screenpeek) {
-			jfaud_movesound(sfx[i].handle,
-				0.0,0.0,0.0,
-				0.0,0.0,0.0, 1);
+			props[0].prop = JFAudProp_position;
+			props[0].val.v[0] = 0.0;
+			props[0].val.v[1] = 0.0;
+			props[0].val.v[2] = 0.0;
 		} else {
-			jfaud_movesound(sfx[i].handle,
-				(float)cx/UNITSPERMETRE,(float)cy/UNITSPERMETRE,(float)cz/UNITSPERMETRE,
-				0.0,0.0,0.0, 0);
+			props[0].prop = JFAudProp_position;
+			props[0].val.v[0] = (float)cx/UNITSPERMETRE;
+			props[0].val.v[1] = (float)cy/UNITSPERMETRE;
+			props[0].val.v[2] = (float)cz/UNITSPERMETRE;
 
-			// This does the ranging of musicandsfx heard distance
-			//if( i >= 0 && (soundm[num]&16) == 0 && PN == MUSICANDSFX && SLT < 999 && (sector[SECT].lotag&0xff) < 9 )
-			//	sndist = divscale14(sndist,(SHT+1));
-/*			gain += (float)soundvo[num]/(150.0*64.0);
+			gain += (float)soundvo[sfx[j].soundnum]/(150.0*64.0);
 			if (gain < 0.0) gain = 0.0; else if (gain > 1.0) gain = 1.0;
 
 			// fake some occlusion
 			if( gain > 0.0 && PN != MUSICANDSFX && !cansee(cx,cy,cz-(24<<8),cs,SX,SY,SZ-(24<<8),SECT) )
-				gain *= 0.8; // I guess what I've got here can somewhat approximate the effect of "sndist += sndist>>5;"
-				*/
+				gain *= 0.8;
+		}
+		props[1].prop = JFAudProp_gain;
+		props[1].val.f = gain;
+
+		err = JFAud_setsoundprops(sfx[j].handle, sizeof(props)/sizeof(JFAudProp), props);
+		if (err != jfauderr_ok) {
+			OSD_Printf("JFAud_setsoundprops() error %s\n", JFAud_errstr(err));
 		}
 	}
 }
@@ -572,7 +611,7 @@ int FX_StopAllSounds( void )
 	for (j=AbsoluteMaxVoices-1;j>=0;j--) {
 		if (sfx[j].handle < 0) continue;
 
-		jfaud_setsoundplaymode(sfx[j].handle, jfaud_stopped);	// release the channel
+		JFAud_killsound(sfx[j].handle);	// release the channel
 		sfx[j].handle = -1;
 		Sound[sfx[j].soundnum].num--;
 	}
@@ -586,17 +625,17 @@ void MUSIC_SetVolume( int volume )
 
 void MUSIC_Pause( void )
 {
-	if (inited) jfaud_setmusicplaymode(jfaud_paused);
+	if (inited) JFAud_setmusicplaymode(JFAudPlayMode_paused);
 }
 
 void MUSIC_Continue( void )
 {
-	if (inited) jfaud_setmusicplaymode(jfaud_playing);
+	if (inited) JFAud_setmusicplaymode(JFAudPlayMode_playing);
 }
 
 int MUSIC_StopSong( void )
 {
-	if (inited) jfaud_setmusicplaymode(jfaud_stopped);
+	if (inited) JFAud_setmusicplaymode(JFAudPlayMode_stopped);
 
 	return 0;
 }

@@ -1461,7 +1461,7 @@ if (!VOLUMEONE) {
 	    p = Bstrrchr(levname,'.');
 	    if (!p) strcat(levname,".mhk");
 	    else { p[1]='m'; p[2]='h'; p[3]='k'; p[4]=0; }
-	    loadmaphack(levname);
+	    if (!loadmaphack(levname)) initprintf("Loaded map hack file %s\n",levname);
 	}
     }
     else if ( loadboard( level_file_names[ (ud.volume_number*11)+ud.level_number],0,&ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum ) == -1)
@@ -1474,7 +1474,7 @@ if (!VOLUMEONE) {
 	p = Bstrrchr(levname,'.');
 	if (!p) strcat(levname,".mhk");
 	else { p[1]='m'; p[2]='h'; p[3]='k'; p[4]=0; }
-	loadmaphack(levname);
+	if (!loadmaphack(levname)) initprintf("Loaded map hack file %s\n",levname);
     }
 
 } else {
@@ -1493,7 +1493,7 @@ if (!VOLUMEONE) {
 	p = Bstrrchr(levname,'.');
 	if (!p) strcat(levname,".mhk");
 	else { p[1]='m'; p[2]='h'; p[3]='k'; p[4]=0; }
-	loadmaphack(levname);
+	if (!loadmaphack(levname)) initprintf("Loaded map hack file %s\n",levname);
     }
 }
 

@@ -96,7 +96,7 @@ extern short ang, cursectnum;
 extern short ceilingheinum, floorheinum;
 extern char names[MAXTILES][25];
 
-extern long ydim16, xdimgame, ydimgame, xdim2d, ydim2d;
+extern long ydim16, xdimgame, ydimgame, bppgame, xdim2d, ydim2d;
 
 extern long zmode, kensplayerheight, zlock;
 
@@ -589,12 +589,14 @@ const char *ExtGetSpriteCaption(short spritenum)
         }
     }
     else
+	    /*
         if( (unsigned short)sprite[spritenum].picnum == 175)
         {
             Bsprintf(lo,"%hu",(unsigned short)sprite[spritenum].lotag);
             Bsprintf(tempbuf,"%hu,%s",(unsigned short)sprite[spritenum].hitag,lo);
         }
         else
+	*/
             {
                 SpriteName(spritenum,lo);
                 Bsprintf(tempbuf,"%hu,%hu %s",
@@ -1950,6 +1952,7 @@ int ExtInit(void)
           kclose(fil);
                 }
 	*/
+    bpp = 8;
 	if (loadsetup("build.cfg") < 0) printOSD("Configuration file not found, using defaults.\n");
 	memcpy((void *)buildkeys,(void *)keys,NUMKEYS);   //Trick to make build use setup.dat keys
 
@@ -1963,6 +1966,7 @@ int ExtInit(void)
                 initmouse();
 	xdimgame = vesares[option[6]&15][0]; ydimgame = vesares[option[6]&15][1];
 	xdim2d = vesares[option[8]&15][0]; ydim2d = vesares[option[8]&15][1];
+	bppgame = bpp;
 
         kensplayerheight = 40; //32
          zmode = 1;

@@ -577,3 +577,5 @@ extern long myaimmode, myaimstat, omyaimstat;
 #define IFISGLMODE if (getrendermode() >= 3)
 #define IFISSOFTMODE if (getrendermode() < 3)
 
+void onvideomodechange(int newmode);
+
