@@ -320,7 +320,4 @@ extern void setstatusbarscale(long sc);
 
 extern void setgamepalette(struct player_struct *player, char *pal, int set);
 
-extern int Win_YesNoBox(char *name, char *fmt, ...);
-extern int Win_MsgBox(char *name, char *fmt, ...);
-
 #endif // __funct_h__

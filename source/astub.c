@@ -1906,30 +1906,38 @@ int ExtInit(void)
 {
     long fil;
     char *duke3dgrp = "duke3d.grp";
-    
-    /*
-    printf("------------------------------------------------------------------------------\n");
-    printf("BUILD.EXE Copyright (c) 1993 - 1996 Ken Silverman, 3D Realms Entertainment.\n");
-    printf("This version of BUILD was created for Duke Nukem 3D and parts were modified\n");
-    printf("by Allen H. Blum III.\n");
-    printf("\n");
-    printf("IMPORTANT:  The Build Editor and associated tools and utilities are NOT\n");
-    printf("shareware and may NOT be freely distributed to any BBS, CD, floppy, or\n");
-    printf("any other media.  These tools may NOT be sold or repackaged for sale in\n");
-    printf("a commercial product.\n");
-    printf("\n");
-    printf("Any levels created with these editors and tools may only be used with the\n");
-    printf("full (registered) copy of Duke Nukem 3D, and not the shareware version.\n");
-    printf("Please refer to LICENSE.DOC for further information on levels created with\n");
-    printf("BUILD.EXE.\n");
-    printf("\n");
-    printf("Please help us protect against software piracy (which drives up software\n");
-    printf("prices) by following these simple rules.\n");
-    printf("\n");
-    printf("Thank You!\n");
-    printf("------------------------------------------------------------------------------\n");
+
+    /*    
+    char *msg =
+    	//"------------------------------------------------------------------------------\n"
+    	"BUILD.EXE Copyright (c) 1993 - 1996 Ken Silverman, 3D Realms Entertainment.\n"
+    	"This version of BUILD was created for Duke Nukem 3D and parts were modified\n"
+    	"by Allen H. Blum III.\n"
+    	"\n"
+    	"IMPORTANT:  The Build Editor and associated tools and utilities are NOT\n"
+    	"shareware and may NOT be freely distributed to any BBS, CD, floppy, or\n"
+    	"any other media.  These tools may NOT be sold or repackaged for sale in\n"
+    	"a commercial product.\n"
+    	"\n"
+    	"Any levels created with these editors and tools may only be used with the\n"
+    	"full (registered) copy of Duke Nukem 3D, and not the shareware version.\n"
+    	"Please refer to LICENSE.DOC for further information on levels created with\n"
+    	"BUILD.EXE.\n"
+    	"\n"
+    	"Please help us protect against software piracy (which drives up software\n"
+    	"prices) by following these simple rules.\n"
+    	"\n"
+    	"Thank You!\n"
+    	//"------------------------------------------------------------------------------\n"
+	;
+#ifdef RENDERTYPEWIN    
+    wm_msgbox("Build Editor for Duke Nukem 3D", msg);
+#else
+    puts(msg);
     getch();
+#endif
     */
+    
 
     // JBF 20031220: Because it's annoying renaming GRP files whenever I want to test different game data
     if (getenv("DUKE3DGRP")) {
@@ -1951,7 +1959,10 @@ int ExtInit(void)
 	memcpy((void *)buildkeys,(void *)keys,NUMKEYS);   //Trick to make build use setup.dat keys
 
         if (initengine()) {
-		initprintf("There was a problem initialising the engine.\n");
+#ifdef RENDERTYPEWIN
+		wm_msgbox("Build Engine Initialisation Error",
+				"There was a problem initialising the Build engine: %s", engineerrstr);
+#endif
 		return -1;
 	}
 	initinput();

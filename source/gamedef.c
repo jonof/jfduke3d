@@ -1582,8 +1582,9 @@ void loadefs(char *filenam,char *mptr)
         initprintf("COPY INTERNAL DEFAULTS TO DIRECTORY(Y/n)?\n");
 
 #ifdef RENDERTYPEWIN
-	i=Win_YesNoBox("Missing CON file(s)", "Missing external CON file(s). "
+	i=wm_ynbox("Missing CON file(s)", "Missing external CON file(s). "
 			"Copy internal defaults to directory?");
+	if (i) i = 'y';
 #else
         KB_FlushKeyboardQueue();
         while( KB_KeyWaiting() );
@@ -1662,9 +1663,10 @@ void loadefs(char *filenam,char *mptr)
             initprintf("INTERNAL DEFAULTS (y/N)?\n");
 
 #ifdef RENDERTYPEWIN
-	    i=Win_YesNoBox("CON File Compilation Warning", "Warnings found in %s file. You should backup "
+	    i=wm_ynbox("CON File Compilation Warning", "Warnings found in %s file. You should backup "
 			    "the original copies before attempting to modify them. Do you want to use the "
 			    "internal defaults?",filenam);
+	    if (i) i = 'y';
 #else
             KB_FlushKeyboardQueue();
             while( KB_KeyWaiting() );
@@ -1695,9 +1697,10 @@ void loadefs(char *filenam,char *mptr)
                 initprintf("internal defaults (Y/N)?\n");
 
 #ifdef RENDERTYPEWIN
-	    i=Win_YesNoBox("CON File Compilation Error", "Errors found in %s file. You should backup "
+	    i=wm_ynbox("CON File Compilation Error", "Errors found in %s file. You should backup "
 			    "the original copies before attempting to modify them. Do you want to use the "
 			    "internal defaults?",filenam);
+	    if (i) i = 'y';
 #else
                 KB_FlushKeyboardQueue();
                 while( !KB_KeyWaiting() );

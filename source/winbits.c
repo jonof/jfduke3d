@@ -34,35 +34,6 @@ Windows-specific hooks for JonoF's Duke3D port.
 #include "winlayer.h"
 
 
-int Win_YesNoBox(char *name, char *fmt, ...)
-{
-	char buf[1000];
-	va_list va;
-	int r;
-
-	va_start(va,fmt);
-	vsprintf(buf,fmt,va);
-	va_end(va);
-
-	r = MessageBox((HWND)win_gethwnd(),buf,name,MB_YESNO|MB_TASKMODAL);
-	if (r==IDYES) return 'y';
-	return 'n';
-}
-
-int Win_MsgBox(char *name, char *fmt, ...)
-{
-	char buf[1000];
-	va_list va;
-
-	va_start(va,fmt);
-	vsprintf(buf,fmt,va);
-	va_end(va);
-
-	MessageBox((HWND)win_gethwnd(),buf,name,MB_OK|MB_TASKMODAL);
-	return 'y';
-}
-
-
 // this replaces the Error() function in jmact/util_lib.c
 extern void Shutdown(void );
 void Error(char *error, ...)

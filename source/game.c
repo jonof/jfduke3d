@@ -2117,7 +2117,7 @@ void gameexit(char *t)
             //printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 		if (!(t[0] == ' ' && t[1] == 0)) {
 #ifdef RENDERTYPEWIN
-			Win_MsgBox("Duke Nukem 3D", t);
+			wm_msgbox("Duke Nukem 3D", t);
 #endif
 			puts(t);
 		}
@@ -6895,7 +6895,7 @@ void comlinehelp(char **argv)
 		"-name NAME\tFoward NAME\n"
 		"-net\t\tNet mode game";
 #ifdef RENDERTYPEWIN
-	Win_MsgBox(apptitle,s);
+	wm_msgbox(apptitle,s);
 #else
 	puts(s);
 #endif
@@ -7474,7 +7474,13 @@ if (VOLUMEONE) {
    if(ud.executions >= 50) initprintf("IT IS NOW TIME TO UPGRADE TO THE COMPLETE VERSION!!!\n");
 }
 
-   initengine();	// JBF: moved to here
+   if (initengine()) {
+#ifdef RENDERTYPEWIN
+	   wm_msgbox("Build Engine Initialisation Error", "There was a problem initialising the Build engine: %s", engineerrstr);
+#endif
+	   exit(1);
+   }
+
    CONTROL_Startup( ControllerType, &GetTime, TICRATE );
 
    // JBF 20040215: evil and nasty place to do this, but joysticks are evil and nasty too
