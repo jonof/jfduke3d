@@ -3819,7 +3819,7 @@ void moveactors(void)
                 }
                 else if(t[0] != -2) getglobalz(i);
 
-                if(t[0] == -2) //On top of somebody
+                if(t[0] == -2) //On top of somebody (an enemy)
                 {
                     makeitfall(i);
                     sprite[t[5]].xvel = 0;
@@ -3840,7 +3840,13 @@ void moveactors(void)
                         {
                             t[0] = -1;
                             x = ldist(s,&sprite[t[5]]);
-                            if(x < 768) sprite[t[5]].xrepeat = 0;
+                            if(x < 768) {
+				    sprite[t[5]].xrepeat = 0;
+
+				    // JBF 20041129: a slimer eating another enemy really ought
+				    // to decrease the maximum kill count by one.
+				    ps[myconnectindex].max_actors_killed--;
+			    }
                         }
                     }
 

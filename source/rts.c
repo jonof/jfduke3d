@@ -65,7 +65,7 @@ void RTS_AddFile (char *filename)
    uint32     i;
    int32      handle, length;
    int32      startlump;
-   filelump_t *fileinfo;
+   filelump_t *fileinfo, *fileinfoo;
 
 //
 // read the entire file in
@@ -83,7 +83,7 @@ void RTS_AddFile (char *filename)
    header.numlumps = IntelLong(header.numlumps);
    header.infotableofs = IntelLong(header.infotableofs);
    length = header.numlumps*sizeof(filelump_t);
-   fileinfo = alloca (length);
+   fileinfoo = fileinfo = (filelump_t*)malloc (length);
    if (!fileinfo)
       Error ("RTS file could not allocate header info on stack");
    lseek (handle, header.infotableofs, SEEK_SET);
@@ -103,6 +103,8 @@ void RTS_AddFile (char *filename)
       lump_p->size = IntelLong(fileinfo->size);
       strncpy (lump_p->name, fileinfo->name, 8);
       }
+
+   free(fileinfoo);
    }
 
 /*

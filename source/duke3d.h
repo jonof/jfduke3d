@@ -70,7 +70,7 @@ extern int shareware;
 #define BYTEVERSION_13	27
 #define BYTEVERSION_14	116
 #define BYTEVERSION_15	117
-#define BYTEVERSION_JF	123	// increase by 3, because atomic GRP adds 1, and Shareware adds 2
+#define BYTEVERSION_JF	126	// increase by 3, because atomic GRP adds 1, and Shareware adds 2
 
 #define BYTEVERSION (BYTEVERSION_JF+(PLUTOPAK?1:(VOLUMEONE<<1)))	// JBF 20040116: different data files give different versions
 
@@ -391,8 +391,10 @@ struct player_struct
 
     char toggle_key_flag,knuckle_incs; // ,select_dir;
     char walking_snd_toggle, palookup, hard_landing;
-    char max_secret_rooms,secret_rooms,/*fire_flag,*/pals[3];
-    char max_actors_killed,actors_killed,return_to_center;
+    char /*fire_flag,*/pals[3];
+    char return_to_center;
+
+    long max_secret_rooms,secret_rooms,max_actors_killed,actors_killed;
 };
 
 extern unsigned char tempbuf[2048], packbuf[576];

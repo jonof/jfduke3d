@@ -9578,23 +9578,37 @@ void dobonus(char bonusonly)
 
                 if( totalclock > (60*4) )
                 {
+					int clockpad = 2;
+
+					{
+						int ii, ij;
+						for (ii=10,ij=1;ii<ps[myconnectindex].player_par/(26*60);ij++,ii*=10) ;
+						clockpad = max(clockpad,ij);
+						for (ii=10,ij=1;ii<partime[ud.volume_number*11+ud.last_level-1]/(26*60);ij++,ii*=10) ;
+						clockpad = max(clockpad,ij);
+						for (ii=10,ij=1;ii<designertime[ud.volume_number*11+ud.last_level-1]/(26*60);ij++,ii*=10) ;
+						clockpad = max(clockpad,ij);
+						OSD_Printf("%d\n",clockpad);
+					}
+					
                     if(bonuscnt == 1)
                     {
                         bonuscnt++;
                         sound(PIPEBOMB_EXPLODE);
                     }
-                    sprintf(tempbuf,"%02ld:%02ld",
-                        (ps[myconnectindex].player_par/(26*60))%60,
+					
+                    sprintf(tempbuf,"%0*ld:%02ld",clockpad,
+                        (ps[myconnectindex].player_par/(26*60)),
                         (ps[myconnectindex].player_par/26)%60);
                     gametext((320>>2)+71,60+9,tempbuf,0,2+8+16);
 
-                    sprintf(tempbuf,"%02ld:%02ld",
-                        (partime[ud.volume_number*11+ud.last_level-1]/(26*60))%60,
+                    sprintf(tempbuf,"%0*ld:%02ld",clockpad,
+                        (partime[ud.volume_number*11+ud.last_level-1]/(26*60)),
                         (partime[ud.volume_number*11+ud.last_level-1]/26)%60);
                     gametext((320>>2)+71,69+9,tempbuf,0,2+8+16);
 
-                    sprintf(tempbuf,"%02ld:%02ld",
-                        (designertime[ud.volume_number*11+ud.last_level-1]/(26*60))%60,
+                    sprintf(tempbuf,"%0*ld:%02ld",clockpad,
+                        (designertime[ud.volume_number*11+ud.last_level-1]/(26*60)),
                         (designertime[ud.volume_number*11+ud.last_level-1]/26)%60);
                     gametext((320>>2)+71,78+9,tempbuf,0,2+8+16);
 
