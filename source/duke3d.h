@@ -547,10 +547,7 @@ extern char syncstat, syncval[MAXPLAYERS][MOVEFIFOSIZ];
 extern signed char multiwho, multipos, multiwhat, multiflag;
 extern long syncvalhead[MAXPLAYERS], syncvaltail, syncvaltottail;
 extern long numfreezebounces,rpgblastradius,pipebombblastradius,tripbombblastradius,shrinkerblastradius,morterblastradius,bouncemineblastradius,seenineblastradius;
-// CTW - MODIFICATION
-// extern char stereo,eightytwofifty,playerswhenstarted,playonten,everyothertime;
-extern char stereo,eightytwofifty,playerswhenstarted,everyothertime;
-// CTW END - MODIFICATION
+extern char stereo,playerswhenstarted,everyothertime;
 extern long myminlag[MAXPLAYERS], mymaxlag, otherminlag, bufferjitter;
 
 extern long numinterpolations, startofdynamicinterpolations;

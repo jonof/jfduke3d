@@ -161,10 +161,7 @@ long myhorizbak[MOVEFIFOSIZ],dukefriction = 0xcc00, show_shareware;
 
 short myangbak[MOVEFIFOSIZ];
 char myname[32],camerashitable,freezerhurtowner=0,lasermode=0;
-// CTW - MODIFICATION
-// char networkmode = 255, movesperpacket = 1,gamequit = 0,playonten = 0,everyothertime;
 char networkmode = 255, movesperpacket = 1,gamequit = 0,everyothertime;
-// CTW END - MODIFICATION
 long numfreezebounces=3,rpgblastradius,pipebombblastradius,tripbombblastradius,shrinkerblastradius,morterblastradius,bouncemineblastradius,seenineblastradius;
 STATUSBARTYPE sbar;
 

@@ -54,11 +54,7 @@ void SoundStartup( void )
    // if they chose None lets return
    if (FXDevice < 0) return;
 
-   if ( eightytwofifty && numplayers > 1) {
-      status = FX_Init( FXDevice, min( NumVoices,4 ), 1, 8, 8000 );
-   } else {
-      status = FX_Init( FXDevice, NumVoices, NumChannels, NumBits, MixRate );
-   }
+   status = FX_Init( FXDevice, NumVoices, NumChannels, NumBits, MixRate );
    if ( status == FX_Ok ) {
       FX_SetVolume( FXVolume );
       if (ReverseStereo == 1) {
@@ -112,7 +108,7 @@ void MusicStartup( void )
    int32 status;
 
    // if they chose None lets return
-   if ((MusicDevice < 0) || (eightytwofifty && numplayers > 1) )
+   if (MusicDevice < 0)
       return;
 
    status = MUSIC_Init( MusicDevice, 0 );
@@ -150,7 +146,7 @@ void MusicShutdown( void )
    int32 status;
 
    // if they chose None lets return
-   if ((MusicDevice < 0) || (eightytwofifty && numplayers > 1) )
+   if (MusicDevice < 0)
       return;
 
    status = MUSIC_Shutdown();
@@ -218,7 +214,6 @@ void playmusic(char *fn)
 
     if(MusicToggle == 0) return;
     if(MusicDevice < 0) return;
-    if(eightytwofifty && numplayers > 1) return;
 
     fp = kopen4load(fn,0);
 

@@ -56,63 +56,6 @@ static int vidsets[16] = { -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 }, cu
 
 static char *mousebuttonnames[] = { "Left", "Right", "Middle", "Thumb", "Wheel Down", "Wheel Up" };
 		
-// CTW - REMOVED
-/* Error codes */
-/*
-#define eTenBnNotInWindows 3801
-#define eTenBnBadGameIni 3802
-#define eTenBnBadTenIni 3803
-#define eTenBnBrowseCancel 3804
-#define eTenBnBadTenInst 3805
-
-int  tenBnStart(void);
-void tenBnSetBrowseRtn(char *(*rtn)(char *str, int len));
-void tenBnSetExitRtn(void (*rtn)(void));
-void tenBnSetEndRtn(void (*rtn)(void));
-// CTW END - REMOVED
-
-void dummyfunc(void)
-{
-}
-
-void dummymess(int i,char *c)
-{
-}
-
-// CTW - REMOVED
-void TENtext(void)
-{
-    long dacount,dalastcount;
-
-    puts("\nDuke Nukem 3D has been licensed exclusively to TEN (Total");
-    puts("Entertainment Network) for wide-area networked (WAN) multiplayer");
-    puts("games.\n");
-
-    puts("The multiplayer code within Duke Nukem 3D has been highly");
-    puts("customized to run best on TEN, where you'll experience fast and");
-    puts("stable performance, plus other special benefits.\n");
-
-    puts("We do not authorize or recommend the use of Duke Nukem 3D with");
-    puts("gaming services other than TEN.\n");
-
-    puts("Duke Nukem 3D is protected by United States copyright law and");
-    puts("international treaty.\n");
-
-    puts("For the best online multiplayer gaming experience, please call TEN");
-    puts("at 800-8040-TEN, or visit TEN's Web Site at www.ten.net.\n");
-
-    puts("Press any key to continue.\n");
-
-    _bios_timeofday(0,&dacount);
-
-    while( _bios_keybrd(1) == 0 )
-    {
-        _bios_timeofday(0,&dalastcount);
-        if( (dacount+240) < dalastcount ) break;
-    }
-}
-*/
-// CTW END - REMOVED
 
 void cmenu(short cm)
 {
@@ -1366,9 +1309,6 @@ void menus(void)
     short c,x,i;
     long l,m;
 	char *p = NULL;
-// CTW - REMOVED
-//  int tenerr;
-// CTW END - REMOVED
 
     getpackets();
 
@@ -1438,39 +1378,6 @@ void menus(void)
 
             if( x >= -1 ) cmenu(100);
             break;
-// CTW - REMOVED
-/*      case 20001:
-            x = probe(188,80+32+32,0,0);
-            gametext(160,86-8,"You must be in Windows 95 to",0,2+8+16);
-            gametext(160,86,"play on TEN",0,2+8+16);
-            gametext(160,86+32,"PRESS ANY KEY...",0,2+8+16);
-            if(x >= -1) cmenu(0);
-            break;
-
-        case 20002:
-            x = probe(188,80+32+32+32,0,0);
-            gametext(160,86-8,"MISSING FILE: TENGAME.INI.  PLEASE",0,2+8+16);
-            gametext(160,86,"CONNECT TO TEN BY LAUNCHING THE",0,2+8+16);
-            gametext(160,86+8,"CONNECT TO TEN SHORTCUT OR CONTACT",0,2+8+16);
-            gametext(160,86+8+8,"CUSTOMER SUPPORT AT 1-800-8040-TEN.",0,2+8+16);
-            gametext(160,86+8+8+32,"PRESS ANY KEY...",0,2+8+16);
-            if(x >= -1) cmenu(0);
-            break;
-        case 20003:
-            x = probe(188,80+32+32,0,0);
-            gametext(160,86-8,"BAD TEN INSTALL:  PLEASE RE-INSTALL",0,2+8+16);
-            gametext(160,86,"BAD TEN INSTALL:  PLEASE RE-INSTALL TEN",0,2+8+16);
-            gametext(160,86+32,"PRESS ANY KEY...",0,2+8+16);
-            if(x >= -1) cmenu(0);
-            break;
-        case 20005:
-            x = probe(188,80+32+32,0,0);
-            gametext(160,86-8,"GET THE LATEST TEN SOFTWARE AT",0,2+8+16);
-            gametext(160,86,"HTTP://WWW.TEN.NET",0,2+8+16);
-            gametext(160,86+32,"PRESS ANY KEY...",0,2+8+16);
-            if(x >= -1) cmenu(0);
-            break;*/
-// CTW END - REMOVED
 
 		case 20001:
         	rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
@@ -2364,38 +2271,7 @@ cheat_for_port_credits:
                         case 0:
                             cmenu(100);
                             break;
-// CTW - MODIFICATION
-/*                      case 1:
-                            if(movesperpacket == 4 || numplayers > 1)
-                                break;
 
-                            tenBnSetExitRtn(dummyfunc);
-                            setDebugMsgRoutine(dummymess);
-                            tenerr = tenBnStart();
-
-                            switch(tenerr)
-                            {
-                                case eTenBnNotInWindows:
-                                    cmenu(20001);
-                                    break;
-                                case eTenBnBadGameIni:
-                                    cmenu(20002);
-                                    break;
-                                case eTenBnBadTenIni:
-                                    cmenu(20003);
-                                    break;
-                                case eTenBnBrowseCancel:
-                                    cmenu(20004);
-                                    break;
-                                case eTenBnBadTenInst:
-                                    cmenu(20005);
-                                    break;
-                                default:
-                                    playonten = 1;
-                                    gameexit(" ");
-                                    break;
-                            }
-                            break;*/
 			case 1: break;//cmenu(20001);break;	// JBF 20031128: I'm taking over the TEN menu option
 			case 2: cmenu(202);break;	// JBF 20031205: was 200
                         case 3:
@@ -2449,7 +2325,6 @@ if (!VOLUMEALL) {
 
             menutext(c,67+16+16+16+16+16+16,SHX(-7),PHX(-7),"QUIT");
             break;
-// CTW END - MODIFICATION
 
         case 50:
             c = (320>>1);
@@ -4064,7 +3939,7 @@ if (PLUTOPAK) {
                     break;
                 case 1:
 
-                    if(eightytwofifty == 0 || numplayers < 2)
+                    if(numplayers < 2)
                         if(MusicDevice >= 0)
                     {
                         MusicToggle = 1-MusicToggle;
@@ -4105,7 +3980,7 @@ if (PLUTOPAK) {
             if(SoundToggle && FXDevice >= 0) menutext(c+160+40,50,0,(FXDevice<0),"ON");
             else menutext(c+160+40,50,0,(FXDevice<0),"OFF");
 
-            if(MusicToggle && (MusicDevice >= 0) && (!eightytwofifty||numplayers<2))
+            if(MusicToggle && (MusicDevice >= 0) && (numplayers<2))
                 menutext(c+160+40,50+16,0,(MusicDevice < 0),"ON");
             else menutext(c+160+40,50+16,0,(MusicDevice < 0),"OFF");
 
@@ -4121,14 +3996,14 @@ if (PLUTOPAK) {
                     FX_SetVolume( (short) FXVolume );
             }
             menutext(c,50+16,SHX(-3),(MusicDevice<0),"MUSIC");
-            menutext(c,50+16+16+16,SHX(-5),(MusicDevice<0)||(numplayers > 1 && eightytwofifty)||MusicToggle==0,"MUSIC VOLUME");
+            menutext(c,50+16+16+16,SHX(-5),(MusicDevice<0)||MusicToggle==0,"MUSIC VOLUME");
             {
                 l = MusicVolume;
                 MusicVolume >>= 2;
                 bar(c+167+40,50+16+16+16,
                     (short *)&MusicVolume,4,
-                    (eightytwofifty==0||numplayers < 2) && (MusicDevice>=0) && x==3,SHX(-5),
-                    (numplayers > 1 && eightytwofifty)||MusicToggle==0||(MusicDevice<0));
+                    (MusicDevice>=0) && x==3,SHX(-5),
+                    MusicToggle==0||(MusicDevice<0));
                 MusicVolume <<= 2;
                 if(l != MusicVolume)
                     MUSIC_SetVolume( (short) MusicVolume );
@@ -4883,12 +4758,6 @@ void palto(char r,char g,char b,long e)
             ps[myconnectindex].palette[i+2]+((((long)b-(long)ps[myconnectindex].palette[i+2])*(long)(e&127))>>6);
     }
 */
-// CTW - MODIFICATION
-/*  if( (e&128) == 0 )
-        if ((vidoption != 1) || (vgacompatible == 1)) limitrate();*/
-//    if( (e&128) == 0 )
-//        if ((ScreenMode != 1) || (vgacompatible == 1)) limitrate();
-// CTW END - MODIFICATION
 
     //setbrightness(ud.brightness>>2,temparray);
 	setpalettefade(r,g,b,e&127);

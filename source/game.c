@@ -74,7 +74,6 @@ Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
 #define TIMERUPDATESIZ 32
 
 long cameradist = 0, cameraclock = 0;
-char eightytwofifty = 0;
 char playerswhenstarted;
 char qe,cp;
 
@@ -2032,19 +2031,6 @@ if (!VOLUMEALL) {
     rotatesprite(0,0,65536L,0,3290,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
     IFISSOFTMODE { for(i=63;i>0;i-=7) palto(0,0,0,i); } else { nextpage(); }
     while( !KB_KeyWaiting() ) getpackets();
-} else {
-// CTW - REMOVED
-/*  setview(0,0,xdim-1,ydim-1);
-    flushperms();
-    ps[myconnectindex].palette = palette;
-    for(i=0;i<64;i+=7) palto(0,0,0,i);
-    KB_FlushKeyboardQueue();
-    clearview(0L);
-    rotatesprite(0,0,65536L,0,TENSCREEN,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
-    nextpage(); for(i=63;i>0;i-=7) palto(0,0,0,i);
-    totalclock = 0;
-    while( !KB_KeyWaiting() && totalclock < 2400) getpackets();*/
-// CTW END - REMOVED
 }
 }
 /*
@@ -2083,22 +2069,15 @@ void gameexit(char *t)
     if(playerswhenstarted > 1 && ud.coop != 1 && *t == ' ')
     {
         dobonus(1);
-// CTW - MODIFICATION
-//      setgamemode();
         setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP);
-// CTW END - MODIFICATION
     }
 #ifdef ONELEVELDEMO
     doorders();
     t = "You have been playing a ONE LEVEL demo of Duke Nukem 3D.";
 #endif
 
-// CTW - MODIFICATION
-/*  if( *t != 0 && *(t+1) != 'V' && *(t+1) != 'Y' && playonten == 0 )
-        showtwoscreens();*/
     if( *t != 0 && *(t+1) != 'V' && *(t+1) != 'Y')
         showtwoscreens();
-// CTW END - MODIFICATION
 
     GOTOHERE:
 
@@ -2108,22 +2087,11 @@ void gameexit(char *t)
     {
         //setvmode(0x3);	// JBF
         //binscreen();
-// CTW - MODIFICATION
-/*      if(playonten == 0)
-        {
-            if(*t == ' ' && *(t+1) == 0) *t = 0;
-            printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-            printf("%s%s","\n",t);
-        }*/
-//        if(true)
-        {
 //            if(*t == ' ' && *(t+1) == 0) *t = 0;
             //printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 		if (!(t[0] == ' ' && t[1] == 0)) {
 			wm_msgbox("Duke Nukem 3D", t);
 		}
-        }
-// CTW END - MODIFICATION
     }
     
     uninitgroupfile();
@@ -6931,7 +6899,6 @@ void checkcommandline(int argc,char **argv)
 					netparamcount = argc - i - 1;
 					netparam = (char **)calloc(netparamcount, sizeof(char**));
 				}
-                //if( *(c+1) == '8' ) eightytwofifty = 1;
                 i++;
                 continue;
             }
@@ -7527,6 +7494,7 @@ if (VOLUMEONE) {
    if(numplayers > 1)
     initprintf("Multiplayer initialized.\n");
 
+	screenpeek = myconnectindex;
    ps[myconnectindex].palette = (char *) &palette[0];
    SetupGameButtons();
 
@@ -7821,13 +7789,6 @@ void app_main(int argc,char **argv)
         printf("Using %ld bytes for heap.\n",totalmemory);
 */
     
-#ifndef ONELEVELDEMO
-// CTW - REMOVED
-/*  if(movesperpacket == 4)
-        TENtext();*/
-// CTW END - REMOVED
-#endif
-
     RegisterShutdownFunction( Shutdown );
 
 if (VOLUMEONE) {
@@ -7875,20 +7836,6 @@ if (VOLUMEALL) {
 		strcpy(apptitle,HEAD2S);
 }
     
-#if 0
-    if( eightytwofifty && numplayers > 1 && (MusicDevice >= 0) )
-    {
-        puts("\n=========================================================================");
-        puts("WARNING: 8250 UART detected.");
-        puts("Music is being disabled and lower quality sound is being set.  We apologize");
-        puts("for this, but it is necessary to maintain high frame rates while trying to");
-        puts("play the game on an 8250.  We suggest upgrading to a 16550 or better UART");
-        puts("for maximum performance.  Press any key to continue.");
-        puts("=========================================================================\n");
-
-        while( !KB_KeyWaiting() ) getpackets();
-    }
-#endif
     if(numplayers > 1)
     {
         ud.multimode = numplayers;
@@ -8192,10 +8139,7 @@ void opendemowrite(void)
 
     ver = BYTEVERSION;
 
-// CTW - MODIFICATION
-//  if ((frecfilep = fopen(d,"wb")) == -1) return;
     if ((frecfilep = fopen(d,"wb")) == NULL) return;
-// CTW END - MODIFICATION
     fwrite(&dummylong,4,1,frecfilep);
     fwrite(&ver,sizeof(char),1,frecfilep);
     fwrite((char *)&ud.volume_number,sizeof(char),1,frecfilep);

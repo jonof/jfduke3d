@@ -85,7 +85,7 @@ else
 		EDITOROBJS+= $(OBJ)buildres.$o
 	endif
 endif
-	
+
 ifeq ($(RENDERTYPE),SDL)
 	override CFLAGS+= $(subst -Dmain=SDL_main,,$(shell sdl-config --cflags))
 	AUDIOLIBOBJ=$(AUDIOLIB_MUSIC_STUB) $(AUDIOLIB_FX_STUB)
