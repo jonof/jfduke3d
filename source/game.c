@@ -659,11 +659,11 @@ void getpackets(void)
 
                 break;
             case 6:
-						 //slaves in M/S mode only send to master
-						 //Master re-transmits message to all others
-					 if ((!networkmode) && (myconnectindex == connecthead))
-						 for(i=connectpoint2[connecthead];i>=0;i=connectpoint2[i])
-							 if (i != other) sendpacket(i,packbuf,packbufleng);
+					//slaves in M/S mode only send to master
+					//Master re-transmits message to all others
+				if ((!networkmode) && (myconnectindex == connecthead))
+					for(i=connectpoint2[connecthead];i>=0;i=connectpoint2[i])
+						if (i != other) sendpacket(i,packbuf,packbufleng);
 
 				if (packbuf[2] != BYTEVERSION)
 					gameexit("\nYou cannot play Duke with different versions.");
@@ -674,8 +674,12 @@ void getpackets(void)
 					ud.user_name[other][i-3] = packbuf[i];
 				ud.user_name[other][i-3] = 0;
 
-					 j = i; //This used to be Duke packet #9... now concatenated with Duke packet #6
-					 for (;i<packbufleng;i++) ud.wchoice[other][i-j] = packbuf[i];
+				j = i; //This used to be Duke packet #9... now concatenated with Duke packet #6
+				for (;i<packbufleng;i++) ud.wchoice[other][i-j] = packbuf[i];
+
+				ps[other].aim_mode = packbuf[i++];
+				ps[other].auto_aim = packbuf[i++];
+					 
                 break;
             case 7:
 						 //slaves in M/S mode only send to master
@@ -6955,13 +6959,11 @@ void checkcommandline(int argc,char **argv)
         while(i < argc)
         {
             c = argv[i];
-				if (((*c == '/') || (*c == '-')) && (!firstnet))
+			if (((*c == '/') || (*c == '-')) && (!firstnet) && (!Bstrcasecmp(c+1,"net")))
             {
-				if (!Bstrcasecmp(c+1,"net")) {
-					firstnet = i;
-					netparamcount = argc - i - 1;
-					netparam = (char **)calloc(netparamcount, sizeof(char**));
-				}
+				firstnet = i;
+				netparamcount = argc - i - 1;
+				netparam = (char **)calloc(netparamcount, sizeof(char**));
                 i++;
                 continue;
             }
@@ -6985,7 +6987,7 @@ void checkcommandline(int argc,char **argv)
                 exit(-1);
             }
 
-            if(*c == '/')
+			if((*c == '/') || (*c == '-'))
             {
                 c++;
                 switch(*c)
@@ -7598,23 +7600,12 @@ void getnames(void)
 				buf[l++] = (char)ud.wchoice[0][i];
           }
 
+		  buf[l++] = ps[myconnectindex].aim_mode = ps[0].aim_mode;
+		  buf[l++] = ps[myconnectindex].auto_aim = ps[0].auto_aim;
+
           for(i=connecthead;i>=0;i=connectpoint2[i])
 		  {
 				if (i != myconnectindex) sendpacket(i,&buf[0],l);
-				if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
-		  }
-
-
-			  //FIXME: OOS ISSUE! THIS ISN'T EVEN BEING PROCESSED IN GETPACKET!
-        buf[0] = 10;
-        buf[1] = ps[0].aim_mode;
-	buf[2] = ps[0].auto_aim;	// JBF 20031126
-        ps[myconnectindex].aim_mode = ps[0].aim_mode;
-	ps[myconnectindex].auto_aim = ps[0].auto_aim;	// JBF 20031126
-
-        for(i=connecthead;i>=0;i=connectpoint2[i])
-		  {
-				if(i != myconnectindex) sendpacket(i,buf,3);   // JBF 20031126: was 2
 				if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
 		  }
 

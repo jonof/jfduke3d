@@ -284,6 +284,9 @@ void ExtLoadMap(char *mapname)
  long sky=0;
  int j;
 
+	char title[256];
+	Bsprintf(title, "BUILD Editor for JFDuke3D - %s", mapname);
+	wm_setapptitle(title);
 
  // PreCache Wall Tiles
     for(j=0;j<numwalls;j++)
