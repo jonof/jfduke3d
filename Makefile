@@ -104,15 +104,15 @@ all: duke3d$(EXESUFFIX) build$(EXESUFFIX)
 
 duke3d$(EXESUFFIX): $(GAMEOBJS) $(EOBJ)$(ENGINELIB)
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
-	-rm duke3d.sym$(EXESUFFIX)
-	cp duke3d$(EXESUFFIX) duke3d.sym$(EXESUFFIX)
-	strip duke3d$(EXESUFFIX)
+#	-rm duke3d.sym$(EXESUFFIX)
+#	cp duke3d$(EXESUFFIX) duke3d.sym$(EXESUFFIX)
+#	strip duke3d$(EXESUFFIX)
 	
 build$(EXESUFFIX): $(EDITOROBJS) $(EOBJ)$(EDITORLIB) $(EOBJ)$(ENGINELIB)
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
-	-rm build.sym$(EXESUFFIX)
-	cp build$(EXESUFFIX) build.sym$(EXESUFFIX)
-	strip build$(EXESUFFIX)
+#	-rm build.sym$(EXESUFFIX)
+#	cp build$(EXESUFFIX) build.sym$(EXESUFFIX)
+#	strip build$(EXESUFFIX)
 
 include Makefile.deps
 

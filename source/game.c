@@ -9121,6 +9121,7 @@ void dobonus(char bonusonly)
     short t, r, tinc,gfx_offset;
     long i, y,xfragtotal,yfragtotal;
     short bonuscnt;
+	int clockpad = 2;
 
     long breathe[] =
     {
@@ -9503,6 +9504,17 @@ void dobonus(char bonusonly)
     bonuscnt = 0;
     totalclock = 0; tinc = 0;
 
+	{
+		int ii, ij;
+
+		for (ii=ps[myconnectindex].player_par/(26*60), ij=1; ii>9; ii/=10, ij++) ;
+			clockpad = max(clockpad,ij);
+		for (ii=partime[ud.volume_number*11+ud.last_level-1]/(26*60), ij=1; ii>9; ii/=10, ij++) ;
+			clockpad = max(clockpad,ij);
+		for (ii=designertime[ud.volume_number*11+ud.last_level-1]/(26*60), ij=1; ii>9; ii/=10, ij++) ;
+			clockpad = max(clockpad,ij);
+	}
+	
     while( 1 )
     {
 	    handleevents();
@@ -9578,19 +9590,6 @@ void dobonus(char bonusonly)
 
                 if( totalclock > (60*4) )
                 {
-					int clockpad = 2;
-
-					{
-						int ii, ij;
-						for (ii=10,ij=1;ii<ps[myconnectindex].player_par/(26*60);ij++,ii*=10) ;
-						clockpad = max(clockpad,ij);
-						for (ii=10,ij=1;ii<partime[ud.volume_number*11+ud.last_level-1]/(26*60);ij++,ii*=10) ;
-						clockpad = max(clockpad,ij);
-						for (ii=10,ij=1;ii<designertime[ud.volume_number*11+ud.last_level-1]/(26*60);ij++,ii*=10) ;
-						clockpad = max(clockpad,ij);
-						OSD_Printf("%d\n",clockpad);
-					}
-					
                     if(bonuscnt == 1)
                     {
                         bonuscnt++;
