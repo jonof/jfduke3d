@@ -2002,7 +2002,7 @@ void FTA(short q,struct player_struct *p)
             p->ftq = q;
             pub = NUMPAGES;
             pus = NUMPAGES;
-	    OSD_Printf("%s\n",fta_quotes[q]);
+	    	if (p == &ps[screenpeek]) OSD_Printf("%s\n",fta_quotes[q]);
         }
     }
 }
@@ -5962,7 +5962,7 @@ void cheats(void)
     return;
 #endif
 
-    if (consolecheat)
+    if (consolecheat && numplayers < 2 && ud.recstat == 0)
 	  goto FOUNDCHEAT;
     
     if ( ps[myconnectindex].cheat_phase == 1)

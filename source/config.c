@@ -808,6 +808,7 @@ if (!VOLUMEONE) {
 #ifdef RENDERTYPEWIN
    SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLUseCDS", (int32*)&glusecds);
    if (glusecds) glusecds = 1;
+   SCRIPT_GetNumber( scripthandle, "Screen Setup", "MaxRefreshFreq", (int32*)&maxrefreshfreq);
 #endif
 
    SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLTextureMode", &gltexfiltermode);
@@ -927,6 +928,7 @@ void CONFIG_WriteSetup( void )
    SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenBPP",ScreenBPP,false,false);	// JBF 20040523
 #ifdef RENDERTYPEWIN
    SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLUseCDS",glusecds,false,false);
+   SCRIPT_PutNumber( scripthandle, "Screen Setup", "MaxRefreshFreq",maxrefreshfreq,false,false);
 #endif
    SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLTextureMode",gltexfiltermode,false,false);
    SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLAnisotropy",glanisotropy,false,false);
