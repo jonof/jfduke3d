@@ -1,6 +1,8 @@
 #include <windows.h>
 
 100 ICON "rsrc/game_icon.ico"
+101 ICON "rsrc/game_icon2.ico"
+102 ICON "rsrc/game_icon3.ico"
 200 BITMAP "rsrc/game.bmp"
 
 1000 DIALOGEX DISCARDABLE  20, 40, 265, 233
