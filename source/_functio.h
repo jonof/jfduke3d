@@ -291,6 +291,10 @@ static char * joystickanalogdefaults[] =
    "analog_moving",
    "analog_strafing",
    "",
+   "",
+   "",
+   "",
+   "",
    };
 
 
@@ -303,6 +307,14 @@ static char * joystickdigitaldefaults[] =
    "",
    "",
    "Run",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
    "",
    };
 #endif

@@ -17,7 +17,7 @@ flags_cl=/G5 /Ot /Z7
 flags_link=/DEBUG
 !else
 # release options
-flags_cl=/G6fy /Ox #/Ob1gity
+flags_cl=/G6Fy /Ox #/Ob1gity
 flags_link=/RELEASE
 !endif
 

@@ -82,10 +82,10 @@ static int32 mousebuttonfunctions[MAXMOUSEBUTTONS], mousedblbuttonfunctions[MAXM
 static int32 mousedigitalfunctions[MAXMOUSEAXES][2], mousedigitaldirection[MAXMOUSEAXES];
 static int32 mousesensitivity = 0x8000;
 
-#define MAXJOYAXES 4
+#define MAXJOYAXES 8
 #define MAXJOYBUTTONS (32+4)
-static int32 joyaxismapping[MAXJOYAXES];	// x, y, rudder, throttle
-static int32 joyaxisscaling[MAXJOYAXES] = { 65536, 65536, 65536, 65536 };
+static int32 joyaxismapping[MAXJOYAXES];	// x, y, rudder, throttle, extras
+static int32 joyaxisscaling[MAXJOYAXES] = { 65536, 65536, 65536, 65536, 65536, 65536, 65536, 65536 };
 static int32 joybuttonages[MAXJOYBUTTONS], joybuttonclicks=0;
 static int32 joybuttonfunctions[MAXJOYBUTTONS], joydblbuttonfunctions[MAXJOYBUTTONS];
 static int32 joydigitalfunctions[MAXJOYAXES][2], joydigitaldirection[MAXJOYAXES];
@@ -175,6 +175,9 @@ void CONTROL_ClearAssignments( void )
 	for (i=0; i<MAXJOYAXES; i++) {
 		joyaxismapping[i] = 0;
 		joyaxisscaling[i] = 65535;
+		joydigitalfunctions[i][0] = 0;
+		joydigitalfunctions[i][1] = 0;
+		joydigitaldirection[i] = 0;
 	}
 
 	for (i=0; i<MAXJOYBUTTONS; i++) {
@@ -256,16 +259,13 @@ void CONTROL_GetInput( ControlInfo *info )
 	}
 
 	if (CONTROL_JoystickEnabled && CONTROL_JoysPresent[0]) {
-		int winlayeridx[MAXJOYAXES] = { 0, 1, 5, 2 };	// x, y, rudder, throttle
-		for (j=0; j<MAXJOYAXES; j++) {
-			if (!(joyaxespresent & (1<<winlayeridx[j]))) continue;
-
+		for (j=0; j<MAXJOYAXES && j<joynumaxes; j++) {
 			if (joyaxismapping[j])
-				axisvalue[joyaxismapping[j]-1] += ((joyaxis[winlayeridx[j]]>>5) * joyaxisscaling[j]) >> 16;
+				axisvalue[joyaxismapping[j]-1] += ((joyaxis[j]>>5) * joyaxisscaling[j]) >> 16;
 
 			mx = 0;
-			if (joyaxis[winlayeridx[j]] < 0) mx = -1;
-			else if (joyaxis[winlayeridx[j]] > 0) mx = 1;
+			if (joyaxis[j] < 0) mx = -1;
+			else if (joyaxis[j] > 0) mx = 1;
 
 			if (mx != joydigitaldirection[j]) {
 				if (!mx || (mx && joydigitaldirection[j])) {
@@ -288,24 +288,14 @@ void CONTROL_GetInput( ControlInfo *info )
 
 		// joystick hats. ugh. we use the first hat.
 		mx = 0;
-		if (joyaxespresent & 0x100) {
-			if (joyaxis[8] != -1) {
+		if (joynumhats > 0) {
+			if (joyhat[0] != -1) {
 				static int hatstate[] = { 1, 1|2, 2, 2|4, 4, 4|8, 8, 8|1 };
 				int val;
 				
 				// thanks SDL for this much more sensible method
-				val = ((joyaxis[8] + 4500 / 2) % 36000) / 4500;
+				val = ((joyhat[0] + 4500 / 2) % 36000) / 4500;
 				if (val < 8) mx = hatstate[val];
-				/*
-				     if (joyaxis[8] > 33750 || joyaxis[8] <= 2250)  mx = 1;	// up only
-				else if (joyaxis[8] > 2250  && joyaxis[8] <= 6750)  mx = 1|2;	// up and right
-				else if (joyaxis[8] > 6750  && joyaxis[8] <= 11250) mx = 2;	// right only
-				else if (joyaxis[8] > 11250 && joyaxis[8] <= 15750) mx = 2|4;	// right and down
-				else if (joyaxis[8] > 15750 && joyaxis[8] <= 20250) mx = 4;	// down only
-				else if (joyaxis[8] > 20250 && joyaxis[8] <= 24750) mx = 4|8;	// left and down
-				else if (joyaxis[8] > 24750 && joyaxis[8] <= 29250) mx = 8;	// left only
-				else if (joyaxis[8] > 29250 && joyaxis[8] <= 33750) mx = 8|1;	// left and up
-				*/
 			}
 			for (i=0; i<4; i++) {
 				j = 1<<i;
@@ -489,6 +479,8 @@ void CONTROL_MapDigitalAxis
 			break;
 		case controldevice_joystick:
 		case controldevice_gamepad:
+			if (whichaxis >= MAXJOYAXES) break;
+			if (direction >= 2) break;
 			joydigitalfunctions[whichaxis][direction] = whichfunction+1;
 			break;
 		default: break;

@@ -90,43 +90,33 @@ char *Myname[1]= {"stryker@metronet.com"};
 char *defsfilename = "duke3d.def";
 
 extern char keystatus[];
-extern short defaultspritecstat;
-extern long posx, posy, posz, horiz, qsetmode;
+extern long posx, posy, posz, horiz;
 extern short ang, cursectnum;
 extern short ceilingheinum, floorheinum;
 extern char names[MAXTILES][25];
 
-extern long ydim16, xdimgame, ydimgame, bppgame, xdim2d, ydim2d;
-
-extern long zmode, kensplayerheight, zlock;
+extern long zlock;
 
 extern short editstatus, searchit;
 extern long searchx, searchy;                          //search input
-extern short searchsector, searchwall, searchstat;     //search output
 
-static short temppicnum, tempcstat;
-static char tempshade, tempxrepeat, tempyrepeat, somethingintab = 255;
-static long temphitag,templotag;
+//static short temppicnum, tempcstat;
+static char /*tempshade, tempxrepeat, tempyrepeat,*/ somethingintab = 255;
+//static long temphitag,templotag;
 
 static long ototalclock = 0;
 
 static long clockval[16], clockcnt = 0;
 
 #define NUMOPTIONS 9
-#define NUMKEYS 19
-
-static long vesares[13][2] = {{320,200},{360,200},{320,240},{360,240},{320,400},
-	{360,400},{640,350},{640,400},{640,480},{800,600},
-	{1024,768},{1280,1024},{1600,1200}};
 
 char option[NUMOPTIONS] = {0,0,0,0,0,0,1,0,0};
-char keys[NUMKEYS] =
+char keys[NUMBUILDKEYS] =
     {
         0xc8,0xd0,0xcb,0xcd,0x2a,0x9d,0x1d,0x39,
         0x1e,0x2c,0xd1,0xc9,0x47,0x49,
-        0x9c,0x1c,0xd,0xc,0xf,
+        0x9c,0x1c,0xd,0xc,0xf,0x45
     };
-extern char buildkeys[NUMKEYS];
 
 int nextvoxid = 0;
 
@@ -1654,6 +1644,7 @@ void Keys3d(void)
 		}
 	}
 
+#if 0	// JBF 20050318: Build already does this... why do it again?
 	if(keystatus[0x0f]==1) //TAB
 	{
 		switch(searchstat)
@@ -1705,6 +1696,7 @@ void Keys3d(void)
 				break;
 		}// end switch
 	}// end TAB
+#endif
 }// end 3d
 
 
@@ -1924,7 +1916,7 @@ int ExtInit(void)
     wm_msgbox("Build Editor for Duke Nukem 3D", msg);
     */
     
-	strcpy(apptitle,"BUILD Editor for JFDuke3D");
+	wm_setapptitle("BUILD Editor for JFDuke3D");
 
     // JBF 20031220: Because it's annoying renaming GRP files whenever I want to test different game data
     if (getenv("DUKE3DGRP")) {
@@ -1944,7 +1936,7 @@ int ExtInit(void)
 	*/
     bpp = 8;
 	if (loadsetup("build.cfg") < 0) printOSD("Configuration file not found, using defaults.\n");
-	memcpy((void *)buildkeys,(void *)keys,NUMKEYS);   //Trick to make build use setup.dat keys
+	memcpy((void *)buildkeys,(void *)keys,NUMBUILDKEYS);   //Trick to make build use setup.dat keys
 
         if (initengine()) {
 		wm_msgbox("Build Engine Initialisation Error",
@@ -1954,9 +1946,6 @@ int ExtInit(void)
 	initinput();
 	// if (option[3] != 0) moustat =
                 initmouse();
-	xdimgame = vesares[option[6]&15][0]; ydimgame = vesares[option[6]&15][1];
-	xdim2d = vesares[option[8]&15][0]; ydim2d = vesares[option[8]&15][1];
-	bppgame = bpp;
 
         kensplayerheight = 40; //32
          zmode = 1;
@@ -1972,6 +1961,7 @@ void ExtUnInit(void)
 {
 // setvmode(0x03);
    uninitgroupfile();
+	writesetup("build.cfg");
 }
 
 static char lockbyte4094;

@@ -7795,7 +7795,7 @@ void app_main(int argc,char **argv)
     sixteen[0] = 'D';
     trees[0] = 'I';
 
-	OSD_SetLogFile("consolelog.txt");
+	OSD_SetLogFile("duke3d.log");
 
 #if 0
     setvmode(0x03);
@@ -7848,8 +7848,8 @@ void app_main(int argc,char **argv)
     copyprotect();
 	if (cp) return;
 
-	if (VOLUMEALL) strcpy(apptitle,HEAD2);
-	else strcpy(apptitle,HEAD);
+	if (VOLUMEALL) wm_setapptitle(HEAD2);
+	else wm_setapptitle(HEAD);
 
     initprintf("%s\n",apptitle);
     initprintf("Copyright (c) 1996 3D Realms Entertainment\n");

@@ -3276,13 +3276,13 @@ if (PLUTOPAK) {
 			minitext(70,30+l*8,tempbuf,(m+l == probey)?0:16,10+16);
 
 		    //strcpy(tempbuf, KB_ScanCodeToString(KeyboardKeys[m+l][0]));
-			strcpy(tempbuf, keynames[KeyboardKeys[m+l][0]]);
+			strcpy(tempbuf, getkeyname(KeyboardKeys[m+l][0]));
 		    if (!tempbuf[0]) strcpy(tempbuf, "  -");
 		    minitext(70+100,30+l*8,tempbuf,
 				    (m+l == probey && !currentlist?21:10),10+16);
 
 		    //strcpy(tempbuf, KB_ScanCodeToString(KeyboardKeys[m+l][1]));
-			strcpy(tempbuf, keynames[KeyboardKeys[m+l][1]]);
+			strcpy(tempbuf, getkeyname(KeyboardKeys[m+l][1]));
 		    if (!tempbuf[0]) strcpy(tempbuf, "  -");
 		    minitext(70+120+34,30+l*8,tempbuf,
 				    (m+l == probey && currentlist?21:10),10+16);
@@ -3482,12 +3482,11 @@ if (PLUTOPAK) {
 		} else if (function == 2) {
 			static char *directions[] = { "UP", "RIGHT", "DOWN", "LEFT" };
 			if (whichkey < 2*joynumbuttons)
-				Bsprintf(tempbuf,"TO %sBUTTON %d", (whichkey&1)?"DOUBLE-CLICKED ":"", 1+(whichkey>>1));
+				Bsprintf(tempbuf,"TO %s%s", (whichkey&1)?"DOUBLE-CLICKED ":"", getjoyname(1,whichkey>>1));
 			else
 				Bsprintf(tempbuf,"TO HAT %s", directions[whichkey-2*joynumbuttons]);
 		} else if (function == 3) {
-			static char *axes[] = { "X-AXIS", "Y-AXIS", "RUDDER", "THROTTLE" };
-			Bsprintf(tempbuf,"TO DIGITAL %s %s",axes[whichkey>>1],(whichkey&1)?"POSITIVE":"NEGATIVE");
+			Bsprintf(tempbuf,"TO DIGITAL %s %s",getjoyname(0,whichkey>>1),(whichkey&1)?"POSITIVE":"NEGATIVE");
 		}
 
 	    gametext(320>>1,25+9,tempbuf,0,2+8+16);
@@ -3715,7 +3714,7 @@ if (PLUTOPAK) {
 	    
 		for (l=0; l<min(13,c); l++) {
 			if (m+l < 2*joynumbuttons) {
-				sprintf(tempbuf, "%sButton %ld", ((l+m)&1)?"Double ":"", ((l+m)>>1)+1);
+				sprintf(tempbuf, "%s%s", ((l+m)&1)?"Double ":"", getjoyname(1,(l+m)>>1));
 				x = JoystickFunctions[(l+m)>>1][(l+m)&1];
 			} else {
 				static char *directions[] = { "Up", "Right", "Down", "Left" };
@@ -3739,20 +3738,30 @@ if (PLUTOPAK) {
 
 	case 208:
 	case 209:
+	case 217:
+	case 218:
+	case 219:
+	case 220:
+	case 221:
+	case 222: {
+		int thispage, twothispage;
          rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,15,0,0,"JOYSTICK AXES");
 
+		thispage = (current_menu < 217) ? (current_menu-208) : (current_menu-217)+2;
+		twothispage = (thispage*2+1 < joynumaxes);
+		
 		onbar = 0;
 		switch (probey) {
 			case 0:
-			case 4: onbar = 1; x = probe(88,45+(probey==4)*64,0,9); break;
+			case 4: onbar = 1; x = probe(88,45+(probey==4)*64,0,1+(4<<twothispage)); break;
 			case 1:
 			case 2:
 			case 5:
-			case 6: x = probe(172+(probey==2||probey==6)*72,45+15+(probey==5||probey==6)*64,0,9); break;
+			case 6: x = probe(172+(probey==2||probey==6)*72,45+15+(probey==5||probey==6)*64,0,1+(4<<twothispage)); break;
 			case 3:
-			case 7: x = probe(88,45+15+15+(probey==7)*64,0,9); break;
-			default: x = probe(60,158,0,9); break;
+			case 7: x = probe(88,45+15+15+(probey==7)*64,0,1+(4<<twothispage)); break;
+			default: x = probe(60,79+79*twothispage,0,1+(4<<twothispage)); break;
 		}
 
 		switch (x) {
@@ -3761,18 +3770,26 @@ if (PLUTOPAK) {
 			    probey = 1;
 			    break;
 			case 8:
-				cmenu( current_menu == 208 ? 209 : 208 );
+				if (joynumaxes > 2) {
+					if (thispage == ((joynumaxes+1)/2)-1) cmenu(208);
+					else {
+						if (current_menu == 209) cmenu(217);
+						else cmenu( current_menu+1 );
+					}
+				}
 				break;
 
-			case 0: // bar
-			case 4: break;
+			case 4: // bar
+				if (!twothispage && joynumaxes > 2)
+					cmenu(208);
+			case 0: break;
 
 			case 1:	// digitals
 			case 2:
 			case 5:
 			case 6:
 				function = 3;
-				whichkey = (((current_menu==209)*2+(x==5||x==6)) << 1) + (x==2||x==6);
+				whichkey = ((thispage*2+(x==5||x==6)) << 1) + (x==2||x==6);
 				cmenu(211);
 				probey = JoystickDigitalFunctions[whichkey>>1][whichkey&1];
 				if (probey < 0) probey = NUMGAMEFUNCTIONS-1;
@@ -3780,149 +3797,156 @@ if (PLUTOPAK) {
 
 			case 3:	// analogues
 			case 7:
-				l = JoystickAnalogueAxes[(current_menu==209)*2+(x==7)];
+				l = JoystickAnalogueAxes[thispage*2+(x==7)];
 				if (l == analog_turning) l = analog_strafing;
 				else if (l == analog_strafing) l = analog_lookingupanddown;
 				else if (l == analog_lookingupanddown) l = analog_moving;
 				else if (l == analog_moving) l = -1;
 				else l = analog_turning;
-				JoystickAnalogueAxes[(current_menu==209)*2+(x==7)] = l;
-				CONTROL_MapAnalogAxis((current_menu==209)*2+(x==7),l,controldevice_joystick);
+				JoystickAnalogueAxes[thispage*2+(x==7)] = l;
+				CONTROL_MapAnalogAxis(thispage*2+(x==7),l,controldevice_joystick);
 				break;
 			default:break;
 		}
 
-		if (current_menu == 208) {
-			menutext(42,32,0,0,"X-AXIS");
-			menutext(42,32+64,0,0,"Y-AXIS");
-		} else {
-			menutext(42,32,0,0,"RUDDER");
-			menutext(42,32+64,0,0,"THROTTLE");
-		}
+		menutext(42,32,0,0,getjoyname(0,thispage*2));
+		if (twothispage) menutext(42,32+64,0,0,getjoyname(0,thispage*2+1));
 
 		gametext(76,38,"SCALE",0,2+8+16);
-		l = (JoystickAnalogueScale[(current_menu==209)*2]+262144) >> 13;
+		l = (JoystickAnalogueScale[thispage*2]+262144) >> 13;
 		bar(140+56,38+8,(short *)&l,1,x==0,0,0);
 		l = (l<<13)-262144;
-		if (l != JoystickAnalogueScale[(current_menu==209)*2]) {
-			CONTROL_SetAnalogAxisScale( (current_menu==209)*2, l, controldevice_joystick );
-			JoystickAnalogueScale[(current_menu==209)*2] = l;
+		if (l != JoystickAnalogueScale[thispage*2]) {
+			CONTROL_SetAnalogAxisScale( thispage*2, l, controldevice_joystick );
+			JoystickAnalogueScale[thispage*2] = l;
 		}
 		Bsprintf(tempbuf,"%s%.2f",l>=0?" ":"",(float)l/65536.0);
 		gametext(140,38,tempbuf,0,2+8+16);
 
 		gametext(76,38+15,"DIGITAL",0,2+8+16);
-			if (JoystickDigitalFunctions[(current_menu==209)*2][0] < 0)
+			if (JoystickDigitalFunctions[thispage*2][0] < 0)
 				strcpy(tempbuf, "  -NONE-");
 			else
-			    strcpy(tempbuf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[(current_menu==209)*2][0]));
+			    strcpy(tempbuf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[thispage*2][0]));
 
 		    for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
             minitext(140+12,38+15,tempbuf,0,10+16);
 
-			if (JoystickDigitalFunctions[(current_menu==209)*2][1] < 0)
+			if (JoystickDigitalFunctions[thispage*2][1] < 0)
 				strcpy(tempbuf, "  -NONE-");
 			else
-			    strcpy(tempbuf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[(current_menu==209)*2][1]));
+			    strcpy(tempbuf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[thispage*2][1]));
 
 		    for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
             minitext(140+12+72,38+15,tempbuf,0,10+16);
 			
 		gametext(76,38+15+15,"ANALOG",0,2+8+16);
-		if (CONFIG_AnalogNumToName( JoystickAnalogueAxes[(current_menu==209)*2] )) {
-			p = CONFIG_AnalogNumToName( JoystickAnalogueAxes[(current_menu==209)*2] );
+		if (CONFIG_AnalogNumToName( JoystickAnalogueAxes[thispage*2] )) {
+			p = CONFIG_AnalogNumToName( JoystickAnalogueAxes[thispage*2] );
 			if (p) {
 				gametext(140+12,38+15+15, strchr(p,'_')+1, 0, 2+8+16 );
 			}
 		}
 		
-		gametext(76,38+64,"SCALE",0,2+8+16);
-		l = (JoystickAnalogueScale[(current_menu==209)*2+1]+262144) >> 13;
-		bar(140+56,38+8+64,(short *)&l,1,x==4,0,0);
-		l = (l<<13)-262144;
-		if (l != JoystickAnalogueScale[(current_menu==209)*2+1]) {
-			CONTROL_SetAnalogAxisScale( (current_menu==209)*2+1, l, controldevice_joystick );
-			JoystickAnalogueScale[(current_menu==209)*2+1] = l;
-		}
-		Bsprintf(tempbuf,"%s%.2f",l>=0?" ":"",(float)l/65536.0);
-		gametext(140,38+64,tempbuf,0,2+8+16);
+		if (twothispage) {
+			gametext(76,38+64,"SCALE",0,2+8+16);
+			l = (JoystickAnalogueScale[thispage*2+1]+262144) >> 13;
+			bar(140+56,38+8+64,(short *)&l,1,x==4,0,0);
+			l = (l<<13)-262144;
+			if (l != JoystickAnalogueScale[thispage*2+1]) {
+				CONTROL_SetAnalogAxisScale( thispage*2+1, l, controldevice_joystick );
+				JoystickAnalogueScale[thispage*2+1] = l;
+			}
+			Bsprintf(tempbuf,"%s%.2f",l>=0?" ":"",(float)l/65536.0);
+			gametext(140,38+64,tempbuf,0,2+8+16);
 
-		gametext(76,38+64+15,"DIGITAL",0,2+8+16);
-			if (JoystickDigitalFunctions[(current_menu==209)*2+1][0] < 0)
-				strcpy(tempbuf, "  -NONE-");
-			else
-			    strcpy(tempbuf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[(current_menu==209)*2+1][0]));
+			gametext(76,38+64+15,"DIGITAL",0,2+8+16);
+				if (JoystickDigitalFunctions[thispage*2+1][0] < 0)
+					strcpy(tempbuf, "  -NONE-");
+				else
+					strcpy(tempbuf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[thispage*2+1][0]));
 
-		    for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
-            minitext(140+12,38+15+64,tempbuf,0,10+16);
+				for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
+				minitext(140+12,38+15+64,tempbuf,0,10+16);
 
-			if (JoystickDigitalFunctions[(current_menu==209)*2+1][1] < 0)
-				strcpy(tempbuf, "  -NONE-");
-			else
-			    strcpy(tempbuf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[(current_menu==209)*2+1][1]));
+				if (JoystickDigitalFunctions[thispage*2+1][1] < 0)
+					strcpy(tempbuf, "  -NONE-");
+				else
+					strcpy(tempbuf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[thispage*2+1][1]));
 
-		    for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
-            minitext(140+12+72,38+15+64,tempbuf,0,10+16);
-		
-		gametext(76,38+64+15+15,"ANALOG",0,2+8+16);
-		if (CONFIG_AnalogNumToName( JoystickAnalogueAxes[(current_menu==209)*2+1] )) {
-			p = CONFIG_AnalogNumToName( JoystickAnalogueAxes[(current_menu==209)*2+1] );
-			if (p) {
-				gametext(140+12,38+64+15+15, strchr(p,'_')+1, 0, 2+8+16 );
+				for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
+				minitext(140+12+72,38+15+64,tempbuf,0,10+16);
+			
+			gametext(76,38+64+15+15,"ANALOG",0,2+8+16);
+			if (CONFIG_AnalogNumToName( JoystickAnalogueAxes[thispage*2+1] )) {
+				p = CONFIG_AnalogNumToName( JoystickAnalogueAxes[thispage*2+1] );
+				if (p) {
+					gametext(140+12,38+64+15+15, strchr(p,'_')+1, 0, 2+8+16 );
+				}
 			}
 		}
 		
-		if (current_menu == 208) {
-	        menutext(320>>1,158,SHX(-10),PHX(-10),"NEXT...");
-			gametext(320-100,158,"Page 1 of 2",0,2+8+16);
-		} else {
-	        menutext(320>>1,158,SHX(-10),PHX(-10),"PREVIOUS...");
-			gametext(320-100,158,"Page 2 of 2",0,2+8+16);
+		if (joynumaxes > 2) {
+		    menutext(320>>1,twothispage?158:108,SHX(-10),(joynumaxes<=2),"NEXT...");
+			sprintf(tempbuf,"Page %d of %d",thispage+1,(joynumaxes+1)/2);
+			gametext(320-100,158,tempbuf,0,2+8+16);
 		}
 		break;
+	}
 
 	case 213:
+	case 214:
+	case 215:
+	case 216: {	// Pray this is enough pages for now :-|
+		int first,last;
          rotatesprite(320<<15,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,24,0,0,"JOY DEAD ZONES");
 
+			first = 4*(current_menu-213);
+			last  = min(4*(current_menu-213)+4,joynumaxes);
+
 			onbar = 1;
-			x = probe(320,48,15,8);
+			x = probe(320,48,15,2*(last-first)+(joynumaxes>4));
 
 			if (x==-1) {
 				cmenu(206);
 				probey = 2;
 				break;
+			} else if (x==2*(last-first) && joynumaxes>4) {
+				cmenu( (current_menu-213) == (joynumaxes/4) ? 213 : (current_menu+1) );
+				probey = 0;
+				break;
 			}
 
-			for (m=0;m<4;m++) {
-				unsigned short odx,dx,ody,dy,ax=0;
-				switch (m) {
-					case 0: p = "X-AXIS"; ax = 0; break;
-					case 1: p = "Y-AXIS"; ax = 1; break;
-					case 2: p = "RUDDER"; ax = 5; break;
-					case 3: p = "THROTT."; ax = 2; break;
-				}
-				menutext(32,48+30*m,0,0,p);
+			for (m=first;m<last;m++) {
+				unsigned short odx,dx,ody,dy;
+				menutext(32,48+30*(m-first),0,0,getjoyname(0,m));
 
-				gametext(128,48+30*m-8,"DEAD",0,2+8+16);
-				gametext(128,48+30*m-8+15,"SAT.",0,2+8+16);
+				gametext(128,48+30*(m-first)-8,"DEAD",0,2+8+16);
+				gametext(128,48+30*(m-first)-8+15,"SATU",0,2+8+16);
 				
 				dx = odx = min(64,64l*JoystickAnalogueDead[m]/10000l);
 				dy = ody = min(64,64l*JoystickAnalogueSaturate[m]/10000l);
 
-				bar(217,48+30*m,&dx,4,x==(m*2),0,0);
-				bar(217,48+30*m+15,&dy,4,x==(m*2+1),0,0);
+				bar(217,48+30*(m-first),&dx,4,x==((m-first)*2),0,0);
+				bar(217,48+30*(m-first)+15,&dy,4,x==((m-first)*2+1),0,0);
 
-				Bsprintf(tempbuf,"%3d%%",100*dx/64); gametext(217-49,48+30*m-8,tempbuf,0,2+8+16);
-				Bsprintf(tempbuf,"%3d%%",100*dy/64); gametext(217-49,48+30*m-8+15,tempbuf,0,2+8+16);
+				Bsprintf(tempbuf,"%3d%%",100*dx/64); gametext(217-49,48+30*(m-first)-8,tempbuf,0,2+8+16);
+				Bsprintf(tempbuf,"%3d%%",100*dy/64); gametext(217-49,48+30*(m-first)-8+15,tempbuf,0,2+8+16);
 
 				if (dx != odx) JoystickAnalogueDead[m]     = 10000l*dx/64l;
 				if (dy != ody) JoystickAnalogueSaturate[m] = 10000l*dy/64l;
 				if (dx != odx || dy != ody)
-					setjoydeadzone(ax,JoystickAnalogueDead[m],JoystickAnalogueSaturate[m]);
+					setjoydeadzone(m,JoystickAnalogueDead[m],JoystickAnalogueSaturate[m]);
 			}
-	    gametext(160,158,"DEAD = DEAD ZONE, SAT. = SATURATION",0,2+8+16);
+		//gametext(160,158,"DEAD = DEAD ZONE, SAT. = SATURATION",0,2+8+16);
+		if (joynumaxes>4) {
+			menutext(32,48+30*(last-first),0,0,"NEXT...");
+			sprintf(tempbuf,"Page %d of %d", 1+(current_menu-213), (joynumaxes+3)/4);
+			gametext(320-100,158,tempbuf,0,2+8+16);
+		}
 		break;		
+	}
 	    
         case 700:
 		case 701:	// JBF 20041220: A hack to stop the game exiting the menu directly to the game if one is running
