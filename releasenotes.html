@@ -53,7 +53,7 @@
 
 	<body>
 		<h1>Release Notes for JFDuke3D</h1>
-		<p>Release date: 14 February 2005 (multiplayer test release)</p>
+		<p>Release date: 16 February 2005 (multiplayer test release)</p>
 
 		<h2>New Features</h2>
 		<ul>
@@ -66,8 +66,6 @@
 			left to do before the port can be given a full official release. Keep that in mind when you come
 			to making modifications that work with this version because certain elements of the mod support
 			will change.</li>
-			<li>Slave players attempting to begin a new game will cause the game to get stuck. Only the master
-			should begin the game.</li>
 			<li>The network code does not display any status information during the joining phase. The game
 			may look as though it has locked up if it is waiting for something. You will have to kill the game
 			in Windows Task Manager if you want to abort the launch. This will become much cleaner and nicer
@@ -96,12 +94,12 @@
 		</table>
 		<p><span class="warning">Keep in mind that the networking features are still being refined and there are
 		certain issues and caveats to be aware of when using it.</span> The basic syntax of the network command
-		line is like so: <code>DUKE3D <em>(normal game parameters)</em> -net <em>(network parameters)</em></code></p>
+		line is like so: <code>DUKE3D <em>(normal game parameters)</em> /net <em>(network parameters)</em></code></p>
 		<table border="1" rules="cols" cellpadding="2" class="center">
+			<caption>Network parameters</caption>
 			<colgroup>
 				<col valign="top" />
 			</colgroup>
-			<caption>Network parameters</caption>
 			<tr>
 				<td>/nx:y</td>
 				<td>Game comm type. <em>x</em> = 0 for master/slave or 1 for peer-to-peer.<br />
@@ -125,9 +123,9 @@
 		lines each machine must run to join the game hosted by the machine named 'asuka':
 		</p>
 		<table border="1" rules="cols" cellpadding="2">
-			<tr><td>asuka</td><td><code>DUKE3D.EXE -net /n0:3</code></td></tr>
-			<tr><td>faye</td><td><code>DUKE3D.EXE -net /n0 192.168.1.5</code></td></tr>
-			<tr><td>kaoru</td><td><code>DUKE3D.EXE -net /n0 192.168.1.5</code></td></tr>
+			<tr><td>asuka</td><td><code>DUKE3D.EXE /net /n0:3</code></td></tr>
+			<tr><td>faye</td><td><code>DUKE3D.EXE /net /n0 192.168.1.5</code></td></tr>
+			<tr><td>kaoru</td><td><code>DUKE3D.EXE /net /n0 192.168.1.5</code></td></tr>
 		</table>
 
 		<h4>Peer-to-peer mode</h4>
@@ -136,9 +134,9 @@
 		it. Peer-to-peer mode requires each machine specify the addresses of each other machine in the game in the
 		same order, but indicating its own position in the sequence with the <code>/n1</code> option.</p>
 		<table border="1" rules="cols" cellpadding="2">
-			<tr><td>asuka</td><td><code>DUKE3D.EXE -net /n1 192.168.1.2 192.168.1.6</code></td></tr>
-			<tr><td>faye</td><td><code>DUKE3D.EXE -net 192.168.1.5 /n1 192.168.1.6</code></td></tr>
-			<tr><td>kaoru</td><td><code>DUKE3D.EXE -net 192.168.1.5 192.168.1.2 /n1</code></td></tr>
+			<tr><td>asuka</td><td><code>DUKE3D.EXE /net /n1 192.168.1.2 192.168.1.6</code></td></tr>
+			<tr><td>faye</td><td><code>DUKE3D.EXE /net 192.168.1.5 /n1 192.168.1.6</code></td></tr>
+			<tr><td>kaoru</td><td><code>DUKE3D.EXE /net 192.168.1.5 192.168.1.2 /n1</code></td></tr>
 		</table>
 
 		<h4>Addresses and ports</h4>
@@ -162,7 +160,39 @@
 		replace the Pig Cop character in Duke.</p>
 
 		<p>Here is the definition for the pig cop which is also included in the sample DUKE3D.DEF file.</p>
-<pre>definemodel "models/pigcop.md2" 1.30 0
+<pre>
+   //New syntax:
+model "models/pigcop.md2"
+{
+   scale 1.30 shade 0
+   skin { pal 0 file "models/pigcop.jpg" }
+   anim { frame0 "walk0" frame1 "walk13" fps 20 flags 0 }
+   frame { name "walk0" tile0 2000 tile1 2019 }
+
+   anim { frame0 "pump0" frame1 "pump2" fps 10 flags 1 }
+   frame { name "pump0" tile0 2025 tile1 2027 }
+
+   frame { name "stand" tile0 2030 tile1 2034 }
+
+   anim { frame0 "shoot0" frame1 "shoot2" fps 10 flags 1 }
+   frame { name "shoot0" tile0 2035 tile1 2037 }
+
+   anim { frame0 "dive0" frame1 "dive3" fps 8 flags 1 }
+   frame { name "dive0" tile0 2040 tile1 2044 }
+   frame { name "dive3" tile0 2045 tile1 2049 }
+
+   anim { frame0 "dshoot0" frame1 "dshoot2" fps 10 flags 1 }
+   frame { name "dshoot0" tile0 2050 tile1 2052 }
+
+   frame { name "die0" tile 2055 }
+   anim { frame0 "die1" frame1 "dead" fps 13 flags 1 }
+   frame { name "die1" tile0 2056 tile1 2059 }
+   frame { name "dead" tile 2060 }
+}
+
+
+   //Old syntax:
+definemodel "models/pigcop.md2" 1.30 0
 definemodelskin 0 "models/pigcop.jpg"
 
 definemodelanim "walk0" "walk13" 20 0
@@ -223,8 +253,10 @@ definemodelframe "dead" 2060 2060</pre>
 			of the tile names in the art file.</dd>
 
 			<dt>model <em>filename</em> { ... }</dt>
-			<dd><span class="warning"><strong>Be aware that this syntax is likely to change in the near future
-			in ways that are unlikely to be backwardly compatible. Consider yourself warned!</strong></span>
+			<dd><span class="warning">Please be aware that we plan to modify certain elements of this model definition
+			syntax in ways that are likely to break existing DEF files written to use this new syntax, so be prepared
+			to update your DEF files once things settle down. However, we do encourage you to experiment with the new
+			style of model definition.</span>
 			Defines an MD2-format model file to replace certain sprites in the game when running in OpenGL
 			Polymost mode. The brace-enclosed block may contain these directives:
 			<dl>
@@ -288,11 +320,113 @@ definemodelframe "dead" 2060 2060</pre>
 					choose to use the 'frame' or 'name' versions of this directive as both are
 					identical.</dd>
 
-					<dt>tile0 <em>tilenum</em><br />
+					<dt>tile <em>tilenum</em><br />
+					tile0 <em>tilenum</em><br />
 					tile1 <em>tilenum</em></dt>
-					<dd>These two directives together specifies a range of ART-file tiles which this
-					model frame should replace.</dd>
+					<dd>Use the <em>tile</em> directive to specify an ART-file tile which this model should replace.
+					Use the <em>tile0</em> and <em>tile1</em> directives together to specify a range of ART-file tiles.
+					If you use <em>tile0</em>, you must also have a <em>tile1</em>. You may not use the same directive
+					twice to specify multiple ranges.</dd>
 				</dl></dd>
+            
+				<dt>hud { ... }</dt>
+				<dd>Defines a range of ART-file tiles to use with a heads-up-display. The brace-enclosed
+				block may contain these directives:
+				<dl>
+					<dt>tile <em>tilenum</em><br />
+					tile0 <em>tilenum</em><br />
+					tile1 <em>tilenum</em></dt>
+					<dd><em>Tile0</em> and <em>tile1</em> together specify a range of ART-file tiles which this model
+					frame should replace when rendered as part of the HUD. You can specify individual tiles using a
+					single <em>tile</em> command.</dd>
+
+					<dt>xadd <em>offset</em><br />
+					yadd <em>offset</em><br />
+					zadd <em>offset</em><br />
+					angadd <em>offset</em></dt>
+					<dd>Use these offsets to fine-tune the location of the model placement. <em>Xadd</em>,
+					<em>yadd</em>, and <em>zadd</em> are position offsets relative to the viewer's orienation. You can
+					use floating point values with them. <em>Angadd</em> is a Build angle offset. (512 = 90 degrees,
+					1024 = 180 degrees, etc...).</dd>
+
+					<dt>hide</dt>
+					<dd>Some weapons use multiple ART tiles for constructing the gun or animation. Use this option to
+					hide parts that you don't need in your replacement.</dd>
+
+					<dt>nobob</dt>
+					<dd>By default, the HUD model offset is affected by the player bobbing offset when Duke is walking.
+					Use this option to disable that.</dd>
+
+					<dt>flipped</dt>
+					<dd>Use this option to apply the settings inside the hud block only if the object is normally
+					rendered x-flipped (mirror image). Some weapons, such as the devastator, are rendered in 2 pieces,
+					the left devastator is actually a mirror image of the right.</dd>
+
+					<dt>nodepth</dt>
+					<dd>Use this to render a HUD model without the use of the depth buffer. Normally, you should avoid
+					this. The one exception where this is useful is for the spinning nuke menu pointer because it
+					should always be in front - and it just happens to be convex ... which is the one case that is safe
+					with the depth buffer disabled ... a rather fortunate coincidence :)</dd>
+				</dl>
+                
+				Here are some HUD examples:
+<pre>
+
+   // A pistol model that was posted a long time ago...
+model "models/m9.md2"
+{
+   scale 50 shade 4
+   anim { frame0 "idle1" frame1 "idle12" fps 5 flags 0 }
+   frame { frame "idle1" tile 2524 }
+   anim { frame0 "frame13" frame1 "frame45" fps 24 flags 0 }
+   frame { frame "frame13" tile0 2525 tile1 2526 }
+   anim { frame0 "reload1" frame1 "reload34" fps 24 flags 0 }
+   frame { frame "reload1" tile0 2528 tile1 2529 }
+
+   hud { tile0 2524 tile1 2529 xadd -1.2 yadd -1.0 zadd -1.0 angadd 1536 }
+
+   frame { frame "reload1" tile0 2530 tile1 2532 } //consume tiles with dummy frames
+   hud { tile0 2530 tile1 2532 hide } //Make it not draw 2D hands during reload
+}
+
+   // A devastator weapon model that was posted a long time ago...
+model "models/hud_devastator.md2"
+{
+   scale 12
+   skin { pal 0 file "models/hud_devastator.pcx" }
+   frame { frame "Frame 1" tile0 2510 tile1 2511 }
+   hud { tile0 2510 tile1 2511 xadd -8.5 yadd +1.83 zadd +10.0 angadd 1024 flipped } //left devastator
+   hud { tile0 2510 tile1 2511 xadd +8.5 yadd +5.90 zadd +10.0 angadd 1024 } //right devastator
+}
+
+   // fearpi's activated tripbomb (wall mine)
+model "models/a_tripbomb.md2"
+{
+   scale 8
+   anim { frame0 "frame1" frame1 "frame1" fps 1 flags 0 }
+   frame { frame "frame1" tile 2566 }
+   hud { tile 2566 yadd +0.35 zadd 1.2 angadd 1024 }
+}
+
+   // spinning icon (by Killd a ton)
+model "models/spinnuke.md2"
+{
+   scale 0.25 shade 0
+
+      //when rendered as respawn timer:
+   skin { pal 0 file "models/spinnuke.png" }
+   anim { frame0 "spin00" frame1 "spin19" fps 17 flags 0 }
+   frame { frame "spin00" tile0 2813 tile1 2819 }
+   frame { frame "spin00" tile0 3190 tile1 3196 }
+   skin { pal 0 file "models/spinnukeyellow.png" }
+   frame { frame "spin00" tile0 3200 tile1 3206 }
+   skin { pal 0 file "models/spinnukegreen.png" }
+   frame { frame "spin00" tile0 3210 tile1 3216 }
+
+      //when rendered as menu icon:
+   hud { tile0 2813 tile1 2819 xadd 0.01 yadd -.02 zadd 1.05 nodepth }
+}</pre>
+				</dd>
 			</dl></dd>
 			
 			<dt>voxel <em>filename</em> { ... }</dt>

@@ -1899,10 +1899,12 @@ if (VOLUMEALL) {
                     {
                         tempbuf[0] = 126;
                         tempbuf[1] = lastsavedpos;
+						tempbuf[2] = myconnectindex;
                         for(x=connecthead;x>=0;x=connectpoint2[x])
-                            if(x != myconnectindex)
-                                sendpacket(x,tempbuf,2);
-
+						{
+							 if (x != myconnectindex) sendpacket(x,tempbuf,3);
+							 if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
+						}
                         getpackets();
 
                         loadplayer(lastsavedpos);
@@ -4524,8 +4526,10 @@ VOLUME_ALL_40x:
                 copybufbyte(menuname[probey],boardfilename,x+1);
 
                 for(c=connecthead;c>=0;c=connectpoint2[c])
-                    if(c != myconnectindex)
-                        sendpacket(c,tempbuf,x+10);
+				{
+					if (c != myconnectindex) sendpacket(c,tempbuf,x+10);
+					if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
+				}
 
                 newgame(ud.m_volume_number,ud.m_level_number,ud.m_player_skill+1);
                 enterlevel(MODE_GAME);
@@ -4637,9 +4641,11 @@ if (VOLUMEALL) {
                     {
                         resetweapons(c);
                         resetinventory(c);
-
-                        if(c != myconnectindex)
-                            sendpacket(c,tempbuf,11);
+					}
+					for(c=connecthead;c>=0;c=connectpoint2[c])
+					{
+						if (c != myconnectindex) sendpacket(c,tempbuf,11);
+						if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
                     }
 
                     newgame(ud.m_volume_number,ud.m_level_number,ud.m_player_skill+1);
@@ -4674,9 +4680,11 @@ if (VOLUMEALL) {
                     {
                         resetweapons(c);
                         resetinventory(c);
-
-                        if(c != myconnectindex)
-                            sendpacket(c,tempbuf,11);
+					}
+					for(c=connecthead;c>=0;c=connectpoint2[c])
+					{
+						if(c != myconnectindex) sendpacket(c,tempbuf,11);
+						if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
                     }
 
                     newgame(ud.m_volume_number,ud.m_level_number,ud.m_player_skill+1);

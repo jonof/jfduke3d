@@ -52,7 +52,7 @@ char fta_quotes[NUMOFFIRSTTIMEACTIVE][64];
 
 unsigned char tempbuf[2048], packbuf[576];
 
-char buf[80];
+char buf[1024];
 
 short camsprite;
 short mirrorwall[64], mirrorsector[64], mirrorcnt;

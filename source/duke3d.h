@@ -412,7 +412,7 @@ extern struct user_defs ud;
 extern short int moustat;
 extern short int global_random;
 extern long scaredfallz;
-extern char buf[80]; //My own generic input buffer
+extern char buf[1024]; //My own generic input buffer
 
 extern char fta_quotes[NUMOFFIRSTTIMEACTIVE][64];
 extern char scantoasc[128],ready2send;

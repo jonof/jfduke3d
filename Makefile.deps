@@ -17,7 +17,6 @@ $(OBJ)testcd.$o: $(SRC)testcd.c
 $(OBJ)winbits.$o: $(SRC)winbits.c
 $(OBJ)osdfuncs.$o: $(SRC)names.h $(EINC)build.h
 $(OBJ)osdcmds.$o: $(SRC)osdcmds.c $(INC)osdcmds.h $(EINC)osd.h $(duke3d_h)
-$(OBJ)multiplayer.$o: $(SRC)multiplayer.c $(duke3d_h)
 
 $(OBJ)astub.$o: $(SRC)astub.c $(EINC)build.h $(EINC)pragmas.h $(EINC)compat.h $(EINC)editor.h
 

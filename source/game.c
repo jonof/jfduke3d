@@ -426,8 +426,10 @@ void allowtimetocorrecterrorswhenquitting(void)
 
           packbuf[0] = 127;
           for(i=connecthead;i>=0;i=connectpoint2[i])
-                if (i != myconnectindex)
-                     sendpacket(i,packbuf,1);
+			 {
+					 if (i != myconnectindex) sendpacket(i,packbuf,1);
+					 if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
+			 }
      }
 }
 
@@ -490,9 +492,15 @@ void getpackets(void)
 		*/
 
             case 126:
+						 //Slaves in M/S mode only send to master
+						 //Master re-transmits message to all others
+					 if ((!networkmode) && (myconnectindex == connecthead))
+						 for(i=connectpoint2[connecthead];i>=0;i=connectpoint2[i])
+							 if (i != other) sendpacket(i,packbuf,packbufleng);
+
                 multiflag = 2;
                 multiwhat = 0;
-                multiwho = other;
+					 multiwho = packbuf[2]; //other: need to send in m/s mode because of possible re-transmit
                 multipos = packbuf[1];
                 loadplayer( multipos );
                 multiflag = 0;
@@ -621,6 +629,12 @@ void getpackets(void)
                 break;
 
             case 5:
+						 //Slaves in M/S mode only send to master
+						 //Master re-transmits message to all others
+					 if ((!networkmode) && (myconnectindex == connecthead))
+						 for(i=connectpoint2[connecthead];i>=0;i=connectpoint2[i])
+							 if (i != other) sendpacket(i,packbuf,packbufleng);
+
                 ud.m_level_number = ud.level_number = packbuf[1];
                 ud.m_volume_number = ud.volume_number = packbuf[2];
                 ud.m_player_skill = ud.player_skill = packbuf[3];
@@ -645,28 +659,30 @@ void getpackets(void)
 
                 break;
             case 6:
+						 //slaves in M/S mode only send to master
+						 //Master re-transmits message to all others
+					 if ((!networkmode) && (myconnectindex == connecthead))
+						 for(i=connectpoint2[connecthead];i>=0;i=connectpoint2[i])
+							 if (i != other) sendpacket(i,packbuf,packbufleng);
+
 				if (packbuf[2] != BYTEVERSION)
 					gameexit("\nYou cannot play Duke with different versions.");
 
-					//slaves in M/S mode only send to master
-				if ((!networkmode) && (myconnectindex == connecthead))
-				{
-						//Master re-transmits message to all others
-					for(i=connectpoint2[connecthead];i>=0;i=connectpoint2[i])
-						if (i != other)
-							sendpacket(i,packbuf,packbufleng);
-				}
 				other = packbuf[1];
 
 				for (i=3;packbuf[i];i++)
 					ud.user_name[other][i-3] = packbuf[i];
 				ud.user_name[other][i-3] = 0;
-				break;
-            case 9:
-                for (i=1;i<packbufleng;i++)
-                    ud.wchoice[other][i-1] = packbuf[i];
+
+					 j = i; //This used to be Duke packet #9... now concatenated with Duke packet #6
+					 for (;i<packbufleng;i++) ud.wchoice[other][i-j] = packbuf[i];
                 break;
             case 7:
+						 //slaves in M/S mode only send to master
+						 //Master re-transmits message to all others
+					 if ((!networkmode) && (myconnectindex == connecthead))
+						 for(i=connectpoint2[connecthead];i>=0;i=connectpoint2[i])
+							 if (i != other) sendpacket(i,packbuf,packbufleng);
 
                 if(numlumps == 0) break;
 
@@ -680,6 +696,12 @@ void getpackets(void)
                 rtsplaying = 7;
                 break;
             case 8:
+						 //Slaves in M/S mode only send to master
+						 //Master re-transmits message to all others
+					 if ((!networkmode) && (myconnectindex == connecthead))
+						 for(i=connectpoint2[connecthead];i>=0;i=connectpoint2[i])
+							 if (i != other) sendpacket(i,packbuf,packbufleng);
+
                 ud.m_level_number = ud.level_number = packbuf[1];
                 ud.m_volume_number = ud.volume_number = packbuf[2];
                 ud.m_player_skill = ud.player_skill = packbuf[3];
@@ -968,7 +990,7 @@ void faketimerhandler()
         return;
     }
 
-        //This allows allow packet-resends
+		  //This allows packet resends
     for(i=connecthead;i>=0;i=connectpoint2[i])
         if (movefifoend[i] <= movefifosendplc)
         {
@@ -6575,8 +6597,10 @@ if (VOLUMEALL) {
                     tempbuf[1] = i;
 
                     for(ch=connecthead;ch>=0;ch=connectpoint2[ch])
-                        if(ch != myconnectindex)
-                            sendpacket(ch,tempbuf,2);
+						  {
+								if(ch != myconnectindex) sendpacket(ch,tempbuf,2);
+								if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
+						  }
                 }
 
                 pus = NUMPAGES;
@@ -6931,7 +6955,7 @@ void checkcommandline(int argc,char **argv)
         while(i < argc)
         {
             c = argv[i];
-            if(*c == '-')
+				if (((*c == '/') || (*c == '-')) && (!firstnet))
             {
 				if (!Bstrcasecmp(c+1,"net")) {
 					firstnet = i;
@@ -7552,47 +7576,36 @@ void sendscore(char *s)
 
 void getnames(void)
 {
-    short i,l;
+	 int i,l;
 
-    for(l=0;myname[l];l++)
-    {
-        ud.user_name[myconnectindex][l] = Btoupper(myname[l]);
-        buf[l+3] = Btoupper(myname[l]);
-    }
+     for(l=0;myname[l];l++)
+          ud.user_name[myconnectindex][l] = Btoupper(myname[l]);
 
-    if(numplayers > 1)
-    {
-        buf[0] = 6;
-		buf[1] = myconnectindex;
-        buf[2] = BYTEVERSION;
+     if(numplayers > 1)
+     {
+          buf[0] = 6;
+		  buf[1] = myconnectindex;
+          buf[2] = BYTEVERSION;
+		  l = 3;
 
-        buf[l+3] = 0;
-        l += 4;
+			  //null terminated player name to send
+		  for(i=0;myname[i];i++) buf[l++] = Btoupper(myname[i]);
+		  buf[l++] = 0;
 
-		for(i=connecthead;i>=0;i=connectpoint2[i])
-		{
-			if (i != myconnectindex) sendpacket(i,&buf[0],l);
-			if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
-		}
+          for(i=0;i<10;i++)
+          {
+                ud.wchoice[myconnectindex][i] = ud.wchoice[0][i];
+				buf[l++] = (char)ud.wchoice[0][i];
+          }
 
-  //      getpackets();
+          for(i=connecthead;i>=0;i=connectpoint2[i])
+		  {
+				if (i != myconnectindex) sendpacket(i,&buf[0],l);
+				if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
+		  }
 
-        l = 1;
-        buf[0] = 9;
 
-        for(i=0;i<10;i++)
-        {
-            ud.wchoice[myconnectindex][i] = ud.wchoice[0][i];
-            buf[l] = (char) ud.wchoice[0][i];
-            l++;
-        }
-
-        for(i=connecthead;i>=0;i=connectpoint2[i])
-            if(i != myconnectindex)
-                sendpacket(i,&buf[0],11);
-
-//        getpackets();
-
+			  //FIXME: OOS ISSUE! THIS ISN'T EVEN BEING PROCESSED IN GETPACKET!
         buf[0] = 10;
         buf[1] = ps[0].aim_mode;
 	buf[2] = ps[0].auto_aim;	// JBF 20031126
@@ -7600,10 +7613,10 @@ void getnames(void)
 	ps[myconnectindex].auto_aim = ps[0].auto_aim;	// JBF 20031126
 
         for(i=connecthead;i>=0;i=connectpoint2[i])
-            if(i != myconnectindex)
-                sendpacket(i,buf,3);	// JBF 20031126: was 2
-
-//        getpackets();
+		  {
+				if(i != myconnectindex) sendpacket(i,buf,3);   // JBF 20031126: was 2
+				if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
+		  }
 
 	/* JBF: Apparently not in Atomic 1.5
         if(cp == 0)
@@ -7611,8 +7624,10 @@ void getnames(void)
             buf[0] = 125;
 
             for(i=connecthead;i>=0;i=connectpoint2[i])
-                if(i != myconnectindex)
-                    sendpacket(i,buf,1);
+				{
+					 if(i != myconnectindex) sendpacket(i,buf,1);
+					 if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
+				}
         }
 	*/
 
