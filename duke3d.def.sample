@@ -11,7 +11,7 @@ definetint 1 110 110 255 1
 definetint 2 255 110 80 1
 definetint 4 0 0 0 0
 definetint 6 192 255 138 3
-definetint 7 228 200 172 0
+definetint 7 172 157 140 0
 definetint 8 180 255 200 0
 
 // This entry defines a texture replacement
