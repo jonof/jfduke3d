@@ -1935,6 +1935,7 @@ int ExtInit(void)
     wm_msgbox("Build Editor for Duke Nukem 3D", msg);
     */
     
+	strcpy(apptitle,"BUILD Editor for JFDuke3D");
 
     // JBF 20031220: Because it's annoying renaming GRP files whenever I want to test different game data
     if (getenv("DUKE3DGRP")) {
