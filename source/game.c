@@ -7547,7 +7547,17 @@ if (VOLUMEONE) {
 
    for(i=0;i<MAXPLAYERS;i++) playerreadyflag[i] = 0;
 
-   initmultiplayers(netparamcount,netparam, 0,0,0);
+   //initmultiplayers(netparamcount,netparam, 0,0,0);
+   if (initmultiplayersparms(netparamcount,netparam)) {
+	   initprintf("Waiting for players...\n");
+	   while (initmultiplayerscycle()) {
+		   handleevents();
+		   if (quitevent) {
+			   Shutdown();
+			   return;
+		   }
+	   }
+   }
    if (netparam) free(netparam);
    netparam = NULL; netparamcount = 0;
 
@@ -7711,12 +7721,13 @@ void copyprotect(void)
 //    FILE *fp;
 //    char idfile[256];
 
+    cp = 0;
+
 #ifdef NOCOPYPROTECT
     return;
 #endif
 if (VOLUMEONE) return;
 
-    cp = 0;
 /*
     fp = (FILE *)fopen("cdrom.ini","rt");
     if(fp == (FILE *) NULL)
@@ -7803,6 +7814,7 @@ void app_main(int argc,char **argv)
     }
     
     copyprotect();
+	if (cp) return;
 
 	if (VOLUMEALL) strcpy(apptitle,HEAD2);
 	else strcpy(apptitle,HEAD);
@@ -7867,6 +7879,7 @@ if (VOLUMEONE) {
     OSD_SetParameters(0,2, 0,0, 4,0);
     registerosdcommands();
     Startup();
+	if (quitevent) return;
 
 	// KJS: Hack to make sure ps[*].palette is never NULL!
     //for(i=connecthead;i>=0;i=connectpoint2[i]) ps[i].palette = palette;

@@ -26,10 +26,15 @@ Replacement cd-auth routine by Jonathon Fowler.
 #if (defined(RENDERTYPEWIN) || defined(WIN32)) && !defined(NOCOPYPROTECT)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include "compat.h"
+#include "baselayer.h"
+
+/*
+ * Why even bother doing this? Because I can. Because it proves the futility
+ * of it all. Because it's amusing. Who cares?
+ */
 
 char testcd( char *fn, long testsiz )
 {
@@ -46,10 +51,10 @@ char testcd( char *fn, long testsiz )
 		if (GetDriveType(driv) != DRIVE_CDROM) continue;
 
 		name[0] = 'A'+i;
-		fil = open(name,O_RDONLY,S_IREAD);
+		fil = Bopen(name,O_RDONLY,S_IREAD);
 		if (fil<0) continue;
-		dalen = filelength(fil);
-		close(fil);
+		dalen = Bfilelength(fil);
+		Bclose(fil);
 
 		if (dalen == testsiz) {
 			initprintf("Copy Protection: Found CDROM in drive %c:\n", driv[0]);
@@ -57,7 +62,7 @@ char testcd( char *fn, long testsiz )
 		}
 	}
 
-	initprintf("Copy Protection: Failed to find CDROM\n");
+	wm_msgbox("Duke Nukem 3D","Copy Protection: Failed to find CDROM");
 	return 1;
 }
 
