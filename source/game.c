@@ -7759,6 +7759,14 @@ void app_main(int argc,char **argv)
     long i, j, k, l;
     int32 tempautorun;
 
+#ifdef RENDERTYPEWIN
+	if (win_checkinstance()) {
+		if (!wm_ynbox("Duke Nukem 3D","Another Build game is currently running. "
+					"Do you wish to continue starting this copy?"))
+			return;
+	}
+#endif
+
     todd[0] = 'T';
     sixteen[0] = 'D';
     trees[0] = 'I';
