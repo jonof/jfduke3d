@@ -1144,6 +1144,14 @@ char parsecommand(void)
             j = *scriptptr;
             while( *textptr == ' ' ) textptr++;
 
+	    if (j < 0 || j >= 4)
+	    {
+                    initprintf("  * ERROR!(L%ld %s) Volume number exceeds maximum volume count.\n",line_number,compilefile);
+                    error++;
+                    while( *textptr != 0x0a && *textptr != 0 ) textptr++;
+                    break;
+	    }
+	    
             i = 0;
 
             while( *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )		// JBF 20040127: end of file checked
@@ -1167,6 +1175,14 @@ char parsecommand(void)
             j = *scriptptr;
             while( *textptr == ' ' ) textptr++;
 
+	    if (j < 0 || j >= 5)
+	    {
+                    initprintf("  * ERROR!(L%ld %s) Skill number exceeds maximum skill count.\n",line_number,compilefile);
+                    error++;
+                    while( *textptr != 0x0a && *textptr != 0 ) textptr++;
+                    break;
+	    }
+	    
             i = 0;
 
             while( *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )		// JBF 20040127: end of file checked
@@ -1194,6 +1210,22 @@ char parsecommand(void)
             k = *scriptptr;
             while( *textptr == ' ' ) textptr++;
 
+	    if (j < 0 || j >= 4)
+	    {
+                    initprintf("  * ERROR!(L%ld %s) Volume number exceeds maximum volume count.\n",line_number,compilefile);
+                    error++;
+                    while( *textptr != 0x0a && *textptr != 0 ) textptr++;
+                    break;
+	    }
+	    if (k < 0 || k >= 11)
+	    {
+                    initprintf("  * ERROR!(L%ld %s) Level number exceeds maximum levels-per-episode count.\n",
+				    line_number,compilefile);
+                    error++;
+                    while( *textptr != 0x0a && *textptr != 0 ) textptr++;
+                    break;
+	    }
+	    
             i = 0;
             while( *textptr != ' ' && *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )	// JBF 20040127: end of file checked
             {
