@@ -16,7 +16,7 @@
 
 	<body>
 		<h1>Release Notes for JonoF's Duke Nukem 3D Port</h1>
-		<p>Release date: 10 October 2004 (interim release)</p>
+		<p>Release date: 13 October 2004 (interim release)</p>
 
 		<h2>New Features</h2>
 		<ul>
@@ -49,41 +49,52 @@
 		<p>Polymost uses the Quake II MD2 model format for 3D models. You can replace any wall-aligned or
 		face sprite in the game with a 3D model using a declaration in the DUKE3D.DEF file. For more information
 		on the specifics of the DEF-file commands for 3D models, <a href="#deffile">see here</a>.</p>
-		<p>Included in this release is a model of an imp by Cheb and Edmundo Bordeu. See
-		<a href="http://www.doomsdayhq.com/files.php?pro=2&amp;class=4&amp;type=6">here for more info on the model
-		and of from where it came</a>. I shall use this model to demonstrate how to replace the Liztroop character
-		in Duke.</p>
+		<p>Included in this release is a model of the Pig Cop by Parkar, and the skin by Motionblur. Visit <a
+		href="http://forums.3drealms.com/ubbthreads/showflat.php?Cat=0&Number=538967&page=0&fpart=19&vc=1&nt=21">this
+		thread on the 3D Realms forum</a> for more model information. I shall use this model to demonstrate how to
+		replace the Pig Cop character in Duke.</p>
 
-		<p>Here is the definition for the imp which is also included in the sample DUKE3D.DEF file.</p>
-<pre>definemodel "models/imp.md2" 2 4
-definemodelanim "walk1" "walk4" 6 0
-definemodelframe "walk1" 1680 1704
-definemodelanim "atk1" "atk5" 16 1
-definemodelframe "atk1" 1715 1717
-definemodelframe "idle" 1720 1727
-definemodelanim "pain1" "pain2" 8 0
-definemodelframe "pain1" 1730 1730
-definemodelanim "die1" "die6" 8 1
-definemodelframe "die1" 1731 1734
-definemodelframe "pain1" 1738 1738
-definemodelframe "pain2" 1739 1740
-definemodelframe "pain1" 1741 1741
-definemodelframe "pain2" 1742 1742
-definemodelframe "idle" 1744 1751
-definemodelframe "idle" 1754 1755</pre>
+		<p>Here is the definition for the pig cop which is also included in the sample DUKE3D.DEF file.</p>
+<pre>definemodel "models/pigcop.md2" 1.30 0
+definemodelskin 0 "models/pigcop.jpg"
+
+definemodelanim "walk0" "walk13" 20 0
+definemodelframe "walk0" 2000 2019
+
+definemodelanim "pump0" "pump2" 10 1
+definemodelframe "pump0" 2025 2027
+
+definemodelframe "stand" 2030 2034
+
+definemodelanim "shoot0" "shoot2" 10 1
+definemodelframe "shoot0" 2035 2037
+
+definemodelanim "dive0" "dive3" 8 1
+definemodelframe "dive0" 2040 2044
+definemodelframe "dive3" 2045 2049
+
+definemodelanim "dshoot0" "dshoot2" 10 1
+definemodelframe "dshoot0" 2050 2052
+
+definemodelframe "die0" 2055 2055
+definemodelanim "die1" "dead" 13 1
+definemodelframe "die1" 2056 2059
+definemodelframe "dead" 2060 2060</pre>
 		<p>Without going through every line of the example, here is the basis of how the definitions work.
 		You must put a
 		definemodel line before any other definemodelframe or definemodelanim lines. The frame and anim lines
 		refer the the definemodel line which precedes them. You can define frames and animations in any order, ie.
 		the animations do not need to be given before the frames, but it is a good convention to keep them
 		together for clarity.</p>
-		<p>The walking loop for the liztroop spans tiles 1680 to 1704. The model contains a four-frame walking
-		animation which we play at six frames per second. The first line of the example specifies the "imp/imp.md2"
-		model should be drawn at two times normal scale and be darkened by a shade offset of four. The first of the
-		definemodelanim lines declares the four frame walking animation at 6fps which should loop (the 0 for the
-		flags parameter says to loop). The definemodelframe line which follows it maps the ART tiles from 1680
-		through to 1704 to play the walking animation. Because the name in the definemodelframe line matches the
-		first frame of the definemodelanim line, the animation will automatically play.</p>
+		<p>The walking loop for the pig cop spans tiles 2000 to 2019. The model contains a fourteen frame walking
+		animation which we play at 20 frames per second. The first line of the example specifies the
+		"models/pigcop.md2" model should be drawn at 1.3 times its normal scale and be left undarkened or
+		lightened. The definemodelskin line specifies the skin to use for palette 0 for all the definemodelframe
+		lines that follow it. The first of the definemodelanim lines declares the fourteen frame walking animation
+		at 20fps which should loop (the 0 for the flags parameter says to loop). The definemodelframe line which
+		follows it maps the ART tiles from 2000 through to 2019 to play the walking animation. Because the name in
+		the definemodelframe line matches the first frame of the definemodelanim line, the animation will
+		automatically play.</p>
 
 		<p><small>Quake II is a registered trademark of <a href="http://www.idsoftware.com">id Software</a></small></p>
 
@@ -397,6 +408,14 @@ as the original Build - but one that worked with vectors instead of already rast
 
 			<dt>usevoxels &lt;0 or 1&gt;</dt>
 			<dd>Disables or enables the use of voxels in the classic renderer if any are defined.</dd>
+
+			<dt>glredbluemode &lt;0 or 1&gt;</dt>
+			<dd>Enables or disables the red-blue stereovision mode in OpenGL. This mode is experimental
+			at this time. We know the flicker is nasty and the menu background will mix into the screen.
+			To avoid the menu bug, run the game in fullscreen mode and type "glredbluemode 1" AFTER
+			beginning the game. Sorry, there is no way to change parallax or separation. Do not contact
+			us about bugs with this mode... if you do, we'll think twice about documenting hidden features
+			in future releases. :P</dd>
 		</dl>
 		
 		
