@@ -2285,30 +2285,54 @@ if (VOLUMEALL) {
 
 				   l = 0;
 cheat_for_port_credits:
-				   gametext(160,48-l,"GAME AND ENGINE",0,2+8+16);
-				   gametext(160,48+8-l, "PORTING AND MODIFICATIONS",0,2+8+16);
+				   gametext(160,40-l,"GAME AND ENGINE PORT",0,2+8+16);
 				   p = "Jonathon \"JonoF\" Fowler";
-				   //minitext(160-(Bstrlen(p)<<1)+1, 48+8+10+1-l, p, 4, 10+16+128);
-				   minitext(160-(Bstrlen(p)<<1), 48+8+10-l, p, 12, 10+16+128);
+				   minitext(160-(Bstrlen(p)<<1), 40+10-l, p, 12, 10+16+128);
 				   
-				   gametext(160,80-l,"\"POLYMOST\" OPENGL RENDERER",0,2+8+16);
-				   gametext(160,80+8-l,"3D MODEL SUPPORT",0,2+8+16);
-				   p = "Ken Silverman";
-				   //minitext(160-(Bstrlen(p)<<1)+1, 80+8+10+1-l, p, 4, 10+16+128);
-				   minitext(160-(Bstrlen(p)<<1), 80+8+10-l, p, 12, 10+16+128);
+				   gametext(160,60-l,"\"POLYMOST\" 3D RENDERER",0,2+8+16);
+				   gametext(160,60+8-l,"NETWORKING, OTHER CODE",0,2+8+16);
+				   p = "Ken \"Awesoken\" Silverman";
+				   minitext(160-(Bstrlen(p)<<1), 60+8+10-l, p, 12, 10+16+128);
 
-				   for (i=0;i<6;i++) {
+				   p = "Icon by Lachlan \"NetNessie\" McDonald";
+				   minitext(160-(Bstrlen(p)<<1), 92-l, p, 12, 10+16+128);
+
+				   {
+						const char *gpl[] = {
+							"This program is free software; you can redistribute it",
+							"and/or modify it under the terms of the GNU General",
+							"Public License as published by the Free Software",
+							"Foundation; either version 2 of the License, or (at your",
+							"option) any later version.",
+							"",
+							"This program is distributed in the hope that it will be",
+							"useful but WITHOUT ANY WARRANTY; without even the implied",
+							"warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR",
+							"PURPOSE. See the GNU General Public License (GPL.TXT) for",
+							"more details.",
+							"",
+							"",
+							"",
+							"",
+							"--x--",
+							"",
+							"",
+							"",
+							""
+						};
+						const int numlines = sizeof(gpl)/sizeof(char *);
+						for (m=0,i=(totalclock/104)%numlines; m<4; m++,i++) {
+							if (i==numlines) i=0;
+							minitext(160-(Bstrlen(gpl[i])<<1), 100+10+(m*7)-l, gpl[i], 8, 10+16+128);
+						}
+				   }
+
+				   for (i=0;i<2;i++) {
 					   switch (i) {
-						   case 0: p = "This program is distributed under the terms of the"; break;
-						   case 1: p = "GNU General Public License version 2 as published by the"; break;
-						   case 2: p = "Free Software Foundation. See GNU.TXT for details."; break;
-						   case 3: p = NULL; break;
-						   case 4: p = "Visit http://jonof.edgenetwork.org/buildport/duke3d/ for"; break;
-						   case 5: p = "the source, latest news, and updates of this port."; break;
+						   case 0: p = "Visit http://jonof.edgenetwork.org/jfduke3d/ for"; break;
+						   case 1: p = "the source code, latest news, and updates of this port."; break;
 					   }
-					   if (!p) continue;
-				       //minitext(160-(Bstrlen(p)<<1)+1, 110+10+1+(i*7)-l, p, 4, 10+16+128);
-				       minitext(160-(Bstrlen(p)<<1), 110+10+(i*7)-l, p, /*12*/8, 10+16+128);
+				       minitext(160-(Bstrlen(p)<<1), 135+10+(i*7)-l, p, 8, 10+16+128);
 			       }
 				   break;
             }
@@ -4001,6 +4025,7 @@ if (PLUTOPAK) {
 		break;		
 	    
         case 700:
+		case 701:	// JBF 20041220: A hack to stop the game exiting the menu directly to the game if one is running
             c = (320>>1)-120;
             rotatesprite(320<<15,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,24,0,0,"SOUNDS");
@@ -4010,7 +4035,7 @@ if (PLUTOPAK) {
             switch(x)
             {
                 case -1:
-                    if(ps[myconnectindex].gm&MODE_GAME)
+                    if(ps[myconnectindex].gm&MODE_GAME && current_menu == 701)
                     {
                         ps[myconnectindex].gm &= ~MODE_MENU;
                         if(ud.multimode < 2  && ud.recstat != 2)

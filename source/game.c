@@ -6681,7 +6681,7 @@ if (VOLUMEALL) {
                 ready2send = 0;
                 totalclock = ototalclock;
             }
-            cmenu(700);
+            cmenu(701);
 
         }
 
@@ -6921,6 +6921,7 @@ void checkcommandline(int argc,char **argv)
             c = argv[i];
             if(*c == '-')
             {
+				if (!Bstrcasecmp(c+1,"net")) break;
                 if( *(c+1) == '8' ) eightytwofifty = 1;
                 i++;
                 continue;
