@@ -1895,7 +1895,7 @@ void Keys2d(void)
 
 int ExtInit(void)
 {
-    long fil;
+    long fil, rv = 0;
     char *duke3dgrp = "duke3d.grp";
 
     /*    
@@ -1943,7 +1943,7 @@ int ExtInit(void)
                 }
 	*/
     bpp = 8;
-	if (loadsetup("build.cfg") < 0) printOSD("Configuration file not found, using defaults.\n");
+	if (loadsetup("build.cfg") < 0) initprintf("Configuration file not found, using defaults.\n"), rv = 1;
 	memcpy((void *)buildkeys,(void *)keys,NUMBUILDKEYS);   //Trick to make build use setup.dat keys
 
         if (initengine()) {
@@ -1962,7 +1962,7 @@ int ExtInit(void)
 
         ReadPaletteTable();
 //  InitWater();
-	return 0;
+	return rv;
 }
 
 void ExtUnInit(void)
