@@ -78,7 +78,7 @@ extern void checkhitsprite(short i,short sn);
 extern void allignwarpelevators(void );
 extern void cheatkeys(short snum);
 extern void checksectors(short snum);
-extern void RTS_AddFile(char *filename);
+extern int32 RTS_AddFile(char *filename);
 extern void RTS_Init(char *filename);
 extern int32 RTS_NumSounds(void );
 extern int32 RTS_SoundLength(int32 lump);

@@ -58,7 +58,7 @@ char lumplockbyte[11];
 ====================
 */
 
-void RTS_AddFile (char *filename)
+int32 RTS_AddFile (char *filename)
    {
    wadinfo_t  header;
    lumpinfo_t *lump_p;
@@ -71,29 +71,46 @@ void RTS_AddFile (char *filename)
 // read the entire file in
 //      FIXME: shared opens
 
-   handle = SafeOpenRead( filename, filetype_binary );
+   handle = kopen4load(filename, 0);
+   if (handle < 0) {
+	initprintf("RTS file %s was not found\n",filename);
+	return -1;
+   }
 
    startlump = numlumps;
 
    // WAD file
    initprintf("    Adding %s.\n",filename);
-   SafeRead( handle, &header, sizeof( header ) );
-   if (strncmp(header.identification,"IWAD",4))
-      Error ("RTS file %s doesn't have IWAD id\n",filename);
+   kread( handle, &header, sizeof( header ) );
+   if (strncmp(header.identification,"IWAD",4)) {
+	initprintf("RTS file %s doesn't have IWAD id\n",filename);
+	kclose(handle);
+	return -1;
+   }
    header.numlumps = IntelLong(header.numlumps);
    header.infotableofs = IntelLong(header.infotableofs);
    length = header.numlumps*sizeof(filelump_t);
-   fileinfoo = fileinfo = (filelump_t*)malloc (length);
-   if (!fileinfo)
-      Error ("RTS file could not allocate header info on stack");
-   lseek (handle, header.infotableofs, SEEK_SET);
-   SafeRead (handle, fileinfo, length);
-   numlumps += header.numlumps;
+   fileinfo = fileinfoo = (filelump_t*)malloc (length);
+   if (!fileinfo) {
+	initprintf("RTS file could not allocate header info\n");
+	kclose(handle);
+	return -1;
+   }
+   klseek (handle, header.infotableofs, SEEK_SET);
+   kread(handle, fileinfo, length);
 
 //
 // Fill in lumpinfo
 //
-   SafeRealloc((void**)&lumpinfo,numlumps*sizeof(lumpinfo_t));
+   lump_p = realloc(lumpinfo, (numlumps + header.numlumps)*sizeof(lumpinfo_t));
+   if (!lump_p) {
+	kclose(handle);
+	return -1;
+   }
+   lumpinfo = lump_p;
+
+   numlumps += header.numlumps;
+
    lump_p = &lumpinfo[startlump];
 
    for (i=startlump ; i<(uint32)numlumps ; i++,lump_p++, fileinfo++)
@@ -105,6 +122,8 @@ void RTS_AddFile (char *filename)
       }
 
    free(fileinfoo);
+
+   return 0;
    }
 
 /*
@@ -124,11 +143,10 @@ void RTS_Init (char *filename)
    // open all the files, load headers, and count lumps
    //
    numlumps = 0;
-   lumpinfo = SafeMalloc(5);   // will be realloced as lumps are added
+   lumpinfo = NULL;   // will be realloced as lumps are added
 
    initprintf("RTS Manager Started.\n");
-   if (SafeFileExists(filename))
-      RTS_AddFile (filename);
+   if (RTS_AddFile (filename)) return;
 
    if (!numlumps) return;
 
@@ -207,8 +225,8 @@ void RTS_ReadLump (int32 lump, void *dest)
    if (lump < 0)
       Error ("RTS_ReadLump: %i < 0",lump);
    l = lumpinfo+lump;
-   lseek (l->handle, l->position, SEEK_SET);
-   SafeRead(l->handle,dest,l->size);
+   klseek (l->handle, l->position, SEEK_SET);
+   kread(l->handle,dest,l->size);
    }
 
 /*
