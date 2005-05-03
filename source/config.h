@@ -66,5 +66,7 @@ extern int32 JoystickAnalogueSaturate[MAXJOYAXES];
 void CONFIG_ReadSetup( void );
 void CONFIG_GetSetupFilename( void );
 void CONFIG_WriteSetup( void );
+void CONFIG_SetupMouse( void );
+void CONFIG_SetupJoystick( void );
 
 #endif

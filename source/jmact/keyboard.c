@@ -199,7 +199,7 @@ static char sctoasc[2][256] = {
 void KB_KeyEvent( kb_scancode scancode, boolean keypressed )
 {
 	if (keypressed) KB_LastScan = scancode;
-	CONTROL_KeyEvent(scancode,keypressed);
+	//CONTROL_KeyEvent(scancode,keypressed);
 }
 
 boolean KB_KeyWaiting( void )
@@ -238,10 +238,10 @@ void KB_FlushKeyboardQueue( void )
 void KB_ClearKeysDown( void )
 {
 	int i;
-	for (i=0;i<256;i++) KB_KeyEvent(i,0);	// JBF 20040717: Hopefully this fixes problems with stuck functions once and for all
+	KB_LastScan = 0;
 	memset(keystatus, 0, sizeof(keystatus));
 	//keyfifoplc = keyfifoend = 0;
-	bflushchars();
+	//bflushchars();
 }
 
 char *KB_ScanCodeToString( kb_scancode scancode )

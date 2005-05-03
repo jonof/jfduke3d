@@ -538,21 +538,21 @@ char * SCRIPT_GetRaw(int32 scripthandle, char * sectionname, char * entryname)
 	return e->value;
 }
 
-void SCRIPT_GetString( int32 scripthandle, char * sectionname, char * entryname, char * dest )
+boolean SCRIPT_GetString( int32 scripthandle, char * sectionname, char * entryname, char * dest )
 {
 	ScriptSectionType *s;
 	ScriptEntryType *e;
 	char *p, ch;
 	int c;
 
-	if (!SC(scripthandle)) return;
-	if (!SCRIPT(scripthandle,script)) return;
+	if (!SC(scripthandle)) return 1;
+	if (!SCRIPT(scripthandle,script)) return 1;
 
 	s = SCRIPT_SectionExists(scripthandle, sectionname);
 	e = SCRIPT_EntryExists(s, entryname);
 	
 	//dest[0] = 0;
-	if (!e) return;
+	if (!e) return 1;
 
 	p = e->value;
 	c = 0;
@@ -565,7 +565,7 @@ void SCRIPT_GetString( int32 scripthandle, char * sectionname, char * entryname,
 				case '\\':
 					ch = *(p++);
 					switch (ch) {
-						case 0:   return;
+						case 0:   return 0;
 						case 'n': dest[c++] = '\n'; break;
 						case 'r': dest[c++] = '\r'; break;
 						case 't': dest[c++] = '\t'; break;
@@ -574,7 +574,7 @@ void SCRIPT_GetString( int32 scripthandle, char * sectionname, char * entryname,
 					break;
 				case '\"':
 					dest[c] = 0;
-					return;
+					return 0;
 				default:
 					dest[c++] = ch;
 					break;
@@ -586,24 +586,26 @@ void SCRIPT_GetString( int32 scripthandle, char * sectionname, char * entryname,
 			else dest[c++] = ch;
 		}
 	}
+
+	return 0;
 }
 
-void SCRIPT_GetDoubleString( int32 scripthandle, char * sectionname, char * entryname, char * dest1, char * dest2 )
+boolean SCRIPT_GetDoubleString( int32 scripthandle, char * sectionname, char * entryname, char * dest1, char * dest2 )
 {
 	ScriptSectionType *s;
 	ScriptEntryType *e;
 	char *p, ch;
 	int c,d=0;
 
-	if (!SC(scripthandle)) return;
-	if (!SCRIPT(scripthandle,script)) return;
+	if (!SC(scripthandle)) return 1;
+	if (!SCRIPT(scripthandle,script)) return 1;
 
 	s = SCRIPT_SectionExists(scripthandle, sectionname);
 	e = SCRIPT_EntryExists(s, entryname);
 	
 	//dest1[0] = 0;
 	//dest2[0] = 0;
-	if (!e) return;
+	if (!e) return 1;
 
 	p = e->value;
 	c = 0;
@@ -616,7 +618,7 @@ void SCRIPT_GetDoubleString( int32 scripthandle, char * sectionname, char * entr
 				case '\\':
 					ch = *(p++);
 					switch (ch) {
-						case 0:   return;
+						case 0:   return 0;
 						case 'n': dest1[c++] = '\n'; break;
 						case 'r': dest1[c++] = '\r'; break;
 						case 't': dest1[c++] = '\t'; break;
@@ -631,7 +633,7 @@ void SCRIPT_GetDoubleString( int32 scripthandle, char * sectionname, char * entr
 					break;
 			}
 		}
-		if (ch == 0) return;
+		if (ch == 0) return 0;
 	} else {
 		while ((ch = *(p++))) {
 			if (ch == ' ' || ch == '\t') { dest1[c] = 0; break; }
@@ -641,7 +643,7 @@ void SCRIPT_GetDoubleString( int32 scripthandle, char * sectionname, char * entr
 
 breakme:
 	while (*p == ' ' || *p == '\t') p++;
-	if (*p == 0) return;
+	if (*p == 0) return 0;
 
 	c = 0;
 		
@@ -653,7 +655,7 @@ breakme:
 				case '\\':
 					ch = *(p++);
 					switch (ch) {
-						case 0:   return;
+						case 0:   return 0;
 						case 'n': dest2[c++] = '\n'; break;
 						case 'r': dest2[c++] = '\r'; break;
 						case 't': dest2[c++] = '\t'; break;
@@ -662,7 +664,7 @@ breakme:
 					break;
 				case '\"':
 					dest2[c] = 0;
-					return;
+					return 0;
 				default:
 					dest2[c++] = ch;
 					break;
@@ -674,6 +676,8 @@ breakme:
 			else dest2[c++] = ch;
 		}
 	}
+
+	return 0;
 }
 
 boolean SCRIPT_GetNumber( int32 scripthandle, char * sectionname, char * entryname, int32 * number )
@@ -688,7 +692,7 @@ boolean SCRIPT_GetNumber( int32 scripthandle, char * sectionname, char * entryna
 	s = SCRIPT_SectionExists(scripthandle, sectionname);
 	e = SCRIPT_EntryExists(s, entryname);
 	
-	if (!e) ;// *number = 0;
+	if (!e) return 1;// *number = 0;
 	else {
 		if (e->value[0] == '0' && e->value[1] == 'x') {
 			// hex
@@ -704,40 +708,44 @@ boolean SCRIPT_GetNumber( int32 scripthandle, char * sectionname, char * entryna
 	return 0;
 }
 
-void SCRIPT_GetBoolean( int32 scripthandle, char * sectionname, char * entryname, boolean * boole )
+boolean SCRIPT_GetBoolean( int32 scripthandle, char * sectionname, char * entryname, boolean * boole )
 {
 	ScriptSectionType *s;
 	ScriptEntryType *e;
 
-	if (!SC(scripthandle)) return;
-	if (!SCRIPT(scripthandle,script)) return;
+	if (!SC(scripthandle)) return 1;
+	if (!SCRIPT(scripthandle,script)) return 1;
 
 	s = SCRIPT_SectionExists(scripthandle, sectionname);
 	e = SCRIPT_EntryExists(s, entryname);
 	
-	if (!e) ;// *boole = 0;
+	if (!e) return 1;// *boole = 0;
 	else {
 		if (!Bstrncasecmp(e->value, "true", 4)) *boole = 1;
 		else if (!Bstrncasecmp(e->value, "false", 5)) *boole = 0;
 		else if (e->value[0] == '1' && (e->value[1] == ' ' || e->value[1] == '\t' || e->value[1] == 0)) *boole = 1;
 		else if (e->value[0] == '0' && (e->value[1] == ' ' || e->value[1] == '\t' || e->value[1] == 0)) *boole = 0;
 	}
+
+	return 0;
 }
 
-void SCRIPT_GetDouble( int32 scripthandle, char * sectionname, char * entryname, double * number )
+boolean SCRIPT_GetDouble( int32 scripthandle, char * sectionname, char * entryname, double * number )
 {
 	ScriptSectionType *s;
 	ScriptEntryType *e;
 
-	if (!SC(scripthandle)) return;
-	if (!SCRIPT(scripthandle,script)) return;
+	if (!SC(scripthandle)) return 1;
+	if (!SCRIPT(scripthandle,script)) return 1;
 
 	s = SCRIPT_SectionExists(scripthandle, sectionname);
 	e = SCRIPT_EntryExists(s, entryname);
 	
-	if (!e) ;// *number = 0.0;
+	if (!e) return 1;// *number = 0.0;
 	else {
 	}
+
+	return 0;
 }
 
 void SCRIPT_PutComment( int32 scripthandle, char * sectionname, char * comment )

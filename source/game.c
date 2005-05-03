@@ -5213,7 +5213,7 @@ void animatesprites(long x,long y,short a,long smoothratio)
                     t->xrepeat = t->yrepeat = 0;
                 continue;
             case CHAIR3:
-				if (bpp > 8 && usemodels && md2_tilehasmodel(t->picnum)) {
+				if (bpp > 8 && usemodels && md_tilehasmodel(t->picnum)) {
 					t->cstat &= ~4;
 					break;
 				}
@@ -5468,7 +5468,7 @@ void animatesprites(long x,long y,short a,long smoothratio)
                 t->picnum = GROWSPARK+( (totalclock>>4)&3 );
                 break;
             case RPG:
-				if (bpp > 8 && usemodels && md2_tilehasmodel(s->picnum)) {
+				if (bpp > 8 && usemodels && md_tilehasmodel(s->picnum)) {
 					t->cstat &= ~4;
 					break;
 				}
@@ -5485,7 +5485,7 @@ void animatesprites(long x,long y,short a,long smoothratio)
                  break;
 
             case RECON:
-				if (bpp > 8 && usemodels && md2_tilehasmodel(s->picnum)) {
+				if (bpp > 8 && usemodels && md_tilehasmodel(s->picnum)) {
 					t->cstat &= ~4;
 					break;
 				}
@@ -5572,7 +5572,7 @@ void animatesprites(long x,long y,short a,long smoothratio)
 
                 if(s->owner == -1)
                 {
-					if (bpp > 8 && usemodels && md2_tilehasmodel(s->picnum)) {
+					if (bpp > 8 && usemodels && md_tilehasmodel(s->picnum)) {
 						k = 0;
 						t->cstat &= ~4;
 					} else {
@@ -5694,7 +5694,7 @@ void animatesprites(long x,long y,short a,long smoothratio)
             {
                 l = *(long *)(t4+8);
 
-				if (bpp > 8 && usemodels && md2_tilehasmodel(s->picnum)) {
+				if (bpp > 8 && usemodels && md_tilehasmodel(s->picnum)) {
 					k = 0;
 					t->cstat &= ~4;
 				} else switch( l ) {
@@ -5793,7 +5793,7 @@ void animatesprites(long x,long y,short a,long smoothratio)
                     yrep = tsprite[spritesortcnt].yrepeat;// - (klabs(daz-t->z)>>11);
                     tsprite[spritesortcnt].yrepeat = yrep;
 
-					if (bpp > 8 && usemodels && md2_tilehasmodel(t->picnum))
+					if (bpp > 8 && usemodels && md_tilehasmodel(t->picnum))
 					{
 						tsprite[spritesortcnt].yrepeat = 0;
 							// 512:trans reverse
@@ -5852,7 +5852,7 @@ void animatesprites(long x,long y,short a,long smoothratio)
                 t->picnum += (s->shade>>1);
                 break;
             case PLAYERONWATER:
-				if (bpp > 8 && usemodels && md2_tilehasmodel(s->picnum)) {
+				if (bpp > 8 && usemodels && md_tilehasmodel(s->picnum)) {
 					k = 0;
 					t->cstat &= ~4;
 				} else {
@@ -5906,7 +5906,7 @@ void animatesprites(long x,long y,short a,long smoothratio)
 
             case CAMERA1:
             case RAT:
-				if (bpp > 8 && usemodels && md2_tilehasmodel(s->picnum)) {
+				if (bpp > 8 && usemodels && md_tilehasmodel(s->picnum)) {
 					t->cstat &= ~4;
 					break;
 				}
@@ -7556,6 +7556,9 @@ void Startup(void)
 		uninitengine();
 		exit(1);
 	}
+	SetupGameButtons();
+	CONFIG_SetupMouse();
+	CONFIG_SetupJoystick();
 
 	// JBF 20040215: evil and nasty place to do this, but joysticks are evil and nasty too
 	if (ControllerType == controltype_keyboardandjoystick) {
@@ -7595,7 +7598,6 @@ void Startup(void)
 
 	screenpeek = myconnectindex;
 	ps[myconnectindex].palette = (char *) &palette[0];
-	SetupGameButtons();
 
 	if(networkmode == 255)
 	   networkmode = 1;

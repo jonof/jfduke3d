@@ -165,7 +165,7 @@ typedef uint8 kb_scancode;
 #define  asc_Tab         9
 #define  asc_Space       32
 
-//#define MAXKEYBOARDSCAN  128
+#define MAXKEYBOARDSCAN  128
 
 
 /*

@@ -4144,9 +4144,7 @@ if (PLUTOPAK) {
                             ready2send = 1;
                             totalclock = ototalclock;
                         }
-				KB_FlushKeyboardQueue();
-				KB_ClearKeysDown();
-                        //KB_ClearKeyDown(sc_Escape);
+                        KB_ClearKeyDown(sc_Escape);
                         sound(EXITMENUSOUND);
                     }
                 }

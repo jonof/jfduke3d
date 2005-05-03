@@ -39,12 +39,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //#define MOTOROLA
 
 
-void Shutdown(void);	// this is defined by whoever links us
+static void (*ShutDown)(void) = NULL;	// this is defined by whoever links us
 
 
 void RegisterShutdownFunction( void (* sh) (void) )
 {
-	atexit(sh);
+	ShutDown = sh;
 }
 
 #ifndef RENDERTYPEWIN
@@ -52,7 +52,7 @@ void Error(char *error, ...)
 {
 	va_list va;
 
-	Shutdown();
+	if (ShutDown) ShutDown();
 
 	if (error) {
 		va_start(va, error);
@@ -82,7 +82,7 @@ void *SafeMalloc (int32 size)
 	void *p;
 
 	p = malloc(size);
-	if (!p) Error("Couldn't allocate %d bytes.",size);
+	if (!p) Error("SafeMalloc failure for %d bytes",size);
 
 	return p;
 }
@@ -97,10 +97,8 @@ void SafeRealloc (void ** ptr, int32 newsize)
 {
 	void *p;
 
-	if (!ptr || !(*ptr)) Error("Tried reallocating a NULL pointer.");
-
 	p = realloc(*ptr, newsize);
-	if (!p) Error("Couldn't reallocate %d bytes.",newsize);
+	if (!p) Error("SafeRealloc failure for %d bytes",newsize);
 
 	*ptr = p;
 }

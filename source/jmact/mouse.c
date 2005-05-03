@@ -62,13 +62,15 @@ void MOUSE_HideCursor( void )
 
 int32 MOUSE_GetButtons( void )
 {
-	return (int32)mouseb;
+	int32 buttons;
+	readmousebstatus(&buttons);
+	return buttons;
 }
 
 
 int32 MOUSE_ClearButton( int32 b )
 {
-	return (/*(int32)*/mouseb &= ~b);
+	return (mouseb &= ~b);
 }
 
 
@@ -79,11 +81,7 @@ void MOUSE_GetPosition( int32*x, int32*y  )
 
 void MOUSE_GetDelta( int32*x, int32*y  )
 {
-	short mx,my;
-	readmousexy(&mx,&my);
-	
-	*x = (int32)mx;
-	*y = (int32)my;
+	readmousexy(x,y);
 }
 
 

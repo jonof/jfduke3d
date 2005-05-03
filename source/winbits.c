@@ -35,7 +35,7 @@ Windows-specific hooks for JonoF's Duke3D port.
 
 
 // this replaces the Error() function in jmact/util_lib.c
-extern void Shutdown(void );
+extern void Shutdown(void );	// game.c
 void Error(char *error, ...)
 {
 	char buf[1000];

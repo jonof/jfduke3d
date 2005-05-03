@@ -139,7 +139,7 @@ char * SCRIPT_GetRaw(int32 scripthandle, char * sectionname, char * entryname);
 =
 ==============
 */
-void SCRIPT_GetString
+boolean SCRIPT_GetString
    (
    int32 scripthandle,
    char * sectionname,
@@ -154,7 +154,7 @@ void SCRIPT_GetString
 =
 ==============
 */
-void SCRIPT_GetDoubleString
+boolean SCRIPT_GetDoubleString
    (
    int32 scripthandle,
    char * sectionname,
@@ -185,7 +185,7 @@ boolean SCRIPT_GetNumber
 =
 ==============
 */
-void SCRIPT_GetBoolean
+boolean SCRIPT_GetBoolean
    (
    int32 scripthandle,
    char * sectionname,
@@ -201,7 +201,7 @@ void SCRIPT_GetBoolean
 ==============
 */
 
-void SCRIPT_GetDouble
+boolean SCRIPT_GetDouble
    (
    int32 scripthandle,
    char * sectionname,

@@ -184,7 +184,7 @@ void CONTROL_CenterJoystick
    );
 int32 CONTROL_GetMouseSensitivity( void );
 void CONTROL_SetMouseSensitivity( int32 newsensitivity );
-int32 CONTROL_Startup
+boolean CONTROL_Startup
    (
    controltype which,
    int32 ( *TimeFunction )( void ),
@@ -215,11 +215,10 @@ void CONTROL_SetAnalogAxisScale
    int32 axisscale,
    controldevice device
    );
-void CONTROL_PrintAxes( void );
 
-void CONTROL_KeyEvent(kb_scancode scancode, boolean keypressed);
-void CONTROL_MouseEvent(int32 button, boolean keypressed);
-void CONTROL_JoyEvent(int32 button, boolean keypressed);
+void CONTROL_PrintKeyMap(void);
+void CONTROL_PrintControlFlag(int32 which);
+void CONTROL_PrintAxes( void );
 
 #ifdef __cplusplus
 };

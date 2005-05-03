@@ -36,6 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <unistd.h>
 #endif
 #include <fcntl.h>
+#include <errno.h>
 #include "types.h"
 #include "file_lib.h"
 #include "util_lib.h"
@@ -48,37 +49,67 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define  O_TEXT   0
 #endif
 
+#define MaxFiles 20
+static char *FileNames[MaxFiles];
 
+int32 SafeOpen(const char *filename, int32 mode, int32 sharemode)
+{
+	int32 h;
+
+	h = open(filename, mode, sharemode);
+	if (h < 0) Error("Error opening %s: %s", filename, strerror(errno));
+
+	if (h < MaxFiles) {
+		if (FileNames[h]) SafeFree(FileNames[h]);
+		FileNames[h] = (char*)SafeMalloc(strlen(filename));
+		if (FileNames[h]) strcpy(FileNames[h], filename);
+	}
+
+	return h;
+}
 
 int32 SafeOpenRead(const char *filename, int32 filetype)
 {
 	int32 h;
 
-	h = open(filename, O_RDONLY|(filetype==filetype_binary?O_BINARY:O_TEXT));
-	if (h<0) Error("Failed opening %s for reading.\n", filename);
-
-	return h;
+	switch (filetype) {
+		case filetype_binary:
+			return SafeOpen(filename, O_RDONLY|O_BINARY, S_IREAD);
+		case filetype_text:
+			return SafeOpen(filename, O_RDONLY|O_TEXT, S_IREAD);
+			break;
+		default:
+			Error("SafeOpenRead: Illegal filetype specified");
+	}
 }
 
 void SafeClose ( int32 handle )
 {
+	int r;
+
 	if (handle < 0) return;
-	close(handle);
+	if (close(handle) < 0) {
+		if (handle < MaxFiles)
+			Error("Unable to close file %s", FileNames[handle]);
+		else
+			Error("Unable to close file");
+	}
+
+	if (handle < MaxFiles && FileNames[handle]) {
+		SafeFree(FileNames[handle]);
+		FileNames[handle] = NULL;
+	}
 }
 
 boolean SafeFileExists(const char *filename)
 {
-	int h;
-
-	h = open(filename, O_RDONLY);
-	if (h<0) return 0;
-	close(h);
-	return 1;
+	if (!access(filename, F_OK)) return true;
+	return false;
 }
 
 int32 SafeFileLength ( int32 handle )
 {
-	if (handle < 0) return 0;
+	if (handle < 0) return -1;
 	return Bfilelength(handle);
 }
 
@@ -89,7 +120,12 @@ void SafeRead(int32 handle, void *buffer, int32 count)
 	b = read(handle, buffer, count);
 	if (b != count) {
 		close(handle);
-		Error("Failed reading %d bytes.\n", count);
+		if (handle < MaxFiles)
+			Error("File read failure %s reading %d bytes from file %s.",
+				strerror(errno), count, FileNames[handle]);
+		else
+			Error("File read failure %s reading %d bytes.",
+				strerror(errno), count);
 	}
 }
 
