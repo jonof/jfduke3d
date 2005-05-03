@@ -350,7 +350,10 @@ void CONFIG_ReadKeys( void )
 
    for (i=0; i<NUMGAMEFUNCTIONS; i++)
       {
-         CONTROL_MapKey( i, KeyboardKeys[i][0], KeyboardKeys[i][1] );
+		 if (i == gamefunc_Show_Console)
+            OSD_CaptureKey(KeyboardKeys[i][0]);
+         else
+            CONTROL_MapKey( i, KeyboardKeys[i][0], KeyboardKeys[i][1] );
       }
    }
 
