@@ -282,9 +282,11 @@ boolean KB_KeypadActive( void )
 void KB_Startup( void )
 {
 	numpad = 0;
+	setkeypresscallback(KB_KeyEvent);
 }
 
 void KB_Shutdown( void )
 {
+	setkeypresscallback((void(*)(long,long))NULL);
 }
 

@@ -77,7 +77,7 @@
 			formats. For now, the existing AudioLib code is in use.</li>
 		</ul>
 
-		<h3><a name="multiplayer"></a>Multiplayer games</h3>
+		<h3><a name="multiplayer">Multiplayer games</a></h3>
 
 		<p>Multiplayer games are started via command-line parameters passed to DUKE3D.EXE. This is a short guide
 		to getting a multiplayer game running between these three hypothetical computers:</p>
@@ -149,13 +149,13 @@
 		port number. If a master is running a game on a port other than the default, the slaves will have to
 		specify the alternative port with <code>address:port</code> notation, eg. 192.168.1.5:20000</p>
 
-		<h3><a name="md2sprite"></a>3D Models</h3>
+		<h3><a name="md2sprite">3D Models</a></h3>
 
 		<p>Polymost uses the Quake II MD2 model format for 3D models. You can replace any wall-aligned or
 		face sprite in the game with a 3D model using a declaration in the DUKE3D.DEF file. For more information
 		on the specifics of the DEF-file commands for 3D models, <a href="#deffile">see here</a>.</p>
 		<p>Included in this release is a model of the Pig Cop by Parkar, and the skin by Motionblur. You should
-		visit <a href="http://hem.bredband.net/pa_duke/duke3d_hrp.htm">this site</a> for a much larger pack of
+		visit <a href="http://www.planetduke.com/hrp/">this site</a> for a much larger pack of
 		textures and models. I shall use this model to demonstrate how to replace the Pig Cop character in Duke.</p>
 
 		<p>Here is the definition for the pig cop which is also included in the sample DUKE3D.DEF file.</p>
@@ -234,7 +234,7 @@ definemodelframe "dead" 2060 2060</pre>
 
 		<p><small>Quake II is a registered trademark of <a href="http://www.idsoftware.com">id Software</a></small></p>
 
-		<h2><a name="deffile"></a>DEF-file Language</h2>
+		<h2><a name="deffile">DEF-file Language</a></h2>
 
 		<p>These are the legal instructions that may be used in the DUKE3D.DEF file. Comments can be used by
 		prefixing the text with a double forward-slash (C++ style), <code>//</code>, or surrounding the text with
@@ -581,7 +581,7 @@ model "models/spinnuke.md2"
 			"definevoxel" instruction.</dd>
 		</dl>
 
-		<h3><a name="deffile-skybox"></a>A note about skyboxes</h3>
+		<h3><a name="deffile-skybox">A note about skyboxes</a></h3>
 
 		<p>Ken has some utilities on his website that can assist you in converting your favourite skybox format to
 		Polymost format. (<a href="http://advsys.net/ken/kube/kube.htm">http://advsys.net/ken/kube/kube.htm</a>)
@@ -592,7 +592,7 @@ model "models/spinnuke.md2"
 		The output files will be called SPLITCAP0.PNG, SPLITCAP1.PNG, ..., SPLITCAP5.PNG. After conversion, I
 		suggest you rename the files and compress them using PNGOUT or similar utility.</p>
 
-		<h2><a name="maphack"></a>Map Hack scripts</h2>
+		<h2><a name="maphack">Map Hack scripts</a></h2>
 
 		<p>"Map Hack" scripts are files that override certain aspects of a map file when it is rendered in OpenGL
 		Polymost mode. Currently they allow for angle adjustment on sprites, and the ability to prevent particular
@@ -635,7 +635,7 @@ sprite 517 notmd2
 // Toilet in restroom in club
 sprite 478 angoff -512</pre>
 
-		<h2><a name="hightile"></a>Hightile</h2>
+		<h2><a name="hightile">Hightile</a></h2>
 
 		<p>This release features the "Hightile" texturing improvements to Polymost. Hightile allows Polymost to use
 		true-colour textures instead of the artwork in the game's usual .ART file.</p>
@@ -653,13 +653,13 @@ sprite 478 angoff -512</pre>
 			will notice a small delay on occasion as a texture is loaded into memory when it is first seen.</li>
 		</ul>
 		
-		<h2><a name="hightile-zip"></a>ZIP file support</h2>
+		<h2><a name="hightile-zip">ZIP file support</a></h2>
 
 		<p>Duke (and Build games in general) can load game resources from a ZIP file.</p>
 		<p>ZIP files are used in Duke in the same manner as extra GRP files are specified. Use the "/g" command-line
 		switch to specify the ZIP to load. eg. <code>DUKE3D.EXE /gMYFILE.ZIP</code></p>
 
-		<h2><a name="polymost"></a>Polymost</h2>
+		<h2><a name="polymost">Polymost</a></h2>
 
 		<p>Polymost is a full 3D implementation of the Build engine renderer, with hardware acceleration capability,
 		and perspective in six degrees of freedom. In Ken's own words (copied from POLYMOST.C in my Build engine

@@ -208,7 +208,6 @@ extern kb_scancode KB_LastScan;
 =============================================================================
 */
 
-void KB_KeyEvent( kb_scancode scancode, boolean keypressed );  // Interprets scancodes
 boolean KB_KeyWaiting( void );         // Checks if a character is waiting in the keyboard queue
 char    KB_Getch( void );              // Gets the next keypress
 void    KB_Addch( char ch );           // Adds key to end of queue

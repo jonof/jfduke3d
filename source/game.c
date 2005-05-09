@@ -2153,53 +2153,39 @@ void gameexit(char *t)
 short inputloc = 0;
 short strget(short x,short y,char *t,short dalen,short c)
 {
-    short ch,sc;
+    short ch;
 
-    while(KB_KeyWaiting())
+    while((ch = KB_Getch()) != 0)
     {
-        sc = 0;
-        ch = KB_Getch();
-
-        if (ch == 0)
+        if(ch == asc_BackSpace)
         {
-
-            sc = KB_Getch();
-            if( sc == 104) return(1);
-
-            continue;
+            if( inputloc > 0 )
+            {
+                inputloc--;
+                *(t+inputloc) = 0;
+            }
         }
         else
         {
-            if(ch == 8)
+            if(ch == asc_Enter)
             {
-                if( inputloc > 0 )
-                {
-                    inputloc--;
-                    *(t+inputloc) = 0;
-                }
+                KB_ClearKeyDown(sc_Enter);
+                KB_ClearKeyDown(sc_kpad_Enter);
+                return (1);
             }
-            else
+            else if(ch == asc_Escape)
             {
-                if(ch == asc_Enter || sc == 104)
-                {
-                    KB_ClearKeyDown(sc_Enter);
-                    KB_ClearKeyDown(sc_kpad_Enter);
-                    return (1);
-                }
-                else if(ch == asc_Escape)
-                {
-                    KB_ClearKeyDown(sc_Escape);
-                    return (-1);
-                }
-                else if ( ch >= 32 && inputloc < dalen && ch < 127)
-                {
-                    ch = Btoupper(ch);
-		    if (c != 997 || (ch >= '0' && ch <= '9')) {	// JBF 20040508: so we can have numeric only if we want
+                KB_ClearKeyDown(sc_Escape);
+                return (-1);
+            }
+            else if ( ch >= 32 && inputloc < dalen && ch < 127)
+            {
+                ch = Btoupper(ch);
+		        if (c != 997 || (ch >= '0' && ch <= '9')) {	// JBF 20040508: so we can have numeric only if we want
 	                *(t+inputloc) = ch;
         	        *(t+inputloc+1) = 0;
                 	inputloc++;
-		    }
-                }
+		        }
             }
         }
     }
@@ -5997,8 +5983,7 @@ void cheats(void)
     {
        while (KB_KeyWaiting())
        {
-          ch = KB_Getch();
-          ch = Btolower(ch);
+          ch = Btolower(KB_Getch());
 
           if( !( (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') ) )
           {

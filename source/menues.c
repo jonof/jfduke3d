@@ -3241,7 +3241,8 @@ if (PLUTOPAK) {
 			function = probey;
 			whichkey = currentlist;
 			cmenu(210);
-			KB_ClearKeysDown();
+			KB_FlushKeyboardQueue();
+			KB_ClearLastScanCode();
 			break;
 	    }
 
@@ -3265,6 +3266,7 @@ if (PLUTOPAK) {
 			KeyboardKeys[probey][currentlist] = 0;
 			CONTROL_MapKey( probey, KeyboardKeys[probey][0], KeyboardKeys[probey][1] );
 			sound(KICK_HIT);
+			KB_ClearKeyDown( sc_Delete );
 	    }
 	    
 	    for (l=0; l < min(13,NUMGAMEFUNCTIONS); l++) {
@@ -3294,7 +3296,9 @@ if (PLUTOPAK) {
 
 	    break;
 
-	case 210:
+	case 210: {
+		int32 sc;
+
         rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
         menutext(320>>1,15,0,0,"KEYS SETUP");
 
@@ -3303,8 +3307,9 @@ if (PLUTOPAK) {
 	    gametext(320>>1,90+9,tempbuf,0,2+8+16);
 	    gametext(320>>1,90+9+9+9,"PRESS \"ESCAPE\" TO CANCEL",0,2+8+16);
 
-	    if ( KB_KeyWaiting() ) {
-			if ( KB_GetLastScanCode() == sc_Escape ) {
+		sc = KB_GetLastScanCode();
+	    if ( sc != sc_None ) {
+			if ( sc == sc_Escape ) {
 			    sound(EXITMENUSOUND);
 			} else {
 			    sound(PISTOL_BODYHIT);
@@ -3321,10 +3326,11 @@ if (PLUTOPAK) {
 			currentlist = whichkey;
 			probey = function;
 
-	        KB_ClearKeysDown();
+	        KB_ClearKeyDown(sc);
 	    }
 
 	    break;
+	}
 
 	case 205:
          rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);

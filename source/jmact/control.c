@@ -912,6 +912,7 @@ boolean CONTROL_Startup(controltype which, int32 ( *TimeFunction )( void ), int3
 	CONTROL_JoyPresent   = CONTROL_JoystickEnabled = false;
 	CONTROL_NumMouseButtons = CONTROL_NumJoyButtons = 0;
 	CONTROL_NumMouseAxes    = CONTROL_NumJoyAxes    = 0;
+	KB_Startup();
 	switch (which) {
 		case controltype_keyboard:
 			break;
