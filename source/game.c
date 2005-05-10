@@ -666,7 +666,7 @@ void getpackets(void)
 				ud.user_name[other][i-3] = 0;
 
 				j = i; //This used to be Duke packet #9... now concatenated with Duke packet #6
-				for (;i<packbufleng;i++) ud.wchoice[other][i-j] = packbuf[i];
+				for (;i-j<10;i++) ud.wchoice[other][i-j] = packbuf[i];
 
 				ps[other].aim_mode = packbuf[i++];
 				ps[other].auto_aim = packbuf[i++];
