@@ -5994,6 +5994,7 @@ void cheats(void)
 
           cheatbuf[cheatbuflen++] = ch;
           cheatbuf[cheatbuflen] = 0;
+		  KB_ClearKeysDown();
 
           if(cheatbuflen > 11)
           {
