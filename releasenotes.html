@@ -814,54 +814,6 @@ as the original Build - but one that worked with vectors instead of already rast
 			in future releases. :P</dd>
 		</dl>
 		
-		
-		<h1>Historical Documentation</h1>
-
-		<p>The content in this section is here for historical reference purposes.</p>
-
-		<h2>A quick word before we get to 3D Models</h2>
-
-		<p>Before I explain the new 3D model support, I need to explain the changes which have been made to how
-		the Hightile enhancements, 3D models, and voxels are described to the game.</p>
-		<p>Users of previous releases of the port would be familiar with the "definetexture" instruction in the
-		CON language which is used to declare Hightile replacement textures. Typically, you would have an extra
-		CON file, often named EXTRA.CON, which you would use to declare textures and whatnot. This file would be
-		passed to the game using a "/x" switch to override the default GAME.CON from executing. In order to provide
-		more generic flexibility so that the enhancements are not tied to the CON language, I have created a new
-		script loader as a service of the engine which is now used to read a file containing those same definitions
-		which CONs once provided. This script file is named DUKE3D.DEF and its syntax is similar to the CON
-		language.</p>
-		<p>The benefits to come from this change to a separate file arrangement is that the new engine features now
-		work in the Build editor as well as the game. Plus, the script reader is a reusable component of the
-		engine which means any future games, or any modifications based on the engine will have the option of
-		using this feature for themselves.</p>
-
-		<h3>Converting EXTRA.CON to DUKE3D.DEF</h3>
-
-		<p>Since the port now uses the DUKE3D.DEF file to specify replacements and whatnot, the CON features have
-		been disabled and a warning written to the console put in their place, something like:</p>
-		<pre>!!! BEGIN NOTICE !!!
-CON-file definition of Hightile textures has been removed in
-favour of DUKE3D.DEF declarations. Please refer to the release
-notes for details on how to convert your CON definitions into
-DUKE3D.DEF equivalents.
-!!! END NOTICE !!!</pre>
-		<p>Since DUKE3D.DEF has a syntax much like the CON language, conversion is not a difficult task. Refer below
-		to the details on the instructions and their parameters for specifics, but here is the basic changes which
-		you would need to make to an EXTRA.CON file to create DUKE3D.DEF:</p>
-		<ol>
-			<li>If you include GAME.CON in the EXTRA.CON file, you will want to change this to include
-			DEFS.CON instead.</li>
-			<li>If there are "definetint" lines, they must be checked to be sure to show five parameters. If
-			there are only four parameters (which would be palette number, red, green, and blue values), add a
-			0 to the end (which is the effects parameter that was option in the CON language).</li>
-			<li>If any of the "definetexture" lines have filenames that contain whitespace, double quotes need
-			to be placed around the filename. It is best to put quotes around all strings, but for strings
-			with no embedded whitespace, quotes are not mandatory.</li>
-		</ol>
-		<p>Complete reference on the DUKE3D.DEF file is <a href="#deffile">here</a>.</p>
-
-
 		<address>Happy Duke'ing!<br />
 			Jonathon Fowler (<a href="mailto:jonof@edgenetwork.org">jonof@edgenetwork.org</a>)</address>
 	</body>

@@ -48,6 +48,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef O_TEXT
 #define  O_TEXT   0
 #endif
+#ifndef F_OK
+#define F_OK 0
+#endif
 
 #define MaxFiles 20
 static char *FileNames[MaxFiles];
