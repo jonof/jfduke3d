@@ -1518,7 +1518,6 @@ if (PLUTOPAK) {
 }
                     break;
                 case 2:
-#ifndef ONELEVELDEMO
                     ud.m_level_number++;
 if (!VOLUMEONE) {
                     if(ud.m_volume_number == 0 && ud.m_level_number > 6)
@@ -1528,7 +1527,6 @@ if (!VOLUMEONE) {
                         ud.m_level_number = 0;
 }
                     if(ud.m_level_number > 10) ud.m_level_number = 0;
-#endif
                     break;
                 case 3:
                     if(ud.m_monsters_off == 1 && ud.m_player_skill > 0)
@@ -4598,7 +4596,6 @@ if (PLUTOPAK) {
 }
                     break;
                 case 2:
-#ifndef ONELEVELDEMO
                     ud.m_level_number++;
 if (!VOLUMEONE) {
                     if(ud.m_volume_number == 0 && ud.m_level_number > 6)
@@ -4608,7 +4605,6 @@ if (!VOLUMEONE) {
                         ud.m_level_number = 0;
 }
                     if(ud.m_level_number > 10) ud.m_level_number = 0;
-#endif
                     break;
                 case 3:
                     if(ud.m_monsters_off == 1 && ud.m_player_skill > 0)
@@ -4766,13 +4762,8 @@ if (VOLUMEONE) {
             menutext(c,57+16-9,SHX(-3),PHX(-3),tempbuf);
 }
 
-#ifndef ONELEVELDEMO
             sprintf(tempbuf,"LEVEL %ld",ud.m_level_number+1);
             menutext(c,57+16+16-9,SHX(-4),PHX(-4),tempbuf);
-#else
-            sprintf(tempbuf,"LEVEL %ld",ud.m_level_number+1);
-            menutext(c,57+16+16-9,SHX(-4),1,tempbuf);
-#endif
             menutext(c,57+16+16+16-9,SHX(-5),PHX(-5),"MONSTERS");
 
             if(ud.m_coop == 0)

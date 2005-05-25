@@ -2117,10 +2117,6 @@ void gameexit(char *t)
         dobonus(1);
         setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP);
     }
-#ifdef ONELEVELDEMO
-    doorders();
-    t = "You have been playing a ONE LEVEL demo of Duke Nukem 3D.";
-#endif
 
     if( *t != 0 && *(t+1) != 'V' && *(t+1) != 'Y')
         showtwoscreens();
@@ -6162,10 +6158,6 @@ if (VOLUMEONE) {
 
                     case 2:
                     case 10:
-#ifdef ONELEVELDEMO
-    ps[myconnectindex].cheat_phase = 0;
-    break;
-#endif
 
                         if(k == 2)
                         {
@@ -7461,10 +7453,6 @@ void Shutdown( void )
     KB_Shutdown();
 }
 
-static char todd[] = "Duke Nukem 3D(tm) Copyright 1989, 1996 Todd Replogle and 3D Realms Entertainment";
-static char trees[] = "I want to make a game with trees";
-static char sixteen[] = "16 Possible Dukes";
-
 /*
 ===================
 =
@@ -7778,10 +7766,6 @@ void app_main(int argc,char **argv)
 	}
 #endif
 
-    todd[0] = 'T';
-    sixteen[0] = 'D';
-    trees[0] = 'I';
-
 	OSD_SetLogFile("duke3d.log");
 
 #if 0
@@ -7805,10 +7789,6 @@ void app_main(int argc,char **argv)
 
 #ifdef BETA
     printstr(0,1,"BETA VERSION BETA VERSION BETA VERSION BETA VERSION BETA VERSION BETA VERSION ",79);
-#endif
-
-#ifdef ONELEVELDEMO
-    printstr(33,1,"ONE LEVEL DEMO",79);
 #endif
 
     printstr(0,1,"                   Copyright (c) 1996 3D Realms Entertainment                   ",79);
@@ -7853,17 +7833,6 @@ if (VOLUMEONE) {
     initprintf("Distribution of shareware Duke Nukem 3D is restricted in certain ways.\n");
     initprintf("Please read LICENSE.DOC for more details.\n");
 }
-#ifdef ONELEVELDEMO
-    puts("DUKE NUKEM 3D SINGLE-LEVEL PROMOTIONAL EDITION\n");
-    puts("This single-level promotional edition of Duke Nukem 3D (tm) may not be");
-    puts("distributed domestically (North America) by any publication other than");
-    puts("Computer Gaming World, a Ziff-Davis publication.  It is a promotional");
-    puts("version, licensed for a single month's run, and may not be redistributed");
-    puts("by any online service, BBS, commercial publisher, magazine or distributor.");
-    puts("International distribution rights are reserved.\n");
-    puts("Please read LICENSE.DOC for further information about this special version.");
-    puts("NOTE: DUKE NUKEM 3D CONTAINS MATURE CONTENT.\n");
-#endif
 
     OSD_SetFunctions(
 		GAME_drawosdchar,
@@ -8033,9 +8002,6 @@ if (VOLUMEONE) {
         {
             if( ps[myconnectindex].gm&MODE_EOL )
             {
-#ifdef ONELEVELDEMO
-                gameexit(" ");
-#endif
                 closedemowrite();
 
                 ready2send = 0;

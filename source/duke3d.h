@@ -51,13 +51,9 @@ Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
 extern int conversion;
 extern int shareware;
 
-//#define VOLUMEALL
 #define VOLUMEALL (shareware==0)
-//#define PLUTOPAK
 #define PLUTOPAK (conversion==14)
-//#define VOLUMEONE
 #define VOLUMEONE (shareware==1)
-// #define ONELEVELDEMO
 
 // #define TEN
 // #define BETA
