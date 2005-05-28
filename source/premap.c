@@ -1124,7 +1124,7 @@ void resetpspritevars(char g)
     short i, j, nexti,circ;
     long firstx,firsty;
     spritetype *s;
-    char aimmode[MAXPLAYERS];
+    char aimmode[MAXPLAYERS],autoaim[MAXPLAYERS];
     STATUSBARTYPE tsbar[MAXPLAYERS];
 
     EGS(ps[0].cursectnum,ps[0].posx,ps[0].posy,ps[0].posz,
@@ -1133,6 +1133,7 @@ void resetpspritevars(char g)
     if(ud.recstat != 2) for(i=0;i<MAXPLAYERS;i++)
     {
         aimmode[i] = ps[i].aim_mode;
+        autoaim[i] = ps[i].auto_aim;
         if(ud.multimode > 1 && ud.coop == 1 && ud.last_level >= 0)
         {
             for(j=0;j<MAX_WEAPONS;j++)
@@ -1163,6 +1164,7 @@ void resetpspritevars(char g)
     if(ud.recstat != 2) for(i=0;i<MAXPLAYERS;i++)
     {
         ps[i].aim_mode = aimmode[i];
+        ps[i].auto_aim = autoaim[i];
         if(ud.multimode > 1 && ud.coop == 1 && ud.last_level >= 0)
         {
             for(j=0;j<MAX_WEAPONS;j++)

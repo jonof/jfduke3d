@@ -664,6 +664,7 @@ void getpackets(void)
 				for (i=3;packbuf[i];i++)
 					ud.user_name[other][i-3] = packbuf[i];
 				ud.user_name[other][i-3] = 0;
+				i++;
 
 				j = i; //This used to be Duke packet #9... now concatenated with Duke packet #6
 				for (;i-j<10;i++) ud.wchoice[other][i-j] = packbuf[i];
@@ -7609,8 +7610,8 @@ void getnames(void)
 				buf[l++] = (char)ud.wchoice[0][i];
           }
 
-		  buf[l++] = ps[myconnectindex].aim_mode = ps[0].aim_mode;
-		  buf[l++] = ps[myconnectindex].auto_aim = ps[0].auto_aim;
+		  buf[l++] = ps[myconnectindex].aim_mode = MouseAiming;
+		  buf[l++] = ps[myconnectindex].auto_aim = AutoAim;
 
           for(i=connecthead;i>=0;i=connectpoint2[i])
 		  {
@@ -7756,7 +7757,6 @@ int shareware = 0;
 void app_main(int argc,char **argv)
 {
     long i, j, k, l;
-    int32 tempautorun;
 
 #ifdef RENDERTYPEWIN
 	if (win_checkinstance()) {
@@ -7955,8 +7955,6 @@ if (VOLUMEONE) {
 
     MAIN_LOOP_RESTART:
 
-    //tempautorun = ud.auto_run;	JBF: doesn't really do much when a demo plays and we quit...
-
     if(ud.warp_on == 0)
         Logo();
     else if(ud.warp_on == 1)
@@ -7974,9 +7972,9 @@ if (VOLUMEONE) {
         goto MAIN_LOOP_RESTART;
     }
 
-    ud.auto_run = RunMode;	// JBF: was tempautorun;
-    ps[0].aim_mode = MouseAiming;	// JBF 20031125: I set this here because it may be changed in the menu
-    ps[0].auto_aim = AutoAim;		// JBF 20031125: I set this here because it may be changed in the menu
+    ud.auto_run = RunMode;
+    ps[myconnectindex].aim_mode = MouseAiming;
+    ps[myconnectindex].auto_aim = AutoAim;
 
     ud.warp_on = 0;
     KB_KeyDown[sc_Pause] = 0;	// JBF: I hate the pause key
@@ -8133,8 +8131,7 @@ char opendemoread(char which_demo) // 0 = mine
      }
 
 	for(i=0;i<ud.multimode;i++) {
-           if (kread(recfilep,(int32 *)&ps[i].aim_mode,sizeof(char)) != sizeof(char)) goto corrupt;
-	   //if (ver == BYTEVERSION_JF)
+       if (kread(recfilep,(int32 *)&ps[i].aim_mode,sizeof(char)) != sizeof(char)) goto corrupt;
 	   if (kread(recfilep,(int32 *)&ps[i].auto_aim,sizeof(char)) != sizeof(char)) goto corrupt;	// JBF 20031126
 	}
 
@@ -8183,7 +8180,7 @@ void opendemowrite(void)
 
     for(i=0;i<ud.multimode;i++) {
         fwrite((int32 *)&ps[i].aim_mode,sizeof(char),1,frecfilep);
-	fwrite((int32 *)&ps[i].auto_aim,sizeof(char),1,frecfilep);		// JBF 20031126
+		fwrite((int32 *)&ps[i].auto_aim,sizeof(char),1,frecfilep);		// JBF 20031126
     }
 
     totalreccnt = 0;

@@ -215,7 +215,7 @@ short aim(spritetype *s,short aang)
     a = s->ang;
 
     j = -1;
-    if(s->picnum == APLAYER && ps[s->yvel].aim_mode && !ps[s->yvel].auto_aim) return -1;	// JBF 20031125: Auto-aim optional
+    if(s->picnum == APLAYER && !ps[s->yvel].auto_aim) return -1;
 
     gotshrinker = s->picnum == APLAYER && ps[s->yvel].curr_weapon == SHRINKER_WEAPON;
     gotfreezer = s->picnum == APLAYER && ps[s->yvel].curr_weapon == FREEZE_WEAPON;
