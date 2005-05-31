@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "JFDuke3D"
-!define PRODUCT_VERSION "20050228"
+!define PRODUCT_VERSION "20050531"
 !define PRODUCT_PUBLISHER "JonoF"
 !define PRODUCT_WEB_SITE "http://jonof.edgenetwork.org/index.php?p=jfduke3d"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
