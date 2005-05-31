@@ -53,23 +53,18 @@
 
 	<body>
 		<h1>Release Notes for JFDuke3D</h1>
-		<p>Release date: 28 February 2005 (multiplayer test release update)</p>
+		<p>Release date: 31 May 2005</p>
 
-		<h2>New Features</h2>
+		<h2>New Features and Improvements</h2>
 		<ul>
-			<li>Multiplayer capability. <a href="#multiplayer">See here for more information</a>.</li>
+			<li>Out-of-sync problems with the networking feature should be less frequent now.</li>
+			<li>Initial support of the MD3 model format. Only a subset of MD3's features are implemented.
+			Only one skin per model is supported at present but this will change to allow each MD3 surface
+			a skin of its own in the near future. Tags and shaders are unsupported.</li>
 		</ul>
 			
 		<h2>Known Issues</h2>
 		<ul>
-			<li><strong>This version should be considered test-quality only!</strong> There are still things
-			left to do before the port can be given a full official release. Keep that in mind when you come
-			to making modifications that work with this version because certain elements of the mod support
-			will change.</li>
-			<li>The network code does not display any status information during the joining phase. The game
-			may look as though it has locked up if it is waiting for something. You will have to kill the game
-			in Windows Task Manager if you want to abort the launch. This will become much cleaner and nicer
-			in the near future.</li>
 			<li>You may have instances where the game goes out of sync. The master can often restart the game
 			from the menu without everyone having to restart the game from scratch, and things should be
 			fine.</li>
@@ -151,7 +146,7 @@
 
 		<h3><a name="md2sprite">3D Models</a></h3>
 
-		<p>Polymost uses the Quake II MD2 model format for 3D models. You can replace any wall-aligned or
+		<p>Polymost uses the Quake II MD2 and Quake III MD3 format for 3D models. You can replace any wall-aligned or
 		face sprite in the game with a 3D model using a declaration in the DUKE3D.DEF file. For more information
 		on the specifics of the DEF-file commands for 3D models, <a href="#deffile">see here</a>.</p>
 		<p>Included in this release is a model of the Pig Cop by Parkar, and the skin by Motionblur. You should
@@ -232,13 +227,14 @@ definemodelframe "dead" 2060 2060</pre>
 		the definemodelframe line matches the first frame of the definemodelanim line, the animation will
 		automatically play.</p>
 
-		<p><small>Quake II is a registered trademark of <a href="http://www.idsoftware.com">id Software</a></small></p>
+		<p><small>Quake II and Quake III are registered trademarks of <a href="http://www.idsoftware.com">id
+				Software</a></small></p>
 
 		<h2><a name="deffile">DEF-file Language</a></h2>
 
 		<p>These are the legal instructions that may be used in the DUKE3D.DEF file. Comments can be used by
 		prefixing the text with a double forward-slash (C++ style), <code>//</code>, or surrounding the text with
-		<code>/*</code> (comment here) <code>*/</code> (C style).</p>
+		<code>/*</code> <em>(comment here)</em> <code>*/</code> (C style).</p>
 
 		<dl>
 			<dt>include <em>filename</em><br />#include <em>filename</em></dt>
@@ -252,11 +248,11 @@ definemodelframe "dead" 2060 2060</pre>
 			of the tile names in the art file.</dd>
 
 			<dt>model <em>filename</em> { ... }</dt>
-			<dd><span class="warning">Please be aware that we plan to modify certain elements of this model definition
+			<dd><!-- <span class="warning">Please be aware that we plan to modify certain elements of this model definition
 			syntax in ways that are likely to break existing DEF files written to use this new syntax, so be prepared
 			to update your DEF files once things settle down. However, we do encourage you to experiment with the new
-			style of model definition.</span>
-			Defines an MD2-format model file to replace certain sprites in the game when running in OpenGL
+			style of model definition.</span> -->
+			Defines an MD2/3-format model file to replace certain sprites in the game when running in OpenGL
 			Polymost mode. The brace-enclosed block may contain these directives:
 			<dl>
 				<dt>scale <em>scale</em></dt>
@@ -268,6 +264,12 @@ definemodelframe "dead" 2060 2060</pre>
 				shade value by.  A negative value for this makes the model brighter. Conversely, a positive
 				value makes it darker.</dd>
 
+				<dt>zadd <em>offset</em></dt>
+				<dd><em>offset</em> is a (possibly fractional) value specifying a height offset for the
+				model. Quake models are aligned in the center while Build models are aligned at the floor.
+				Using this command will allow Build to use Quake models without modification to the MD2/3
+				file itself.</dd>
+
 				<dt>skin { ... }</dt>
 				<dd>Defines a skin to be used on the model for all frames declared after this command. The
 				brace-enclosed block may contain these directives:
@@ -277,7 +279,7 @@ definemodelframe "dead" 2060 2060</pre>
 
 					<dt>file <em>filename</em></dt>
 					<dd><strong>IMPORTANT:</strong> If your model exists in a subdirectory (ie.
-					the model filename includes a path to the .md2) you will need to give the same path
+					the model filename includes a path to the .md2/3) you will need to give the same path
 					to <em>filename</em> if the skin is in the same directory.</dd>
 				</dl></dd>
 
@@ -540,9 +542,9 @@ model "models/spinnuke.md2"
 			for now until its meaning is fully conceived.</dd>
 
 			<dt>definemodel <em>filename scale shade-offset</em></dt>
-			<dd>Defines an MD2-format model file to replace certain sprites in the game. See
+			<dd>Defines an MD2/3-format model file to replace certain sprites in the game. See
 			"definemodelframe" and "definemodelanim" for details on how to specify the ART-file tiles to
-			replace. <em>filename</em> is the name of the MD2 model. <em>scale</em> is a (possibly fractional)
+			replace. <em>filename</em> is the name of the MD2/3 model. <em>scale</em> is a (possibly fractional)
 			value specifying a scaling factor for the model when it is rendered, eg. 1.5 for one-and-a-half
 			times as big.  <em>shade-offset</em> is an integer value specifying how much to bias the sprite's
 			shade value by.  A negative value for this makes the model brighter. Conversely, a positive value
@@ -552,7 +554,7 @@ model "models/spinnuke.md2"
 			<dd>Defines a skin to be used on the model for all frames declared after this command, when the
 			sprite palette is equal to <em>palette-number</em>. (This makes more sense when given a
 			demonstration.) <strong>IMPORTANT:</strong> If your model exists in a subdirectory (ie.
-			definemodel includes a path to the .md2) you will need to give the same path to <em>filename</em>
+			definemodel includes a path to the .md2/3) you will need to give the same path to <em>filename</em>
 			if the skin is in the same directory.</dd>
 
 			<dt>definemodelanim <em>start-frame end-frame frame-rate flags</em></dt>
@@ -608,9 +610,19 @@ model "models/spinnuke.md2"
 			the Build editor by highlighting the sprite in 2D mode and pressing Control+Tab. The next group of
 			commands describe the changes to make to the sprite.
 			<dl>
-				<dt>notmd2</dt>
+				<dt>notmd<br />
+				notmd2<br />
+				notmd3</dt>
 				<dd>Prevents the sprite from being drawn as a model. It gets drawn as a regular sprite
-				instead.</dd>
+				instead. <strong>notmd2</strong> and <strong>notmd3</strong> are synonyms for
+				<strong>notmd</strong>.</dd>
+
+				<dt>nomdanim<br />
+				nomd2anim<br />
+				nomd3anim</dt>
+				<dd>Prevents model animation from playing if the sprite is being drawn as a model.
+				<strong>nomd2anim</strong> and <strong>nomd3anim</strong> are synonyms for
+				<strong>nomdanim</strong>.</dd>
 
 				<dt>angleoff <em>angle</em><br />
 				angoff <em>angle</em></dt>
@@ -702,8 +714,8 @@ as the original Build - but one that worked with vectors instead of already rast
 		This may be extremely slow. If your Windows installation doesn't have any form of OpenGL rendering ability,
 		Polymost will probably crash.</p>
 		<p><strong>NOTE 2:</strong> OpenGL Polymost has been tested on an nVidia Riva TNT 16MB, an nVidia GeForce2
-		GTS 32MB, an nVidia GeForce4 Ti4600 128MB, an ATi Radeon Mobility 9000 64MB, and a 3D-Labs Oxygen GVX420
-		128MB (minor texturing issues).</p>
+		GTS 32MB, an nVidia GeForce4 Ti4600 128MB, an nVidia GeForce 6800GT 256MB, an ATi Radeon Mobility 9000 64MB,
+		and a 3D-Labs Oxygen GVX420 128MB (minor texturing issues).</p>
 
 		<h2>Console Commands</h2>
 
@@ -775,11 +787,6 @@ as the original Build - but one that worked with vectors instead of already rast
 			<dd>Sets the colour depth. Does not apply it immediately though. You need to use 'restartvid'
 			after setting this if you want to apply the change.</dd>
 
-			<dt>glusecds &lt;0 or 1&gt;</dt>
-			<dd>Enables the use of the ChangeDisplaySettings() Windows function to switch the current
-			screen mode. Some video cards require this be set in order for OpenGL to work properly.
-			Intel and Matrox users are in this category.</dd>
-
 			<dt>glusetexcompr &lt;0 or 1&gt;</dt>
 			<dd>Enables or disables the use of OpenGL texture compression for hightile textures. You need
 			to use 'restartvid' to apply any changes to this value.</dd>
@@ -804,6 +811,15 @@ as the original Build - but one that worked with vectors instead of already rast
 
 			<dt>usevoxels &lt;0 or 1&gt;</dt>
 			<dd>Disables or enables the use of voxels in the classic renderer if any are defined.</dd>
+
+			<dt>usehightile &lt;0 or 1&gt;</dt>
+			<dd>Disables or enables the use of Hightile textures in GL Polymost mode if any are defined.</dd>
+
+			<dt>usegoodalpha &lt;0 or 1&gt;</dt>
+			<dd>If 1, a lower alpha cutoff value is used when rendering textures with transparency, which
+			gives better looking transparent textures at the expense of some sprites behind the transparent
+			item potentially being invisible in certain circumstances. 0 is a more compatible value (and is
+			the default) for this option but slight visual degradation will result.</dd>
 
 			<dt>glredbluemode &lt;0 or 1&gt;</dt>
 			<dd>Enables or disables the red-blue stereovision mode in OpenGL. This mode is experimental
