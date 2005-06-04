@@ -196,12 +196,6 @@ static char sctoasc[2][256] = {
 };
 */
 
-void KB_KeyEvent( kb_scancode scancode, boolean keypressed )
-{
-	if (keypressed) KB_LastScan = scancode;
-	//CONTROL_KeyEvent(scancode,keypressed);
-}
-
 boolean KB_KeyWaiting( void )
 {
 	return bkbhit();
@@ -277,6 +271,11 @@ void KB_TurnKeypadOff( void )
 boolean KB_KeypadActive( void )
 {
 	return numpad;
+}
+
+static void KB_KeyEvent( long scancode, long keypressed )
+{
+	if (keypressed) KB_LastScan = scancode;
 }
 
 void KB_Startup( void )

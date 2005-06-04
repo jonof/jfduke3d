@@ -41,24 +41,24 @@ MV_Mix8BitMono16_:
 
         ; Sample size
         mov     ebx, _MV_SampleSize
-        mov     [apatch7+2],bl
-        mov     [apatch8+2],bl
-        mov     [apatch9+3],bl
+        mov     byte ptr [apatch7+2],bl
+        mov     byte ptr [apatch8+2],bl
+        mov     byte ptr [apatch9+3],bl
 
         ; Volume table ptr
         mov     ebx, _MV_LeftVolume             ; Since we're mono, use left volume
-        mov     [apatch1+4],ebx
-        mov     [apatch2+4],ebx
+        mov     dword ptr [apatch1+4],ebx
+        mov     dword ptr [apatch2+4],ebx
 
         ; Harsh Clip table ptr
         mov     ebx, _MV_HarshClipTable
         add     ebx, 128
-        mov     [apatch3+2],ebx
-        mov     [apatch4+2],ebx
+        mov     dword ptr [apatch3+2],ebx
+        mov     dword ptr [apatch4+2],ebx
 
         ; Rate scale ptr
-        mov     [apatch5+2],edx
-        mov     [apatch6+2],edx
+        mov     dword ptr [apatch5+2],edx
+        mov     dword ptr [apatch6+2],edx
 
         mov     edi, _MV_MixDestination         ; Get the position to write to
 
@@ -165,29 +165,29 @@ MV_Mix8BitStereo16_:
 
         ; Sample size
         mov     ebx, _MV_SampleSize
-        mov     [bpatch8+2],bl
- ;       mov     [bpatch9+2],bl
+        mov     byte ptr [bpatch8+2],bl
+ ;       mov     byte ptr [bpatch9+2],bl
 
         ; Right channel offset
         mov     ebx, _MV_RightChannelOffset
-        mov     [bpatch6+3],ebx
-        mov     [bpatch7+2],ebx
+        mov     dword ptr [bpatch6+3],ebx
+        mov     dword ptr [bpatch7+2],ebx
 
         ; Volume table ptr
         mov     ebx, _MV_LeftVolume
-        mov     [bpatch1+4],ebx
+        mov     dword ptr [bpatch1+4],ebx
 
         mov     ebx, _MV_RightVolume
-        mov     [bpatch2+4],ebx
+        mov     dword ptr [bpatch2+4],ebx
 
         ; Rate scale ptr
-        mov     [bpatch3+2],edx
+        mov     dword ptr [bpatch3+2],edx
 
         ; Harsh Clip table ptr
         mov     ebx, _MV_HarshClipTable
         add     ebx,128
-        mov     [bpatch4+2],ebx
-        mov     [bpatch5+2],ebx
+        mov     dword ptr [bpatch4+2],ebx
+        mov     dword ptr [bpatch5+2],ebx
 
         mov     edi, _MV_MixDestination         ; Get the position to write to
 
@@ -278,17 +278,17 @@ MV_Mix16BitMono16_:
 
         ; Sample size
         mov     ebx, _MV_SampleSize
-        mov     [cpatch4+2],bl
-        mov     [cpatch5+3],bl
+        mov     byte ptr [cpatch4+2],bl
+        mov     byte ptr [cpatch5+3],bl
 
         ; Volume table ptr
         mov     ebx, _MV_LeftVolume
-        mov     [cpatch2+4],ebx
+        mov     dword ptr [cpatch2+4],ebx
         inc     ebx
-        mov     [cpatch1+4],ebx
+        mov     dword ptr [cpatch1+4],ebx
 
         ; Rate scale ptr
-        mov     [cpatch3+2],edx
+        mov     dword ptr [cpatch3+2],edx
 
         mov     edi, _MV_MixDestination         ; Get the position to write to
 
@@ -389,29 +389,29 @@ MV_Mix16BitStereo16_:
 
         ; Sample size
         mov     ebx, _MV_SampleSize
-        mov     [dpatch9+2],bl
+        mov     byte ptr [dpatch9+2],bl
 
         ; Right channel offset
         mov     ebx, _MV_RightChannelOffset
-        mov     [dpatch7+3],ebx
-        mov     [dpatch8+3],ebx
+        mov     dword ptr [dpatch7+3],ebx
+        mov     dword ptr [dpatch8+3],ebx
 
         ; Volume table ptr
         mov     ebx, _MV_LeftVolume
-        mov     [dpatch1+4],ebx
+        mov     dword ptr [dpatch1+4],ebx
         inc     ebx
-        mov     [dpatch2+4],ebx
+        mov     dword ptr [dpatch2+4],ebx
 
         mov     ebx, _MV_RightVolume
-        mov     [dpatch3+4],ebx
+        mov     dword ptr [dpatch3+4],ebx
         inc     ebx
-        mov     [dpatch4+4],ebx
+        mov     dword ptr [dpatch4+4],ebx
 
         ; Rate scale ptr
-        mov     [dpatch5+2],edx
+        mov     dword ptr [dpatch5+2],edx
 
         ; Source ptr
-        mov     [dpatch6+4],esi
+        mov     dword ptr [dpatch6+4],esi
 
         mov     edi, _MV_MixDestination         ; Get the position to write to
 
