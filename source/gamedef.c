@@ -32,9 +32,8 @@ int conversion = 13;	// by default we think we're 1.3d until compilation informs
 extern short otherp;
 
 static short total_lines,line_number;
-static char checking_ifelse,parsing_state,*last_used_text;
+static char checking_ifelse,parsing_state;
 static short num_squigilly_brackets;
-static long last_used_size;
 
 static short g_i,g_p;
 static long g_x;
@@ -446,11 +445,8 @@ void transnum(void)
 
 char parsecommand(void)
 {
-    long i, j, k, *tempscrptr, temp_last_used_size;
-    char done, *origtptr, temp_ifelse_check, tw;
-    short temp_line_number;
-    int fp;
-    char parentcompilefile[255];	// JBF 20031130
+    long i, j, k, *tempscrptr;
+    char done, tw;
 
     if ((unsigned)(scriptptr-script) > MAXSCRIPTSIZE) {
 	Bsprintf(tempbuf,"FATAL ERROR: Compiled size of CON code exceeds maximum size!\n"
@@ -721,44 +717,59 @@ char parsecommand(void)
             }
             tempbuf[j] = '\0';
 
-            fp = kopen4load(tempbuf,loadfromgrouponly);
-            if(fp < 0)
-            {
-                error++;
-                initprintf("  * ERROR!(L%ld %s) Could not find '%s'.\n",line_number,compilefile,tempbuf);
-                return 0;
-            }
+	    {
+		short temp_line_number;
+		char  temp_ifelse_check;
+		char *origtptr, *mptr;
+		char parentcompilefile[255];
+		int fp;
 
-            j = kfilelength(fp);
+		fp = kopen4load(tempbuf,loadfromgrouponly);
+		if(fp < 0)
+		{
+			error++;
+			initprintf("  * ERROR!(L%ld %s) Could not find '%s'.\n",line_number,compilefile,tempbuf);
+			return 0;
+		}
 
-            initprintf("Including: '%s'.\n",tempbuf);
+		j = kfilelength(fp);
 
-            temp_line_number = line_number;
-            line_number = 1;
-            temp_ifelse_check = checking_ifelse;
-            checking_ifelse = 0;
-            origtptr = textptr;
-            textptr = last_used_text+last_used_size;
-	    temp_last_used_size = last_used_size;	// JBF 20040125: in order to chain includes save this
-	    last_used_size += j+1;			// JBF 20040125: gotta include the null byte in this
+		mptr = (char *)Bmalloc(j+1);
+		if (!mptr) {
+			kclose(fp);
+			error++;
+			initprintf("  * ERROR!(L%ld %s) Could not allocate %ld bytes to include '%s'.\n",
+				line_number,compilefile,j,tempbuf);
+			return 0;
+		}
 
-            *(textptr+j) = 0;
+		initprintf("Including: %s (%ld bytes)\n",tempbuf, j);
+		kread(fp, mptr, j);
+		kclose(fp);
+		mptr[j] = 0;
 
-            kread(fp,(char *)textptr,j);
-            kclose(fp);
+		origtptr = textptr;
 
-	    strcpy(parentcompilefile, compilefile);	// JBF 20031130: Back up currently compiling file name
-	    strcpy(compilefile, tempbuf);
-            do
-                done = parsecommand();
-            while( done == 0 );
-	    strcpy(compilefile, parentcompilefile);	// JBF 20031130: Restore last compiling file name
+		strcpy(parentcompilefile, compilefile);
+		strcpy(compilefile, tempbuf);
+	        temp_line_number = line_number;
+        	line_number = 1;
+		temp_ifelse_check = checking_ifelse;
+		checking_ifelse = 0;
 
-            textptr = origtptr;
-	    last_used_size = temp_last_used_size;	// JBF 20040125: in order to chain includes restore this
-            total_lines += line_number;
-            line_number = temp_line_number;
-            checking_ifelse = temp_ifelse_check;
+		textptr = mptr;
+
+		do done = parsecommand(); while (!done);
+
+		strcpy(compilefile, parentcompilefile);
+		total_lines += line_number;
+		line_number = temp_line_number;
+		checking_ifelse = temp_ifelse_check;
+		
+		textptr = origtptr;
+		
+		Bfree(mptr);
+	    }
 
             return 0;
         case 24:
@@ -1607,21 +1618,19 @@ void loadefs(char *filenam,char *mptr)
         return; //Not there
     }
 
-    mptr = (char *)Bmalloc(MAXCOMPILETEXTSIZE);
-    if (!mptr) {
-	    Bsprintf(tempbuf,"Failed allocating temporary %d byte CON text buffer.", MAXCOMPILETEXTSIZE);
-	    gameexit(tempbuf);
-    }
-	    
-    initprintf("Compiling: '%s'.\n",filenam);
-
     fs = kfilelength(fp);
 
-    last_used_text = textptr = (char *) mptr;
-    last_used_size = fs+1;	// JBF 20040125: gotta include a null byte
-	
-    *(textptr+fs) = 0;	// JBF 20040125: gotta include a null byte to terminate compile
+    initprintf("Compiling: %s (%ld bytes)\n",filenam,fs);
 
+    mptr = (char *)Bmalloc(fs+1);
+    if (!mptr) {
+	    Bsprintf(tempbuf,"Failed allocating %ld byte CON text buffer.", fs+1);
+	    gameexit(tempbuf);
+    }
+    mptr[fs] = 0;
+	    
+    textptr = (char *) mptr;
+	
     kread(fp,(char *)textptr,fs);
     kclose(fp);
 
@@ -1700,7 +1709,7 @@ void loadefs(char *filenam,char *mptr)
     else
     {
         total_lines += line_number;
-        initprintf("Code Size:%ld bytes(%ld labels).\n",(long)((scriptptr-script)<<2)-4,labelcnt);
+        initprintf("Code Size: %ld bytes (%ld labels).\n",(long)((scriptptr-script)<<2)-4,labelcnt);
     }
 }
 

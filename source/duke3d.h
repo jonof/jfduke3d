@@ -161,7 +161,6 @@ extern int shareware;
 
 #define MAXCYCLERS 256
 #define MAXSCRIPTSIZE 23040	// JBF 20040531: was 20460 but some mods (like MERC2 exceed this limit)
-#define MAXCOMPILETEXTSIZE 524288	// JBF 20040531
 #define MAXANIMATES 64
 
 #define SP  sprite[i].yvel
