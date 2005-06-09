@@ -2550,7 +2550,7 @@ if (PLUTOPAK) {
 			    scale(320-40+4,xdim,320)-1,scale(12+32+112+4,ydim,200)-1);
 
 	    // path
-	    minitext(52,32,boardfilename,17,26);
+	    minitext(52,32,boardfilename,0,26);
 
 		{	// JBF 20040208: seek to first name matching pressed character
 			struct _directoryitem *seeker = currentlist ? filedirectory : dirdirectory;
@@ -2579,7 +2579,7 @@ if (PLUTOPAK) {
 		for(i=0; i<2; i++) if (!dir->prev) break; else dir=dir->prev;
 		for(i=2; i>-2 && dir; i--, dir=dir->next) {
 		    if (dir == dirhighlight) c=0; else c=16;
-		    minitext(40,1+12+32+8*(3-i),dir->name,c,26);
+		    minitextshade(40,1+12+32+8*(3-i),dir->name,c,0,26);
 		}
 	    }
 
@@ -2590,17 +2590,17 @@ if (PLUTOPAK) {
 		for(i=0; i<4; i++) if (!dir->prev) break; else dir=dir->prev;
 		for(i=4; i>-4 && dir; i--, dir=dir->next) {
 			l = (boardfilename[0]=='G' && boardfilename[1]=='R' && boardfilename[2]=='P' && boardfilename[3]==':');
-		    if (dir == filehighlight) c=21; else c=10;
-		    minitext(40,(8+32+8*5)+8*(6-i),dir->name,c,26);
+		    if (dir == filehighlight) c=0; else c=16;
+		    minitextshade(40,(8+32+8*5)+8*(6-i),dir->name,c,2,26);
 		    sprintf(tempbuf,"%ld",dir->size);
-		    minitext(40+132,(8+32+8*5)+8*(6-i),tempbuf,c,26);
+		    minitextshade(40+132,(8+32+8*5)+8*(6-i),tempbuf,c,2,26);
 			if (l)
 			sprintf(tempbuf,"(IN GROUP FILE)");
 			else
 		    sprintf(tempbuf,"%04d-%02d-%02d %02d:%02d:%02d",
 				    1900+dir->mtime.tm_year,dir->mtime.tm_mon+1,dir->mtime.tm_mday,
 				    dir->mtime.tm_hour,dir->mtime.tm_min,dir->mtime.tm_sec);
-		    minitext(40+164,(8+32+8*5)+8*(6-i),tempbuf,l?20:c,26);
+		    minitextshade(40+164,(8+32+8*5)+8*(6-i),tempbuf,c,2,26);
 		}
 	    }
 
@@ -3273,19 +3273,19 @@ if (PLUTOPAK) {
 
 			strcpy(tempbuf, p);
 			for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
-			minitext(70,30+l*8,tempbuf,(m+l == probey)?0:16,10+16);
+			minitextshade(70,30+l*8,tempbuf,(m+l == probey)?0:16,0,10+16);
 
 		    //strcpy(tempbuf, KB_ScanCodeToString(KeyboardKeys[m+l][0]));
 			strcpy(tempbuf, getkeyname(KeyboardKeys[m+l][0]));
 		    if (!tempbuf[0]) strcpy(tempbuf, "  -");
-		    minitext(70+100,30+l*8,tempbuf,
-				    (m+l == probey && !currentlist?21:10),10+16);
+		    minitextshade(70+100,30+l*8,tempbuf,
+				    (m+l == probey && !currentlist?0:16),2,10+16);
 
 		    //strcpy(tempbuf, KB_ScanCodeToString(KeyboardKeys[m+l][1]));
 			strcpy(tempbuf, getkeyname(KeyboardKeys[m+l][1]));
 		    if (!tempbuf[0]) strcpy(tempbuf, "  -");
-		    minitext(70+120+34,30+l*8,tempbuf,
-				    (m+l == probey && currentlist?21:10),10+16);
+		    minitextshade(70+120+34,30+l*8,tempbuf,
+				    (m+l == probey && currentlist?0:16),2,10+16);
 	    }
 
 	    gametext(160,140,"UP/DOWN = SELECT ACTION",0,2+8+16);
@@ -3379,14 +3379,14 @@ if (PLUTOPAK) {
 				m = MouseFunctions[l-(MAXMOUSEBUTTONS-2)][0];
 			}
 
-			minitext(c+20,30+l*8,tempbuf,(l==probey)?0:16,10+16);
+			minitextshade(c+20,30+l*8,tempbuf,(l==probey)?0:16,0,10+16);
 
 			if (m == -1)
-				minitext(c+100+20,30+l*8,"  -NONE-",(l==probey)?0:16,10+16);
+				minitextshade(c+100+20,30+l*8,"  -NONE-",(l==probey)?0:16,0,10+16);
 			else {
 				strcpy(tempbuf, CONFIG_FunctionNumToName(m));
 			    for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
-				minitext(c+100+20,30+l*8,tempbuf,(l==probey)?0:16,10+16);
+				minitextshade(c+100+20,30+l*8,tempbuf,(l==probey)?0:16,0,10+16);
 			}
 	    }
 
@@ -3509,7 +3509,7 @@ if (PLUTOPAK) {
 			    strcpy(tempbuf, CONFIG_FunctionNumToName(m+l));
 
 		    for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
-            minitext(100,46+l*8,tempbuf,(m+l == probey)?0:16,10+16);
+            minitextshade(100,46+l*8,tempbuf,(m+l == probey)?0:16,0,10+16);
 		}
 
 	    gametext(320>>1,154,"PRESS \"ESCAPE\" TO CANCEL",0,2+8+16);
@@ -3725,14 +3725,14 @@ if (PLUTOPAK) {
 				sprintf(tempbuf, "Hat %s", directions[(l+m)-2*joynumbuttons]);
 				x = JoystickFunctions[MAXJOYBUTTONS-4+(l+m)-2*joynumbuttons][0];
 			}
-			minitext(80-4,33+l*8,tempbuf,(m+l == probey)?0:16,10+16);
+			minitextshade(80-4,33+l*8,tempbuf,(m+l == probey)?0:16,0,10+16);
 
 			if (x == -1)
-				minitext(176,33+l*8,"  -NONE-",(m+l==probey)?0:16,10+16);
+				minitextshade(176,33+l*8,"  -NONE-",(m+l==probey)?0:16,0,10+16);
 			else {
 				strcpy(tempbuf, CONFIG_FunctionNumToName(x));
 			    for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
-				minitext(176,33+l*8,tempbuf,(m+l==probey)?0:16,10+16);
+				minitextshade(176,33+l*8,tempbuf,(m+l==probey)?0:16,0,10+16);
 			}
 		}
 		

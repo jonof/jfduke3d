@@ -176,6 +176,7 @@ extern int gametext(int x,int y,char *t,char s,short dabits);
 extern int gametextpal(int x,int y,char *t,char s,char p);
 extern int gametextpart(int x,int y,char *t,char s,short p);
 extern int minitext(int x,int y,char *t,char p,short sb);
+extern int minitextshade(int x,int y,char *t,char s,char p,short sb);
 extern void gamenumber(long x,long y,long n,char s);
 extern void Shutdown(void );
 extern void allowtimetocorrecterrorswhenquitting(void );
