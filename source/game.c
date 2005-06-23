@@ -7768,7 +7768,7 @@ void app_main(int argc,char **argv)
 #endif
 
 	{
-		char cwd[MAX_PATH];
+		char cwd[BMAX_PATH];
 		char *homedir;
 		int asperr;
 
@@ -7777,7 +7777,7 @@ void app_main(int argc,char **argv)
 		addsearchpath("/usr/local/games/jfduke3d");
 #endif
 #if 1//defined(PLATFORMWINDOWS)	// should Linux search the cwd?
-		if (getcwd(cwd,MAX_PATH)) addsearchpath(cwd);
+		if (getcwd(cwd,BMAX_PATH)) addsearchpath(cwd);
 #endif
 		if ((homedir = Bgethomedir())) {
 			Bsnprintf(cwd,sizeof(cwd),"%s/"
@@ -7789,7 +7789,7 @@ void app_main(int argc,char **argv)
 			,homedir);
 			asperr = addsearchpath(cwd);
 			if (asperr == -2) {
-				if (mkdir(cwd) == 0) asperr = addsearchpath(cwd);
+				if (Bmkdir(cwd,S_IRWXU) == 0) asperr = addsearchpath(cwd);
 				else asperr = -1;
 			}
 			if (asperr == 0)
