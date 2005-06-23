@@ -7776,7 +7776,7 @@ void app_main(int argc,char **argv)
 		addsearchpath("/usr/share/games/jfduke3d");
 		addsearchpath("/usr/local/games/jfduke3d");
 #endif
-#if defined(PLATFORMWINDOWS)	// should Linux search the cwd?
+#if 1//defined(PLATFORMWINDOWS)	// should Linux search the cwd?
 		if (getcwd(cwd,MAX_PATH)) addsearchpath(cwd);
 #endif
 		if ((homedir = Bgethomedir())) {
