@@ -2719,7 +2719,8 @@ void drawbackground(void)
 	}
 
 	y1 = 0; y2 = ydim;
-	if( ready2send || ud.recstat == 2 )
+	//if( ready2send || ud.recstat == 2 )	// original
+	if ( (ready2send && ps[myconnectindex].gm == MODE_GAME) || ud.recstat == 2 )	// TerminX's solution
 	//if (ud.recstat == 0 || ud.recstat == 1 || (ud.recstat == 2 && ud.reccnt > 0))	// JBF 20040717
 	{
 		if (ud.screen_size == 8)
@@ -7765,6 +7766,37 @@ void app_main(int argc,char **argv)
 			return;
 	}
 #endif
+
+	{
+		char cwd[MAX_PATH];
+		char *homedir;
+		int asperr;
+
+#if defined(PLATFORMLINUX)
+		addsearchpath("/usr/share/games/jfduke3d");
+		addsearchpath("/usr/local/games/jfduke3d");
+#endif
+#if defined(PLATFORMWINDOWS)	// should Linux search the cwd?
+		if (getcwd(cwd,MAX_PATH)) addsearchpath(cwd);
+#endif
+		if ((homedir = Bgethomedir())) {
+			Bsnprintf(cwd,sizeof(cwd),"%s/"
+#if defined(PLATFORMWINDOWS) || defined(PLATFORMDARWIN)
+				"JFDuke3D"
+#else
+				".jfduke3d"
+#endif
+			,homedir);
+			asperr = addsearchpath(cwd);
+			if (asperr == -2) {
+				if (mkdir(cwd) == 0) asperr = addsearchpath(cwd);
+				else asperr = -1;
+			}
+			if (asperr == 0)
+				chdir(cwd);
+			free(homedir);
+		}
+	}
 
 	OSD_SetLogFile("duke3d.log");
 

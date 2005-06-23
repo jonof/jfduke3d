@@ -31,8 +31,11 @@ AS=ml
 LINK=link /opt:nowin98 /nologo /opt:ref
 CFLAGS= /MD /J /nologo $(flags_cl)  \
 	/I$(INC) /I$(EINC) /I$(SRC)jmact /I$(SRC)jaudiolib \
-	/DNOCOPYPROTECT $(ENGINEOPTS) /DUSE_MSC_PRAGMAS /DUSE_MSC_ASSEMBLY
-LIBS=opengl32.lib
+	/DNOCOPYPROTECT $(ENGINEOPTS) /DUSE_MSC_PRAGMAS /DUSE_MSC_ASSEMBLY \
+	/I$(DXROOT)\include /DPLATFORMWINDOWS=1 /DRENDERTYPEWIN=1
+PLATFORM=WINDOWS
+RENDERTYPE=WIN
+LIBS=shfolder.lib user32.lib gdi32.lib dxguid.lib winmm.lib wsock32.lib opengl32.lib
 ASFLAGS=/nologo /coff
 EXESUFFIX=.exe
 
@@ -80,22 +83,12 @@ GAMEOBJS=$(OBJ)game.$o \
 
 EDITOROBJS=$(OBJ)astub.$o
 
-PLATFORM=WINDOWS
-CFLAGS=$(CFLAGS) /I$(DXROOT)\include
-LIBS=$(LIBS) user32.lib gdi32.lib
 GAMEOBJS=$(GAMEOBJS) $(OBJ)winbits.$o $(OBJ)gameres.res
 EDITOROBJS=$(EDITOROBJS) $(OBJ)buildres.res
-!ifndef RENDERTYPE
-RENDERTYPE=WIN
-!endif
-	
+
 #GAMEOBJS=$(GAMEOBJS) $(EOBJ)winlayer.$o
 #EDITOROBJS=$(EDITOROBJS) $(EOBJ)winlayer.$o
 		
-LIBS=$(LIBS) dxguid.lib winmm.lib wsock32.lib
-
-CFLAGS=$(CFLAGS) /D$(PLATFORM) /DRENDERTYPE$(RENDERTYPE)=1
-
 # RULES
 .SUFFIXES: .masm
 

@@ -21,10 +21,13 @@ ENGINEOPTS=-dSUPERBUILD -dPOLYMOST -dUSE_OPENGL
 
 CC=wcc386
 CFLAGS= -5r -s -orb -fp5 -d2 -db &
-	-i=$(INC) -i=$(EINC) -i=$(SRC)jmact -i=$(SRC)jaudiolib &
+	-i=$(INC) -i=$(EINC) -i=$(SRC)jmact -i=$(SRC)jaudiolib -i=$(DXROOT)\include &
+	-dPLATFORMWINDOWS=1 -dRENDERTYPEWIN=1 &
 	-dNOCOPYPROTECT $(ENGINEOPTS) &
 	-dUSE_WATCOM_PRAGMAS -dUSE_WATCOM_ASSEMBLY
-LIBS=opengl32.lib
+PLATFORM=WINDOWS
+RENDERTYPE=WIN
+LIBS=shfolder.lib winmm.lib wsock32.lib dxguid.lib opengl32.lib
 WASMFLAGS=-d1
 EXESUFFIX=.exe
 
@@ -73,20 +76,9 @@ GAMEOBJS=$(OBJ)game.$o &
 
 EDITOROBJS=$(OBJ)astub.$o
 
-PLATFORM=WINDOWS
-CFLAGS+= -i=$(DXROOT)\include
-LIBS+= winmm.lib wsock32.lib
-!ifndef RENDERTYPE
-RENDERTYPE=WIN
-!endif
-	
 #GAMEOBJS+= $(EOBJ)winlayer.$o
 #EDITOROBJS+= $(EOBJ)winlayer.$o
 		
-LIBS+= dxguid.lib
-
-CFLAGS+= -d$(PLATFORM) -dRENDERTYPE$(RENDERTYPE)=1
-
 # RULES
 .EXTENSIONS: .wasm .res .rc
 

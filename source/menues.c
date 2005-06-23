@@ -2273,7 +2273,7 @@ cheat_for_port_credits:
             rotatesprite(c<<16,28<<16,65536L,0,INGAMEDUKETHREEDEE,0,0,10,0,0,xdim-1,ydim-1);
 	    if (PLUTOPAK)	// JBF 20030804
             rotatesprite((c+100)<<16,36<<16,65536L,0,PLUTOPAKSPRITE+2,(sintable[(totalclock<<4)&2047]>>11),0,2+8,0,0,xdim-1,ydim-1);
-            x = probe(c,67,16,7);
+            x = probe(c,67,16,6);
             if(x >= 0)
             {
                 if( ud.multimode > 1 && x == 0 && ud.recstat != 2)
@@ -2293,16 +2293,16 @@ cheat_for_port_credits:
                             cmenu(100);
                             break;
 
-			case 1: break;//cmenu(20001);break;	// JBF 20031128: I'm taking over the TEN menu option
-			case 2: cmenu(202);break;	// JBF 20031205: was 200
-                        case 3:
+			//case 1: break;//cmenu(20001);break;	// JBF 20031128: I'm taking over the TEN menu option
+			case 1: cmenu(202);break;	// JBF 20031205: was 200
+                        case 2:
                             if(movesperpacket == 4 && connecthead != myconnectindex)
                                 break;
                             cmenu(300);
                             break;
-                        case 4: KB_FlushKeyboardQueue();cmenu(400);break;
-                        case 5: cmenu(990);break;
-                        case 6: cmenu(500);break;
+                        case 3: KB_FlushKeyboardQueue();cmenu(400);break;
+                        case 4: cmenu(990);break;
+                        case 5: cmenu(500);break;
                     }
                 }
             }
@@ -2329,22 +2329,22 @@ cheat_for_port_credits:
             else
                 menutext(c,67,SHX(-2),PHX(-2),"NEW GAME");
 
-	    menutext(c,67+16,0,1,"NETWORK GAME");
+	//    menutext(c,67+16,0,1,"NETWORK GAME");
 
-            menutext(c,67+16+16,SHX(-3),PHX(-3),"OPTIONS");
+            menutext(c,67+16/*+16*/,SHX(-3),PHX(-3),"OPTIONS");
 
             if(movesperpacket == 4 && connecthead != myconnectindex)
-                menutext(c,67+16+16+16,SHX(-4),1,"LOAD GAME");
-            else menutext(c,67+16+16+16,SHX(-4),PHX(-4),"LOAD GAME");
+                menutext(c,67+16+16/*+16*/,SHX(-4),1,"LOAD GAME");
+            else menutext(c,67+16+16/*+16*/,SHX(-4),PHX(-4),"LOAD GAME");
 
 if (!VOLUMEALL) {
-            menutext(c,67+16+16+16+16,SHX(-5),PHX(-5),"HOW TO ORDER");
+            menutext(c,67+16+16+16/*+16*/,SHX(-5),PHX(-5),"HOW TO ORDER");
 } else {
-            menutext(c,67+16+16+16+16,SHX(-5),PHX(-5),"HELP");
+            menutext(c,67+16+16+16/*+16*/,SHX(-5),PHX(-5),"HELP");
 }
-            menutext(c,67+16+16+16+16+16,SHX(-6),PHX(-6),"CREDITS");
+            menutext(c,67+16+16+16+16/*+16*/,SHX(-6),PHX(-6),"CREDITS");
 
-            menutext(c,67+16+16+16+16+16+16,SHX(-7),PHX(-7),"QUIT");
+            menutext(c,67+16+16+16+16+16/*+16*/,SHX(-7),PHX(-7),"QUIT");
             break;
 
         case 50:

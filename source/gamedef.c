@@ -42,9 +42,7 @@ static spritetype *g_sp;
 
 static char compilefile[255] = "(none)";	// file we're currently compiling
 
-static char noticebits=0;
-
-#define NUMKEYWORDS     (sizeof(keyw)/sizeof(keyw[0]))	//115
+#define NUMKEYWORDS     (sizeof(keyw)/sizeof(keyw[0]))
 
 static char *keyw[/*NUMKEYWORDS*/] =
 {
@@ -160,9 +158,6 @@ static char *keyw[/*NUMKEYWORDS*/] =
     "ifnosounds", // 109
     "clipdist", // 110
     "ifangdiffl", // 111
-    "definevoxel", // 112
-    "definetint", // 113
-    "definetexture" // 114
 };
 
 
@@ -445,8 +440,8 @@ void transnum(void)
 
 char parsecommand(void)
 {
-    long i, j, k, *tempscrptr;
-    char done, tw;
+    long i, j, k, *tempscrptr, tw;
+    char done;
 
     if ((unsigned)(scriptptr-script) > MAXSCRIPTSIZE) {
 	Bsprintf(tempbuf,"FATAL ERROR: Compiled size of CON code exceeds maximum size!\n"
@@ -1488,48 +1483,6 @@ FREEZERHURTOWNER	CAMERASDESTRUCTABLE
 		}
             }
             return 0;
-	case 112:	// JBF 20031118: voxel loading
-            scriptptr--;
-            while( *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )		// JBF 20040127: end of file checked
-                textptr++;
-	    if (!(noticebits&1)) {
-		    initprintf("!!! BEGIN NOTICE !!!\nCON-file definition of voxels has been removed in "
-			"favour of DUKE3D.DEF declarations. Please refer to the release notes for "
-			"details on how to convert your CON definitions into DUKE3D.DEF equivalents."
-			"\n!!! END NOTICE !!!\n");
-		    noticebits |= 1;
-	    }
-	    return 0;
-	case 113:	// JBF 20040125: tint specification for true colour textures
-	    scriptptr--;
-	    transnum(); // palette lookup #
-	    transnum(); // r
-	    transnum(); // g
-	    transnum(); // b
-	    if (keyword() != -1) *(scriptptr++) = 0;	// effect
-	    else transnum();
-	    scriptptr -= 5;
-	    if (!(noticebits&2)) {
-		    initprintf("!!! BEGIN NOTICE !!!\nCON-file definition of Hightile tints has been removed in "
-			"favour of DUKE3D.DEF declarations. Please refer to the release notes for "
-			"details on how to convert your CON definitions into DUKE3D.DEF equivalents."
-			"\n!!! END NOTICE !!!\n");
-		    noticebits |= 2;
-	    }
-	    return 0;
-	case 114:	// JBF 20040125: replacements specification
-	    scriptptr--;
-		    
-            while( *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )	// JBF 20040127: end of file checked
-			textptr++;
-	    if (!(noticebits&4)) {
-		    initprintf("!!! BEGIN NOTICE !!!\nCON-file definition of Hightile textures has been removed in "
-			"favour of DUKE3D.DEF declarations. Please refer to the release notes for "
-			"details on how to convert your CON definitions into DUKE3D.DEF equivalents."
-			"\n!!! END NOTICE !!!\n");
-		    noticebits |= 4;
-	    }
-	    return 0;
     }
     return 0;
 }

@@ -41,6 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "file_lib.h"
 #include "util_lib.h"
 #include "compat.h"
+#include "cache1d.h"
 
 #ifndef O_BINARY
 #define  O_BINARY 0
@@ -59,7 +60,7 @@ int32 SafeOpen(const char *filename, int32 mode, int32 sharemode)
 {
 	int32 h;
 
-	h = open(filename, mode, sharemode);
+	h = openfrompath(filename, mode, sharemode);
 	if (h < 0) Error("Error opening %s: %s", filename, strerror(errno));
 
 	if (h < MaxFiles) {
