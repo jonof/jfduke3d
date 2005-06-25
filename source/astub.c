@@ -1233,7 +1233,7 @@ void ShowHelpText(char *name)
     BFILE *fp;
     int i,t;
     char x=0,y=4,xmax=0,xx=0,col=0;
-    if((fp=Bfopen("helpdoc.txt","rb")) == NULL)
+    if((fp=fopenfrompath("helpdoc.txt","rb")) == NULL)
     {
 	    begindrawing();
         printext256(1*4,4*8,11,-1,"ERROR: file not found.",0);
@@ -1926,6 +1926,38 @@ int ExtInit(void)
     
 	wm_setapptitle("BUILD Editor for JFDuke3D");
 
+#if defined(PLATFORMWINDOWS)
+	if (!access("user_profiles_enabled", F_OK))
+#endif
+	{
+		char cwd[MAX_PATH];
+		char *homedir;
+		int asperr;
+
+#if defined(PLATFORMLINUX)
+		addsearchpath("/usr/share/games/jfduke3d");
+		addsearchpath("/usr/local/games/jfduke3d");
+#endif
+		if (getcwd(cwd,MAX_PATH)) addsearchpath(cwd);
+		if ((homedir = Bgethomedir())) {
+			Bsnprintf(cwd,sizeof(cwd),"%s/"
+#if defined(PLATFORMWINDOWS) || defined(PLATFORMDARWIN)
+				"JFDuke3D"
+#else
+				".jfduke3d"
+#endif
+			,homedir);
+			asperr = addsearchpath(cwd);
+			if (asperr == -2) {
+				if (mkdir(cwd) == 0) asperr = addsearchpath(cwd);
+				else asperr = -1;
+			}
+			if (asperr == 0)
+				chdir(cwd);
+			free(homedir);
+		}
+	}
+	
     // JBF 20031220: Because it's annoying renaming GRP files whenever I want to test different game data
     if (getenv("DUKE3DGRP")) {
 	    duke3dgrp = getenv("DUKE3DGRP");

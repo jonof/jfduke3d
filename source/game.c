@@ -7767,6 +7767,9 @@ void app_main(int argc,char **argv)
 	}
 #endif
 
+#if defined(PLATFORMWINDOWS)
+	if (!access("user_profiles_enabled", F_OK))
+#endif
 	{
 		char cwd[BMAX_PATH];
 		char *homedir;
@@ -7776,9 +7779,7 @@ void app_main(int argc,char **argv)
 		addsearchpath("/usr/share/games/jfduke3d");
 		addsearchpath("/usr/local/games/jfduke3d");
 #endif
-#if 1//defined(PLATFORMWINDOWS)	// should Linux search the cwd?
 		if (getcwd(cwd,BMAX_PATH)) addsearchpath(cwd);
-#endif
 		if ((homedir = Bgethomedir())) {
 			Bsnprintf(cwd,sizeof(cwd),"%s/"
 #if defined(PLATFORMWINDOWS) || defined(PLATFORMDARWIN)
