@@ -2939,13 +2939,13 @@ if (PLUTOPAK) {
 				for (day = 0; day < validmodecnt; day++) {
 					if (dax == sizeof(vidsets)/sizeof(vidsets[1])) break;
 					for (daz = 0; daz < dax; daz++)
-						if ((validmodebpp[day]|((validmodefs[day]&1)<<16)) == (vidsets[daz]&0x1ffffl)) break;
+						if ((validmode[day].bpp|((validmode[day].fs&1)<<16)) == (vidsets[daz]&0x1ffffl)) break;
 					if (vidsets[daz] != -1) continue;
-					if (validmodebpp[day] == 8) {
-						vidsets[dax++] = 8|((validmodefs[day]&1)<<16);
-						vidsets[dax++] = 0x20000|8|((validmodefs[day]&1)<<16);
+					if (validmode[day].bpp == 8) {
+						vidsets[dax++] = 8|((validmode[day].fs&1)<<16);
+						vidsets[dax++] = 0x20000|8|((validmode[day].fs&1)<<16);
 					} else
-						vidsets[dax++] = 0x20000|validmodebpp[day]|((validmodefs[day]&1)<<16);
+						vidsets[dax++] = 0x20000|validmode[day].bpp|((validmode[day].fs&1)<<16);
 				}
 				for (dax = 0; dax < (long)(sizeof(vidsets)/sizeof(vidsets[1])) && vidsets[dax] != -1; dax++)
 					if (vidsets[dax] == (((getrendermode()>=2)<<17)|(fullscreen<<16)|bpp)) break;
@@ -3023,8 +3023,8 @@ if (PLUTOPAK) {
 			        newvidmode++;
 			        if (newvidmode >= validmodecnt) newvidmode = 0;
 				}
-		    } while ((validmodefs[newvidmode]&1) != ((vidsets[newvidset]>>16)&1) || validmodebpp[newvidmode] != (vidsets[newvidset] & 0x0ffff));
-			//OSD_Printf("New mode is %dx%dx%d-%d %d\n",validmodexdim[newvidmode],validmodeydim[newvidmode],validmodebpp[newvidmode],validmodefs[newvidmode],newvidmode);
+		    } while ((validmode[newvidmode].fs&1) != ((vidsets[newvidset]>>16)&1) || validmode[newvidmode].bpp != (vidsets[newvidset] & 0x0ffff));
+			//OSD_Printf("New mode is %dx%dx%d-%d %d\n",validmode[newvidmode].xdim,validmode[newvidmode].ydim,validmode[newvidmode].bpp,validmode[newvidmode].fs,newvidmode);
 		    if ((curvidmode == 0x7fffffffl && newvidmode == validmodecnt) || curvidmode == newvidmode)
 				changesmade &= ~1;
 		    else
@@ -3052,12 +3052,12 @@ if (PLUTOPAK) {
 						newvidmode++;
 						if (newvidmode == lastvidmode) break;	// end of cycle
 						if (newvidmode >= validmodecnt) newvidmode = 0;
-						if (validmodebpp[newvidmode] == (vidsets[newvidset]&0x0ffff) &&
-							validmodefs[newvidmode] == newfullscreen &&
-							validmodexdim[newvidmode] <= validmodexdim[lastvidmode] &&
-							   (safevidmode==-1?1:(validmodexdim[newvidmode]>=validmodexdim[safevidmode])) &&
-							validmodeydim[newvidmode] <= validmodeydim[lastvidmode] &&
-							   (safevidmode==-1?1:(validmodeydim[newvidmode]>=validmodeydim[safevidmode]))
+						if (validmode[newvidmode].bpp == (vidsets[newvidset]&0x0ffff) &&
+							validmode[newvidmode].fs == newfullscreen &&
+							validmode[newvidmode].xdim <= validmode[lastvidmode].xdim &&
+							   (safevidmode==-1?1:(validmode[newvidmode].xdim>=validmode[safevidmode].xdim)) &&
+							validmode[newvidmode].ydim <= validmode[lastvidmode].ydim &&
+							   (safevidmode==-1?1:(validmode[newvidmode].ydim>=validmode[safevidmode].ydim))
 							)
 							safevidmode = newvidmode;
 					} while (1);
@@ -3066,7 +3066,7 @@ if (PLUTOPAK) {
 						newvidmode = lastvidmode;
 						newvidset = lastvidset;
 					} else {
-						//OSD_Printf("Best fit is %dx%dx%d-%d %d\n",validmodexdim[safevidmode],validmodeydim[safevidmode],validmodebpp[safevidmode],validmodefs[safevidmode],safevidmode);
+						//OSD_Printf("Best fit is %dx%dx%d-%d %d\n",validmode[safevidmode].xdim,validmode[safevidmode].ydim,validmode[safevidmode].bpp,validmode[safevidmode].fs,safevidmode);
 						newvidmode = safevidmode;
 					}
 				}
@@ -3107,12 +3107,12 @@ if (PLUTOPAK) {
 					newvidmode++;
 					if (newvidmode == lastvidmode) break;	// end of cycle
 					if (newvidmode >= validmodecnt) newvidmode = 0;
-					if (validmodebpp[newvidmode] == (vidsets[newvidset]&0x0ffff) &&
-						validmodefs[newvidmode] == newfullscreen &&
-						validmodexdim[newvidmode] <= validmodexdim[lastvidmode] &&
-						   (safevidmode==-1?1:(validmodexdim[newvidmode]>=validmodexdim[safevidmode])) &&
-						validmodeydim[newvidmode] <= validmodeydim[lastvidmode] &&
-						   (safevidmode==-1?1:(validmodeydim[newvidmode]>=validmodeydim[safevidmode]))
+					if (validmode[newvidmode].bpp == (vidsets[newvidset]&0x0ffff) &&
+						validmode[newvidmode].fs == newfullscreen &&
+						validmode[newvidmode].xdim <= validmode[lastvidmode].xdim &&
+						   (safevidmode==-1?1:(validmode[newvidmode].xdim>=validmode[safevidmode].xdim)) &&
+						validmode[newvidmode].ydim <= validmode[lastvidmode].ydim &&
+						   (safevidmode==-1?1:(validmode[newvidmode].ydim>=validmode[safevidmode].ydim))
 						)
 						safevidmode = newvidmode;
 				} while (1);
@@ -3122,7 +3122,7 @@ if (PLUTOPAK) {
 					newvidset = lastvidset;
 					newfullscreen = !newfullscreen;
 				} else {
-					//OSD_Printf("Best fit is %dx%dx%d-%d %d\n",validmodexdim[safevidmode],validmodeydim[safevidmode],validmodebpp[safevidmode],validmodefs[safevidmode],safevidmode);
+					//OSD_Printf("Best fit is %dx%dx%d-%d %d\n",validmode[safevidmode].xdim,validmode[safevidmode].ydim,validmode[safevidmode].bpp,validmode[safevidmode].fs,safevidmode);
 					newvidmode = safevidmode;
 				}
 				if (newvidset != curvidset) changesmade |= 4; else changesmade &= ~4;
@@ -3138,10 +3138,10 @@ if (PLUTOPAK) {
 				long nxdim, nydim, nfs, nbpp, nrend;
 
 				pxdim = xdim; pydim = ydim; pbpp = bpp; pfs = fullscreen; prend = getrendermode();
-				nxdim = (newvidmode==validmodecnt)?xdim:validmodexdim[newvidmode];
-				nydim = (newvidmode==validmodecnt)?ydim:validmodeydim[newvidmode];
+				nxdim = (newvidmode==validmodecnt)?xdim:validmode[newvidmode].xdim;
+				nydim = (newvidmode==validmodecnt)?ydim:validmode[newvidmode].ydim;
 				nfs   = newfullscreen;
-				nbpp  = (newvidmode==validmodecnt)?bpp:validmodebpp[newvidmode];
+				nbpp  = (newvidmode==validmodecnt)?bpp:validmode[newvidmode].bpp;
 				nrend = (vidsets[newvidset] & 0x20000) ? (nbpp==8?2:3) : 0;
 
 				if (setgamemode(nfs, nxdim, nydim, nbpp) < 0) {
@@ -3189,8 +3189,8 @@ if (PLUTOPAK) {
 
 	    menutext(c,50,0,0,"RESOLUTION");
 	    sprintf(tempbuf,"%ld x %ld",
-			    (newvidmode==validmodecnt)?xdim:validmodexdim[newvidmode],
-			    (newvidmode==validmodecnt)?ydim:validmodeydim[newvidmode]);
+			    (newvidmode==validmodecnt)?xdim:validmode[newvidmode].xdim,
+			    (newvidmode==validmodecnt)?ydim:validmode[newvidmode].ydim);
             gametext(c+154,50-8,tempbuf,0,2+8+16);
 	    
 	    menutext(c,50+16,0,0,"VIDEO MODE");

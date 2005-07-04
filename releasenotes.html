@@ -57,10 +57,9 @@
 
 		<h2>New Features and Improvements</h2>
 		<ul>
+			<li>Individual user profile support. See <a href="#profiles">this section</a> for more
+			information.</li>
 			<li>Out-of-sync problems with the networking feature should be less frequent now.</li>
-			<li>Initial support of the MD3 model format. Only a subset of MD3's features are implemented.
-			Only one skin per model is supported at present but this will change to allow each MD3 surface
-			a skin of its own in the near future. Tags and shaders are unsupported.</li>
 		</ul>
 			
 		<h2>Known Issues</h2>
@@ -72,6 +71,28 @@
 			formats. For now, the existing AudioLib code is in use.</li>
 		</ul>
 
+		<h3><a name="profiles">Individual User Profiles</a></h3>
+
+		<p>With Windows 2000 and XP, having multiple user accounts for different people on the one computer has
+		been very easy, with XP especially so. Linux, BSD, and other *nix-like OS users have known about this
+		forever and now JFDuke3D properly supports installations where each user can have his/her own set of
+		configuration and savegame files without interfering with other players on the same PC. On Windows the
+		default mode of behaviour is the same as in previous versions: everything is shared, but it is now possible
+		to enable "user profile mode". Linux/BSD users will run in "user profile mode" permanently; your personal
+		files will be located in <code>~/.jfduke3d</code> so if you used previous versions of the port, you will
+		have to move your config and savegames there. Windows users can turn on "user profile mode" by creating an
+		empty file in the JFDuke3D directory named 'user_profiles_enabled'. Here is how:</p>
+		<ol>
+			<li>In Windows Explorer, navigate to the JFDuke3D directory.</li>
+			<li>Open the File menu, move to the "New" option, and select "Text Document".</li>
+			<li>Type <code>user_profiles_enabled</code> and press Enter.</li>
+			<li>If a dialog box appears asking to confirm changing the filename extension to one that may
+			make the file unusable, choose "Yes".</li>
+		</ol>
+		<p>When you next run JFDuke3D, a JFDuke3D directory will be created in <code>C:\Documents and
+		Settings\<em>your username</em>\Application Data</code> along with a new configuration file. You will
+		then have to move your existing DUKE3D.CFG file to this location if you have used the game previously.</p>
+		
 		<h3><a name="multiplayer">Multiplayer games</a></h3>
 
 		<p>Multiplayer games are started via command-line parameters passed to DUKE3D.EXE. This is a short guide
