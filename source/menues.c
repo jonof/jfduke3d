@@ -794,7 +794,7 @@ int probe(int x,int y,int i,int n)
     }
 }
 
-int menutext(int x,int y,short s,short p,char *t)
+int menutext(int x,int y,short s,short p,const char *t)
 {
     short i, ac, centre;
 
@@ -909,7 +909,7 @@ int menutext(int x,int y,short s,short p,char *t)
     return (x);
 }
 
-int menutextc(int x,int y,short s,short p,char *t)
+int menutextc(int x,int y,short s,short p,const char *t)
 {
     short i, ac, centre;
 
@@ -2929,7 +2929,7 @@ if (PLUTOPAK) {
 
 		case 2:
 			{
-				long dax = xdim, day = ydim, daz;
+				int dax = xdim, day = ydim, daz;
 				curvidmode = newvidmode = checkvideomode(&dax,&day,bpp,fullscreen);
 				if (newvidmode == 0x7fffffffl) newvidmode = validmodecnt;
 				newfullscreen = fullscreen;

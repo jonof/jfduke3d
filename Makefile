@@ -22,7 +22,7 @@ ENGINEOPTS=-DSUPERBUILD -DPOLYMOST -DUSE_OPENGL -DDYNAMIC_OPENGL
 
 CC=gcc
 # -Werror-implicit-function-declaration
-CFLAGS=$(debug) -W -Wall -Werror-implicit-function-declaration \
+CFLAGS=$(debug) -W -Wall -Wimplicit \
 	-Wno-char-subscripts -Wno-unused \
 	-march=pentium -funsigned-char -fno-strict-aliasing -DNO_GCC_BUILTINS \
 	-I$(INC) -I$(EINC) -I$(SRC)jmact -I$(SRC)jaudiolib -I../jfaud/inc \

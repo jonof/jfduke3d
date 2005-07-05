@@ -2586,14 +2586,14 @@ void displayrest(long smoothratio)
 	minitext(320-5*12,200-i-6-6-6,tempbuf,0,26);
 
         if(ud.player_skill > 3 )
-        	sprintf(tempbuf,"Kills: %d",ps[myconnectindex].actors_killed);
+        	sprintf(tempbuf,"Kills: %ld",ps[myconnectindex].actors_killed);
         else
-                sprintf(tempbuf,"Kills: %d/%d",ps[myconnectindex].actors_killed,
+                sprintf(tempbuf,"Kills: %ld/%ld",ps[myconnectindex].actors_killed,
 				ps[myconnectindex].max_actors_killed>ps[myconnectindex].actors_killed?
 				ps[myconnectindex].max_actors_killed:ps[myconnectindex].actors_killed);
 	minitext(320-5*12,200-i-6-6,tempbuf,0,26);
 
-	sprintf(tempbuf,"Secrets: %d/%d", ps[myconnectindex].secret_rooms,ps[myconnectindex].max_secret_rooms);
+	sprintf(tempbuf,"Secrets: %ld/%ld", ps[myconnectindex].secret_rooms,ps[myconnectindex].max_secret_rooms);
 	minitext(320-5*12,200-i-6,tempbuf,0,26);
     }
 }
@@ -9664,7 +9664,7 @@ void dobonus(char bonusonly)
                         bonuscnt++;
                         sound(PIPEBOMB_EXPLODE);
                     }
-                    sprintf(tempbuf,"%-3d",ps[myconnectindex].actors_killed);
+                    sprintf(tempbuf,"%-3ld",ps[myconnectindex].actors_killed);
                     gametext((320>>2)+70,93+9,tempbuf,0,2+8+16);
                     if(ud.player_skill > 3 )
                     {
@@ -9675,7 +9675,7 @@ void dobonus(char bonusonly)
                     {
                         if( (ps[myconnectindex].max_actors_killed-ps[myconnectindex].actors_killed) < 0 )
                             sprintf(tempbuf,"%-3d",0);
-                        else sprintf(tempbuf,"%-3d",ps[myconnectindex].max_actors_killed-ps[myconnectindex].actors_killed);
+                        else sprintf(tempbuf,"%-3ld",ps[myconnectindex].max_actors_killed-ps[myconnectindex].actors_killed);
                         gametext((320>>2)+70,99+4+9,tempbuf,0,2+8+16);
                     }
                 }
@@ -9693,11 +9693,11 @@ void dobonus(char bonusonly)
                         bonuscnt++;
                         sound(PIPEBOMB_EXPLODE);
                     }
-                    sprintf(tempbuf,"%-3d",ps[myconnectindex].secret_rooms);
+                    sprintf(tempbuf,"%-3ld",ps[myconnectindex].secret_rooms);
                     gametext((320>>2)+70,120+9,tempbuf,0,2+8+16);
                     if( ps[myconnectindex].secret_rooms > 0 )
-                        sprintf(tempbuf,"%-3d%%",(100*ps[myconnectindex].secret_rooms/ps[myconnectindex].max_secret_rooms));
-                    sprintf(tempbuf,"%-3d",ps[myconnectindex].max_secret_rooms-ps[myconnectindex].secret_rooms);
+                        sprintf(tempbuf,"%-3ld%%",(100*ps[myconnectindex].secret_rooms/ps[myconnectindex].max_secret_rooms));
+                    sprintf(tempbuf,"%-3ld",ps[myconnectindex].max_secret_rooms-ps[myconnectindex].secret_rooms);
                     gametext((320>>2)+70,130+9,tempbuf,0,2+8+16);
                 }
             }

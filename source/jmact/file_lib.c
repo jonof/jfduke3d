@@ -81,9 +81,9 @@ int32 SafeOpenRead(const char *filename, int32 filetype)
 			return SafeOpen(filename, O_RDONLY|O_BINARY, S_IREAD);
 		case filetype_text:
 			return SafeOpen(filename, O_RDONLY|O_TEXT, S_IREAD);
-			break;
 		default:
 			Error("SafeOpenRead: Illegal filetype specified");
+			return -1;
 	}
 }
 

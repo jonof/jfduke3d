@@ -220,7 +220,7 @@ void playmusic(char *fn)
     if(fp == -1) return;
 
     l = kfilelength( fp );
-    if(l >= sizeof(MusicPtr))
+    if(l >= (long)sizeof(MusicPtr))
     {
         kclose(fp);
         return;

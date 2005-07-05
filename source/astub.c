@@ -2197,11 +2197,11 @@ void ExtCheckKeys(void)
 			printext256(70*8+1,0*8+1,0,-1,names[temppicnum],1);
 			printext256(70*8+1,0*8,15,-1,names[temppicnum],1);
 
-			Bsprintf(tempbuf,"lo = %ld",templotag);
+			Bsprintf(tempbuf,"lo = %d",templotag);
 			printext256(70*8+1,1*8+1,0,-1,tempbuf,1);
 			printext256(70*8,1*8,15,-1,tempbuf,1);
 
-			Bsprintf(tempbuf,"hi = %ld",temphitag);
+			Bsprintf(tempbuf,"hi = %d",temphitag);
 			printext256(70*8+1,2*8+1,0,-1,tempbuf,1);
 			printext256(70*8,2*8,15,-1,tempbuf,1);
 

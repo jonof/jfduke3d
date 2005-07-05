@@ -42,7 +42,7 @@ static spritetype *g_sp;
 
 static char compilefile[255] = "(none)";	// file we're currently compiling
 
-#define NUMKEYWORDS     (sizeof(keyw)/sizeof(keyw[0]))
+#define NUMKEYWORDS     (int)(sizeof(keyw)/sizeof(keyw[0]))
 
 static char *keyw[/*NUMKEYWORDS*/] =
 {
