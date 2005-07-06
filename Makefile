@@ -20,9 +20,12 @@ DXROOT=c:/sdks/msc/dx61
 
 ENGINEOPTS=-DSUPERBUILD -DPOLYMOST -DUSE_OPENGL -DDYNAMIC_OPENGL
 
+# This is the list of flags -O1 enables, but actually enabling -O1 causes breakage
+OPTIMISE=-fdefer-pop -fmerge-constants -fthread-jumps -floop-optimize -fcrossjumping \
+	-fif-conversion -fif-conversion2 -fguess-branch-probability -fcprop-registers
+
 CC=gcc
-# -Werror-implicit-function-declaration
-CFLAGS=$(debug) -W -Wall -Wimplicit \
+CFLAGS=$(debug) -W -Wall -Wimplicit $(OPTIMISE) \
 	-Wno-char-subscripts -Wno-unused \
 	-march=pentium -funsigned-char -fno-strict-aliasing -DNO_GCC_BUILTINS \
 	-I$(INC) -I$(EINC) -I$(SRC)jmact -I$(SRC)jaudiolib -I../jfaud/inc \
