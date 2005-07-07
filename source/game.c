@@ -7754,6 +7754,7 @@ if (VOLUMEONE) return;
 
 int shareware = 0;
 
+char *startwin_labeltext = "Starting Duke Nukem 3D...";
 
 void app_main(int argc,char **argv)
 {
@@ -7775,7 +7776,7 @@ void app_main(int argc,char **argv)
 		char *homedir;
 		int asperr;
 
-#if defined(PLATFORMLINUX)
+#if defined(PLATFORMLINUX) || defined(PLATFORMBSD)
 		addsearchpath("/usr/share/games/jfduke3d");
 		addsearchpath("/usr/local/games/jfduke3d");
 #endif

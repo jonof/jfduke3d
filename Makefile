@@ -81,24 +81,29 @@ include $(EROOT)Makefile.shared
 
 ifeq ($(PLATFORM),LINUX)
 	NASMFLAGS+= -f elf
-else
-	ifeq ($(PLATFORM),WINDOWS)
-		override CFLAGS+= -DUNDERSCORES -I$(DXROOT)/include
-		NASMFLAGS+= -DUNDERSCORES -f win32
-		GAMEOBJS+= $(OBJ)gameres.$o $(OBJ)winbits.$o
-		EDITOROBJS+= $(OBJ)buildres.$o
-	endif
+endif
+ifeq ($(PLATFORM),WINDOWS)
+	override CFLAGS+= -DUNDERSCORES -I$(DXROOT)/include
+	NASMFLAGS+= -DUNDERSCORES -f win32
+	GAMEOBJS+= $(OBJ)gameres.$o $(OBJ)winbits.$o
+	EDITOROBJS+= $(OBJ)buildres.$o
 endif
 
 ifeq ($(RENDERTYPE),SDL)
 	override CFLAGS+= $(subst -Dmain=SDL_main,,$(shell sdl-config --cflags))
 	AUDIOLIBOBJ=$(AUDIOLIB_MUSIC_STUB) $(AUDIOLIB_FX_STUB)
+
+	ifeq (1,$(HAVE_GTK2))
+		override CFLAGS+= -DHAVE_GTK2 $(shell pkg-config --cflags gtk+-2.0)
+		GAMEOBJS+= $(OBJ)game_banner.$o
+		EDITOROBJS+= $(OBJ)editor_banner.$o
+	endif
+
 	GAMEOBJS+= $(OBJ)game_icon.$o
 	EDITOROBJS+= $(OBJ)build_icon.$o
-else
-	ifeq ($(RENDERTYPE),WIN)
-		AUDIOLIBOBJ=$(AUDIOLIB_MUSIC) $(AUDIOLIB_FX)
-	endif
+endif
+ifeq ($(RENDERTYPE),WIN)
+	AUDIOLIBOBJ=$(AUDIOLIB_MUSIC) $(AUDIOLIB_FX)
 endif
 
 GAMEOBJS+= $(AUDIOLIBOBJ)
@@ -151,6 +156,15 @@ $(OBJ)%.$o: $(SRC)util/%.c
 
 $(OBJ)%.$o: $(RSRC)%.c
 	$(CC) $(CFLAGS) -c $< -o $@ 2>&1
+
+$(OBJ)game_banner.$o: $(RSRC)game_banner.c
+$(OBJ)editor_banner.$o: $(RSRC)editor_banner.c
+$(RSRC)game_banner.c: $(RSRC)game.bmp
+	echo "#include <gdk-pixbuf/gdk-pixdata.h>" > $@
+	gdk-pixbuf-csource --extern --struct --raw --name=startbanner_pixdata $^ | sed 's/load_inc//' >> $@
+$(RSRC)editor_banner.c: $(RSRC)build.bmp
+	echo "#include <gdk-pixbuf/gdk-pixdata.h>" > $@
+	gdk-pixbuf-csource --extern --struct --raw --name=startbanner_pixdata $^ | sed 's/load_inc//' >> $@
 
 # PHONIES	
 clean:

@@ -1893,6 +1893,8 @@ void Keys2d(void)
 }// end key2d
 
 
+char *startwin_labeltext = "Starting Build Editor for Duke Nukem 3D,,,";
+
 int ExtInit(void)
 {
     long fil, rv = 0;
@@ -1934,7 +1936,7 @@ int ExtInit(void)
 		char *homedir;
 		int asperr;
 
-#if defined(PLATFORMLINUX)
+#if defined(PLATFORMLINUX) || defined(PLATFORMBSD)
 		addsearchpath("/usr/share/games/jfduke3d");
 		addsearchpath("/usr/local/games/jfduke3d");
 #endif
