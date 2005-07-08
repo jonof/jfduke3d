@@ -1228,7 +1228,7 @@ int getfilenames(char *path, char kind[])
 	while ((fileinfo = Breaddir(dir)) != NULL) {
 		if (type == 1) {
 			if (fileinfo->mode & BS_IFDIR) continue;
-			if (!wildmatch(fileinfo->name, kind)) continue;
+			if (!Bwildmatch(fileinfo->name, kind)) continue;
 			//if ((p = Bstrrchr(fileinfo->name,'.')) == NULL) continue;
 			//else if (Bstrcasecmp(p, kind)) continue;
 		} else if ((type == 0) && !(fileinfo->mode & BS_IFDIR)) {
