@@ -94,7 +94,7 @@ extern void resetweapons(short snum);
 extern void resetinventory(short snum);
 extern void resetprestat(short snum,char g);
 extern void setupbackdrop(short backpicnum);
-extern void cachespritenum(short i, char pal);
+extern void cachespritenum(short i);
 extern void cachegoodsprites(void );
 extern void prelevel(char g);
 extern void newgame(char vn,char ln,char sk);

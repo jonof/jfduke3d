@@ -30,18 +30,31 @@ Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
 extern char everyothertime;
 short which_palookup = 9;
 
-static char precachehightile[MAXTILES][2][256>>3];	// [tilenum][(0)wall/(1)sprite][palette]
-static void jloadhightile(short tilenume, char type, char palnume)
+static char precachehightile[2][MAXTILES>>3];
+
+static void tloadtile(short tilenume, char type)
 {
-    precachehightile[tilenume][type][palnume>>3] |= (1<<(palnume&7));
+    if ((picanm[tilenume]&63) > 0) {
+	int i,j;
+
+	if ((picanm[tilenume]&192)==192) {
+		i = tilenume - (picanm[tilenume]&63);
+		j = tilenume;
+	} else {
+		i = tilenume;
+		j = tilenume + (picanm[tilenume]&63);
+	}
+	for (;i<=j;i++) {
+	    gotpic[i>>3] |= (1<<(i&7));
+	    precachehightile[type][i>>3] |= (1<<(i&7));
+	}
+    } else {
+	gotpic[tilenume>>3] |= (1<<(tilenume&7));
+	precachehightile[type][tilenume>>3] |= (1<<(tilenume&7));
+    }
 }
 
-void tloadtile(short tilenume)
-{
-    gotpic[tilenume>>3] |= (1<<(tilenume&7));
-}
-
-void cachespritenum(short i, char pal)
+void cachespritenum(short i)
 {
     char maxc;
     short j;
@@ -53,24 +66,21 @@ void cachespritenum(short i, char pal)
     switch(PN)
     {
         case HYDRENT:
-            tloadtile(BROKEFIREHYDRENT); jloadhightile(BROKEFIREHYDRENT,1,pal);
+            tloadtile(BROKEFIREHYDRENT,1);
             for(j = TOILETWATER; j < (TOILETWATER+4); j++) {
-                if(waloff[j] == 0) tloadtile(j);
-		jloadhightile(j,1,pal);
+                tloadtile(j,1);
 	    }
             break;
         case TOILET:
-            tloadtile(TOILETBROKE); jloadhightile(TOILETBROKE,1,pal);
+            tloadtile(TOILETBROKE,1);
             for(j = TOILETWATER; j < (TOILETWATER+4); j++) {
-                if(waloff[j] == 0) tloadtile(j);
-		jloadhightile(j,1,pal);
+                tloadtile(j,1);
 	    }
             break;
         case STALL:
-            tloadtile(STALLBROKE); jloadhightile(STALLBROKE,1,pal);
+            tloadtile(STALLBROKE,1);
             for(j = TOILETWATER; j < (TOILETWATER+4); j++) {
-                if(waloff[j] == 0) tloadtile(j);
-		jloadhightile(j,1,pal);
+                tloadtile(j,1);
 	    }
             break;
         case RUBBERCAN:
@@ -89,23 +99,17 @@ void cachespritenum(short i, char pal)
         case LIZTROOPONTOILET:
         case LIZTROOPDUCKING:
             for(j = LIZTROOP; j < (LIZTROOP+72); j++) {
-                if(waloff[j] == 0)
-                    tloadtile(j);
-		jloadhightile(j,1,pal);
+                tloadtile(j,1);
 	    }
             for(j=HEADJIB1;j<LEGJIB1+3;j++) {
-                if(waloff[j] == 0)
-                    tloadtile(j);
-		jloadhightile(j,1,pal);
+                tloadtile(j,1);
 	    }
             maxc = 0;
             break;
         case WOODENHORSE:
             maxc = 5;
             for(j = HORSEONSIDE; j < (HORSEONSIDE+4); j++) {
-                if(waloff[j] == 0)
-                    tloadtile(j);
-		jloadhightile(j,1,pal);
+                tloadtile(j,1);
 	    }
             break;
         case NEWBEAST:
@@ -138,9 +142,7 @@ void cachespritenum(short i, char pal)
         case LIZMANFEEDING:
         case LIZMANJUMP:
             for(j=LIZMANHEAD1;j<LIZMANLEG1+3;j++) {
-                if(waloff[j] == 0)
-                    tloadtile(j);
-		jloadhightile(j,1,pal);
+                tloadtile(j,1);
 	    }
             maxc = 80;
             break;
@@ -150,9 +152,7 @@ void cachespritenum(short i, char pal)
             {
                 maxc = 5;
                 for(j = 1420;j < 1420+106; j++) {
-                    if(waloff[j] == -1)
-                        tloadtile(j);
-		    jloadhightile(j,1,pal);
+                    tloadtile(j,1);
 		}
             }
             break;
@@ -174,101 +174,80 @@ void cachespritenum(short i, char pal)
     }
 
     for(j = PN; j < (PN+maxc); j++) {
-        if(waloff[j] == 0)
-            tloadtile(j);
-	jloadhightile(j, 1, pal);
+        tloadtile(j,1);
     }
 }
 
-#define jtloadtile(i) tloadtile(i); jloadhightile(i,1,0);
 void cachegoodsprites(void)
 {
     short i;
 
     if(ud.screen_size >= 8)
     {
-        if(waloff[BOTTOMSTATUSBAR] == 0) {
-            jtloadtile(BOTTOMSTATUSBAR);
-	}
+        tloadtile(BOTTOMSTATUSBAR,1);
         if( ud.multimode > 1)
         {
-            if(waloff[FRAGBAR] == 0) {
-                jtloadtile(FRAGBAR);
-	    }
+            tloadtile(FRAGBAR,1);
             for(i=MINIFONT;i<MINIFONT+63;i++) {
-                if(waloff[i] == 0)
-                    jtloadtile(i);
+                tloadtile(i,1);
 	    }
         }
     }
 
-    jtloadtile(VIEWSCREEN);
+    tloadtile(VIEWSCREEN,1);
 
     for(i=STARTALPHANUM;i<ENDALPHANUM+1;i++) {
-        if (waloff[i] == 0)
-            jtloadtile(i);
+        tloadtile(i,1);
     }
 
     for(i=FOOTPRINTS;i<FOOTPRINTS+3;i++) {
-        if (waloff[i] == 0)
-            jtloadtile(i);
+        tloadtile(i,1);
     }
 
     for( i = BIGALPHANUM; i < BIGALPHANUM+82; i++) {
-        if(waloff[i] == 0)
-            jtloadtile(i);
+        tloadtile(i,1);
     }
 
     for( i = BURNING; i < BURNING+14; i++) {
-        if(waloff[i] == 0)
-            jtloadtile(i);
+        tloadtile(i,1);
     }
 
     for( i = BURNING2; i < BURNING2+14; i++) {
-        if(waloff[i] == 0)
-            jtloadtile(i);
+        tloadtile(i,1);
     }
 
     for( i = CRACKKNUCKLES; i < CRACKKNUCKLES+4; i++) {
-        if(waloff[i] == 0)
-            jtloadtile(i);
+        tloadtile(i,1);
     }
 
     for( i = FIRSTGUN; i < FIRSTGUN+3 ; i++ ) {
-        if(waloff[i] == 0)
-            jtloadtile(i);
+        tloadtile(i,1);
     }
 
     for( i = EXPLOSION2; i < EXPLOSION2+21 ; i++ ) {
-        if(waloff[i] == 0)
-            jtloadtile(i);
+        tloadtile(i,1);
     }
 
-    jtloadtile(BULLETHOLE);
+    tloadtile(BULLETHOLE,1);
 
     for( i = FIRSTGUNRELOAD; i < FIRSTGUNRELOAD+8 ; i++ ) {
-        if(waloff[i] == 0)
-            jtloadtile(i);
+        tloadtile(i,1);
     }
 
-    jtloadtile(FOOTPRINTS);
+    tloadtile(FOOTPRINTS,1);
 
     for( i = JIBS1; i < (JIBS5+5); i++) {
-        if(waloff[i] == 0)
-            jtloadtile(i);
+        tloadtile(i,1);
     }
 
     for( i = SCRAP1; i < (SCRAP1+19); i++) {
-        if(waloff[i] == 0)
-            jtloadtile(i);
+        tloadtile(i,1);
     }
 
     for( i = SMALLSMOKE; i < (SMALLSMOKE+4); i++) {
-        if(waloff[i] == 0)
-            jtloadtile(i);
+        tloadtile(i,1);
     }
 }
-#undef jtloadtile
 
 char getsound(unsigned short num)
 {
@@ -322,53 +301,30 @@ void cacheit(void)
 
     cachegoodsprites();
 
-    clearbufbyte(precachehightile, sizeof(precachehightile), 0l);
-
     for(i=0;i<numwalls;i++)
-        if( waloff[wall[i].picnum] == 0 )
     {
-        if(waloff[wall[i].picnum] == 0)
-            tloadtile(wall[i].picnum);
+        tloadtile(wall[i].picnum, 0);
 
-	jloadhightile(wall[i].picnum, 0, wall[i].pal);
-	
         if(wall[i].overpicnum >= 0) {
-		if ( waloff[wall[i].overpicnum] == 0 )
-	            tloadtile(wall[i].overpicnum);
-
-		jloadhightile(wall[i].overpicnum, 0, wall[i].pal);
+	    tloadtile(wall[i].overpicnum, 0);
 	}
     }
 
     for(i=0;i<numsectors;i++)
     {
-        if( waloff[sector[i].floorpicnum] == 0 )
-            tloadtile( sector[i].floorpicnum );
-
-	jloadhightile(sector[i].floorpicnum, 0, sector[i].floorpal);
-	
-        if( waloff[sector[i].ceilingpicnum] == 0 )
+        tloadtile( sector[i].floorpicnum, 0 );
+        tloadtile( sector[i].ceilingpicnum, 0 );
+        if( sector[i].ceilingpicnum == LA)	// JBF 20040509: if( waloff[sector[i].ceilingpicnum] == LA) WTF??!??!?!?
         {
-            tloadtile( sector[i].ceilingpicnum );
-            if( sector[i].ceilingpicnum == LA)	// JBF 20040509: if( waloff[sector[i].ceilingpicnum] == LA) WTF??!??!?!?
-            {
-                tloadtile(LA+1);
-                tloadtile(LA+2);
-            }
+            tloadtile(LA+1, 0);
+            tloadtile(LA+2, 0);
         }
-
-	jloadhightile(sector[i].ceilingpicnum, 0, sector[i].ceilingpal);
-	if (sector[i].ceilingpicnum == LA) {
-		jloadhightile(sector[i].ceilingpicnum+1, 0, sector[i].ceilingpal);
-		jloadhightile(sector[i].ceilingpicnum+2, 0, sector[i].ceilingpal);
-	}
 
         j = headspritesect[i];
         while(j >= 0)
         {
             if(sprite[j].xrepeat != 0 && sprite[j].yrepeat != 0 && (sprite[j].cstat&32768) == 0)
-                if(waloff[sprite[j].picnum] == 0)
-                    cachespritenum(j,sprite[j].pal);
+                cachespritenum(j);
             j = nextspritesect[j];
         }
     }
@@ -386,15 +342,17 @@ void docacheit(void)
 		if (waloff[i] == 0)
 		    loadtile((short)i);
 
-		for (k=0; k<256; k++) {
-			if (precachehightile[i][0][k>>3] & (1<<(k&7)))
+		if (precachehightile[0][i>>3] & (1<<(i&7)))
+			for (k=0; k<MAXPALOOKUPS; k++)
 				polymost_precache(i,k,0);
-			if (precachehightile[i][1][k>>3] & (1<<(k&7)))
+
+		if (precachehightile[1][i>>3] & (1<<(i&7)))
+			for (k=0; k<MAXPALOOKUPS; k++)
 				polymost_precache(i,k,1);
-		}
+
+		j++;
 	}
 
-	j++;
 	if((j&7) == 0) getpackets();
     }
 
@@ -751,8 +709,7 @@ void prelevel(char g)
             {
                 if(sector[i].ceilingpicnum == LA)
                     for(j=0;j<5;j++)
-                        if(waloff[sector[i].ceilingpicnum+j] == 0)
-                            tloadtile(sector[i].ceilingpicnum+j);
+                        tloadtile(sector[i].ceilingpicnum+j, 0);
             }
             setupbackdrop(sector[i].ceilingpicnum);
 
@@ -926,9 +883,8 @@ void prelevel(char g)
                 break;
 
             case W_FORCEFIELD:
-                if(waloff[W_FORCEFIELD] == 0)
-                    for(j=0;j<3;j++)
-                        tloadtile(W_FORCEFIELD+j);
+                for(j=0;j<3;j++)
+                    tloadtile(W_FORCEFIELD+j, 0);
             case W_FORCEFIELD+1:
             case W_FORCEFIELD+2:
                 if(wal->shade > 31)
@@ -954,14 +910,12 @@ void prelevel(char g)
         {
             case WATERTILE2:
                 for(j=0;j<3;j++)
-                    if(waloff[wal->picnum+j] == 0)
-                        tloadtile(wal->picnum+j);
+                    tloadtile(wal->picnum+j, 0);
                 break;
 
             case TECHLIGHT2:
             case TECHLIGHT4:
-                if(waloff[wal->picnum] == 0)
-                    tloadtile(wal->picnum);
+                tloadtile(wal->picnum, 0);
                 break;
             case W_TECHWALL1:
             case W_TECHWALL2:
@@ -974,9 +928,8 @@ void prelevel(char g)
             case SCREENBREAK6:
             case SCREENBREAK7:
             case SCREENBREAK8:
-                if(waloff[SCREENBREAK6] == 0)
-                    for(j=SCREENBREAK6;j<SCREENBREAK9;j++)
-                        tloadtile(j);
+                for(j=SCREENBREAK6;j<SCREENBREAK9;j++)
+                    tloadtile(j, 0);
                 animwall[numanimwalls].wallnum = i;
                 animwall[numanimwalls].tag = -1;
                 numanimwalls++;
@@ -1512,6 +1465,7 @@ if (!VOLUMEONE) {
 }
 
     clearbufbyte(gotpic,sizeof(gotpic),0L);
+    clearbufbyte(precachehightile, sizeof(precachehightile), 0l);
     //clearbufbyte(hittype,sizeof(hittype),0l);	// JBF 20040531: yes? no?
 
     prelevel(g);
