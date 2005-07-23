@@ -135,11 +135,11 @@ extern int32 numlumps;
 FILE *frecfilep = (FILE *)NULL;
 void pitch_test( void );
 
-long screencaptmovieframe=0;
-char restorepalette,screencapt,nomorelogohack,screencaptmovie=0;
+char restorepalette,screencapt,nomorelogohack;
 int sendmessagecommand = -1;
 
 static char *duke3dgrp = "duke3d.grp";	// JBF 20030925
+static char *duke3ddef = "duke3d.def";
 
 //task *TimerPtr=NULL;
 
@@ -6429,19 +6429,11 @@ void nonsharedkeys(void)
         CONTROL_GetInput( &noshareinfo );
     }
 
-    if( KB_KeyPressed( sc_F12 ) || (screencaptmovie&2) )
+    if( KB_KeyPressed( sc_F12 ) )
     {
-	if (KB_KeyPressed( sc_F12 )) if (screencaptmovie & 1) screencaptmovie ^= 2;
         KB_ClearKeyDown( sc_F12 );
-	if (screencaptmovie & 2) {
-		if (screencaptmovieframe != (totalclock&~3)) {	// 120/4 = 30fps
-			screencapture("duke0000.tga",0);
-			screencaptmovieframe = totalclock&~3;
-		}
-	} else {
-	        screencapture("duke0000.tga",0);
-		FTA(103,&ps[myconnectindex]);
-	}
+	screencapture("duke0000.tga",0);
+	FTA(103,&ps[myconnectindex]);
     }
 
     if( !ALT_IS_PRESSED && ud.overhead_on == 0)
@@ -6886,7 +6878,6 @@ void comlinehelp(char **argv)
 		"/v#\t\tVolume (1-4)\n"
 		"/s#\t\tSkill (1-4)\n"
 		"/r\t\tRecord demo\n"
-		"/o\t\tMovie screen capture mode\n"
 		"/dFILE\t\tStart to play demo FILE\n"
 		"/m\t\tNo monsters\n"
 		"/ns\t\tNo sound\n"
@@ -6898,6 +6889,7 @@ void comlinehelp(char **argv)
 		"/i#\t\tNetwork mode (1/0) (multiplayer only) (default == 1)\n"
 		"/f#\t\tSend fewer packets (1, 2, 4) (multiplayer only)\n"
 		"/gFILE\t\tUse multiple group files (must be last on command line)\n"
+		"/hFILE\t\tUse FILE instead of DUKE3D.DEF\n"
 		"/xFILE\t\tCompile FILE (default GAME.CON)\n"
 		"/u#########\tUser's favorite weapon order (default: 3425689071)\n"
 		"/#\t\tLoad and run a game (slot 0-9)\n"
@@ -7021,8 +7013,15 @@ void checkcommandline(int argc,char **argv)
                                 initprintf("Using group file %s.\n",tempbuf);
                             }
                         }
-
                         break;
+		    case 'h':
+		    case 'H':
+			c++;
+			if (*c) {
+				duke3ddef = c;
+				initprintf("Using DEF file %s.\n",duke3ddef);
+			}
+			break;
                     case 'a':
                     case 'A':
                         ud.playerai = 1;
@@ -7231,11 +7230,6 @@ else
                         }
 
                         break;
-
-		case 'o':
-		case 'O':
-			screencaptmovie = 1;
-			break;
                 }
             }
             i++;
@@ -7886,7 +7880,7 @@ if (VOLUMEONE) {
 	// KJS: Hack to make sure ps[*].palette is never NULL!
     //for(i=connecthead;i>=0;i=connectpoint2[i]) ps[i].palette = palette;
 
-    if (!loaddefinitionsfile("duke3d.def")) initprintf("Definitions file loaded.\n");
+    if (!loaddefinitionsfile(duke3ddef)) initprintf("Definitions file loaded.\n");
 
     // gotta set the proper title after we compile the CONs if this is the full version
 if (VOLUMEALL) {
