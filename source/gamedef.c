@@ -1532,8 +1532,9 @@ void copydefaultcons(void)
     }
 }
 
-void loadefs(char *filenam,char *mptr)
+void loadefs(char *filenam)
 {
+    char *mptr;
     int i;
     long fs,fp;
 
@@ -2403,7 +2404,7 @@ char parse(void)
                         {
 
                             j = g_sp->sectnum;
-                            pushmove(&g_sp->x,&g_sp->y,&g_sp->z,(short*)&j,128L,(4L<<8),(4L<<8),CLIPMASK0);	// JBF 20030910: casted &j to short to satisfy type error in Watcom
+                            pushmove(&g_sp->x,&g_sp->y,&g_sp->z,(short*)&j,128L,(4L<<8),(4L<<8),CLIPMASK0);
                             if(j != g_sp->sectnum && j >= 0 && j < MAXSECTORS)
                                 changespritesect(g_i,j);
 

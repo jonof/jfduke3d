@@ -4,6 +4,8 @@
 #include "duke3d.h"
 #include "crc32.h"
 
+#include <ctype.h>
+
 struct osdcmd_cheatsinfo osdcmd_cheatsinfo_stat;
 
 int osdcmd_quit(const osdfuncparm_t *parm)
@@ -265,6 +267,71 @@ static int osdcmd_setstatusbarscale(const osdfuncparm_t *parm)
 	return OSDCMD_OK;
 }
 
+static int osdcmd_spawn(const osdfuncparm_t *parm)
+{
+	long x,y,z;
+	unsigned short cstat,picnum;
+	unsigned char pal;
+	short ang;
+	short set=0, idx;
+
+	if (numplayers > 1 || !(ps[myconnectindex].gm & MODE_GAME)) {
+		OSD_Printf("spawn: Can't spawn sprites in multiplayer games or demos\n");
+		return OSDCMD_OK;
+	}
+	
+	switch (parm->numparms) {
+		case 7:	// x,y,z
+			x = Batol(parm->parms[4]);
+			y = Batol(parm->parms[5]);
+			z = Batol(parm->parms[6]);
+			set |= 8;
+		case 4:	// ang
+			ang = Batol(parm->parms[3]) & 2047; set |= 4;
+		case 3:	// cstat
+			cstat = (unsigned short)Batol(parm->parms[2]); set |= 2;
+		case 2:	// pal
+			pal = (unsigned char)Batol(parm->parms[1]); set |= 1;
+		case 1:	// tile number
+			if (isdigit(parm->parms[0][0])) {
+				picnum = (unsigned short)Batol(parm->parms[0]);
+			} else {
+				int i;
+				for (i=0; i<labelcnt; i++) {
+					if (!strcmp(label+(i<<6), parm->parms[0])) {
+						picnum = (unsigned short)labelcode[i];
+						break;
+					}
+				}
+				if (i==labelcnt) {
+					OSD_Printf("spawn: Invalid tile label given\n");
+					return OSDCMD_OK;
+				}
+			}
+			
+			if (picnum >= MAXTILES) {
+				OSD_Printf("spawn: Invalid tile number\n");
+				return OSDCMD_OK;
+			}
+			break;
+		default:
+			return OSDCMD_SHOWHELP;
+	}
+
+	idx = spawn(ps[myconnectindex].i, (short)picnum);
+	if (set & 1) sprite[idx].pal = (char)pal;
+	if (set & 2) sprite[idx].cstat = (short)cstat;
+	if (set & 4) sprite[idx].ang = ang;
+	if (set & 8) {
+		if (setsprite(idx, x,y,z) < 0) {
+			OSD_Printf("spawn: Sprite can't be spawned into null space\n");
+			deletesprite(idx);
+		}
+	}
+	
+	return OSDCMD_OK;
+}
+
 
 void onvideomodechange(int newmode)
 {
@@ -301,6 +368,7 @@ if (VOLUMEONE) {
 	OSD_RegisterFunction("noclip","noclip: toggles clipping mode", osdcmd_noclip);
 
 	OSD_RegisterFunction("setstatusbarscale","setstatusbarscale [percent]: changes the status bar scale", osdcmd_setstatusbarscale);
+	OSD_RegisterFunction("spawn","spawn <picnum> [palnum] [cstat] [ang] [x y z]: spawns a sprite with the given properties",osdcmd_spawn);
 	
 	OSD_RegisterFunction("fileinfo","fileinfo <file>: gets a file's information", osdcmd_fileinfo);
 	OSD_RegisterFunction("quit","quit: exits the game immediately", osdcmd_quit);

@@ -161,7 +161,7 @@ extern long transword(void );
 extern void transnum(void );
 extern char parsecommand(void );
 extern void passone(void );
-extern void loadefs(char *fn,char *mptr);
+extern void loadefs(char *fn);
 extern char dodge(spritetype *s);
 extern short furthestangle(short i,short angs);
 extern short furthestcanseepoint(short i,spritetype *ts,long *dax,long *day);

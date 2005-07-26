@@ -7459,18 +7459,37 @@ void Shutdown( void )
 
 void compilecons(void)
 {
-   mymembuf = (char *)&hittype[0];
    labelcode = (long *)&sector[0];
    label = (char *)&sprite[0];
 
 //   printf("%ld %ld %ld\n",sizeof(hittype),sizeof(sector),sizeof(sprite));
 //   exit(0);
 
-   loadefs(confilename,mymembuf);
+   loadefs(confilename);
    if( loadfromgrouponly )
    {
        initprintf("  * Writing defaults to current directory.\n");
-       loadefs(confilename,mymembuf);
+       loadefs(confilename);
+   }
+
+   if ((unsigned long)labelcnt > min( (sizeof(sector)/sizeof(long)), (sizeof(sprite)/(1<<6)) ) )
+	   gameexit("Error: too many labels defined!");
+   else {
+	   char *newlabel;
+	   long *newlabelcode;
+
+	   newlabel     = (char *)malloc(labelcnt<<6);
+	   newlabelcode = (long *)malloc(labelcnt*sizeof(long));
+
+	   if (!newlabel || !newlabelcode) {
+		   gameexit("Error: out of memory retaining labels\n");
+	   }
+
+	   copybuf(label,     newlabel,     (labelcnt<<6)>>2);
+	   copybuf(labelcode, newlabelcode, (labelcnt*sizeof(long))>>2);
+
+	   label = newlabel;
+	   labelcode = newlabelcode;
    }
 }
 
