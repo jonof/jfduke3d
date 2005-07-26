@@ -296,12 +296,18 @@ static int osdcmd_spawn(const osdfuncparm_t *parm)
 			if (isdigit(parm->parms[0][0])) {
 				picnum = (unsigned short)Batol(parm->parms[0]);
 			} else {
-				int i;
-				for (i=0; i<labelcnt; i++) {
-					if (!strcmp(label+(i<<6), parm->parms[0])) {
-						picnum = (unsigned short)labelcode[i];
-						break;
+				int i,j;
+				for (j=0; j<2; j++) {
+					for (i=0; i<labelcnt; i++) {
+						if (
+						    (j == 0 && !Bstrcmp(label+(i<<6),     parm->parms[0])) ||
+						    (j == 1 && !Bstrcasecmp(label+(i<<6), parm->parms[0]))
+						   ) {
+							picnum = (unsigned short)labelcode[i];
+							break;
+						}
 					}
+					if (i<labelcnt) break;
 				}
 				if (i==labelcnt) {
 					OSD_Printf("spawn: Invalid tile label given\n");
