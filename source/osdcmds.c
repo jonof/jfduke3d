@@ -56,12 +56,12 @@ int osdcmd_changelevel(const osdfuncparm_t *parm)
 	if (!VOLUMEONE) {
 		if (PLUTOPAK) {
 			if (volume > 3) {
-				OSD_Printf("Error: invalid volume number (range 1-4)\n");
+				OSD_Printf("changelevel: invalid volume number (range 1-4)\n");
 				return OSDCMD_OK;
 			}
 		} else {
 			if (volume > 2) {
-				OSD_Printf("Error: invalid volume number (range 1-3)\n");
+				OSD_Printf("changelevel: invalid volume number (range 1-3)\n");
 				return OSDCMD_OK;
 			}
 		}
@@ -69,12 +69,12 @@ int osdcmd_changelevel(const osdfuncparm_t *parm)
 
 	if (volume == 0) {
 		if (level > 5) {
-			OSD_Printf("Error: invalid volume 1 level number (range 1-6)\n");
+			OSD_Printf("changelevel: invalid volume 1 level number (range 1-6)\n");
 			return OSDCMD_OK;
 		}
 	} else {
 		if (level > 10) {
-			OSD_Printf("Error: invalid volume 2+ level number (range 1-11)\n");
+			OSD_Printf("changelevel: invalid volume 2+ level number (range 1-11)\n");
 			return OSDCMD_SHOWHELP;
 		}
 	}
@@ -117,7 +117,7 @@ int osdcmd_map(const osdfuncparm_t *parm)
         	strcat(filename,".map");
 
 	if ((i = kopen4load(filename,0)) < 0) {
-		OSD_Printf("Error: Map file \"%s\" does not exist.\n", filename);
+		OSD_Printf("map: file \"%s\" does not exist.\n", filename);
 		return OSDCMD_OK;
 	}
 	kclose(i);
@@ -153,10 +153,10 @@ int osdcmd_map(const osdfuncparm_t *parm)
 int osdcmd_god(const osdfuncparm_t *parm)
 {
 	parm=parm;
-	if (ps[myconnectindex].gm & MODE_GAME) {
+	if (numplayers == 1 && ps[myconnectindex].gm & MODE_GAME) {
 		osdcmd_cheatsinfo_stat.cheatnum = 0;
 	} else {
-		OSD_Printf("Can't toggle God mode. Not in a game.\n");
+		OSD_Printf("god: Not in a single-player game.\n");
 	}
 	
 	return OSDCMD_OK;
@@ -165,10 +165,10 @@ int osdcmd_god(const osdfuncparm_t *parm)
 int osdcmd_noclip(const osdfuncparm_t *parm)
 {
 	parm=parm;
-	if (ps[myconnectindex].gm & MODE_GAME) {
+	if (numplayers == 1 && ps[myconnectindex].gm & MODE_GAME) {
 		osdcmd_cheatsinfo_stat.cheatnum = 20;
 	} else {
-		OSD_Printf("Can't toggle clipping mode. Not in a game.\n");
+		OSD_Printf("god: Not in a single-player game.\n");
 	}
 	
 	return OSDCMD_OK;
@@ -183,7 +183,7 @@ int osdcmd_fileinfo(const osdfuncparm_t *parm)
 	if (parm->numparms != 1) return OSDCMD_SHOWHELP;
 	
 	if ((i = kopen4load((char *)parm->parms[0],0)) < 0) {
-		OSD_Printf("Error: File \"%s\" does not exist.\n", parm->parms[0]);
+		OSD_Printf("fileinfo: File \"%s\" does not exist.\n", parm->parms[0]);
 		return OSDCMD_OK;
 	}
 
@@ -198,7 +198,7 @@ int osdcmd_fileinfo(const osdfuncparm_t *parm)
 	
 	kclose(i);
 
-	OSD_Printf("File: %s\n"
+	OSD_Printf("fileinfo: %s\n"
 	           "  File size: %d\n"
 		   "  CRC-32:    %08X\n",
 		   parm->parms[0], length, crc);
@@ -258,12 +258,12 @@ static int osdcmd_vidmode(const osdfuncparm_t *parm)
 static int osdcmd_setstatusbarscale(const osdfuncparm_t *parm)
 {
 	if (parm->numparms == 0) {
-		OSD_Printf("Status bar scale is %d%%\n", ud.statusbarscale);
+		OSD_Printf("setstatusbarscale: scale is %d%%\n", ud.statusbarscale);
 		return OSDCMD_OK;
 	} else if (parm->numparms != 1) return OSDCMD_SHOWHELP;
 
 	setstatusbarscale(Batol(parm->parms[0]));
-	OSD_Printf("Status bar scale set to %d%%\n", ud.statusbarscale);
+	OSD_Printf("setstatusbarscale: new scale is %d%%\n", ud.statusbarscale);
 	return OSDCMD_OK;
 }
 
