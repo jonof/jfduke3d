@@ -3454,8 +3454,8 @@ if (PLUTOPAK) {
 					JoystickFunctions[whichkey>>1][whichkey&1] = x;
 					CONTROL_MapButton( x, whichkey>>1, whichkey&1, controldevice_joystick);
 				} else {
-					JoystickFunctions[MAXJOYBUTTONS-4+(whichkey-2*joynumbuttons)][0] = x;
-					CONTROL_MapButton( x, MAXJOYBUTTONS-4+(whichkey-2*joynumbuttons), 0, controldevice_joystick);
+					JoystickFunctions[joynumbuttons + (whichkey-2*joynumbuttons)][0] = x;
+					CONTROL_MapButton( x, joynumbuttons + (whichkey-2*joynumbuttons), 0, controldevice_joystick);
 				}
 				cmenu(207);
 				probey = whichkey;
@@ -3702,7 +3702,7 @@ if (PLUTOPAK) {
 			if (x < 2*joynumbuttons) {
 				probey = JoystickFunctions[x>>1][x&1];
 			} else {
-				probey = JoystickFunctions[MAXJOYBUTTONS-4+x-2*joynumbuttons][0];
+				probey = JoystickFunctions[joynumbuttons + (x-2*joynumbuttons)][0];
 			}
 			if (probey < 0) probey = NUMGAMEFUNCTIONS-1;
 			break;
@@ -3723,7 +3723,7 @@ if (PLUTOPAK) {
 			} else {
 				static char *directions[] = { "Up", "Right", "Down", "Left" };
 				sprintf(tempbuf, "Hat %s", directions[(l+m)-2*joynumbuttons]);
-				x = JoystickFunctions[MAXJOYBUTTONS-4+(l+m)-2*joynumbuttons][0];
+				x = JoystickFunctions[joynumbuttons + ((l+m)-2*joynumbuttons)][0];
 			}
 			minitextshade(80-4,33+l*8,tempbuf,(m+l == probey)?0:16,0,10+16);
 
