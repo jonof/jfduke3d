@@ -31,6 +31,7 @@ extern char everyothertime;
 short which_palookup = 9;
 
 static char precachehightile[2][MAXTILES>>3];
+static int  precachecount;
 
 static void tloadtile(short tilenume, char type)
 {
@@ -45,10 +46,12 @@ static void tloadtile(short tilenume, char type)
 		j = tilenume + (picanm[tilenume]&63);
 	}
 	for (;i<=j;i++) {
+	    if (!(gotpic[i>>3] & (1<<(i&7)))) precachecount++;
 	    gotpic[i>>3] |= (1<<(i&7));
 	    precachehightile[type][i>>3] |= (1<<(i&7));
 	}
     } else {
+	if (!(gotpic[tilenume>>3] & (1<<(tilenume&7)))) precachecount++;
 	gotpic[tilenume>>3] |= (1<<(tilenume&7));
 	precachehightile[type][tilenume>>3] |= (1<<(tilenume&7));
     }
@@ -333,7 +336,8 @@ void cacheit(void)
 
 void docacheit(void)
 {
-    long i,j,k;
+    long i,j,k, pc=0;
+    long tc = totalclock;
 
     j = 0;
 
@@ -351,9 +355,15 @@ void docacheit(void)
 				polymost_precache(i,k,1);
 
 		j++;
-	}
+		pc++;
+	} else continue;
 
 	if((j&7) == 0) getpackets();
+	if (totalclock - tc > TICRATE/4) {
+		sprintf(tempbuf,"Loading textures ... %ld%%\n",min(100,100*pc/precachecount));
+		dofrontscreens(tempbuf);
+		tc = totalclock;
+	}
     }
 
     clearbufbyte(gotpic,sizeof(gotpic),0L);
@@ -1297,20 +1307,22 @@ void waitforeverybody()
 	}
 }
 
-void dofrontscreens(void)
+void dofrontscreens(char *statustext)
 {
     long tincs,i,j;
 
     if(ud.recstat != 2)
     {
-        //ps[myconnectindex].palette = palette;
-	//setcurrentpalette(palette,1);	// JBF 20031231
-	setgamepalette(&ps[myconnectindex], palette, 1);	// JBF 20040308
-        IFISSOFTMODE for(j=0;j<63;j+=7) palto(0,0,0,j);
-        i = ud.screen_size;
-        ud.screen_size = 0;
-        vscrn();
-        clearview(0L);
+	if (!statustext) {
+		//ps[myconnectindex].palette = palette;
+		//setcurrentpalette(palette,1);	// JBF 20031231
+		setgamepalette(&ps[myconnectindex], palette, 1);	// JBF 20040308
+		IFISSOFTMODE for(j=0;j<63;j+=7) palto(0,0,0,j);
+		i = ud.screen_size;
+		ud.screen_size = 0;
+		vscrn();
+		clearview(0L);
+	}
 
         rotatesprite(320<<15,200<<15,65536L,0,LOADSCREEN,0,0,2+8+64,0,0,xdim-1,ydim-1);
 
@@ -1325,22 +1337,30 @@ void dofrontscreens(void)
             menutext(160,90+16+8,0,0,level_names[(ud.volume_number*11) + ud.level_number]);
         }
 
+	if (statustext) gametext(160,180,statustext,0,2+8+16);
+
         nextpage();
 
-        IFISSOFTMODE for(j=63;j>0;j-=7) palto(0,0,0,j);
+	if (!statustext) {
+        	IFISSOFTMODE for(j=63;j>0;j-=7) palto(0,0,0,j);
 
-        KB_FlushKeyboardQueue();
-        ud.screen_size = i;
+        	KB_FlushKeyboardQueue();
+        	ud.screen_size = i;
+	}
     }
     else
     {
-        clearview(0L);
-        //ps[myconnectindex].palette = palette;
-	//palto(0,0,0,0);
-	//setcurrentpalette(palette,0);	// JBF 20031231
-	setgamepalette(&ps[myconnectindex], palette, 0);	// JBF 20040308
+	if (!statustext) {
+        	clearview(0L);
+        	//ps[myconnectindex].palette = palette;
+		//palto(0,0,0,0);
+		//setcurrentpalette(palette,0);	// JBF 20031231
+		setgamepalette(&ps[myconnectindex], palette, 0);	// JBF 20040308
+	}
+
         rotatesprite(320<<15,200<<15,65536L,0,LOADSCREEN,0,0,2+8+64,0,0,xdim-1,ydim-1);
         menutext(160,105,0,0,"LOADING...");
+	if (statustext) gametext(160,180,statustext,0,2+8+16);
         nextpage();
     }
 }
@@ -1410,7 +1430,7 @@ void enterlevel(char g)
 
     i = ud.screen_size;
     ud.screen_size = 0;
-    dofrontscreens();
+    dofrontscreens(NULL);
     vscrn();
     ud.screen_size = i;
 
@@ -1464,6 +1484,7 @@ if (!VOLUMEONE) {
     }
 }
 
+    precachecount = 0;
     clearbufbyte(gotpic,sizeof(gotpic),0L);
     clearbufbyte(precachehightile, sizeof(precachehightile), 0l);
     //clearbufbyte(hittype,sizeof(hittype),0l);	// JBF 20040531: yes? no?

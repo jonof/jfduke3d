@@ -106,7 +106,7 @@ extern char checksum(long sum);
 extern char getsound(unsigned short num);
 extern void precachenecessarysounds(void );
 extern void cacheit(void );
-extern void dofrontscreens(void );
+extern void dofrontscreens(char *);
 extern void clearfifo(void);
 extern void resetmys(void);
 extern void enterlevel(char g);
