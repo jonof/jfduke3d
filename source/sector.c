@@ -397,8 +397,13 @@ void animatecamsprite(void)
         if(ps[screenpeek].newowner >= 0)
             OW = ps[screenpeek].newowner;
 
-        else if(OW >= 0 && dist(&sprite[ps[screenpeek].i],&sprite[i]) < 2048)
-            xyzmirror(OW,PN);
+        else if(OW >= 0 && dist(&sprite[ps[screenpeek].i],&sprite[i]) < 2048) {
+	    if (waloff[TILE_VIEWSCR] == 0)
+		allocatepermanenttile(TILE_VIEWSCR,tilesizx[PN],tilesizy[PN]);
+	    else
+		walock[TILE_VIEWSCR] = 255;
+            xyzmirror(OW,/*PN*/TILE_VIEWSCR);
+	}
     }
     else T1++;
 }

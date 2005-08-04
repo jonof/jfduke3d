@@ -125,7 +125,7 @@ int loadpheader(char spot,struct savehead *saveh)
 
 	if ((fil = kopen4load(fn,0)) == -1) return(-1);
 
-	walock[MAXTILES-3] = 255;
+	walock[TILE_LOADSHOT] = 255;
 
 	if (kdfread(&bv,4,1,fil) != 1) goto corrupt;
 	if(bv != BYTEVERSION) {
@@ -142,10 +142,10 @@ int loadpheader(char spot,struct savehead *saveh)
 	if (kdfread(&saveh->plrskl,sizeof(int32),1,fil) != 1) goto corrupt;
 	if (kdfread(saveh->boardfn,BMAX_PATH,1,fil) != 1) goto corrupt;
 
-	if (waloff[MAXTILES-3] == 0) allocache(&waloff[MAXTILES-3],320*200,&walock[MAXTILES-3]);
-	tilesizx[MAXTILES-3] = 200; tilesizy[MAXTILES-3] = 320;
-	if (kdfread((char *)waloff[MAXTILES-3],320,200,fil) != 200) goto corrupt;
-	invalidatetile(MAXTILES-3,0,255);
+	if (waloff[TILE_LOADSHOT] == 0) allocache(&waloff[TILE_LOADSHOT],320*200,&walock[TILE_LOADSHOT]);
+	tilesizx[TILE_LOADSHOT] = 200; tilesizy[TILE_LOADSHOT] = 320;
+	if (kdfread((char *)waloff[TILE_LOADSHOT],320,200,fil) != 200) goto corrupt;
+	invalidatetile(TILE_LOADSHOT,0,255);
 
 	kclose(fil);
 
@@ -252,11 +252,11 @@ int loadplayer(signed char spot)
          ud.m_player_skill = ud.player_skill;
 
                  //Fake read because lseek won't work with compression
-     walock[MAXTILES-3] = 1;
-     if (waloff[MAXTILES-3] == 0) allocache(&waloff[MAXTILES-3],320*200,&walock[MAXTILES-3]);
-     tilesizx[MAXTILES-3] = 200; tilesizy[MAXTILES-3] = 320;
-     if (kdfread((char *)waloff[MAXTILES-3],320,200,fil) != 200) goto corrupt;
-	 invalidatetile(MAXTILES-3,0,255);
+     walock[TILE_LOADSHOT] = 1;
+     if (waloff[TILE_LOADSHOT] == 0) allocache(&waloff[TILE_LOADSHOT],320*200,&walock[TILE_LOADSHOT]);
+     tilesizx[TILE_LOADSHOT] = 200; tilesizy[TILE_LOADSHOT] = 320;
+     if (kdfread((char *)waloff[TILE_LOADSHOT],320,200,fil) != 200) goto corrupt;
+	 invalidatetile(TILE_LOADSHOT,0,255);
 
          if (kdfread(&numwalls,2,1,fil) != 1) goto corrupt;
      if (kdfread(&wall[0],sizeof(walltype),MAXWALLS,fil) != MAXWALLS) goto corrupt;
@@ -535,7 +535,7 @@ int saveplayer(signed char spot)
      dfwrite(&ud.level_number,sizeof(ud.level_number),1,fil);
          dfwrite(&ud.player_skill,sizeof(ud.player_skill),1,fil);
      dfwrite(&boardfilename[0],BMAX_PATH,1,fil);
-     dfwrite((char *)waloff[MAXTILES-1],320,200,fil);
+     dfwrite((char *)waloff[TILE_SAVESHOT],320,200,fil);
 
          dfwrite(&numwalls,2,1,fil);
      dfwrite(&wall[0],sizeof(walltype),MAXWALLS,fil);
@@ -1334,7 +1334,7 @@ void menus(void)
 
     if( (ps[myconnectindex].gm&MODE_MENU) == 0 )
     {
-        walock[MAXTILES-3] = 1;
+        walock[TILE_LOADSHOT] = 1;
         return;
     }
 
@@ -1856,7 +1856,7 @@ if (VOLUMEALL) {
             rotatesprite(160<<16,200<<15,65536L,0,MENUSCREEN,16,0,10+64,0,0,xdim-1,ydim-1);
             rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(160,24,0,0,"LOAD GAME");
-            rotatesprite(101<<16,97<<16,65536>>1,512,MAXTILES-3,-32,0,4+10+64,0,0,xdim-1,ydim-1);
+            rotatesprite(101<<16,97<<16,65536>>1,512,TILE_LOADSHOT,-32,0,4+10+64,0,0,xdim-1,ydim-1);
 
             dispnames();
 
@@ -1981,7 +1981,7 @@ if (VOLUMEALL) {
             rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(160,24,0,0,"SAVE GAME");
 
-            rotatesprite(101<<16,97<<16,65536L>>1,512,MAXTILES-3,-32,0,4+10+64,0,0,xdim-1,ydim-1);
+            rotatesprite(101<<16,97<<16,65536L>>1,512,TILE_LOADSHOT,-32,0,4+10+64,0,0,xdim-1,ydim-1);
             sprintf(tempbuf,"PLAYERS: %-2ld                      ",ud.multimode);
             gametext(160,156,tempbuf,0,2+8+16);
 
@@ -4081,7 +4081,7 @@ if (PLUTOPAK) {
             cmenu(351);
             screencapt = 1;
             displayrooms(myconnectindex,65536);
-            //savetemp("duke3d.tmp",waloff[MAXTILES-1],160*100);
+            //savetemp("duke3d.tmp",waloff[TILE_SAVESHOT],160*100);
             screencapt = 0;
             break;
 
@@ -4153,7 +4153,7 @@ if (PLUTOPAK) {
                     }
                 }
 
-                rotatesprite(101<<16,97<<16,65536>>1,512,MAXTILES-1,-32,0,2+4+8+64,0,0,xdim-1,ydim-1);
+                rotatesprite(101<<16,97<<16,65536>>1,512,TILE_SAVESHOT,-32,0,2+4+8+64,0,0,xdim-1,ydim-1);
                 dispnames();
                 rotatesprite((c+67+strlen(&ud.savegame[current_menu-360][0])*4)<<16,(50+12*probey)<<16,32768L-10240,0,SPINNINGNUKEICON+(((totalclock)>>3)%7),0,0,10,0,0,xdim-1,ydim-1);
                 break;
@@ -4173,7 +4173,7 @@ if (PLUTOPAK) {
                      lastprobey = probey;
                   }
 
-                  rotatesprite(101<<16,97<<16,65536L>>1,512,MAXTILES-3,-32,0,4+10+64,0,0,xdim-1,ydim-1);
+                  rotatesprite(101<<16,97<<16,65536L>>1,512,TILE_LOADSHOT,-32,0,4+10+64,0,0,xdim-1,ydim-1);
                   sprintf(tempbuf,"PLAYERS: %-2ld                      ",savehead.numplr);
                   gametext(160,156,tempbuf,0,2+8+16);
                   sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+savehead.volnum,1+savehead.levnum,savehead.plrskl);
@@ -4190,7 +4190,7 @@ if (PLUTOPAK) {
                   if(lastprobey != probey)
                       loadpheader(probey,&savehead);
                   lastprobey = probey;
-                  rotatesprite(101<<16,97<<16,65536L>>1,512,MAXTILES-3,-32,0,4+10+64,0,0,xdim-1,ydim-1);
+                  rotatesprite(101<<16,97<<16,65536L>>1,512,TILE_LOADSHOT,-32,0,4+10+64,0,0,xdim-1,ydim-1);
               }
               else menutext(69,70,0,0,"EMPTY");
               sprintf(tempbuf,"PLAYERS: %-2ld                      ",ud.multimode);
@@ -5271,17 +5271,17 @@ void playanm(char *fn,char t)
         if(handle == -1) return;
         length = kfilelength(handle);
 
-    walock[MAXTILES-3-t] = 219+t;
+    walock[TILE_ANIM] = 219+t;
 
-    if(anim == 0 || lastanimhack != (MAXTILES-3-t))
-        allocache((long *)&anim,length+sizeof(anim_t),&walock[MAXTILES-3-t]);
+    if(anim == 0 || lastanimhack != t)
+        allocache((long *)&anim,length+sizeof(anim_t),&walock[TILE_ANIM]);
 
     animbuf = (char *)(FP_OFF(anim)+sizeof(anim_t));
 
-    lastanimhack = (MAXTILES-3-t);
+    lastanimhack = t;
 
-    tilesizx[MAXTILES-3-t] = 200;
-    tilesizy[MAXTILES-3-t] = 320;
+    tilesizx[TILE_ANIM] = 200;
+    tilesizy[TILE_ANIM] = 320;
 
         kread(handle,animbuf,length);
         kclose(handle);
@@ -5330,9 +5330,9 @@ void playanm(char *fn,char t)
        else if(ud.volume_number == 1) ototalclock += 18;
        else                           ototalclock += 10;
 
-       waloff[MAXTILES-3-t] = FP_OFF(ANIM_DrawFrame(i));
-	   invalidatetile(MAXTILES-3-t, 0, 1<<4);	// JBF 20031228
-       rotatesprite(0<<16,0<<16,65536L,512,MAXTILES-3-t,0,0,2+4+8+16+64, 0,0,xdim-1,ydim-1);
+       waloff[TILE_ANIM] = FP_OFF(ANIM_DrawFrame(i));
+	   invalidatetile(TILE_ANIM, 0, 1<<4);	// JBF 20031228
+       rotatesprite(0<<16,0<<16,65536L,512,TILE_ANIM,0,0,2+4+8+16+64, 0,0,xdim-1,ydim-1);
        nextpage();
 
        if(t == 8) endanimvol41(i);
@@ -5348,7 +5348,7 @@ void playanm(char *fn,char t)
     ENDOFANIMLOOP:
 
     ANIM_FreeAnim ();
-    walock[MAXTILES-3-t] = 1;
+    walock[TILE_ANIM] = 1;
 }
 
 /*

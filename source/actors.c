@@ -2126,8 +2126,9 @@ void movestandables(void)
                 {
                     camsprite = -1;
                     T1 = 0;
-                    loadtile(s->picnum);
-		    invalidatetile(s->picnum,-1,-1);
+                    //loadtile(s->picnum);
+		    //invalidatetile(s->picnum,-1,255);
+		    walock[TILE_VIEWSCR] = 199;
                 }
 
                 goto BOLT;

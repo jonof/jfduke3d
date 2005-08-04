@@ -127,7 +127,7 @@ build$(EXESUFFIX): $(EDITOROBJS) $(EOBJ)$(ENGINELIB) $(EOBJ)$(EDITORLIB)
 
 !include Makefile.deps
 
-$(EOBJ)$(ENGINELIB):
+$(EOBJ)$(ENGINELIB): AlwaysBuild
 	-mkdir $(EOBJ)
 	echo OBJ=$(MAKEDIR)\$(EOBJ) > $(EOBJ)overrides.mak
 	echo CFLAGS=$(ENGINEOPTS) >> $(EOBJ)overrides.mak
@@ -135,7 +135,7 @@ $(EOBJ)$(ENGINELIB):
 	nmake /f Makefile.msvc "OVERRIDES=$(MAKEDIR)\$(EOBJ)overrides.mak" enginelib
 	cd $(MAKEDIR)
 
-$(EOBJ)$(EDITORLIB):
+$(EOBJ)$(EDITORLIB): AlwaysBuild
 	-mkdir $(EOBJ)
 	echo OBJ=$(MAKEDIR)\$(EOBJ) > $(EOBJ)overrides.mak
 	echo CFLAGS=$(ENGINEOPTS) >> $(EOBJ)overrides.mak
@@ -143,6 +143,7 @@ $(EOBJ)$(EDITORLIB):
 	nmake /f Makefile.msvc "OVERRIDES=$(MAKEDIR)\$(EOBJ)overrides.mak" editorlib
 	cd $(MAKEDIR)
 
+AlwaysBuild: ;
 
 # PHONIES	
 clean:

@@ -374,7 +374,7 @@ void docacheit(void)
 
 void xyzmirror(short i,short wn)
 {
-    if (waloff[wn] == 0) loadtile(wn);
+    //if (waloff[wn] == 0) loadtile(wn);
 	setviewtotile(wn,tilesizy[wn],tilesizx[wn]);
 
 	drawrooms(SX,SY,SZ,SA,100+sprite[i].shade,SECT);
@@ -383,7 +383,7 @@ void xyzmirror(short i,short wn)
 
 	setviewback();
 	squarerotatetile(wn);
-	invalidatetile(wn,-1,-1);
+	invalidatetile(wn,-1,255);
 }
 
 void vscrn(void)

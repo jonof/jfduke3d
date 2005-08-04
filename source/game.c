@@ -2537,7 +2537,7 @@ void displayrest(long smoothratio)
                 cameraclock = totalclock;
                 cameradist = 65536L;
             }
-            walock[MAXTILES-1] = 199;
+            walock[TILE_SAVESHOT] = 199;
             vscrn();
         }
         else if( (ps[myconnectindex].gm&MODE_MENU) != MODE_MENU &&
@@ -3034,10 +3034,10 @@ void displayrooms(short snum,long smoothratio)
 
         if(screencapt)
         {
-            walock[MAXTILES-1] = 254;
-            if (waloff[MAXTILES-1] == 0)
-                allocache((long *)&waloff[MAXTILES-1],200*320,&walock[MAXTILES-1]);
-            setviewtotile(MAXTILES-1,200L,320L);
+            walock[TILE_SAVESHOT] = 254;
+            if (waloff[TILE_SAVESHOT] == 0)
+                allocache((long *)&waloff[TILE_SAVESHOT],200*320,&walock[TILE_SAVESHOT]);
+            setviewtotile(TILE_SAVESHOT,200L,320L);
         }
         else if( getrendermode() == 0 && ( ( ud.screen_tilting && p->rotscrnang ) || ud.detail==0 ) )
         {
@@ -3053,13 +3053,13 @@ void displayrooms(short snum,long smoothratio)
 			tiltcy = 480;
 		}
 
-                walock[MAXTILES-2] = 255;
-       	        if (waloff[MAXTILES-2] == 0)
-               	    allocache(&waloff[MAXTILES-2],tiltcx*tiltcx,&walock[MAXTILES-2]);
+                walock[TILE_TILT] = 255;
+       	        if (waloff[TILE_TILT] == 0)
+               	    allocache(&waloff[TILE_TILT],tiltcx*tiltcx,&walock[TILE_TILT]);
                 if ((tang&1023) == 0)
-       	            setviewtotile(MAXTILES-2,tiltcy>>(1-ud.detail),tiltcx>>(1-ud.detail));
+       	            setviewtotile(TILE_TILT,tiltcy>>(1-ud.detail),tiltcx>>(1-ud.detail));
                	else
-                    setviewtotile(MAXTILES-2,tiltcx>>(1-ud.detail),tiltcx>>(1-ud.detail));
+                    setviewtotile(TILE_TILT,tiltcx>>(1-ud.detail),tiltcx>>(1-ud.detail));
        	        if ((tang&1023) == 512)
                	{     //Block off unscreen section of 90ø tilted screen
                     j = ((tiltcx-(60*tiltcs))>>(1-ud.detail));
@@ -3180,7 +3180,7 @@ void displayrooms(short snum,long smoothratio)
         if(screencapt == 1)
         {
             setviewback();
-            walock[MAXTILES-1] = 1;
+            walock[TILE_SAVESHOT] = 1;
             screencapt = 0;
         }
         else if( getrendermode() == 0 && ( ( ud.screen_tilting && p->rotscrnang) || ud.detail==0 ) )
@@ -3189,13 +3189,13 @@ void displayrooms(short snum,long smoothratio)
 
 	    if (getrendermode() == 0) {
 	            setviewback();
-        	    picanm[MAXTILES-2] &= 0xff0000ff;
+        	    picanm[TILE_TILT] &= 0xff0000ff;
 	            i = (tang&511); if (i > 256) i = 512-i;
         	    i = sintable[i+512]*8 + sintable[i]*5L;
 	            if ((1-ud.detail) == 0) i >>= 1;
 		    i>>=(tiltcs-1);	// JBF 20030807
-	            rotatesprite(160<<16,100<<16,i,tang+512,MAXTILES-2,0,0,4+2+64,windowx1,windowy1,windowx2,windowy2);
-        	    walock[MAXTILES-2] = 199;
+	            rotatesprite(160<<16,100<<16,i,tang+512,TILE_TILT,0,0,4+2+64,windowx1,windowy1,windowx2,windowy2);
+        	    walock[TILE_TILT] = 199;
 	    }
         }
     }
@@ -5442,7 +5442,9 @@ void animatesprites(long x,long y,short a,long smoothratio)
                     t->cstat |= (rand()&12);
                     t->xrepeat += 8;
                     t->yrepeat += 8;
-                }
+                } else if (camsprite >= 0 && waloff[TILE_VIEWSCR] && walock[TILE_VIEWSCR] > 200) {
+					t->picnum = TILE_VIEWSCR;
+				}
                 break;
 
             case SHRINKSPARK:
@@ -6636,7 +6638,7 @@ if (VOLUMEALL) {
                 cmenu(350);
                 screencapt = 1;
                 displayrooms(myconnectindex,65536);
-                //savetemp("duke3d.tmp",waloff[MAXTILES-1],160*100);
+                //savetemp("duke3d.tmp",waloff[TILE_SAVESHOT],160*100);
                 screencapt = 0;
                 FX_StopAllSounds();
                 clearsoundlocks();
@@ -6708,7 +6710,7 @@ if (VOLUMEALL) {
             }
             screencapt = 1;
             displayrooms(myconnectindex,65536);
-            //savetemp("duke3d.tmp",waloff[MAXTILES-1],160*100);
+            //savetemp("duke3d.tmp",waloff[TILE_SAVESHOT],160*100);
             screencapt = 0;
             if( lastsavedpos >= 0 )
             {
