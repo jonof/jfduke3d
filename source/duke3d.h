@@ -403,7 +403,6 @@ extern short spriteq[1024],spriteqloc,spriteqamount;
 extern struct player_struct ps[MAXPLAYERS];
 extern struct player_orig po[MAXPLAYERS];
 extern struct user_defs ud;
-extern short int moustat;
 extern short int global_random;
 extern long scaredfallz;
 extern char buf[1024]; //My own generic input buffer
