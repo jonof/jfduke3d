@@ -574,3 +574,5 @@ void onvideomodechange(int newmode);
 #define TILE_ANIM     (MAXTILES-4)
 #define TILE_VIEWSCR  (MAXTILES-5)
 
+extern char useprecache;
+

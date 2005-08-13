@@ -382,6 +382,7 @@ if (VOLUMEONE) {
 	OSD_RegisterVariable("myname",OSDVAR_STRING,myname,32,NULL);
 	OSD_RegisterVariable("showfps",OSDVAR_INTEGER,&ud.tickrate,1,osd_internal_validate_boolean);
 	OSD_RegisterVariable("showcoords",OSDVAR_INTEGER,&ud.coords,1,osd_internal_validate_boolean);
+	OSD_RegisterVariable("useprecache",OSDVAR_INTEGER,&useprecache,1,osd_internal_validate_boolean);
 
 	OSD_RegisterFunction("restartvid","restartvid: reinitialised the video mode",osdcmd_restartvid);
 	OSD_RegisterFunction("vidmode","vidmode [xdim ydim] [bpp] [fullscreen]: immediately change the video mode",osdcmd_vidmode);

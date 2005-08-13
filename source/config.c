@@ -580,6 +580,7 @@ void CONFIG_ReadSetup( void )
       SCRIPT_GetNumber( scripthandle, "Misc", "Crosshairs",&ud.crosshair);
       SCRIPT_GetNumber( scripthandle, "Misc", "StatusBarScale",&ud.statusbarscale);
       SCRIPT_GetNumber( scripthandle, "Misc", "ShowLevelStats",&ud.levelstats);
+      dummy = useprecache; SCRIPT_GetNumber( scripthandle, "Misc", "UsePrecache",&dummy); useprecache = dummy != 0;
       if(ud.wchoice[0][0] == 0 && ud.wchoice[0][1] == 0)
       {
           ud.wchoice[0][0] = 3;
@@ -679,6 +680,7 @@ void CONFIG_WriteSetup( void )
    SCRIPT_PutNumber( scripthandle, "Misc", "Crosshairs",ud.crosshair,false,false);
    SCRIPT_PutNumber( scripthandle, "Misc", "ShowLevelStats",ud.levelstats,false,false);
    SCRIPT_PutNumber( scripthandle, "Misc", "StatusBarScale",ud.statusbarscale,false,false);
+   SCRIPT_PutNumber( scripthandle, "Misc", "UsePrecache",useprecache,false,false);
    SCRIPT_PutNumber( scripthandle, "Controls", "MouseAimingFlipped",ud.mouseflip,false,false);
    SCRIPT_PutNumber( scripthandle, "Controls","MouseAiming",MouseAiming,false,false);
    //SCRIPT_PutNumber( scripthandle, "Controls","GameMouseAiming",(int32) ps[myconnectindex].aim_mode,false,false);

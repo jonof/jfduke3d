@@ -28,7 +28,8 @@ Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
 #include "duke3d.h"
 
 extern char everyothertime;
-short which_palookup = 9;
+static short which_palookup = 9;
+char useprecache = 1;
 
 static char precachehightile[2][MAXTILES>>3];
 static int  precachecount;
@@ -346,13 +347,15 @@ void docacheit(void)
 		if (waloff[i] == 0)
 		    loadtile((short)i);
 
-		if (precachehightile[0][i>>3] & (1<<(i&7)))
-			for (k=0; k<MAXPALOOKUPS; k++)
-				polymost_precache(i,k,0);
+		if (useprecache) { 
+			if (precachehightile[0][i>>3] & (1<<(i&7)))
+				for (k=0; k<MAXPALOOKUPS; k++)
+					polymost_precache(i,k,0);
 
-		if (precachehightile[1][i>>3] & (1<<(i&7)))
-			for (k=0; k<MAXPALOOKUPS; k++)
-				polymost_precache(i,k,1);
+			if (precachehightile[1][i>>3] & (1<<(i&7)))
+				for (k=0; k<MAXPALOOKUPS; k++)
+					polymost_precache(i,k,1);
+		}
 
 		j++;
 		pc++;
