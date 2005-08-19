@@ -7783,7 +7783,7 @@ void app_main(int argc,char **argv)
 	}
 #endif
 
-#if defined(PLATFORMWINDOWS)
+#ifdef _WIN32
 	if (!access("user_profiles_enabled", F_OK))
 #endif
 	{
@@ -7791,14 +7791,14 @@ void app_main(int argc,char **argv)
 		char *homedir;
 		int asperr;
 
-#if defined(PLATFORMLINUX) || defined(PLATFORMBSD)
+#if defined(__linux__) || defined(__FreeBSD__)
 		addsearchpath("/usr/share/games/jfduke3d");
 		addsearchpath("/usr/local/games/jfduke3d");
 #endif
 		if (getcwd(cwd,BMAX_PATH)) addsearchpath(cwd);
 		if ((homedir = Bgethomedir())) {
 			Bsnprintf(cwd,sizeof(cwd),"%s/"
-#if defined(PLATFORMWINDOWS) || defined(PLATFORMDARWIN)
+#if defined(_WIN32) || defined(__APPLE__)
 				"JFDuke3D"
 #else
 				".jfduke3d"
