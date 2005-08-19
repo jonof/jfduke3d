@@ -32,8 +32,7 @@ LINK=link /opt:nowin98 /nologo /opt:ref
 CFLAGS= /MD /J /nologo $(flags_cl)  \
 	/I$(INC) /I$(EINC) /I$(SRC)jmact /I$(SRC)jaudiolib \
 	/DNOCOPYPROTECT $(ENGINEOPTS) /DUSE_MSC_PRAGMAS /DUSE_MSC_ASSEMBLY \
-	/I$(DXROOT)\include /DPLATFORMWINDOWS=1 /DRENDERTYPEWIN=1
-PLATFORM=WINDOWS
+	/I$(DXROOT)\include /DRENDERTYPEWIN=1
 RENDERTYPE=WIN
 LIBS=shfolder.lib user32.lib gdi32.lib dxguid.lib winmm.lib wsock32.lib opengl32.lib
 ASFLAGS=/nologo /coff
