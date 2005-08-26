@@ -115,7 +115,7 @@ int32 ParseNum (char *str)
 
 int16 MotoShort (int16 l)
 {
-#ifdef MOTOROLA
+#if B_LITTLE_ENDIAN != 0
 	return l;
 #else
 	return ((l & 0x00ff) << 8) | ((l & 0xff00) >> 8);
@@ -124,7 +124,7 @@ int16 MotoShort (int16 l)
 
 int16  IntelShort (int16 l)
 {
-#ifdef MOTOROLA
+#if B_BIG_ENDIAN != 0
 	return ((l & 0x00ff) << 8) | ((l & 0xff00) >> 8);
 #else
 	return l;
@@ -133,7 +133,7 @@ int16  IntelShort (int16 l)
 
 int32  MotoLong (int32 l)
 {
-#ifdef MOTOROLA
+#if B_LITTLE_ENDIAN != 0
 	return l;
 #else
 	int32 t = ((l & 0x00ff00ffl) << 8) | ((l & 0xff00ff00l) >> 8);
@@ -143,7 +143,7 @@ int32  MotoLong (int32 l)
 
 int32  IntelLong (int32 l)
 {
-#ifdef MOTOROLA
+#if B_BIG_ENDIAN != 0
 	int32 t = ((l & 0x00ff00ffl) << 8) | ((l & 0xff00ff00l) >> 8);
 	return ((t & 0x0000ffffl) << 16) | ((t & 0xffff0000l) >> 16);
 #else

@@ -216,6 +216,7 @@ void SCRIPT_AddEntry ( int32 scripthandle, char * sectionname, char * entryname,
 
 int32 SCRIPT_ParseBuffer(int32 scripthandle, char *data, int32 length)
 {
+	char *fence = data + length;
 	char *dp, *sp, ch=0, lastch=0;
 	char *currentsection = "";
 	char *currententry = NULL;
@@ -248,7 +249,7 @@ int32 SCRIPT_ParseBuffer(int32 scripthandle, char *data, int32 length)
 	state = ParsingIdle;
 	expect = ExpectingSection | ExpectingEntry;
 
-#define EATLINE(p) while (*p != '\n' && *p != '\r' && length > 0) { p++; length--; }
+#define EATLINE(p) while (length > 0 && *p != '\n' && *p != '\r') { p++; length--; }
 #define LETTER() { lastch = ch; ch = *(sp++); length--; }
 
 	while (length > 0) {
@@ -384,6 +385,8 @@ int32 SCRIPT_ParseBuffer(int32 scripthandle, char *data, int32 length)
 				 continue;
 		}
 	}
+
+	if (sp > fence) printf("Stepped outside the fence!\n");
 
 	return rv;
 }
