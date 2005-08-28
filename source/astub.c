@@ -239,8 +239,8 @@ char framerateon=1,tabgraphic=0;
 
 
 static char sidemode=0;
-extern long vel, svel, angvel;
-long xvel, yvel, hvel, timeoff;
+extern long vel, svel, hvel, angvel;
+long xvel, yvel, timeoff;
 
 static char once=0;
 

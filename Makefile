@@ -1,5 +1,20 @@
 # Duke3D Makefile for GNU Make
 
+# SDK locations - adjust to match your setup
+DXROOT=c:/sdks/msc/dx61
+
+# Engine options
+SUPERBUILD = 1
+POLYMOST = 1
+USE_OPENGL = 1
+DYNAMIC_OPENGL = 1
+USE_A_C = 0
+NOASM = 0
+
+# Debugging options
+RELEASE?=0
+
+# build locations
 SRC=source/
 RSRC=rsrc/
 OBJ=obj/
@@ -9,28 +24,23 @@ EOBJ=eobj/
 INC=$(SRC)
 o=o
 
-# debugging enabled
-debug=-ggdb
-# debugging disabled
-#debug=-ggdb -fomit-frame-pointer
-
-
-DXROOT=c:/sdks/msc/dx61
-#FMODROOT=c:/mingw32/fmodapi360win32/api
-
-ENGINEOPTS=-DSUPERBUILD -DPOLYMOST -DUSE_OPENGL -DDYNAMIC_OPENGL
-
 # This is the list of flags -O1 enables, but actually enabling -O1 causes breakage
 OPTIMISE=-fdefer-pop -fmerge-constants -fthread-jumps -floop-optimize -fcrossjumping \
 	-fif-conversion -fif-conversion2 -fguess-branch-probability -fcprop-registers
 
+ifneq (0,$(RELEASE))
+  # debugging disabled
+  debug=-fomit-frame-pointer $(OPTIMISE)
+else
+  # debugging enabled
+  debug=-ggdb
+endif
+
 CC=gcc
-CFLAGS=$(debug) -W -Wall -Wimplicit $(OPTIMISE) \
-	-Wno-char-subscripts -Wno-unused \
-	-march=pentium -funsigned-char -fno-strict-aliasing -DNO_GCC_BUILTINS \
-	-I$(INC:/=) -I$(EINC:/=) -I$(SRC)jmact -I$(SRC)jaudiolib -I../jfaud/inc \
-	$(ENGINEOPTS) -DNOCOPYPROTECT \
-	-DUSE_GCC_PRAGMAS
+CFLAGS=-march=pentium $(debug)
+override CFLAGS+= -W -Wall -Wimplicit -Wno-char-subscripts -Wno-unused \
+	-funsigned-char -fno-strict-aliasing -DNO_GCC_BUILTINS -DNOCOPYPROTECT \
+	-I$(INC:/=) -I$(EINC:/=) -I$(SRC)jmact -I$(SRC)jaudiolib #-I../jfaud/inc
 LIBS=-lm #../jfaud/jfaud.a # -L../jfaud -ljfaud
 NASMFLAGS=-s #-g
 EXESUFFIX=
@@ -115,25 +125,22 @@ all: duke3d$(EXESUFFIX) build$(EXESUFFIX)
 
 duke3d$(EXESUFFIX): $(GAMEOBJS) $(EOBJ)$(ENGINELIB)
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS) -Wl,-Map=$@.map
-#	-rm duke3d.sym$(EXESUFFIX)
-#	cp duke3d$(EXESUFFIX) duke3d.sym$(EXESUFFIX)
-#	strip duke3d$(EXESUFFIX)
 	
 build$(EXESUFFIX): $(EDITOROBJS) $(EOBJ)$(EDITORLIB) $(EOBJ)$(ENGINELIB)
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS) -Wl,-Map=$@.map
-#	-rm build.sym$(EXESUFFIX)
-#	cp build$(EXESUFFIX) build.sym$(EXESUFFIX)
-#	strip build$(EXESUFFIX)
 
 include Makefile.deps
 
-$(EOBJ)$(ENGINELIB):
+.PHONY: enginelib editorlib
+enginelib editorlib:
 	-mkdir $(EOBJ)
-	$(MAKE) -C $(EROOT) "OBJ=$(CURDIR)/$(EOBJ)" "CFLAGS=$(ENGINEOPTS)" enginelib
-
-$(EOBJ)$(EDITORLIB):
-	-mkdir $(EOBJ)
-	$(MAKE) -C $(EROOT) "OBJ=$(CURDIR)/$(EOBJ)" "CFLAGS=$(ENGINEOPTS)" editorlib
+	$(MAKE) -C $(EROOT) "OBJ=$(CURDIR)/$(EOBJ)" \
+		SUPERBUILD=$(SUPERBUILD) POLYMOST=$(POLYMOST) \
+		USE_OPENGL=$(USE_OPENGL) DYNAMIC_OPENGL=$(DYNAMIC_OPENGL) \
+		USE_A_C=$(USE_A_C) NOASM=$(NOASM) RELEASE=$(RELEASE) $@
+	
+$(EOBJ)$(ENGINELIB): enginelib
+$(EOBJ)$(EDITORLIB): editorlib
 
 # RULES
 $(OBJ)%.$o: $(SRC)%.nasm
@@ -168,7 +175,7 @@ $(RSRC)editor_banner.c: $(RSRC)build.bmp
 
 # PHONIES	
 clean:
-	-rm -f $(OBJ)* duke3d$(EXESUFFIX) duke3d.sym$(EXESUFFIX) build$(EXESUFFIX) build.sym$(EXESUFFIX) core*
+	-rm -f $(OBJ)* duke3d$(EXESUFFIX) build$(EXESUFFIX)
 	
 veryclean: clean
 	-rm -f $(EOBJ)*

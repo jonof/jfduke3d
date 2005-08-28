@@ -17,16 +17,13 @@ EDITORLIB=build.lib
 
 DXROOT=c:\sdks\msc\dx7
 
-ENGINEOPTS=-dSUPERBUILD -dPOLYMOST -dUSE_OPENGL
+ENGINEOPTS=-dSUPERBUILD -dPOLYMOST -dUSE_OPENGL -dDYNAMIC_OPENGL
 
 CC=wcc386
 CFLAGS= -5r -s -orb -fp5 -d2 -db &
 	-i=$(INC) -i=$(EINC) -i=$(SRC)jmact -i=$(SRC)jaudiolib -i=$(DXROOT)\include &
-	-dRENDERTYPEWIN=1 &
-	-dNOCOPYPROTECT $(ENGINEOPTS) &
-	-dUSE_WATCOM_PRAGMAS -dUSE_WATCOM_ASSEMBLY
-RENDERTYPE=WIN
-LIBS=shfolder.lib winmm.lib wsock32.lib dxguid.lib opengl32.lib
+	-dRENDERTYPEWIN=1 -dNOCOPYPROTECT $(ENGINEOPTS)
+LIBS=shfolder.lib winmm.lib wsock32.lib dxguid.lib #opengl32.lib
 WASMFLAGS=-d1
 EXESUFFIX=.exe
 
@@ -75,9 +72,6 @@ GAMEOBJS=$(OBJ)game.$o &
 
 EDITOROBJS=$(OBJ)astub.$o
 
-#GAMEOBJS+= $(EOBJ)winlayer.$o
-#EDITOROBJS+= $(EOBJ)winlayer.$o
-		
 # RULES
 .EXTENSIONS: .wasm .res .rc
 
@@ -104,55 +98,42 @@ all: duke3d$(EXESUFFIX) build$(EXESUFFIX) .SYMBOLIC
 	%null
 
 duke3d$(EXESUFFIX): $(GAMEOBJS) $(OBJ)gameres.res $(EOBJ)$(ENGINELIB)
-	%write $@.wlink NAME     $(OBJ)$@
-	%write $@.wlink SYSTEM   WIN95
-	%write $@.wlink DEBUG    ALL
-	%write $@.wlink FILE     { $(GAMEOBJS) $(ENGINEOBJS) }
-	%write $@.wlink RESOURCE $(OBJ)gameres.res
-	%write $@.wlink LIBPATH  $(DXROOT)\lib
-	%write $@.wlink LIBPATH  $(EOBJ)
-	%write $@.wlink LIBFILE  { $(LIBS) $(ENGINELIB) }
-	wlink @$@.wlink
-	copy /y $(OBJ)$@ $@
-	del $@.wlink
+	wlink	NAME     $@ &
+		SYSTEM   WIN95 &
+		DEBUG    ALL &
+		FILE     { $(GAMEOBJS) $(ENGINEOBJS) } &
+		RESOURCE $(OBJ)gameres.res &
+		LIBPATH  $(DXROOT)\lib &
+		LIBPATH  $(EOBJ) &
+		LIBFILE  { $(LIBS) $(ENGINELIB) }
 	
 build$(EXESUFFIX): $(EDITOROBJS) $(OBJ)buildres.res $(EOBJ)$(ENGINELIB) $(EOBJ)$(EDITORLIB)
-	%write $@.wlink NAME     $(OBJ)$@
-	%write $@.wlink SYSTEM   WIN95
-	%write $@.wlink DEBUG    ALL
-	%write $@.wlink FILE     { $(EDITOROBJS) }
-	%write $@.wlink RESOURCE $(OBJ)buildres.res
-	%write $@.wlink LIBPATH  $(DXROOT)\lib
-	%write $@.wlink LIBPATH  $(EOBJ)
-	%write $@.wlink LIBFILE  { $(LIBS) $(ENGINELIB) $(EDITORLIB) }
-	wlink @$@.wlink
-	copy /y $(OBJ)$@ $@
-	del $@.wlink
+	wlink	NAME     $@ &
+		SYSTEM   WIN95 &
+		DEBUG    ALL &
+		FILE     { $(EDITOROBJS) } &
+		RESOURCE $(OBJ)buildres.res &
+		LIBPATH  $(DXROOT)\lib &
+		LIBPATH  $(EOBJ) &
+		LIBFILE  { $(LIBS) $(ENGINELIB) $(EDITORLIB) }
 
 !include Makefile.deps
 
 cwd=$+ $(%cwd) $-
-$(EOBJ)$(ENGINELIB): .SYMBOLIC
+enginelib editorlib: .SYMBOLIC
 	-mkdir $(EOBJ)
 	%write $(EOBJ)overrides.mak OBJ=$(cwd)\$(EOBJ)
 	%write $(EOBJ)overrides.mak CFLAGS=$(ENGINEOPTS)
 	cd $(EROOT)
-	wmake -f Makefile.watcom OVERRIDES=$(cwd)\$(EOBJ)overrides.mak enginelib
+	wmake -f Makefile.watcom OVERRIDES=$(cwd)\$(EOBJ)overrides.mak $@
 	cd $(cwd)
 
-$(EOBJ)$(EDITORLIB): .SYMBOLIC
-	-mkdir $(EOBJ)
-	%write $(EOBJ)overrides.mak OBJ=$(cwd)\$(EOBJ)
-	%write $(EOBJ)overrides.mak CFLAGS=$(ENGINEOPTS)
-	cd $(EROOT)
-	wmake -f Makefile.watcom OVERRIDES=$(cwd)\$(EOBJ)overrides.mak editorlib
-	cd $(cwd)
-
-
+$(EOBJ)$(EDITORLIB): editorlib .SYMBOLIC
+$(EOBJ)$(ENGINELIB): enginelib .SYMBOLIC
 
 # PHONIES	
 clean: .SYMBOLIC
-	-del $(OBJ)* duke3d$(EXESUFFIX) duke3d.sym$(EXESUFFIX) build$(EXESUFFIX) build.sym$(EXESUFFIX) core*
+	-del $(OBJ)* duke3d$(EXESUFFIX) build$(EXESUFFIX)
 	
 veryclean: clean .SYMBOLIC
 	-del $(EOBJ)*

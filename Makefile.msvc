@@ -24,17 +24,16 @@ flags_link=/RELEASE
 
 DXROOT=c:\sdks\msc\dx7
 
-ENGINEOPTS=/DSUPERBUILD /DPOLYMOST /DUSE_OPENGL
+ENGINEOPTS=/DSUPERBUILD /DPOLYMOST /DUSE_OPENGL /DDYNAMIC_OPENGL
 
 CC=cl
 AS=ml
 LINK=link /opt:nowin98 /nologo /opt:ref
 CFLAGS= /MD /J /nologo $(flags_cl)  \
 	/I$(INC) /I$(EINC) /I$(SRC)jmact /I$(SRC)jaudiolib \
-	/DNOCOPYPROTECT $(ENGINEOPTS) /DUSE_MSC_PRAGMAS /DUSE_MSC_ASSEMBLY \
+	/DNOCOPYPROTECT $(ENGINEOPTS) \
 	/I$(DXROOT)\include /DRENDERTYPEWIN=1
-RENDERTYPE=WIN
-LIBS=shfolder.lib user32.lib gdi32.lib dxguid.lib winmm.lib wsock32.lib opengl32.lib
+LIBS=shfolder.lib user32.lib gdi32.lib dxguid.lib winmm.lib wsock32.lib #opengl32.lib
 ASFLAGS=/nologo /coff
 EXESUFFIX=.exe
 
@@ -78,15 +77,12 @@ GAMEOBJS=$(OBJ)game.$o \
 	$(OBJ)osdfuncs.$o \
 	$(OBJ)osdcmds.$o \
 	$(JMACTOBJ) \
-	$(JAUDIOLIBOBJ)
+	$(JAUDIOLIBOBJ) \
+	$(OBJ)winbits.$o $(OBJ)gameres.res
 
-EDITOROBJS=$(OBJ)astub.$o
+EDITOROBJS=$(OBJ)astub.$o \
+	$(OBJ)buildres.res
 
-GAMEOBJS=$(GAMEOBJS) $(OBJ)winbits.$o $(OBJ)gameres.res
-EDITOROBJS=$(EDITOROBJS) $(OBJ)buildres.res
-
-#GAMEOBJS=$(GAMEOBJS) $(EOBJ)winlayer.$o
-#EDITOROBJS=$(EDITOROBJS) $(EOBJ)winlayer.$o
 		
 # RULES
 .SUFFIXES: .masm
@@ -117,36 +113,28 @@ EDITOROBJS=$(EDITOROBJS) $(OBJ)buildres.res
 all: duke3d$(EXESUFFIX) build$(EXESUFFIX) ;
 
 duke3d$(EXESUFFIX): $(GAMEOBJS) $(EOBJ)$(ENGINELIB)
-	$(LINK) /OUT:$(OBJ)$@ /SUBSYSTEM:WINDOWS /LIBPATH:$(DXROOT)\lib $(flags_link) /MAP $** $(LIBS) msvcrt.lib
-	copy /y $(OBJ)$@ $@
+	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS /LIBPATH:$(DXROOT)\lib $(flags_link) /MAP $** $(LIBS) msvcrt.lib
 	
 build$(EXESUFFIX): $(EDITOROBJS) $(EOBJ)$(ENGINELIB) $(EOBJ)$(EDITORLIB)
-	$(LINK) /OUT:$(OBJ)$@ /SUBSYSTEM:WINDOWS /LIBPATH:$(DXROOT)\lib $(flags_link) /MAP $** $(LIBS) msvcrt.lib
-	copy /y $(OBJ)$@ $@
+	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS /LIBPATH:$(DXROOT)\lib $(flags_link) /MAP $** $(LIBS) msvcrt.lib
 
 !include Makefile.deps
 
-$(EOBJ)$(ENGINELIB): AlwaysBuild
+enginelib editorlib: AlwaysBuild
 	-mkdir $(EOBJ)
 	echo OBJ=$(MAKEDIR)\$(EOBJ) > $(EOBJ)overrides.mak
 	echo CFLAGS=$(ENGINEOPTS) >> $(EOBJ)overrides.mak
 	cd $(EROOT)
-	nmake /f Makefile.msvc "OVERRIDES=$(MAKEDIR)\$(EOBJ)overrides.mak" enginelib
-	cd $(MAKEDIR)
-
-$(EOBJ)$(EDITORLIB): AlwaysBuild
-	-mkdir $(EOBJ)
-	echo OBJ=$(MAKEDIR)\$(EOBJ) > $(EOBJ)overrides.mak
-	echo CFLAGS=$(ENGINEOPTS) >> $(EOBJ)overrides.mak
-	cd $(EROOT)
-	nmake /f Makefile.msvc "OVERRIDES=$(MAKEDIR)\$(EOBJ)overrides.mak" editorlib
+	nmake /f Makefile.msvc "OVERRIDES=$(MAKEDIR)\$(EOBJ)overrides.mak" $@
 	cd $(MAKEDIR)
 
 AlwaysBuild: ;
+$(EOBJ)$(EDITORLIB): editorlib ;
+$(EOBJ)$(ENGINELIB): enginelib ;
 
 # PHONIES	
 clean:
-	-del $(OBJ)* duke3d$(EXESUFFIX) duke3d.sym$(EXESUFFIX) build$(EXESUFFIX) build.sym$(EXESUFFIX) core*
+	-del $(OBJ)* duke3d$(EXESUFFIX) build$(EXESUFFIX)
 	
 veryclean: clean
 	-del $(EOBJ)*
