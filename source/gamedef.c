@@ -1218,16 +1218,16 @@ char parsecommand(void)
 
 	    if (j < 0 || j >= 4)
 	    {
-                    initprintf("  * ERROR!(L%ld %s) Volume number exceeds maximum volume count.\n",line_number,compilefile);
-                    error++;
+                    initprintf("  * WARNING!(L%ld %s) Volume number exceeds maximum volume count.\n",line_number,compilefile);
+                    warning++;
                     while( *textptr != 0x0a && *textptr != 0 ) textptr++;
                     break;
 	    }
 	    if (k < 0 || k >= 11)
 	    {
-                    initprintf("  * ERROR!(L%ld %s) Level number exceeds maximum levels-per-episode count.\n",
+                    initprintf("  * WARNING!(L%ld %s) Level number exceeds maximum levels-per-episode count.\n",
 				    line_number,compilefile);
-                    error++;
+                    warning++;
                     while( *textptr != 0x0a && *textptr != 0 ) textptr++;
                     break;
 	    }
@@ -1614,13 +1614,8 @@ void loadefs(char *filenam)
     {
         if( groupfile != -1 && loadfromgrouponly == 0 )
         {
-            initprintf("Warnings found in %s file.  You should backup the original copies before\n",filenam);
-            initprintf("before attempting to modify them.  Do you want to use the\n");
-            initprintf("INTERNAL DEFAULTS (y/N)?\n");
-
-	    i=wm_ynbox("CON File Compilation Warning", "Warnings found in %s file. You should backup "
-			    "the original copies before attempting to modify them. Do you want to use the "
-			    "internal defaults?",filenam);
+            initprintf("Warnings found when compiling CON files. Use default CONs instead? (Y/N)\n");
+	    i=wm_ynbox("CON File Compilation Warning", "Warnings found when compiling CON files. Use default CONs instead?");
 	    if (i) i = 'y';
 	    if(i == 'y' || i == 'Y' )
             {
@@ -1635,21 +1630,16 @@ void loadefs(char *filenam)
     {
         if( loadfromgrouponly )
         {
-            sprintf(buf,"\nError in %s.",filenam);
+            sprintf(buf,"\nError compiling CON files.");
             gameexit(buf);
         }
         else
         {
             if( groupfile != -1 && loadfromgrouponly == 0 )
             {
-                initprintf("Errors found in %s file.  You should backup the original copies\n",filenam);
-                initprintf("before attempting to modify them.  Do you want to use the\n");
-                initprintf("internal defaults (Y/N)?\n");
-
-	    i=wm_ynbox("CON File Compilation Error", "Errors found in %s file. You should backup "
-			    "the original copies before attempting to modify them. Do you want to use the "
-			    "internal defaults?",filenam);
-	    if (i) i = 'y';
+                initprintf("Errors found when compiling CON files.  Use default CONs instead? (Y/N)\n");
+		i=wm_ynbox("CON File Compilation Error", "Errors found when compiling CON files. Use default CONs instead?");
+		if (i) i = 'y';
                 if( i == 'y' || i == 'Y' )
                 {
                     initprintf(" Yes\n");

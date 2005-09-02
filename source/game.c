@@ -7470,7 +7470,7 @@ void compilecons(void)
    loadefs(confilename);
    if( loadfromgrouponly )
    {
-       initprintf("  * Writing defaults to current directory.\n");
+       initprintf("  * Using default CONs.\n");
        loadefs(confilename);
    }
 
