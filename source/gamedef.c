@@ -460,7 +460,7 @@ long transnum(long type)
 	    textptr += l;
 	    el = translatelabeltype(type);
 	    gl = translatelabeltype(labeltype[i]);
-	    initprintf("  * WARNING!(L%ld %s) Expecting a %s label but found a %s instead.\n",line_number,compilefile,el,gl);
+	    initprintf("  * WARNING!(L%ld %s) Expected a '%s' label but found a '%s' label instead.\n",line_number,compilefile,el,gl);
 	    free(el);
 	    free(gl);
 	    return -1;	// valid label name, but wrong type

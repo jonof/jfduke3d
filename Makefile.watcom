@@ -23,7 +23,7 @@ CC=wcc386
 CFLAGS= -5r -s -orb -fp5 -d2 -db &
 	-i=$(INC) -i=$(EINC) -i=$(SRC)jmact -i=$(SRC)jaudiolib -i=$(DXROOT)\include &
 	-dRENDERTYPEWIN=1 -dNOCOPYPROTECT $(ENGINEOPTS)
-LIBS=shfolder.lib winmm.lib wsock32.lib dxguid.lib #opengl32.lib
+LIBS=winmm.lib wsock32.lib dxguid.lib #opengl32.lib
 WASMFLAGS=-d1
 EXESUFFIX=.exe
 
@@ -105,7 +105,8 @@ duke3d$(EXESUFFIX): $(GAMEOBJS) $(OBJ)gameres.res $(EOBJ)$(ENGINELIB)
 		RESOURCE $(OBJ)gameres.res &
 		LIBPATH  $(DXROOT)\lib &
 		LIBPATH  $(EOBJ) &
-		LIBFILE  { $(LIBS) $(ENGINELIB) }
+		LIBFILE  shfolder.lib &
+		LIBRARY  { $(ENGINELIB) $(LIBS) }
 	
 build$(EXESUFFIX): $(EDITOROBJS) $(OBJ)buildres.res $(EOBJ)$(ENGINELIB) $(EOBJ)$(EDITORLIB)
 	wlink	NAME     $@ &
@@ -115,7 +116,8 @@ build$(EXESUFFIX): $(EDITOROBJS) $(OBJ)buildres.res $(EOBJ)$(ENGINELIB) $(EOBJ)$
 		RESOURCE $(OBJ)buildres.res &
 		LIBPATH  $(DXROOT)\lib &
 		LIBPATH  $(EOBJ) &
-		LIBFILE  { $(LIBS) $(ENGINELIB) $(EDITORLIB) }
+		LIBFILE  shfolder.lib &
+		LIBRARY  { $(LIBS) $(ENGINELIB) $(EDITORLIB) }
 
 !include Makefile.deps
 
