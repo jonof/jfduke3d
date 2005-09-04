@@ -112,7 +112,7 @@ char playerreadyflag[MAXPLAYERS],ready2send;
 char playerquitflag[MAXPLAYERS];
 long vel, svel, angvel, horiz, ototalclock, respawnactortime=768, respawnitemtime=768, groupfile;
 
-long *scriptptr,*insptr,*labelcode,labelcnt;
+long *scriptptr,*insptr,*labelcode,labelcnt,*labeltype;
 long *actorscrptr[MAXTILES],*parsing_actor;
 char *label,*textptr,error,warning,killit_flag;
 char *music_pointer;

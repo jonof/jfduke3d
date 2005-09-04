@@ -421,7 +421,7 @@ extern char sounds[NUM_SOUNDS][14];
 
 	// JBF 20040531: adding 16 extra to the script so we have some leeway
 	// to (hopefully) safely abort when hitting the limit
-extern long script[MAXSCRIPTSIZE+16],*scriptptr,*insptr,*labelcode,labelcnt;
+extern long script[MAXSCRIPTSIZE+16],*scriptptr,*insptr,*labelcode,labelcnt,*labeltype;
 extern char *label,*textptr,error,warning,killit_flag;
 extern long *actorscrptr[MAXTILES],*parsing_actor;
 extern char actortype[MAXTILES];

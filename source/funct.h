@@ -158,7 +158,7 @@ extern void makeitfall(short i);
 extern void getlabel(void );
 extern long keyword(void );
 extern long transword(void );
-extern void transnum(void );
+extern long transnum(long type);
 extern char parsecommand(void );
 extern void passone(void );
 extern void loadefs(char *fn);

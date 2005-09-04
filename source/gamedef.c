@@ -42,6 +42,39 @@ static spritetype *g_sp;
 
 static char compilefile[255] = "(none)";	// file we're currently compiling
 
+enum labeltypes {
+	LABEL_ANY    = -1,
+	LABEL_DEFINE = 1,
+	LABEL_STATE  = 2,
+	LABEL_ACTOR  = 4,
+	LABEL_ACTION = 8,
+	LABEL_AI     = 16,
+	LABEL_MOVE   = 32,
+};
+
+static char *labeltypenames[] = {
+	"define",
+	"state",
+	"actor",
+	"action",
+	"ai",
+	"move"
+};
+
+static char *translatelabeltype(long type)
+{
+	int i;
+	char x[64];
+	
+	x[0] = 0;
+	for (i=0;i<6;i++) {
+		if (!(type & (1<<i))) continue;
+		if (x[0]) Bstrcat(x, " or ");
+		Bstrcat(x, labeltypenames[i]);
+	}
+	return strdup(x);
+}
+
 #define NUMKEYWORDS     (int)(sizeof(keyw)/sizeof(keyw[0]))
 
 static char *keyw[/*NUMKEYWORDS*/] =
@@ -382,7 +415,7 @@ long transword(void) //Returns its code #
     return -1;
 }
 
-void transnum(void)
+long transnum(long type)
 {
     long i, l;
 
@@ -391,7 +424,7 @@ void transnum(void)
         if(*textptr == 0x0a) line_number++;
         textptr++;
         if( *textptr == 0 )
-            return;
+            return -1;	// eof
     }
 
 
@@ -414,12 +447,23 @@ void transnum(void)
 
     for(i=0;i<labelcnt;i++)
     {
-        if( strcmp(tempbuf,label+(i<<6)) == 0 )
+        if( !Bstrcmp(tempbuf,label+(i<<6)) )
         {
-            *scriptptr = labelcode[i];
-            scriptptr++;
-            textptr += l;
-            return;
+	    char *el,*gl;
+
+	    if (labeltype[i] & type) {
+                *(scriptptr++) = labelcode[i];
+                textptr += l;
+                return labeltype[i];
+	    }
+	    *(scriptptr++) = 0;
+	    textptr += l;
+	    el = translatelabeltype(type);
+	    gl = translatelabeltype(labeltype[i]);
+	    initprintf("  * WARNING!(L%ld %s) Expecting a %s label but found a %s instead.\n",line_number,compilefile,el,gl);
+	    free(el);
+	    free(gl);
+	    return -1;	// valid label name, but wrong type
         }
     }
 
@@ -428,13 +472,15 @@ void transnum(void)
         initprintf("  * ERROR!(L%ld %s) Parameter '%s' is undefined.\n",line_number,compilefile,tempbuf);
         error++;
         textptr+=l;
-        return;
+        return -1;	// error!
     }
 
     *scriptptr = atol(textptr);
     scriptptr++;
 
     textptr += l;
+
+    return 0;	// literal value
 }
 
 
@@ -481,6 +527,7 @@ char parsecommand(void)
                 getlabel();
                 scriptptr--;
                 labelcode[labelcnt] = (long) scriptptr;
+		labeltype[labelcnt] = LABEL_STATE;
                 labelcnt++;
 
                 parsing_state = 1;
@@ -500,7 +547,7 @@ char parsecommand(void)
 
             for(j=0;j<labelcnt;j++)
             {
-                if( strcmp(label+(j<<6),label+(labelcnt<<6)) == 0 )
+                if( !Bstrcmp(label+(j<<6),label+(labelcnt<<6)) && (labeltype[j] & LABEL_STATE) )
                 {
                     *scriptptr = labelcode[j];
                     break;
@@ -520,7 +567,7 @@ char parsecommand(void)
         case 87:
         case 89:
         case 93:
-            transnum();
+            transnum(LABEL_DEFINE);
             return 0;
 
         case 18:
@@ -566,9 +613,12 @@ char parsecommand(void)
                 }
             }
 
-            transnum();
-            if(i == labelcnt)
-                labelcode[labelcnt++] = *(scriptptr-1);
+            transnum(LABEL_DEFINE);
+            if(i == labelcnt) {
+                labelcode[labelcnt] = *(scriptptr-1);
+		labeltype[labelcnt] = LABEL_DEFINE;
+		labelcnt++;
+	    }
             scriptptr -= 2;
             return 0;
         case 14:
@@ -576,7 +626,7 @@ char parsecommand(void)
             for(j = 0;j < 4;j++)
             {
                 if( keyword() == -1 )
-                    transnum();
+                    transnum(LABEL_DEFINE);
                 else break;
             }
 
@@ -591,12 +641,12 @@ char parsecommand(void)
         case 32:
             if( parsing_actor || parsing_state )
             {
-                transnum();
+                transnum(LABEL_MOVE);
 
                 j = 0;
                 while(keyword() == -1)
                 {
-                    transnum();
+                    transnum(LABEL_DEFINE);
                     scriptptr--;
                     j |= *scriptptr;
                 }
@@ -624,12 +674,15 @@ char parsecommand(void)
                         initprintf("  * WARNING.(L%ld %s) Duplicate move '%s' ignored.\n",line_number,compilefile,label+(labelcnt<<6));
                         break;
                     }
-                if(i == labelcnt)
-                    labelcode[labelcnt++] = (long) scriptptr;
+                if(i == labelcnt) {
+		    labeltype[labelcnt] = LABEL_MOVE;
+                    labelcode[labelcnt] = (long) scriptptr;
+		    labelcnt++;
+		}
                 for(j=0;j<2;j++)
                 {
                     if(keyword() >= 0) break;
-                    transnum();
+                    transnum(LABEL_DEFINE);
                 }
                 for(k=j;k<2;k++)
                 {
@@ -642,7 +695,7 @@ char parsecommand(void)
         case 54:
             {
                 scriptptr--;
-                transnum(); // Volume Number (0/4)
+                transnum(LABEL_DEFINE); // Volume Number (0/4)
                 scriptptr--;
 
                 k = *scriptptr-1;
@@ -769,7 +822,7 @@ char parsecommand(void)
             return 0;
         case 24:
             if( parsing_actor || parsing_state )
-                transnum();
+                transnum(LABEL_AI);
             else
             {
                 scriptptr--;
@@ -791,18 +844,24 @@ char parsecommand(void)
                         break;
                     }
 
-                if(i == labelcnt)
-                    labelcode[labelcnt++] = (long) scriptptr;
+                if(i == labelcnt) {
+		    labeltype[labelcnt] = LABEL_AI;
+                    labelcode[labelcnt] = (long) scriptptr;
+		    labelcnt++;
+		}
 
                 for(j=0;j<3;j++)
                 {
                     if(keyword() >= 0) break;
-                    if(j == 2)
+		    if(j == 1)
+			transnum(LABEL_ACTION);
+		    else if(j == 2)
                     {
+			transnum(LABEL_MOVE);
                         k = 0;
                         while(keyword() == -1)
                         {
-                            transnum();
+                            transnum(LABEL_DEFINE);
                             scriptptr--;
                             k |= *scriptptr;
                         }
@@ -810,7 +869,6 @@ char parsecommand(void)
                         scriptptr++;
                         return 0;
                     }
-                    else transnum();
                 }
                 for(k=j;k<3;k++)
                 {
@@ -822,7 +880,7 @@ char parsecommand(void)
 
         case 7:
             if( parsing_actor || parsing_state )
-                transnum();
+                transnum(LABEL_ACTION);
             else
             {
                 scriptptr--;
@@ -845,13 +903,16 @@ char parsecommand(void)
                         break;
                     }
 
-                if(i == labelcnt)
-                    labelcode[labelcnt++] = (long) scriptptr;
+                if(i == labelcnt) {
+		    labeltype[labelcnt] = LABEL_ACTION;
+                    labelcode[labelcnt] = (long) scriptptr;
+		    labelcnt++;
+		}
 
                 for(j=0;j<5;j++)
                 {
                     if(keyword() >= 0) break;
-                    transnum();
+                    transnum(LABEL_DEFINE);
                 }
                 for(k=j;k<5;k++)
                 {
@@ -878,7 +939,7 @@ char parsecommand(void)
             scriptptr--;
             parsing_actor = scriptptr;
 
-            transnum();
+            transnum(LABEL_DEFINE);
             scriptptr--;
             actorscrptr[*scriptptr] = parsing_actor;
 
@@ -890,7 +951,7 @@ char parsecommand(void)
                     j = 0;
                     while(keyword() == -1)
                     {
-                        transnum();
+                        transnum(LABEL_ANY);
                         scriptptr--;
                         j |= *scriptptr;
                     }
@@ -905,7 +966,7 @@ char parsecommand(void)
                         scriptptr += (4-j);
                         break;
                     }
-                    transnum();
+                    transnum(LABEL_ANY);
 
                     *(parsing_actor+j) = *(scriptptr-1);
                 }
@@ -933,11 +994,11 @@ char parsecommand(void)
             scriptptr--;
             parsing_actor = scriptptr;
 
-            transnum();
+            transnum(LABEL_DEFINE);
             scriptptr--;
             j = *scriptptr;
 
-            transnum();
+            transnum(LABEL_DEFINE);
             scriptptr--;
             actorscrptr[*scriptptr] = parsing_actor;
             actortype[*scriptptr] = j;
@@ -950,7 +1011,7 @@ char parsecommand(void)
                     j = 0;
                     while(keyword() == -1)
                     {
-                        transnum();
+                        transnum(LABEL_ANY);
                         scriptptr--;
                         j |= *scriptptr;
                     }
@@ -968,7 +1029,7 @@ char parsecommand(void)
 								//   too.
                         break;
                     }
-                    transnum();
+                    transnum(LABEL_ANY);
 
                     *(parsing_actor+j) = *(scriptptr-1);
                 }
@@ -999,7 +1060,7 @@ char parsecommand(void)
         case 103:
         case 105:
         case 110:
-            transnum();
+            transnum(LABEL_DEFINE);
             return 0;
 
         case 2:
@@ -1009,15 +1070,15 @@ char parsecommand(void)
         case 37:
         case 48:
         case 58:
-            transnum();
-            transnum();
+            transnum(LABEL_DEFINE);
+            transnum(LABEL_DEFINE);
             break;
         case 50:
-            transnum();
-            transnum();
-            transnum();
-            transnum();
-            transnum();
+            transnum(LABEL_DEFINE);
+            transnum(LABEL_DEFINE);
+            transnum(LABEL_DEFINE);
+            transnum(LABEL_DEFINE);
+            transnum(LABEL_DEFINE);
             break;
         case 10:
             if( checking_ifelse )
@@ -1038,15 +1099,15 @@ char parsecommand(void)
             return 0;
 
         case 75:
-            transnum();
+            transnum(LABEL_DEFINE);
         case 3:
         case 8:
         case 9:
-        case 21:
+        case 21:	// ifai
         case 33:
-        case 34:
+        case 34:	// ifaction
         case 35:
-        case 41:
+        case 41:	// ifmove
         case 46:
         case 53:
         case 56:
@@ -1059,7 +1120,12 @@ char parsecommand(void)
         case 85:
         case 94:
         case 111:
-            transnum();
+	    switch (tw) {
+		case 21: transnum(LABEL_AI); break;
+		case 34: transnum(LABEL_ACTION); break;
+		case 41: transnum(LABEL_MOVE); break;
+		default: transnum(LABEL_DEFINE); break;
+	    }
         case 43:
         case 44:
         case 49:
@@ -1086,7 +1152,7 @@ char parsecommand(void)
                 j = 0;
                 do
                 {
-                    transnum();
+                    transnum(LABEL_DEFINE);
                     scriptptr--;
                     j |= *scriptptr;
                 }
@@ -1145,7 +1211,7 @@ char parsecommand(void)
 
         case 107:
             scriptptr--;
-            transnum();
+            transnum(LABEL_DEFINE);
             scriptptr--;
             j = *scriptptr;
             while( *textptr == ' ' ) textptr++;
@@ -1176,7 +1242,7 @@ char parsecommand(void)
             return 0;
         case 108:
             scriptptr--;
-            transnum();
+            transnum(LABEL_DEFINE);
             scriptptr--;
             j = *scriptptr;
             while( *textptr == ' ' ) textptr++;
@@ -1208,10 +1274,10 @@ char parsecommand(void)
 
         case 0:
             scriptptr--;
-            transnum();
+            transnum(LABEL_DEFINE);
             scriptptr--;
             j = *scriptptr;
-            transnum();
+            transnum(LABEL_DEFINE);
             scriptptr--;
             k = *scriptptr;
             while( *textptr == ' ' ) textptr++;
@@ -1282,7 +1348,7 @@ char parsecommand(void)
 
         case 79:
             scriptptr--;
-            transnum();
+            transnum(LABEL_DEFINE);
             k = *(scriptptr-1);
             if(k >= NUMOFFIRSTTIMEACTIVE)
             {
@@ -1310,7 +1376,7 @@ char parsecommand(void)
             return 0;
         case 57:
             scriptptr--;
-            transnum();
+            transnum(LABEL_DEFINE);
             k = *(scriptptr-1);
             if(k >= NUM_SOUNDS)
             {
@@ -1337,19 +1403,19 @@ char parsecommand(void)
             }
             sounds[k][i] = '\0';
 
-            transnum();
+            transnum(LABEL_DEFINE);
             soundps[k] = *(scriptptr-1);
             scriptptr--;
-            transnum();
+            transnum(LABEL_DEFINE);
             soundpe[k] = *(scriptptr-1);
             scriptptr--;
-            transnum();
+            transnum(LABEL_DEFINE);
             soundpr[k] = *(scriptptr-1);
             scriptptr--;
-            transnum();
+            transnum(LABEL_DEFINE);
             soundm[k] = *(scriptptr-1);
             scriptptr--;
-            transnum();
+            transnum(LABEL_DEFINE);
             soundvo[k] = *(scriptptr-1);
             scriptptr--;
             return 0;
@@ -1396,7 +1462,7 @@ char parsecommand(void)
 		scriptptr--;
 		for(j = 0; j < 30; j++)
         	{
-			transnum();
+			transnum(LABEL_DEFINE);
 			scriptptr--;
 			params[j] = *scriptptr;
 
