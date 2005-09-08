@@ -1708,7 +1708,7 @@ if (VOLUMEALL) {
             {
                 if(sprite[ps[myconnectindex].i].extra <= 0)
                 {
-                    enterlevel(MODE_GAME);
+                    if (enterlevel(MODE_GAME)) backtomenu();
                     return;
                 }
 
@@ -2713,7 +2713,7 @@ if (PLUTOPAK) {
                 }
 
                 newgame(ud.m_volume_number,ud.m_level_number,ud.m_player_skill);
-                enterlevel(MODE_GAME);
+                if (enterlevel(MODE_GAME)) backtomenu();
             }
             else if(x == -1)
             {
@@ -4558,7 +4558,7 @@ VOLUME_ALL_40x:
 				}
 
                 newgame(ud.m_volume_number,ud.m_level_number,ud.m_player_skill+1);
-                enterlevel(MODE_GAME);
+                if (enterlevel(MODE_GAME)) backtomenu();
             }
             break;
 
@@ -4673,7 +4673,7 @@ if (VOLUMEALL) {
                     }
 
                     newgame(ud.m_volume_number,ud.m_level_number,ud.m_player_skill+1);
-                    enterlevel(MODE_GAME);
+                    if (enterlevel(MODE_GAME)) backtomenu();
 
                     return;
 }
@@ -4712,7 +4712,7 @@ if (VOLUMEALL) {
                     }
 
                     newgame(ud.m_volume_number,ud.m_level_number,ud.m_player_skill+1);
-                    enterlevel(MODE_GAME);
+                    if (enterlevel(MODE_GAME)) backtomenu();
 
                     return;
 

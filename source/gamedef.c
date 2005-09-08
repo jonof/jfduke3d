@@ -951,7 +951,7 @@ char parsecommand(void)
                     j = 0;
                     while(keyword() == -1)
                     {
-                        transnum(LABEL_ANY);
+                        transnum(LABEL_DEFINE);
                         scriptptr--;
                         j |= *scriptptr;
                     }
@@ -963,11 +963,16 @@ char parsecommand(void)
                 {
                     if(keyword() >= 0)
                     {
-                        scriptptr += (4-j);
+                        //scriptptr += (4-j);
+			for (i=4-j; i>0; i--) *(scriptptr++) = 0;
                         break;
                     }
-                    transnum(LABEL_ANY);
-
+		    switch (j)
+		    {
+			case 0: transnum(LABEL_DEFINE); break;
+			case 1: transnum(LABEL_ACTION); break;
+			case 2: transnum(LABEL_MOVE|LABEL_DEFINE); break;
+		    }
                     *(parsing_actor+j) = *(scriptptr-1);
                 }
             }
@@ -1011,7 +1016,7 @@ char parsecommand(void)
                     j = 0;
                     while(keyword() == -1)
                     {
-                        transnum(LABEL_ANY);
+                        transnum(LABEL_DEFINE);
                         scriptptr--;
                         j |= *scriptptr;
                     }
@@ -1024,13 +1029,15 @@ char parsecommand(void)
                     if(keyword() >= 0)
                     {
                         //scriptptr += (4-j);
-			for (i=4-j; i; i--) *(scriptptr++) = 0;	// JBF 20040829: this instead of above fixes
-								//   a crash in JJDuke and potentially elsewhere
-								//   too.
+			for (i=4-j; i>0; i--) *(scriptptr++) = 0;
                         break;
                     }
-                    transnum(LABEL_ANY);
-
+		    switch (j)
+		    {
+			case 0: transnum(LABEL_DEFINE); break;
+			case 1: transnum(LABEL_ACTION); break;
+			case 2: transnum(LABEL_MOVE|LABEL_DEFINE); break;
+		    }
                     *(parsing_actor+j) = *(scriptptr-1);
                 }
             }

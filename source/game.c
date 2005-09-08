@@ -646,7 +646,7 @@ void getpackets(void)
                 newgame(ud.volume_number,ud.level_number,ud.player_skill);
                 ud.coop = ud.m_coop;
 
-                enterlevel(MODE_GAME);
+                if (enterlevel(MODE_GAME)) backtomenu();
 
                 break;
             case 6:
@@ -719,7 +719,7 @@ void getpackets(void)
                 }
 
                 newgame(ud.volume_number,ud.level_number,ud.player_skill);
-                enterlevel(MODE_GAME);
+                if (enterlevel(MODE_GAME)) backtomenu();
                 break;
 
             case 16:
@@ -7673,72 +7673,11 @@ void writestring(long a1,long a2,long a3,short a4,long vx,long vy,long vz)
 }
 
 
-// JBF: moved to testcd.c to keep Windows out of things
-#if 0
-char testcd( char *fn )
-{
- short drive_count, drive;
- long dalen = 0;
- struct find_t dafilet;
- int fil;
-
- union _REGS ir;
- union _REGS or;
- struct _SREGS sr;
-
- if( IDFSIZE != 9961476 )
- {
-     drive = Btoupper(*fn)-'A';
-
-     ir.w.ax = 0x1500;
-     ir.w.bx = 0;                             /* check that MSCDEX is installed */
-     int386(0x2f, &ir, &or);
-     drive_count = or.w.bx;
-
-     if( drive_count == 0 )
-         return 1;
-
-     ir.w.ax = 0x150b;
-     ir.w.bx = 0;
-     ir.w.cx = drive;
-     int386(0x2f, &ir, &or);
-
-     if (or.w.ax == 0 || or.w.bx != 0xadad)
-         return 1;
-
-     ir.w.ax = 0x1502;
-     ir.w.bx = FP_OFF(buf);
-     sr.es = FP_SEG(buf);
-     ir.w.cx = drive;
-     int386x(0x2f, &ir, &or, &sr);
-
-     if( or.h.al == 0 || or.h.al == 30)
-         return 1;
-
-  }
-
-  fil = open(fn,O_RDONLY,S_IREAD);
-
-  if ( fil < 0 ) return 1;
-
-  // ( DO A SEE/Byte check here.) (Not coded in this version)
-
-
-  dalen = filelength(fil);
-
-  close(fil);
-
-  return( dalen != IDFSIZE );
-}
-#endif
 char testcd(char *fn, long testsiz);
 
 // JBF: various hacks here
 void copyprotect(void)
 {
-//    FILE *fp;
-//    char idfile[256];
-
     cp = 0;
 
 #ifdef NOCOPYPROTECT
@@ -7746,19 +7685,6 @@ void copyprotect(void)
 #endif
 if (VOLUMEONE) return;
 
-/*
-    fp = (FILE *)fopen("cdrom.ini","rt");
-    if(fp == (FILE *) NULL)
-    {
-        cp = 1;
-        return;
-    }
-
-    fscanf(fp,"%s",idfile);
-    fclose(fp);
-
-    strcat(idfile,IDFILENAME);
-*/
     if( testcd(IDFILENAME, IDFSIZE) )
     {
         cp = 1;
@@ -7766,11 +7692,20 @@ if (VOLUMEONE) return;
     }
 }
 
+void backtomenu(void)
+{
+	boardfilename[0] = 0;
+	if (ud.recstat == 1) closedemowrite();
+	ud.warp_on = 0;
+	ps[myconnectindex].gm = MODE_MENU;
+	cmenu(0);
+	KB_FlushKeyboardQueue();
+}
+
 #include "osdfuncs.h"
 #include "osdcmds.h"
 
 int shareware = 0;
-
 char *startwin_labeltext = "Starting Duke Nukem 3D...";
 
 void app_main(int argc,char **argv)
@@ -8011,7 +7946,7 @@ if (VOLUMEONE) {
     else if(ud.warp_on == 1)
     {
         newgame(ud.m_volume_number,ud.m_level_number,ud.m_player_skill);
-        enterlevel(MODE_GAME);
+        if (enterlevel(MODE_GAME)) backtomenu();
     }
     else vscrn();
 
@@ -8084,7 +8019,10 @@ if (!VOLUMEALL) {
 
             ready2send = 0;
             if(numplayers > 1) ps[myconnectindex].gm = MODE_GAME;
-            enterlevel(ps[myconnectindex].gm);
+            if (enterlevel(ps[myconnectindex].gm)) {
+				backtomenu();
+				goto MAIN_LOOP_RESTART;
+			}
             continue;
         }
 
@@ -8318,7 +8256,7 @@ long playback(void)
         ud.recstat = 2;
         which_demo++;
         if(which_demo == 10) which_demo = 1;
-        enterlevel(MODE_DEMO);
+        if (enterlevel(MODE_DEMO)) return 1;
     }
 
     if(foundemo == 0 || in_menu || KB_KeyWaiting() || numplayers > 1)

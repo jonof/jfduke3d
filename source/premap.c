@@ -1409,7 +1409,7 @@ void resetmys(void)
       myreturntocenter = ps[myconnectindex].return_to_center;
 }
 
-void enterlevel(char g)
+int enterlevel(char g)
 {
     short i,j;
     long l;
@@ -1443,8 +1443,9 @@ if (!VOLUMEONE) {
     {
         if ( loadboard( boardfilename,0,&ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum ) == -1 )
         {
-            sprintf(tempbuf,"Map %s not found!",boardfilename);
-            gameexit(tempbuf);
+            initprintf("Map %s not found!\n",boardfilename);
+            //gameexit(tempbuf);
+	    return 1;
         } else {
             char *p;
             strcpy(levname, boardfilename);
@@ -1456,8 +1457,9 @@ if (!VOLUMEONE) {
     }
     else if ( loadboard( level_file_names[ (ud.volume_number*11)+ud.level_number],0,&ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum ) == -1)
     {
-        sprintf(tempbuf,"Map %s not found!",level_file_names[(ud.volume_number*11)+ud.level_number]);
-        gameexit(tempbuf);
+        initprintf("Map %s not found!\n",level_file_names[(ud.volume_number*11)+ud.level_number]);
+        //gameexit(tempbuf);
+	return 1;
     } else {
         char *p;
         strcpy(levname, level_file_names[ (ud.volume_number*11)+ud.level_number]);
@@ -1476,8 +1478,9 @@ if (!VOLUMEONE) {
 
     if ( loadboard( levname,1,&ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum ) == -1)
     {
-        sprintf(tempbuf,"Map %s not found!",level_file_names[(ud.volume_number*11)+ud.level_number]);
-        gameexit(tempbuf);
+        initprintf("Map %s not found!\n",level_file_names[(ud.volume_number*11)+ud.level_number]);
+        //gameexit(tempbuf);
+	return 1;
     } else {
         char *p;
 	p = Bstrrchr(levname,'.');
@@ -1580,7 +1583,7 @@ if (VOLUMEONE) {
 
      resettimevars();  // Here we go
 
-
+	return 0;
 }
 
 /*
