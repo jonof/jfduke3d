@@ -24,13 +24,9 @@ EOBJ=eobj/
 INC=$(SRC)
 o=o
 
-# This is the list of flags -O1 enables, but actually enabling -O1 causes breakage
-OPTIMISE=-fdefer-pop -fmerge-constants -fthread-jumps -floop-optimize -fcrossjumping \
-	-fif-conversion -fif-conversion2 -fguess-branch-probability -fcprop-registers
-
 ifneq (0,$(RELEASE))
   # debugging disabled
-  debug=-fomit-frame-pointer $(OPTIMISE)
+  debug=-fomit-frame-pointer -O1
 else
   # debugging enabled
   debug=-ggdb

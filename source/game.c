@@ -41,6 +41,7 @@ Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
 
 #include "osd.h"
 #include "osdcmds.h"
+//#include "crc32.h"
 
 #include "duke3d.h"
 
@@ -8375,6 +8376,21 @@ if (VOLUMEONE) {
         }
     }
     kclose(recfilep);
+
+#if 0
+	{
+		unsigned long crcv;
+		// sync checker
+		initcrc32table();
+		crc32init(&crcv);
+		crc32block(&crcv, (unsigned char *)wall, sizeof(wall));
+		crc32block(&crcv, (unsigned char *)sector, sizeof(sector));
+		crc32block(&crcv, (unsigned char *)sprite, sizeof(sprite));
+		crc32finish(&crcv);
+		initprintf("Checksum = %08X\n",crcv);
+	}
+#endif
+	
     if(ps[myconnectindex].gm&MODE_MENU) goto RECHECK;
     return 1;
 }
