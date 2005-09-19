@@ -186,71 +186,40 @@ void cachegoodsprites(void)
 {
     short i;
 
-    if(ud.screen_size >= 8)
-    {
-        tloadtile(BOTTOMSTATUSBAR,1);
-        if( ud.multimode > 1)
-        {
-            tloadtile(FRAGBAR,1);
-            for(i=MINIFONT;i<MINIFONT+63;i++) {
-                tloadtile(i,1);
-	    }
-        }
-    }
+    tloadtile(BOTTOMSTATUSBAR,1);
+    if( ud.multimode > 1)
+        tloadtile(FRAGBAR,1);
 
     tloadtile(VIEWSCREEN,1);
 
-    for(i=STARTALPHANUM;i<ENDALPHANUM+1;i++) {
-        tloadtile(i,1);
-    }
+    for(i=STARTALPHANUM;i<ENDALPHANUM+1;i++) tloadtile(i,1);
+    for(i=BIGALPHANUM; i<BIGALPHANUM+82; i++) tloadtile(i,1);
+    for(i=MINIFONT;i<MINIFONT+63;i++) tloadtile(i,1);
 
-    for(i=FOOTPRINTS;i<FOOTPRINTS+3;i++) {
-        tloadtile(i,1);
-    }
+    for(i=FOOTPRINTS;i<FOOTPRINTS+3;i++) tloadtile(i,1);
 
-    for( i = BIGALPHANUM; i < BIGALPHANUM+82; i++) {
-        tloadtile(i,1);
-    }
+    for( i = BURNING; i < BURNING+14; i++) tloadtile(i,1);
+    for( i = BURNING2; i < BURNING2+14; i++) tloadtile(i,1);
 
-    for( i = BURNING; i < BURNING+14; i++) {
-        tloadtile(i,1);
-    }
+    for( i = CRACKKNUCKLES; i < CRACKKNUCKLES+4; i++) tloadtile(i,1);
 
-    for( i = BURNING2; i < BURNING2+14; i++) {
-        tloadtile(i,1);
-    }
+    for( i = FIRSTGUN; i < FIRSTGUN+3 ; i++ ) tloadtile(i,1);
+    for( i = FIRSTGUNRELOAD; i < FIRSTGUNRELOAD+8 ; i++ ) tloadtile(i,1);
 
-    for( i = CRACKKNUCKLES; i < CRACKKNUCKLES+4; i++) {
-        tloadtile(i,1);
-    }
-
-    for( i = FIRSTGUN; i < FIRSTGUN+3 ; i++ ) {
-        tloadtile(i,1);
-    }
-
-    for( i = EXPLOSION2; i < EXPLOSION2+21 ; i++ ) {
-        tloadtile(i,1);
-    }
+    for( i = EXPLOSION2; i < EXPLOSION2+21 ; i++ ) tloadtile(i,1);
 
     tloadtile(BULLETHOLE,1);
+    for( i = SMALLSMOKE; i < (SMALLSMOKE+4); i++) tloadtile(i,1);
 
-    for( i = FIRSTGUNRELOAD; i < FIRSTGUNRELOAD+8 ; i++ ) {
-        tloadtile(i,1);
-    }
+    for( i = JIBS1; i < (JIBS5+5); i++) tloadtile(i,1);
+    for( i = SCRAP1; i < (SCRAP1+19); i++) tloadtile(i,1);
 
-    tloadtile(FOOTPRINTS,1);
-
-    for( i = JIBS1; i < (JIBS5+5); i++) {
-        tloadtile(i,1);
-    }
-
-    for( i = SCRAP1; i < (SCRAP1+19); i++) {
-        tloadtile(i,1);
-    }
-
-    for( i = SMALLSMOKE; i < (SMALLSMOKE+4); i++) {
-        tloadtile(i,1);
-    }
+    for (i=RPG; i<RPG+7; i++) tloadtile(i,1);
+    for (i=FREEZEBLAST; i<FREEZEBLAST+3; i++) tloadtile(i,1);
+    for (i=SHRINKSPARK; i<SHRINKSPARK+4; i++) tloadtile(i,1);
+    for (i=GROWSPARK; i<GROWSPARK+4; i++) tloadtile(i,1);
+    for (i=SHRINKEREXPLOSION; i<SHRINKEREXPLOSION+4; i++) tloadtile(i,1);
+    for (i=MORTER; i<MORTER+4; i++) tloadtile(i,4);
 }
 
 char getsound(unsigned short num)
