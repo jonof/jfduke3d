@@ -547,10 +547,23 @@ char parsecommand(void)
 
             for(j=0;j<labelcnt;j++)
             {
-                if( !Bstrcmp(label+(j<<6),label+(labelcnt<<6)) && (labeltype[j] & LABEL_STATE) )
+                if( !Bstrcmp(label+(j<<6),label+(labelcnt<<6)) )
                 {
-                    *scriptptr = labelcode[j];
-                    break;
+		    char *gl;
+
+		    if (labeltype[j] & LABEL_STATE) {
+                        *scriptptr = labelcode[j];
+                        break;
+		    } else {
+			char *gl;
+
+			gl = translatelabeltype(labeltype[j]);
+			initprintf("  * WARNING!(L%ld %s) Expected a state label, found a %s instead. Neutering.\n",
+				line_number,compilefile,gl);
+			free(gl);
+			*(scriptptr-1) = 106;	// nullop
+			return 0;
+		    }
                 }
             }
 

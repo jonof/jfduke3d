@@ -105,7 +105,6 @@ duke3d$(EXESUFFIX): $(GAMEOBJS) $(OBJ)gameres.res $(EOBJ)$(ENGINELIB)
 		RESOURCE $(OBJ)gameres.res &
 		LIBPATH  $(DXROOT)\lib &
 		LIBPATH  $(EOBJ) &
-		LIBFILE  shfolder.lib &
 		LIBRARY  { $(ENGINELIB) $(LIBS) }
 	
 build$(EXESUFFIX): $(EDITOROBJS) $(OBJ)buildres.res $(EOBJ)$(ENGINELIB) $(EOBJ)$(EDITORLIB)
@@ -116,7 +115,6 @@ build$(EXESUFFIX): $(EDITOROBJS) $(OBJ)buildres.res $(EOBJ)$(ENGINELIB) $(EOBJ)$
 		RESOURCE $(OBJ)buildres.res &
 		LIBPATH  $(DXROOT)\lib &
 		LIBPATH  $(EOBJ) &
-		LIBFILE  shfolder.lib &
 		LIBRARY  { $(LIBS) $(ENGINELIB) $(EDITORLIB) }
 
 !include Makefile.deps

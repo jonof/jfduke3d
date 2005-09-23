@@ -33,7 +33,7 @@ CFLAGS= /MD /J /nologo $(flags_cl)  \
 	/I$(INC) /I$(EINC) /I$(SRC)jmact /I$(SRC)jaudiolib \
 	/DNOCOPYPROTECT $(ENGINEOPTS) \
 	/I$(DXROOT)\include /DRENDERTYPEWIN=1
-LIBS=shfolder.lib user32.lib gdi32.lib dxguid.lib winmm.lib wsock32.lib #opengl32.lib
+LIBS=user32.lib gdi32.lib shell32.lib dxguid.lib winmm.lib wsock32.lib #opengl32.lib
 ASFLAGS=/nologo /coff
 EXESUFFIX=.exe
 
