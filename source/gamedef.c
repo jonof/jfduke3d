@@ -549,8 +549,6 @@ char parsecommand(void)
             {
                 if( !Bstrcmp(label+(j<<6),label+(labelcnt<<6)) )
                 {
-		    char *gl;
-
 		    if (labeltype[j] & LABEL_STATE) {
                         *scriptptr = labelcode[j];
                         break;
