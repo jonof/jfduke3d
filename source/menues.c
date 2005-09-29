@@ -2216,7 +2216,7 @@ cheat_for_port_credits:
 				   p = "Ken \"Awesoken\" Silverman";
 				   minitext(160-(Bstrlen(p)<<1), 60+8+10-l, p, 12, 10+16+128);
 
-				   p = "Icon by Lachlan \"NetNessie\" McDonald";
+				   p = "Icon and startup graphics by Lachlan \"NetNessie\" McDonald";
 				   minitext(160-(Bstrlen(p)<<1), 92-l, p, 12, 10+16+128);
 
 				   {

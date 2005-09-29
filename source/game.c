@@ -8378,9 +8378,9 @@ if (VOLUMEONE) {
     kclose(recfilep);
 
 #if 0
+	// sync checker
 	{
 		unsigned long crcv;
-		// sync checker
 		initcrc32table();
 		crc32init(&crcv);
 		crc32block(&crcv, (unsigned char *)wall, sizeof(wall));
