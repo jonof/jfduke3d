@@ -240,7 +240,7 @@ char framerateon=1,tabgraphic=0;
 
 static char sidemode=0;
 extern long vel, svel, hvel, angvel;
-long xvel, yvel, timeoff;
+long xvel, yvel, timoff;
 
 static char once=0;
 
@@ -2265,12 +2265,12 @@ void faketimerhandler(void)
                 else
                         ang = ((ang-((((ang-daang)&2047)+24)>>4))&2047);
 
-                timeoff = ototalclock;
+                timoff = ototalclock;
         }
         else
         {
-                if (ototalclock > timeoff+32)
-                        ang = ((ang+((timeoff+32-ototalclock)>>4))&2047);
+                if (ototalclock > timoff+32)
+                        ang = ((ang+((timoff+32-ototalclock)>>4))&2047);
         }
 
         getzrange(posx,posy,posz,cursectnum,&hiz,&hihit,&loz,&lohit,128L,0);
@@ -2278,7 +2278,7 @@ void faketimerhandler(void)
         oposx -= posx; oposy -= posy;
 
   dist = ksqrt(oposx*oposx+oposy*oposy);
-  if (ototalclock > timeoff+32) dist = 0;
+  if (ototalclock > timoff+32) dist = 0;
 
   daang = mulscale(dist,angvel,9);
         posz += (daang<<6);
