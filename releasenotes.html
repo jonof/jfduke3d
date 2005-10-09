@@ -53,17 +53,21 @@
 
 	<body>
 		<h1>Release Notes for JFDuke3D</h1>
-		<p>Release date: 25 September 2005</p>
+		<p>Release date: 9 October 2005</p>
 
 		<h2>New Features and Improvements</h2>
 		<ul>
-			<li>Individual user profile support. See <a href="#profiles">this section</a> for more
-			information.</li>
 			<li>Improved stability with mods, particularly Duke Meets Doom which no longer crashes when you
 			punch a wall for instance. Big thanks to Richard "TerminX" Gobeille for his help with identifying
 			the cause of this problem and fixing it.</li>
 			<li>MD3 models may now have a skin for each surface of the model. If you don't know what this
 			means, don't worry. If you do, then you ought to realise the significance of this.</li>
+			<li>Polymost high-resolution texture and model skin caching has been made far more comprehensive.
+			This has the effect of reducing the number of pauses during gameplay when textures are loaded at
+			the expense of a longer wait during the level load phase while the textures and skins are loaded
+			from disk.</li>
+			<li>Individual user profile support. See <a href="#profiles">this section</a> for more
+			information.</li>
 		</ul>
 			
 		<h2>Known Issues</h2>
@@ -71,14 +75,14 @@
 			<li>You may have instances where the game goes out of sync. The master can often restart the game
 			from the menu without everyone having to restart the game from scratch, and things should be
 			fine.</li>
-			<li>A future version will include my new sound code that supports OggVorbis and other sound
-			formats. For now, the existing AudioLib code is in use.</li>
+			<li>A test version in the near future will include my new sound code that supports OggVorbis and
+			other sound formats. For now, the existing AudioLib code is in use.</li>
 		</ul>
 
 		<h3><a name="profiles">Individual User Profiles</a></h3>
 
 		<p>With Windows 2000 and XP, having multiple user accounts for different people on the one computer has
-		been very easy, with XP especially so. Linux, BSD, and other *nix-like OS users have known about this
+		been very easy, with XP especially so. Linux, BSD, and other *nix-like OS users have had this ability
 		forever and now JFDuke3D properly supports installations where each user can have his/her own set of
 		configuration and savegame files without interfering with other players on the same PC. On Windows the
 		default mode of behaviour is the same as in previous versions: everything is shared, but it is now possible
@@ -323,13 +327,11 @@ sprite 478 angoff -512</pre>
 		<p>Hightile textures are defined in the DUKE3D.DEF file. See the <a href="#deffile">DEF-file language</a>
 		reference for information on how to specify Hightile textures.</p>
 		
-		<h3>Limitations to Hightile in this release</h3>
+		<h3>Limitations to Hightile</h3>
 		<ul>
 			<li>Hightile will squash or stretch the replacement to fit in the dimensions of the original tile
 			it replaces. Artists should keep their replacements in the same ratio as the original tile for the
 			art to not look distorted.</li>
-			<li>Duke does not precache textures yet with a great level of sophistication, so be aware that you
-			will notice a small delay on occasion as a texture is loaded into memory when it is first seen.</li>
 		</ul>
 		
 		<h2><a name="hightile-zip">ZIP file support</a></h2>
@@ -404,6 +406,14 @@ as the original Build - but one that worked with vectors instead of already rast
 			<dt>glinfo</dt>
 			<dd>Displays some information about the OpenGL driver.</dd>
 
+			<dt>glredbluemode &lt;0 or 1&gt;</dt>
+			<dd>Enables or disables the red-blue stereovision mode in OpenGL. This mode is experimental
+			at this time. We know the flicker is nasty and the menu background will mix into the screen.
+			To avoid the menu bug, run the game in fullscreen mode and type "glredbluemode 1" AFTER
+			beginning the game. Sorry, there is no way to change parallax or separation. Do not contact
+			us about bugs with this mode... if you do, we'll think twice about documenting hidden features
+			in future releases. :P</dd>
+
 			<dt>gltextureanisotropy &lt;level&gt;</dt>
 			<dd>Sets the OpenGL anisotropic filtering level.</dd>
 
@@ -417,6 +427,10 @@ as the original Build - but one that worked with vectors instead of already rast
 				<tr><td>4</td><td>GL_NEAREST_MIPMAP_LINEAR</td></tr>
 				<tr><td>5</td><td>GL_LINEAR_MIPMAP_LINEAR (trilinear)</td></tr>
 			</table></dd>
+
+			<dt>glusetexcompr &lt;0 or 1&gt;</dt>
+			<dd>Enables or disables the use of OpenGL texture compression for hightile textures. You need
+			to use 'restartvid' to apply any changes to this value.</dd>
 
 			<dt>god</dt>
 			<dd>Enables God mode.</dd>
@@ -433,11 +447,20 @@ as the original Build - but one that worked with vectors instead of already rast
 			<dt>noclip</dt>
 			<dd>Disables player collisions with world objects.</dd>
 
+			<dt>novoxmips &lt;0 or 1&gt;</dt>
+			<dd>Disables or enables the use of voxel mipmaps to improve voxel visual quality.</dd>
+
+			<dt>osdrows &lt;num&gt;</dt>
+			<dd>Sets the number of visible lines of the console when it is open.</dd>
+
 			<dt>quit</dt>
 			<dd>Exits the game.</dd>
 
 			<dt>restartvid</dt>
 			<dd>Resets the video system, reinitialising the video mode.</dd>
+
+			<dt>screencaptureformat &lt;0 or 1&gt;</dt>
+			<dd>0 = Targa, 1 = PCX</dd>
 
 			<dt>setrendermode &lt;mode&gt;</dt>
 			<dd>Sets the current Polymost render mode.</dd>
@@ -446,41 +469,16 @@ as the original Build - but one that worked with vectors instead of already rast
 			<dd>Sets the size of the status bar as a percentage of its original full-width size. Minimum size is
 			10%, maximum 100%.</dd>
 
-			<dt>vidmode [xres yres] [bpp]</dt>
-			<dd>Changes the current video mode. You may pass either a new resolution (eg 640 480),
-			a new colour depth (eg 32), or both a resolution and colour depth (eg 640 480 32).</dd>
-
-			<dt>bpp &lt;colourdepth&gt;</dt>
-			<dd>Sets the colour depth. Does not apply it immediately though. You need to use 'restartvid'
-			after setting this if you want to apply the change.</dd>
-
-			<dt>glusetexcompr &lt;0 or 1&gt;</dt>
-			<dd>Enables or disables the use of OpenGL texture compression for hightile textures. You need
-			to use 'restartvid' to apply any changes to this value.</dd>
-
-			<dt>novoxmips &lt;0 or 1&gt;</dt>
-			<dd>Disables or enables the use of voxel mipmaps to improve voxel visual quality.</dd>
-
-			<dt>osdrows &lt;num&gt;</dt>
-			<dd>Sets the number of visible lines of the console when it is open.</dd>
-
-			<dt>screencaptureformat &lt;0 or 1&gt;</dt>
-			<dd>0 = Targa, 1 = PCX</dd>
-
 			<dt>showcoords &lt;0 or 1&gt;</dt>
 			<dd>Same as typing "DNCOORDS" cheat.</dd>
 
 			<dt>showfps &lt;0 or 1&gt;</dt>
 			<dd>Shows/hides the framerate counter. Same as typing "DNRATE" cheat.</dd>
 
-			<dt>usemodels &lt;0 or 1&gt;</dt>
-			<dd>Disables or enables the use of 3D models in GL Polymost mode if any are defined.</dd>
-
-			<dt>usevoxels &lt;0 or 1&gt;</dt>
-			<dd>Disables or enables the use of voxels in the classic renderer if any are defined.</dd>
-
-			<dt>usehightile &lt;0 or 1&gt;</dt>
-			<dd>Disables or enables the use of Hightile textures in GL Polymost mode if any are defined.</dd>
+			<dt>spawn &lt;tile-number or name&gt; [pal] [cstat] [angle] [x y z]</dt>
+			<dd>Places a sprite of the given tile number or name at the current position, or if given, the "x
+			y z" location. A name is a label defined in the CON code. The sprite may be spawned with a
+			specific palette, cstat value, and angle if those parameters are given.</dd>
 
 			<dt>usegoodalpha &lt;0 or 1&gt;</dt>
 			<dd>If 1, a lower alpha cutoff value is used when rendering textures with transparency, which
@@ -488,13 +486,22 @@ as the original Build - but one that worked with vectors instead of already rast
 			item potentially being invisible in certain circumstances. 0 is a more compatible value (and is
 			the default) for this option but slight visual degradation will result.</dd>
 
-			<dt>glredbluemode &lt;0 or 1&gt;</dt>
-			<dd>Enables or disables the red-blue stereovision mode in OpenGL. This mode is experimental
-			at this time. We know the flicker is nasty and the menu background will mix into the screen.
-			To avoid the menu bug, run the game in fullscreen mode and type "glredbluemode 1" AFTER
-			beginning the game. Sorry, there is no way to change parallax or separation. Do not contact
-			us about bugs with this mode... if you do, we'll think twice about documenting hidden features
-			in future releases. :P</dd>
+			<dt>usehightile &lt;0 or 1&gt;</dt>
+			<dd>Disables or enables the use of Hightile textures in GL Polymost mode if any are defined.</dd>
+
+			<dt>usemodels &lt;0 or 1&gt;</dt>
+			<dd>Disables or enables the use of 3D models in GL Polymost mode if any are defined.</dd>
+
+			<dt>usevoxels &lt;0 or 1&gt;</dt>
+			<dd>Disables or enables the use of voxels in the classic renderer if any are defined.</dd>
+
+			<dt>vidmode [xres yres] [bpp]</dt>
+			<dd>Changes the current video mode. You may pass either a new resolution (eg 640 480),
+			a new colour depth (eg 32), or both a resolution and colour depth (eg 640 480 32).</dd>
+
+			<dt>bpp &lt;colourdepth&gt;</dt>
+			<dd>Sets the display colour depth. Does not apply it immediately though. You need to use
+			'restartvid' after setting this if you want to apply the change.</dd>
 		</dl>
 		
 		<address>Happy Duke'ing!<br />
