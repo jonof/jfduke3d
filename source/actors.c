@@ -3846,7 +3846,9 @@ void moveactors(void)
 
 				    // JBF 20041129: a slimer eating another enemy really ought
 				    // to decrease the maximum kill count by one.
-				    ps[myconnectindex].max_actors_killed--;
+				    // JBF 20051024: additionally, the enemy has to be alive for
+				    // the max enemy count to be decremented.
+				    if (sprite[t[5]].extra > 0) ps[myconnectindex].max_actors_killed--;
 			    }
                         }
                     }

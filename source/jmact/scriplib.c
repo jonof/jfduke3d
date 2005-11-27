@@ -7,6 +7,8 @@
  * Since we weren't given the source for MACT386.LIB so I've had to do some
  * creative interpolation here.
  *
+ * This all should be rewritten in a much much cleaner fashion.
+ *
  */
 //-------------------------------------------------------------------------
 /*
@@ -793,13 +795,25 @@ void SCRIPT_PutString
    char * string
    )
 {
-	char *raw;
+	char *raw,*q,*p;
+	int len = 3;
 	if (!string) string = "";
 
-	raw = Bmalloc(strlen(string)+3);
-	strcpy(raw,"\"");
-	strcat(raw,string);
-	strcat(raw,"\"");
+	for (q=string; *q; q++) {
+		if (*q == '\r' || *q == '\n' || *q == '\t' || *q == '\\' || *q == '"') len+=2;
+		else if (*q >= ' ') len++;
+	}
+	p = raw = Bmalloc(len);
+	*(p++) = '"';
+	for (q=string; *q; q++) {
+		if (*q == '\r') { *(p++) = '\\'; *(p++) = 'r'; }
+		else if (*q == '\n') { *(p++) = '\\'; *(p++) = 'n'; }
+		else if (*q == '\t') { *(p++) = '\\'; *(p++) = 't'; }
+		else if (*q == '\\' || *q == '"') { *(p++) = '\\'; *(p++) = *q; }
+		else if (*q >= ' ') *(p++) = *q;
+	}
+	*(p++) = '"';
+	*p=0;
 	
 	SCRIPT_AddEntry(scripthandle, sectionname, entryname, raw);
 	Bfree(raw);
@@ -814,17 +828,41 @@ void SCRIPT_PutDoubleString
    char * string2
    )
 {
-	char *raw;
+	char *raw,*q,*p;
+	int len = 6;
 	if (!string1) string1 = "";
 	if (!string2) string2 = "";
 
-	raw = Bmalloc(strlen(string1)+strlen(string2)+6);
-	strcpy(raw,"\"");
-	strcat(raw,string1);
-	strcat(raw,"\" \"");
-	strcat(raw,string2);
-	strcat(raw,"\"");
-
+	for (q=string1; *q; q++) {
+		if (*q == '\r' || *q == '\n' || *q == '\t' || *q == '\\' || *q == '"') len+=2;
+		else if (*q >= ' ') len++;
+	}
+	for (q=string2; *q; q++) {
+		if (*q == '\r' || *q == '\n' || *q == '\t' || *q == '\\' || *q == '"') len+=2;
+		else if (*q >= ' ') len++;
+	}
+	p = raw = Bmalloc(len);
+	*(p++) = '"';
+	for (q=string1; *q; q++) {
+		if (*q == '\r') { *(p++) = '\\'; *(p++) = 'r'; }
+		else if (*q == '\n') { *(p++) = '\\'; *(p++) = 'n'; }
+		else if (*q == '\t') { *(p++) = '\\'; *(p++) = 't'; }
+		else if (*q == '\\' || *q == '"') { *(p++) = '\\'; *(p++) = *q; }
+		else if (*q >= ' ') *(p++) = *q;
+	}
+	*(p++) = '"';
+	*(p++) = ' ';
+	*(p++) = '"';
+	for (q=string2; *q; q++) {
+		if (*q == '\r') { *(p++) = '\\'; *(p++) = 'r'; }
+		else if (*q == '\n') { *(p++) = '\\'; *(p++) = 'n'; }
+		else if (*q == '\t') { *(p++) = '\\'; *(p++) = 't'; }
+		else if (*q == '\\' || *q == '"') { *(p++) = '\\'; *(p++) = *q; }
+		else if (*q >= ' ') *(p++) = *q;
+	}
+	*(p++) = '"';
+	*p=0;
+	
 	SCRIPT_AddEntry(scripthandle, sectionname, entryname, raw);
 	Bfree(raw);
 }

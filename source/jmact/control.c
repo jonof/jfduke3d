@@ -217,8 +217,8 @@ void CONTROL_MapKey( int32 which, kb_scancode key1, kb_scancode key2 )
 {
 	if (CONTROL_CheckRange(which)) return;
 
-	CONTROL_KeyMapping[which].key1 = key1;
-	CONTROL_KeyMapping[which].key2 = key2;
+	CONTROL_KeyMapping[which].key1 = key1 ? key1 : KEYUNDEFINED;
+	CONTROL_KeyMapping[which].key2 = key2 ? key2 : KEYUNDEFINED;
 }
 
 void CONTROL_PrintKeyMap(void)

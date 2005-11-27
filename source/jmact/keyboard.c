@@ -148,8 +148,6 @@ static struct {
 	{ "PgDn", 0xd1 },
 	{ "Insert", 0xd2 },
 	{ "Delete", 0xd3 },
-	{ "", 0 },
-	{ "Unknwn", 0xff }
 };
 
 // translation table for turning scancode into ascii characters
@@ -245,7 +243,7 @@ char *KB_ScanCodeToString( kb_scancode scancode )
 	for (s=0; s < (sizeof(sctokeylut)/sizeof(sctokeylut[0])); s++)
 		if (sctokeylut[s].sc == scancode) return sctokeylut[s].key;
 	
-	return "Unknwn";
+	return "";
 }
 
 kb_scancode KB_StringToScanCode( char * string )
@@ -255,7 +253,7 @@ kb_scancode KB_StringToScanCode( char * string )
 	for (s=0; s < (sizeof(sctokeylut)/sizeof(sctokeylut[0])); s++)
 		if (!Bstrcasecmp(sctokeylut[s].key, string)) return sctokeylut[s].sc;
 
-	return 0xff;
+	return 0;
 }
 
 void KB_TurnKeypadOn( void )
