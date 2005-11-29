@@ -5273,10 +5273,8 @@ void playanm(char *fn,char t)
 
     walock[TILE_ANIM] = 219+t;
 
-    if(anim == 0 || lastanimhack != t)
-        allocache((long *)&anim,length+sizeof(anim_t),&walock[TILE_ANIM]);
-
-    animbuf = (char *)(FP_OFF(anim)+sizeof(anim_t));
+    if(lastanimhack != t)
+        allocache((long *)&animbuf,length,&walock[TILE_ANIM]);
 
     lastanimhack = t;
 
