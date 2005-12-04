@@ -3606,6 +3606,8 @@ short spawn( short j, short pn )
                 setsprite(i,sp->x,sp->y,sp->z);
                 break;
 
+			case FRAMEEFFECT1_13:
+				if (PLUTOPAK) break;
             case FRAMEEFFECT1:
                 if(j >= 0)
                 {
@@ -5870,6 +5872,8 @@ void animatesprites(long x,long y,short a,long smoothratio)
                 if(T1 > 1) t->cstat &= ~4;
                 if(T1 > 2) t->cstat &= ~12;
                 break;
+			case FRAMEEFFECT1_13:
+				if (PLUTOPAK) break;
             case FRAMEEFFECT1:
                 if(s->owner >= 0 && sprite[s->owner].statnum < MAXSTATUS)
                 {

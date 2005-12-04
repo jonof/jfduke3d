@@ -2239,6 +2239,7 @@ cheat_for_port_credits:
 							"Thanks to these people for their input and contributions:",
 							"",
 							"Richard \"TerminX\" Gobeille, Ben \"ProAsm\" Smit,",
+							"Matthieu Klein,",
 							"",
 							"and all those who submitted bug reports and ",
 							"supported the project financially!",

@@ -625,6 +625,7 @@ Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
 #define FEM9 3450
 #define FOOTPRINT 3701
 #define POOP 4094
+#define FRAMEEFFECT1_13 3999
 #define FRAMEEFFECT1 4095
 #define PANNEL3 4099
 #define SCREENBREAK14 4120

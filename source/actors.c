@@ -3982,7 +3982,7 @@ void moveactors(void)
 
             case BOUNCEMINE:
             case MORTER:
-                j = spawn(i,FRAMEEFFECT1);
+                j = spawn(i, (PLUTOPAK ? FRAMEEFFECT1 : FRAMEEFFECT1_13) );
                 hittype[j].temp_data[0] = 3;
 
             case HEAVYHBOMB:
@@ -4521,6 +4521,8 @@ void moveexplosions(void)  // STATNUM 5
                     deletesprite(i);
                 goto BOLT;
 
+            case FRAMEEFFECT1_13:
+		if (PLUTOPAK) goto BOLT;	// JBF: ideally this should never happen...
             case FRAMEEFFECT1:
 
                 if(s->owner >= 0)
