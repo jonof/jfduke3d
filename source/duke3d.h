@@ -364,7 +364,8 @@ struct player_struct
     short dummyplayersprite,extra_extra8,quick_kick;
     short heat_amount,actorsqu,timebeforeexit,customexitsound;
 
-    short weaprecs[16],weapreccnt,interface_toggle_flag;
+    short weaprecs[16],weapreccnt;
+    unsigned long interface_toggle_flag;
 
     short orotscrnang,rotscrnang,dead_flag,show_empty_weapon;	// JBF 20031220: added orotscrnang
     short scuba_amount,jetpack_amount,steroids_amount,shield_amount;

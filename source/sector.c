@@ -2425,6 +2425,36 @@ void cheatkeys(short snum)
 
     if(p->cheat_phase == 1) return;
 
+    // 1<<0  =  jump
+    // 1<<1  =  crouch
+    // 1<<2  =  fire
+    // 1<<3  =  aim up
+    // 1<<4  =  aim down
+    // 1<<5  =  run
+    // 1<<6  =  look left
+    // 1<<7  =  look right
+    // 15<<8 = !weapon selection (bits 8-11)
+    // 1<<12 = !steroids
+    // 1<<13 =  look up
+    // 1<<14 =  look down
+    // 1<<15 = !nightvis
+    // 1<<16 = !medkit
+    // 1<<17 =  (multiflag==1) ? changes meaning of bits 18 and 19
+    // 1<<18 =  centre view
+    // 1<<19 = !holster weapon
+    // 1<<20 = !inventory left
+    // 1<<21 = !pause
+    // 1<<22 = !quick kick
+    // 1<<23 =  aim mode
+    // 1<<24 = !holoduke
+    // 1<<25 = !jetpack
+    // 1<<26 =  gamequit
+    // 1<<27 = !inventory right
+    // 1<<28 = !turn around
+    // 1<<29 = !open
+    // 1<<30 = !inventory
+    // 1<<31 = !escape
+
     i = p->aim_mode;
     p->aim_mode = (sb_snum>>23)&1;
     if(p->aim_mode < i)
@@ -2437,12 +2467,13 @@ void cheatkeys(short snum)
         FTA(80,p);
     }
 
-    if( !(sb_snum&((15<<8)|(1<<12)|(1<<15)|(1<<16)|(1<<22)|(1<<19)|(1<<20)|(1<<21)|(1<<24)|(1<<25)|(1<<27)|(1<<28)|(1<<29)|(1<<30)|(1<<31))) )
-        p->interface_toggle_flag = 0;
-    else if(p->interface_toggle_flag == 0 && ( sb_snum&(1<<17) ) == 0)
-    {
-        p->interface_toggle_flag = 1;
+    j = sb_snum & ((15<<8)|(1<<12)|(1<<15)|(1<<16)|(1<<22)|(1<<19)|(1<<20)|(1<<21)|(1<<24)|(1<<25)|(1<<27)|(1<<28)|(1<<29)|(1<<30)|(1<<31));
+    sb_snum = j & ~p->interface_toggle_flag;
+    p->interface_toggle_flag |= sb_snum | ((sb_snum&0xf00)?0xf00:0);
+    p->interface_toggle_flag &= j | ((j&0xf00)?0xf00:0);
 
+    if(sb_snum && ( sb_snum&(1<<17) ) == 0)
+    {
         if( sb_snum&(1<<21) )
         {
             KB_ClearKeyDown( sc_Pause );
@@ -2464,9 +2495,9 @@ void cheatkeys(short snum)
 
         if(ud.pause_on) return;
 
-        if(sprite[p->i].extra <= 0) return;
+        if(sprite[p->i].extra <= 0) return;		// if dead...
 
-        if( sb_snum&(1<<30) && p->newowner == -1 )
+        if( sb_snum&(1<<30) && p->newowner == -1 )	// inventory button generates event for selected item
         {
             switch(p->inven_icon)
             {
@@ -2496,7 +2527,7 @@ void cheatkeys(short snum)
                 p->inven_icon = 2;
                 FTA(12,p);
             }
-            return;
+            return;		// is there significance to returning?
         }
 
         if(p->newowner == -1)
@@ -2697,7 +2728,7 @@ void cheatkeys(short snum)
                     sb_snum |= 1<<19;
                     p->weapon_pos = -9;
                 }
-                else if( p->gotweapon[j] && (unsigned long)p->curr_weapon != j ) switch(j)
+                else if( (long)j >= 0 && p->gotweapon[j] && (unsigned long)p->curr_weapon != j ) switch(j)
                 {
                     case KNEE_WEAPON:
                         addweapon( p, KNEE_WEAPON );
@@ -2887,8 +2918,9 @@ void cheatkeys(short snum)
             else FTA(50,p);
         }
 
-        if(sb_snum&(1<<28) && p->one_eighty_count == 0)
+        if(sb_snum&(1<<28) && p->one_eighty_count == 0) {
             p->one_eighty_count = -1024;
+	}
     }
 }
 
