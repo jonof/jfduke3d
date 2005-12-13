@@ -590,6 +590,7 @@ void resetprestat(short snum,char g)
     p->kickback_pic = 5;
     p->last_weapon = -1;
     p->weapreccnt = 0;
+    p->interface_toggle_flag = 0;
     p->show_empty_weapon= 0;
     p->holster_weapon = 0;
     p->last_pissed_time = 0;

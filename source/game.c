@@ -6476,6 +6476,7 @@ void nonsharedkeys(void)
     {
         CONTROL_ClearButton(gamefunc_Show_Opponents_Weapon);
         ud.showweapons = 1-ud.showweapons;
+		ShowOpponentWeapons = ud.showweapons;
         FTA(82-ud.showweapons,&ps[screenpeek]);
     }
 
@@ -7964,6 +7965,7 @@ if (VOLUMEONE) {
     }
 
     ud.auto_run = RunMode;
+	ud.showweapons = ShowOpponentWeapons;
     ps[myconnectindex].aim_mode = MouseAiming;
     ps[myconnectindex].auto_aim = AutoAim;
 
@@ -8095,10 +8097,10 @@ char opendemoread(char which_demo) // 0 = mine
      if (kread(recfilep,&ver,sizeof(char)) != sizeof(char)) goto corrupt;
      if( (ver != BYTEVERSION) ) // || (ud.reccnt < 512) )
      {
-	if (ver == BYTEVERSION_JF) OSD_Printf("Demo %s is for Regular edition.\n", d);
-	else if (ver == BYTEVERSION_JF+1) OSD_Printf("Demo %s is for Atomic edition.\n", d);
-	else if (ver == BYTEVERSION_JF+2) OSD_Printf("Demo %s is for Shareware version.\n", d);
-	else OSD_Printf("Demo %s is of an incompatible version (%d).\n", d, ver);
+        if      (ver == BYTEVERSION_JF)   initprintf("Demo %s is for Regular edition.\n", d);
+        else if (ver == BYTEVERSION_JF+1) initprintf("Demo %s is for Atomic edition.\n", d);
+        else if (ver == BYTEVERSION_JF+2) initprintf("Demo %s is for Shareware version.\n", d);
+        else initprintf("Demo %s is of an incompatible version (%d).\n", d, ver);
         kclose(recfilep);
 		ud.reccnt = 0;
         return 0;

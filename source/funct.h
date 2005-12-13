@@ -144,6 +144,7 @@ extern int probe(int x,int y,int i,int n);
 extern int menutext(int x,int y,short s,short p,const char *t);
 extern int menutextc(int x,int y,short s,short p,const char *t);
 extern void bar(int x,int y,short *p,short dainc,char damodify,short s,short pa);
+extern void barsm(int x,int y,short *p,short dainc,char damodify,short s,short pa);
 extern void dispnames(void );
 extern int getfilenames(char *path, char kind[]);
 extern void sortfilenames(void);

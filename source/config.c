@@ -68,6 +68,7 @@ int32 ControllerType;
 int32 MouseAiming;
 int32 RunMode;
 int32 AutoAim;	// JBF 20031125
+int32 ShowOpponentWeapons;
 
 // JBF 20031211: Store the input settings because
 // (currently) jmact can't regurgitate them
@@ -233,6 +234,7 @@ void CONFIG_SetDefaults( void )
    ud.m_marker = 1;
    ud.m_ffire = 1;
    ud.levelstats = 0;
+   ShowOpponentWeapons = 0;
    Bstrcpy(ud.rtsname, "DUKE.RTS");
    Bstrcpy(myname, "Duke");
 
@@ -580,6 +582,7 @@ void CONFIG_ReadSetup( void )
       SCRIPT_GetNumber( scripthandle, "Misc", "Crosshairs",&ud.crosshair);
       SCRIPT_GetNumber( scripthandle, "Misc", "StatusBarScale",&ud.statusbarscale);
       SCRIPT_GetNumber( scripthandle, "Misc", "ShowLevelStats",&ud.levelstats);
+	  SCRIPT_GetNumber( scripthandle, "Misc", "ShowOpponentWeapons",&ShowOpponentWeapons);
       dummy = useprecache; SCRIPT_GetNumber( scripthandle, "Misc", "UsePrecache",&dummy); useprecache = dummy != 0;
       if(ud.wchoice[0][0] == 0 && ud.wchoice[0][1] == 0)
       {
@@ -680,6 +683,7 @@ void CONFIG_WriteSetup( void )
    SCRIPT_PutNumber( scripthandle, "Misc", "Crosshairs",ud.crosshair,false,false);
    SCRIPT_PutNumber( scripthandle, "Misc", "ShowLevelStats",ud.levelstats,false,false);
    SCRIPT_PutNumber( scripthandle, "Misc", "StatusBarScale",ud.statusbarscale,false,false);
+   SCRIPT_PutNumber( scripthandle, "Misc", "ShowOpponentWeapons",ShowOpponentWeapons,false,false);
    SCRIPT_PutNumber( scripthandle, "Misc", "UsePrecache",useprecache,false,false);
    SCRIPT_PutNumber( scripthandle, "Controls", "MouseAimingFlipped",ud.mouseflip,false,false);
    SCRIPT_PutNumber( scripthandle, "Controls","MouseAiming",MouseAiming,false,false);

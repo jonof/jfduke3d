@@ -46,6 +46,7 @@ extern int32 ControllerType;
 extern int32 MouseAiming;
 extern int32 RunMode;
 extern int32 AutoAim;
+extern int32 ShowOpponentWeapons;
 extern int32 ScreenMode;
 extern int32 ScreenWidth;
 extern int32 ScreenHeight;

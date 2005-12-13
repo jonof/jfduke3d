@@ -1012,7 +1012,7 @@ int menutextc(int x,int y,short s,short p,const char *t)
 }
 
 
-void bar(int x,int y,short *p,short dainc,char damodify,short s, short pa)
+static void bar_(int type, int x,int y,short *p,short dainc,char damodify,short s, short pa)
 {
     short xloc;
     char rev;
@@ -1073,12 +1073,15 @@ void bar(int x,int y,short *p,short dainc,char damodify,short s, short pa)
 
     xloc = *p;
 
-    rotatesprite( (x+22)<<16,(y-3)<<16,65536L,0,SLIDEBAR,s,pa,10,0,0,xdim-1,ydim-1);
+    rotatesprite( (x<<16)+(22<<(16-type)),(y<<16)-(3<<(16-type)),65536L>>type,0,SLIDEBAR,s,pa,10,0,0,xdim-1,ydim-1);
     if(rev == 0)
-        rotatesprite( (x+xloc+1)<<16,(y+1)<<16,65536L,0,SLIDEBAR+1,s,pa,10,0,0,xdim-1,ydim-1);
+        rotatesprite( (x<<16)+((xloc+1)<<(16-type)),(y<<16)+(1<<(16-type)),65536L>>type,0,SLIDEBAR+1,s,pa,10,0,0,xdim-1,ydim-1);
     else
-        rotatesprite( (x+(65-xloc) )<<16,(y+1)<<16,65536L,0,SLIDEBAR+1,s,pa,10,0,0,xdim-1,ydim-1);
+        rotatesprite( (x<<16)+((65-xloc)<<(16-type)),(y<<16)+(1<<(16-type)),65536L>>type,0,SLIDEBAR+1,s,pa,10,0,0,xdim-1,ydim-1);
 }
+
+void bar(int x,int y,short *p,short dainc,char damodify,short s, short pa) { bar_(0,x,y,p,dainc,damodify,s,pa); }
+void barsm(int x,int y,short *p,short dainc,char damodify,short s, short pa) { bar_(1,x,y,p,dainc,damodify,s,pa); }
 
 #define SHX(X) 0
 // ((x==X)*(-sh))
@@ -1371,7 +1374,7 @@ void menus(void)
             gametext(160,50-8,"YOU ARE PLAYING THE SHAREWARE",0,2+8+16);
             gametext(160,59-8,"VERSION OF DUKE NUKEM 3D.  WHILE",0,2+8+16);
             gametext(160,68-8,"THIS VERSION IS REALLY COOL, YOU",0,2+8+16);
-            gametext(160,77-8,"ARE MISSING OVER 75% OF THE TOTAL",0,2+8+16);
+            gametext(160,77-8,"ARE MISSING OVER 75%% OF THE TOTAL",0,2+8+16);
             gametext(160,86-8,"GAME, ALONG WITH OTHER GREAT EXTRAS",0,2+8+16);
             gametext(160,95-8,"AND GAMES, WHICH YOU'LL GET WHEN",0,2+8+16);
             gametext(160,104-8,"YOU ORDER THE COMPLETE VERSION AND",0,2+8+16);
@@ -2238,8 +2241,10 @@ cheat_for_port_credits:
 							"",
 							"Thanks to these people for their input and contributions:",
 							"",
-							"Richard \"TerminX\" Gobeille, Ben \"ProAsm\" Smit,",
-							"Matthieu Klein,",
+							"Richard \"TerminX\" Gobeille, ",
+							"Par \"Parkar\" Karlsson", // "Pär \"Parkar\" Karlsson",
+							"Matthieu Klein",
+							"Ben \"ProAsm\" Smit,",
 							"",
 							"and all those who submitted bug reports and ",
 							"supported the project financially!",
@@ -2735,6 +2740,7 @@ if (PLUTOPAK) {
 
             c = (320>>1)-120;
 
+#if 1
             onbar = (probey == 3);
             x = probe(c+6,31,15,9);
 
@@ -2778,12 +2784,15 @@ if (PLUTOPAK) {
 				    break;
             }
 
+            menutext(c,31,SHX(-2),PHX(-2),"DETAIL");
             if(ud.detail) menutext(c+160+40,31,0,0,"HIGH");
             else menutext(c+160+40,31,0,0,"LOW");
 
+            menutext(c,31+15,SHX(-3),PHX(-3),"SHADOWS");
             if(ud.shadows) menutext(c+160+40,31+15,0,0,"ON");
             else menutext(c+160+40,31+15,0,0,"OFF");
 
+            menutext(c,31+15+15,SHX(-4),PHX(-4),"SCREEN TILTING");
             switch(ud.screen_tilting)
             {
                 case 0: menutext(c+160+40,31+15+15,0,0,"OFF");break;
@@ -2791,9 +2800,6 @@ if (PLUTOPAK) {
                 case 2: menutext(c+160+40,31+15+15,0,0,"FULL");break;
             }
 
-            menutext(c,31,SHX(-2),PHX(-2),"DETAIL");
-            menutext(c,31+15,SHX(-3),PHX(-3),"SHADOWS");
-            menutext(c,31+15+15,SHX(-4),PHX(-4),"SCREEN TILTING");
             menutext(c,31+15+15+15,SHX(-5),PHX(-5),"SCREEN SIZE");
                 bar(c+167+40,31+15+15+15,(short *)&ud.screen_size,-4,x==3,SHX(-5),PHX(-5));
 
@@ -2826,7 +2832,75 @@ if (PLUTOPAK) {
 
 			gametext(320-100,158,"Page 1 of 2",0,2+8+16);
             break;
-	    
+#else
+		{
+			int io, ii, yy = 31, d=c+160+40, enabled;
+			char *opts[] = {
+				"Crosshair",
+				"Level stats",
+				"Status bar size",
+				"-",
+				"Mouse aiming",
+				"Invert mouse aim",
+				"Mouse aim type",
+				"Auto-aiming",
+				"Run key style",
+				"Auto weapon switch",
+				"-",
+				"Screen size",
+				"Detail",
+				"Shadows",
+				"Screen tilting",
+				"-",
+				"Record demo",
+				NULL
+			};
+
+			onbar = 0;
+			x = probe(c+6,31,15,9);
+
+			if(x == -1) cmenu(202);
+			
+			for (ii=io=0; opts[ii]; ii++) {
+				if (opts[ii][0] == '-' && !opts[ii][1]) {
+					yy += 4;
+					continue;
+				}
+				enabled = 1;
+				switch (io) {
+					case 0:  gametextpal(d,yy, ud.crosshair ? "On" : "Off", 0, 0); break;
+					case 1:  gametextpal(d,yy, ud.levelstats ? "Shown" : "Hidden", 0, 0); break;
+					case 2:
+						{
+							short sbs, sbsl;
+							sbs = sbsl = scale(max(0,ud.statusbarscale-50),63,100-50);
+				            barsm(d+8,yy+7, (short *)&sbs,9,x==4,SHX(-5),PHX(-5));
+							if (x == 4 && sbs != sbsl) {
+								sbs = scale(sbs,100-50,63)+50;
+								setstatusbarscale(sbs);
+							}
+						}
+						break;
+					case 3:  enabled = !MouseAiming; gametextpal(d,yy, myaimmode ? "On" : "Off", enabled?0:10, 0); break;
+					case 4:  gametextpal(d,yy, ud.mouseflip ? "On" : "Off", 0, 0); break;
+					case 5:  gametextpal(d,yy, MouseAiming ? "Held" : "Toggle", 0, 0); break;
+					case 6:  gametextpal(d,yy, AutoAim ? "On" : "Off", 0, 0); break;
+					case 7:  gametextpal(d,yy, ud.runkey_mode ? "Classic" : "Modern", 0, 0); break;
+					case 8:  break;	// auto weapon switch
+					case 9:  barsm(d+8,yy+7, (short *)&ud.screen_size,-4,x==3,SHX(-5),PHX(-5)); break;
+					case 10: gametextpal(d,yy, ud.detail ? "High" : "Low", 0, 0); break;
+					case 11: gametextpal(d,yy, ud.shadows ? "On" : "Off", 0, 0); break;
+					case 12: gametextpal(d,yy, ud.screen_tilting ? "On" : "Off", 0, 0); break;	// original had a 'full' option
+					default: break;
+				}
+				gametextpal(c,yy, opts[ii], enabled?0:10, 2);
+				io++;
+				yy += 8;
+			}
+		}
+		break;
+#endif
+			
 	    // JBF 20031129: Page 2 of game options
 	case 201:
 	
@@ -5351,6 +5425,6 @@ void playanm(char *fn,char t)
 }
 
 /*
- * vim:ts=4:sw=4:tw=8:
+ * vim:ts=4:sw=4:tw=8:enc=utf-8:
  */
 
