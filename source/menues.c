@@ -707,7 +707,7 @@ ControlInfo minfo;
 
 long mi;
 
-int probe(int x,int y,int i,int n)
+static int probe_(int type,int x,int y,int i,int n)
 {
     short centre, s;
 
@@ -761,11 +761,11 @@ int probe(int x,int y,int i,int n)
 //        rotatesprite(((320>>1)+(centre)+54)<<16,(y+(probey*i)-4)<<16,65536L,0,SPINNINGNUKEICON+6-((6+(totalclock>>3))%7),sh,0,10,0,0,xdim-1,ydim-1);
 //        rotatesprite(((320>>1)-(centre)-54)<<16,(y+(probey*i)-4)<<16,65536L,0,SPINNINGNUKEICON+((totalclock>>3)%7),sh,0,10,0,0,xdim-1,ydim-1);
 
-        rotatesprite(((320>>1)+(centre>>1)+70)<<16,(y+(probey*i)-4)<<16,65536L,0,SPINNINGNUKEICON+6-((6+(totalclock>>3))%7),sh,0,10,0,0,xdim-1,ydim-1);
-        rotatesprite(((320>>1)-(centre>>1)-70)<<16,(y+(probey*i)-4)<<16,65536L,0,SPINNINGNUKEICON+((totalclock>>3)%7),sh,0,10,0,0,xdim-1,ydim-1);
+        rotatesprite(((320>>1)+(centre>>1)+70)<<16,(y+(probey*i)-4)<<16,65536L>>type,0,SPINNINGNUKEICON+6-((6+(totalclock>>3))%7),sh,0,10,0,0,xdim-1,ydim-1);
+        rotatesprite(((320>>1)-(centre>>1)-70)<<16,(y+(probey*i)-4)<<16,65536L>>type,0,SPINNINGNUKEICON+((totalclock>>3)%7),sh,0,10,0,0,xdim-1,ydim-1);
     }
     else
-        rotatesprite((x-tilesizx[BIGFNTCURSOR]-4)<<16,(y+(probey*i)-4)<<16,65536L,0,SPINNINGNUKEICON+(((totalclock>>3))%7),sh,0,10,0,0,xdim-1,ydim-1);
+        rotatesprite((x<<16)-((tilesizx[BIGFNTCURSOR]-4)<<(16-type)),(y+(probey*i)-(4>>type))<<16,65536L>>type,0,SPINNINGNUKEICON+(((totalclock>>3))%7),sh,0,10,0,0,xdim-1,ydim-1);
 
     if( KB_KeyPressed(sc_Space) || KB_KeyPressed( sc_kpad_Enter ) || KB_KeyPressed( sc_Enter ) || (LMB && !onbar) )
     {
@@ -793,6 +793,8 @@ int probe(int x,int y,int i,int n)
         else return(-probey-2);
     }
 }
+int probe(int x,int y,int i,int n) { return probe_(0,x,y,i,n); }
+int probesm(int x,int y,int i,int n) { return probe_(1,x,y,i,n); }
 
 int menutext(int x,int y,short s,short p,const char *t)
 {
@@ -2740,101 +2742,8 @@ if (PLUTOPAK) {
 
             c = (320>>1)-120;
 
-#if 1
-            onbar = (probey == 3);
-            x = probe(c+6,31,15,9);
-
-            if(x == -1)
-		cmenu(202);	// JBF 20031205
-                //{ if(ps[myconnectindex].gm&MODE_GAME) cmenu(50);else cmenu(0); }
-
-            if(onbar == 0) switch(x)
-            {
-                case 0:
-                    ud.detail = 1-ud.detail;
-                    break;
-                case 1:
-                    ud.shadows = 1-ud.shadows;
-                    break;
-                case 2:
-                    ud.screen_tilting = 1-ud.screen_tilting;
-                    break;
-				case 3:
-					break;
-				case 4:
-			        ud.crosshair = 1-ud.crosshair;
-					break;
-				case 5:
-					if (MouseAiming) break;
-					myaimmode ^= 1;
-					break;
-                case 6:
-                    ud.mouseflip = 1-ud.mouseflip;
-                    break;
-                case 7:
-                    if( (ps[myconnectindex].gm&MODE_GAME) )
-                    {
-                        closedemowrite();
-                        break;
-                    }
-                    ud.m_recstat = !ud.m_recstat;
-                    break;
-                case 8:
-				    cmenu(201);
-				    break;
-            }
-
-            menutext(c,31,SHX(-2),PHX(-2),"DETAIL");
-            if(ud.detail) menutext(c+160+40,31,0,0,"HIGH");
-            else menutext(c+160+40,31,0,0,"LOW");
-
-            menutext(c,31+15,SHX(-3),PHX(-3),"SHADOWS");
-            if(ud.shadows) menutext(c+160+40,31+15,0,0,"ON");
-            else menutext(c+160+40,31+15,0,0,"OFF");
-
-            menutext(c,31+15+15,SHX(-4),PHX(-4),"SCREEN TILTING");
-            switch(ud.screen_tilting)
-            {
-                case 0: menutext(c+160+40,31+15+15,0,0,"OFF");break;
-                case 1: menutext(c+160+40,31+15+15,0,0,"ON");break;
-                case 2: menutext(c+160+40,31+15+15,0,0,"FULL");break;
-            }
-
-            menutext(c,31+15+15+15,SHX(-5),PHX(-5),"SCREEN SIZE");
-                bar(c+167+40,31+15+15+15,(short *)&ud.screen_size,-4,x==3,SHX(-5),PHX(-5));
-
-			menutext(c,31+15+15+15+15,0,0,"CROSSHAIR");
-				menutext(c+160+40,31+15+15+15+15,0,0,ud.crosshair?"ON":"OFF");
-
-			menutext(c,31+15+15+15+15+15,0,MouseAiming,"MOUSE AIMING");
-				menutext(c+160+40,31+15+15+15+15+15,0,MouseAiming,myaimmode?"ON":"OFF");
-				
-            menutext(c,31+15+15+15+15+15+15,SHX(-7),PHX(-7),"INVERT MOUSE AIM");
-                if(ud.mouseflip) menutext(c+160+40,31+15+15+15+15+15+15,SHX(-7),PHX(-7),"ON");
-                else menutext(c+160+40,31+15+15+15+15+15+15,SHX(-7),PHX(-7),"OFF");
-
-			if( (ps[myconnectindex].gm&MODE_GAME) && ud.m_recstat != 1 )
-            {
-                menutext(c,31+15+15+15+15+15+15+15,SHX(-10),1,"RECORD DEMO");
-                menutext(c+160+40,31+15+15+15+15+15+15+15,SHX(-10),1,"OFF");
-            }
-            else
-            {
-                menutext(c,31+15+15+15+15+15+15+15,SHX(-10),PHX(-10),"RECORD DEMO");
-
-                if(ud.m_recstat == 1)
-                    menutext(c+160+40,31+15+15+15+15+15+15+15,SHX(-10),PHX(-10),"ON");
-                else menutext(c+160+40,31+15+15+15+15+15+15+15,SHX(-10),PHX(-10),"OFF");
-            }
-
-				
-            menutext(320>>1,31+15+15+15+15+15+15+15+15,SHX(-10),PHX(-10),"NEXT...");
-
-			gametext(320-100,158,"Page 1 of 2",0,2+8+16);
-            break;
-#else
 		{
-			int io, ii, yy = 31, d=c+160+40, enabled;
+			int io, ii, yy, d=c+160+40, enabled;
 			char *opts[] = {
 				"Crosshair",
 				"Level stats",
@@ -2842,7 +2751,7 @@ if (PLUTOPAK) {
 				"-",
 				"Mouse aiming",
 				"Invert mouse aim",
-				"Mouse aim type",
+				"Mouse aiming type",
 				"Auto-aiming",
 				"Run key style",
 				"Auto weapon switch",
@@ -2856,11 +2765,22 @@ if (PLUTOPAK) {
 				NULL
 			};
 
-			onbar = 0;
-			x = probe(c+6,31,15,9);
+			yy = 31;
+			for (ii=io=0; opts[ii]; ii++) {
+				if (opts[ii][0] == '-' && !opts[ii][1]) {
+					if (io <= probey) yy += 4;
+					continue;
+				}
+				if (io < probey) yy += 8;
+				io++;
+			}
 
-			if(x == -1) cmenu(202);
+			onbar = (probey == 2 || probey == 9);
+			x = probesm(c,yy+5,0,io);
+
+			if (x == -1) { cmenu(202); break; }
 			
+			yy = 31;
 			for (ii=io=0; opts[ii]; ii++) {
 				if (opts[ii][0] == '-' && !opts[ii][1]) {
 					yy += 4;
@@ -2868,29 +2788,52 @@ if (PLUTOPAK) {
 				}
 				enabled = 1;
 				switch (io) {
-					case 0:  gametextpal(d,yy, ud.crosshair ? "On" : "Off", 0, 0); break;
-					case 1:  gametextpal(d,yy, ud.levelstats ? "Shown" : "Hidden", 0, 0); break;
+					case 0:  if (x==io) ud.crosshair = 1-ud.crosshair;
+					         gametextpal(d,yy, ud.crosshair ? "On" : "Off", 0, 0); break;
+					case 1:  if (x==io) ud.levelstats = 1-ud.levelstats;
+					         gametextpal(d,yy, ud.levelstats ? "Shown" : "Hidden", 0, 0); break;
 					case 2:
 						{
 							short sbs, sbsl;
 							sbs = sbsl = scale(max(0,ud.statusbarscale-50),63,100-50);
-				            barsm(d+8,yy+7, (short *)&sbs,9,x==4,SHX(-5),PHX(-5));
-							if (x == 4 && sbs != sbsl) {
+							barsm(d+8,yy+7, (short *)&sbs,9,x==io,SHX(-5),PHX(-5));
+							if (x == io && sbs != sbsl) {
 								sbs = scale(sbs,100-50,63)+50;
 								setstatusbarscale(sbs);
 							}
 						}
 						break;
-					case 3:  enabled = !MouseAiming; gametextpal(d,yy, myaimmode ? "On" : "Off", enabled?0:10, 0); break;
-					case 4:  gametextpal(d,yy, ud.mouseflip ? "On" : "Off", 0, 0); break;
-					case 5:  gametextpal(d,yy, MouseAiming ? "Held" : "Toggle", 0, 0); break;
-					case 6:  gametextpal(d,yy, AutoAim ? "On" : "Off", 0, 0); break;
-					case 7:  gametextpal(d,yy, ud.runkey_mode ? "Classic" : "Modern", 0, 0); break;
-					case 8:  break;	// auto weapon switch
-					case 9:  barsm(d+8,yy+7, (short *)&ud.screen_size,-4,x==3,SHX(-5),PHX(-5)); break;
-					case 10: gametextpal(d,yy, ud.detail ? "High" : "Low", 0, 0); break;
-					case 11: gametextpal(d,yy, ud.shadows ? "On" : "Off", 0, 0); break;
-					case 12: gametextpal(d,yy, ud.screen_tilting ? "On" : "Off", 0, 0); break;	// original had a 'full' option
+					case 3:  enabled = !MouseAiming;
+						 if (enabled && x==io) myaimmode = 1-myaimmode;
+						 gametextpal(d,yy, myaimmode ? "On" : "Off", enabled?0:10, 0); break;
+					case 4:  if (x==io) ud.mouseflip = 1-ud.mouseflip;
+						 gametextpal(d,yy, ud.mouseflip ? "On" : "Off", 0, 0); break;
+					case 5:  if (ps[myconnectindex].gm&MODE_GAME || numplayers > 1) enabled = 0;
+						 if (enabled && x==io) MouseAiming = 1-MouseAiming;
+		    					// don't change when in a multiplayer game
+		    					// because the state is sent during getnames()
+							// however, this will be fixed later
+						 gametextpal(d,yy, MouseAiming ? "Held" : "Toggle", enabled?0:10, 0); break;
+					case 6:  if (ps[myconnectindex].gm&MODE_GAME || numplayers > 1) enabled = 0;
+						 if (enabled && x==io) AutoAim = 1-AutoAim;
+					         gametextpal(d,yy, AutoAim ? "On" : "Off", enabled?0:10, 0); break;
+					case 7:  if (x==io) ud.runkey_mode = 1-ud.runkey_mode;
+						 gametextpal(d,yy, ud.runkey_mode ? "Classic" : "Modern", 0, 0); break;
+					case 8:  enabled = 0; break;	// auto weapon switch
+					case 9:  barsm(d+8,yy+7, (short *)&ud.screen_size,-4,x==io,SHX(-5),PHX(-5)); break;
+					case 10: if (x==io) ud.detail = 1-ud.detail;
+						 gametextpal(d,yy, ud.detail ? "High" : "Low", 0, 0); break;
+					case 11: if (x==io) ud.shadows = 1-ud.shadows;
+						 gametextpal(d,yy, ud.shadows ? "On" : "Off", 0, 0); break;
+					case 12: if (x==io) ud.screen_tilting = 1-ud.screen_tilting;
+						 gametextpal(d,yy, ud.screen_tilting ? "On" : "Off", 0, 0); break;	// original had a 'full' option
+					case 13: if (x==io) {
+					            if( (ps[myconnectindex].gm&MODE_GAME) ) closedemowrite();
+					            else ud.m_recstat = !ud.m_recstat;
+						 }
+					         if( (ps[myconnectindex].gm&MODE_GAME) && ud.m_recstat != 1 )
+							 enabled = 0;
+						 gametextpal(d,yy, ud.m_recstat==1 ? "On" : "Off", enabled?0:10, 0); break;
 					default: break;
 				}
 				gametextpal(c,yy, opts[ii], enabled?0:10, 2);
@@ -2899,86 +2842,7 @@ if (PLUTOPAK) {
 			}
 		}
 		break;
-#endif
 			
-	    // JBF 20031129: Page 2 of game options
-	case 201:
-	
-            rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
-            menutext(320>>1,15,0,0,"GAME OPTIONS");
-
-            c = (320>>1)-120;
-
-            onbar = (probey==4);
-            x = probe(c+6,31,15,6);
-
-            if(x == -1)
-		cmenu(202);	// JBF 20031205
-                //{ if(ps[myconnectindex].gm&MODE_GAME) cmenu(50);else cmenu(0); }
-
-            switch(x)
-            {
-		case 0:
-		    // switch mouse aim type
-		    if (ps[myconnectindex].gm&MODE_GAME || numplayers > 1) break;
-		    				// don't change when in a multiplayer game
-		    				// because the state is sent during getnames()
-						// however, this will be fixed later
-		    MouseAiming = 1-MouseAiming;
-		    break;
-                case 1:
-                    // (en|dis)able autoaiming
-		    if (ps[myconnectindex].gm&MODE_GAME || numplayers > 1) break;
-		    				// don't change when in a multiplayer game
-		    				// because the state is sent during getnames()
-						// however, this will be fixed later
-		    AutoAim = 1-AutoAim;
-                    break;
-                case 2:
-                    ud.runkey_mode = 1-ud.runkey_mode;
-                    break;
-				case 3:
-					ud.levelstats = !ud.levelstats;
-					break;
-				case 4: break;
-                case 5:
-		    cmenu(200);
-                    break;
-            }
-
-            l = (ps[myconnectindex].gm&MODE_GAME || numplayers > 1);
-
-	    menutext(c,31,0,l,"MOUSE AIM TYPE");
-	    if (MouseAiming) menutext(c+160+40,31,0,l,"HELD");
-            else menutext(c+160+40,31,0,l,"TOGGLE");
-	    
-            menutext(c,31+15,0,l,"AUTO-AIMING");
-            if (!AutoAim) menutext(c+160+40,31+15,0,l,"OFF");
-            else menutext(c+160+40,31+15,0,l,"ON");
-	    
-	    menutext(c,31+15+15,0,0,"RUN KEY STYLE");
-            if (ud.runkey_mode) menutext(c+160+40,31+15+15,0,0,"CLASSIC");
-            else menutext(c+160+40,31+15+15,0,0,"MODERN");
-
-		menutext(c,31+15+15+15,0,0,"LEVEL STATS");
-			if (ud.levelstats) menutext(c+160+40,31+15+15+15,0,0,"SHOWN");
-			else menutext(c+160+40,31+15+15+15,0,0,"HIDDEN");
-
-		menutext(c,31+15+15+15+15,0,0,"STATUSBAR SIZE");
-			{
-				short sbs, sbsl;
-				sbs = sbsl = scale(max(0,ud.statusbarscale-50),63,100-50);
-	            bar(c+167+40,31+15+15+15+15,(short *)&sbs,9,x==4,SHX(-5),PHX(-5));
-				if (x == 4 && sbs != sbsl) {
-					sbs = scale(sbs,100-50,63)+50;
-					setstatusbarscale(sbs);
-				}
-			}
-			
-            menutext(320>>1,31+15+15+15+15+15,0,0,"PREVIOUS...");
-			gametext(320-100,158,"Page 2 of 2",0,2+8+16);
-	    break;
-
 	    // JBF 20031205: Second level options menu selection
 	case 202:
             rotatesprite(320<<15,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
