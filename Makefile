@@ -9,7 +9,7 @@ POLYMOST = 1
 USE_OPENGL = 1
 DYNAMIC_OPENGL = 1
 USE_A_C = 0
-NOASM = 1
+NOASM = 0
 
 # Debugging options
 RELEASE?=0
@@ -37,7 +37,7 @@ CFLAGS=-march=pentium $(debug)
 override CFLAGS+= -W -Wall -Wimplicit -Wno-char-subscripts -Wno-unused \
 	-funsigned-char -fno-strict-aliasing -DNO_GCC_BUILTINS -DNOCOPYPROTECT \
 	-I$(INC:/=) -I$(EINC:/=) -I$(SRC)jmact -I$(SRC)jaudiolib #-I../jfaud/inc
-LIBS=-lm ../jfaud/libjfaud.a -lmodplug # -L../jfaud -ljfaud
+LIBS=-lm #../jfaud/libjfaud.a -lmodplug # -L../jfaud -ljfaud
 NASMFLAGS=-s #-g
 EXESUFFIX=
 
