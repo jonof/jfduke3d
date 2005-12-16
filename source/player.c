@@ -52,6 +52,13 @@ void setpal(struct player_struct *p)
     restorepalette = 1;
 }
 
+void fadepal(int r, int g, int b, int start, int end, int step)
+{
+	if (getrendermode() >= 3) return;
+	if (step > 0) for (; start < end; start += step) palto(r,g,b,start);
+	else for (; start >= end; start += step) palto(r,g,b,start);
+}
+
 void incur_damage( struct player_struct *p )
 {
     long damage = 0L, shield_damage = 0L;

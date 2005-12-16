@@ -556,14 +556,6 @@ extern long stereomode, stereowidth, stereopixelwidth;
 
 extern long myaimmode, myaimstat, omyaimstat;
 
-// JBF 20031231
-#define setcurrentpalette(p,n) \
-	{ \
-		ps[myconnectindex].palette = p; \
-		setbrightness(ud.brightness>>2, ps[myconnectindex].palette, n); \
-		pub = pus = NUMPAGES; \
-	}
-
 #define IFISGLMODE if (getrendermode() >= 3)
 #define IFISSOFTMODE if (getrendermode() < 3)
 

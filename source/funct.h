@@ -314,5 +314,6 @@ extern void moveexplosions(void );
 extern void setstatusbarscale(long sc);
 
 extern void setgamepalette(struct player_struct *player, char *pal, int set);
+extern void fadepal(int r, int g, int b, int start, int end, int step);
 
 #endif // __funct_h__

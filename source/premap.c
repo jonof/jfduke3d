@@ -1288,9 +1288,8 @@ void dofrontscreens(char *statustext)
     {
 	if (!statustext) {
 		//ps[myconnectindex].palette = palette;
-		//setcurrentpalette(palette,1);	// JBF 20031231
 		setgamepalette(&ps[myconnectindex], palette, 1);	// JBF 20040308
-		IFISSOFTMODE for(j=0;j<63;j+=7) palto(0,0,0,j);
+		fadepal(0,0,0, 0,64,7);
 		i = ud.screen_size;
 		ud.screen_size = 0;
 		vscrn();
@@ -1315,7 +1314,7 @@ void dofrontscreens(char *statustext)
         nextpage();
 
 	if (!statustext) {
-        	IFISSOFTMODE for(j=63;j>0;j-=7) palto(0,0,0,j);
+		fadepal(0,0,0, 63,0,-7);
 
         	KB_FlushKeyboardQueue();
         	ud.screen_size = i;
@@ -1327,7 +1326,6 @@ void dofrontscreens(char *statustext)
         	clearview(0L);
         	//ps[myconnectindex].palette = palette;
 		//palto(0,0,0,0);
-		//setcurrentpalette(palette,0);	// JBF 20031231
 		setgamepalette(&ps[myconnectindex], palette, 0);	// JBF 20040308
 	}
 
@@ -1521,8 +1519,7 @@ if (VOLUMEONE) {
 
      //ps[myconnectindex].palette = palette;
      //palto(0,0,0,0);
-     //setcurrentpalette(palette,0);	// JBF 20031231
-	setgamepalette(&ps[myconnectindex], palette, 0);	// JBF 20040308
+     setgamepalette(&ps[myconnectindex], palette, 0);	// JBF 20040308
 
      setpal(&ps[myconnectindex]);
      flushperms();

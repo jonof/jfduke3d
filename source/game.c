@@ -146,27 +146,6 @@ static char *duke3ddef = "duke3d.def";
 
 extern long lastvisinc;
 
-/* JBF: We use the winlayer/sdlayer versions of these now
-void timerhandler()
-{
-    totalclock++;
-}
-
-void inittimer()
-{
-    TimerPtr = TS_ScheduleTask( timerhandler,TICRATE, 1, NULL );
-    TS_Dispatch();
-}
-
-void uninittimer(void)
-{
-   if (TimerPtr)
-      TS_Terminate( TimerPtr );
-   TimerPtr = NULL;
-   TS_Shutdown();
-}
-*/
-
 void setgamepalette(struct player_struct *player, char *pal, int set)
 {
 	if (player != &ps[screenpeek]) {
@@ -179,7 +158,7 @@ void setgamepalette(struct player_struct *player, char *pal, int set)
 		// 8-bit mode
 		player->palette = pal;
 		setbrightness(ud.brightness>>2, pal, set);
-		pub = pus = NUMPAGES;
+		//pub = pus = NUMPAGES;
 		return;
 	}
 
@@ -191,7 +170,6 @@ void setgamepalette(struct player_struct *player, char *pal, int set)
 	}
 	player->palette = pal;
 	setpalettefade(0,0,0,0);
-	setpalettefadeclamps(0,0,0,0);
 }
 
 int gametext(int x,int y,char *t,char s,short dabits)
@@ -2063,18 +2041,17 @@ if (!VOLUMEALL) {
     setview(0,0,xdim-1,ydim-1);
     flushperms();
     //ps[myconnectindex].palette = palette;
-    //setcurrentpalette(palette,1);	// JBF 20031231
-	setgamepalette(&ps[myconnectindex], palette, 1);	// JBF 20040308
-    IFISSOFTMODE for(i=0;i<64;i+=7) palto(0,0,0,i);
+    setgamepalette(&ps[myconnectindex], palette, 1);	// JBF 20040308
+    fadepal(0,0,0, 0,64,7);
     KB_FlushKeyboardQueue();
     rotatesprite(0,0,65536L,0,3291,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
-    IFISSOFTMODE { for(i=63;i>0;i-=7) palto(0,0,0,i); } else { nextpage(); }
+    IFISSOFTMODE fadepal(0,0,0, 63,0,-7); else nextpage();
     while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
 
-    IFISSOFTMODE for(i=0;i<64;i+=7) palto(0,0,0,i);
+    fadepal(0,0,0, 0,64,7);
     KB_FlushKeyboardQueue();
     rotatesprite(0,0,65536L,0,3290,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
-    IFISSOFTMODE { for(i=63;i>0;i-=7) palto(0,0,0,i); } else { nextpage(); }
+    IFISSOFTMODE fadepal(0,0,0, 63,0,-7); else nextpage();
     while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
 }
 }
@@ -2345,17 +2322,10 @@ void moveclouds(void)
     }
 }
 
-static void tintage(char *pal)
-{
-	if (pal == waterpal) setpalettefadeclamps(0,0,63,8);
-	else if (pal == slimepal) setpalettefadeclamps(0,63,0,8);
-	else setpalettefadeclamps(0,0,0,0);
-}
-
 void displayrest(long smoothratio)
 {
     long a, i, j;
-    char cr=0,cg=0,cb=0,cf=0,dotint=0;
+    char fader=0,fadeg=0,fadeb=0,fadef=0,tintr=0,tintg=0,tintb=0,tintf=0,dotint=0;
 
     struct player_struct *pp;
     walltype *wal;
@@ -2363,42 +2333,43 @@ void displayrest(long smoothratio)
 
     pp = &ps[screenpeek];
 
+    // this takes care of fullscreen tint for OpenGL
+    if (getrendermode() >= 3) {
+   	if (pp->palette == waterpal) tintr=0,tintg=0,tintb=63,tintf=8;
+ 	else if (pp->palette == slimepal) tintr=0,tintg=63,tintb=0,tintf=8;
+    }
+
+    // this does pain tinting etc from the CON
     if( pp->pals_time >= 0 && pp->loogcnt == 0)	// JBF 20040101: pals_time > 0 now >= 0
     {
-	dotint = 1;
-	cr = pp->pals[0];
-	cg = pp->pals[1];
-	cb = pp->pals[2];
-	cf = pp->pals_time;
-/*	
-        palto( pp->pals[0],
-               pp->pals[1],
-               pp->pals[2],
-               pp->pals_time|128);
-*/
+	fader = pp->pals[0];
+	fadeg = pp->pals[1];
+	fadeb = pp->pals[2];
+	fadef = pp->pals_time;
 	restorepalette = 1;		// JBF 20040101
+	dotint = 1;
     }
+    // reset a normal palette
     else if( restorepalette )
     {
         //setbrightness(ud.brightness>>2,&pp->palette[0],0);
 	setgamepalette(pp,pp->palette,0);
-	//palto(0,0,0,128);	// JBF 20031231
-	dotint = 1;
-	cr = cg = cb = 0;
-	cf = 0;
         restorepalette = 0;
     }
+    // loogies courtesy of being snotted on
     else if(pp->loogcnt > 0) {
-	    dotint = 1;
-	    cr = 0;
-	    cg = 64;
-	    cb = 0;
-	    cf = pp->loogcnt>>1;
 	    //palto(0,64,0,(pp->loogcnt>>1)+128);
+	    fader = 0;
+	    fadeg = 64;
+	    fadeb = 0;
+	    fadef = pp->loogcnt>>1;
+	    dotint = 1;
     }
-    if (dotint) {
-	    tintage(pp->palette);
-	    palto(cr,cg,cb,cf|128);
+    if (fadef > tintf) {
+	    tintr = fader;
+	    tintg = fadeg;
+	    tintb = fadeb;
+	    tintf = fadef;
     }
 
     if(ud.show_help)
@@ -2424,6 +2395,7 @@ void displayrest(long smoothratio)
             }
             vscrn();
         }
+    	if (tintf > 0 || dotint) palto(tintr,tintg,tintb,tintf|128);
         return;
     }
 
@@ -2594,6 +2566,7 @@ void displayrest(long smoothratio)
 	sprintf(tempbuf,"Secrets: %ld/%ld", ps[myconnectindex].secret_rooms,ps[myconnectindex].max_secret_rooms);
 	minitext(320-5*12,200-i-6,tempbuf,0,26);
     }
+    if (tintf > 0 || dotint) palto(tintr,tintg,tintb,tintf|128);
 }
 
 
@@ -7311,14 +7284,13 @@ if (VOLUMEALL) {
 }
 
     playmusic(&env_music_fn[0][0]);
-    for(i=0;i<64;i+=7) palto(0,0,0,i);
+    fadepal(0,0,0, 0,64,7);
     //ps[myconnectindex].palette = drealms;
     //palto(0,0,0,63);
-    //setcurrentpalette(drealms,3);	// JBF 20031231
-	setgamepalette(&ps[myconnectindex], drealms, 3);	// JBF 20040308
+    setgamepalette(&ps[myconnectindex], drealms, 3);	// JBF 20040308
     rotatesprite(0,0,65536L,0,DREALMS,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
     nextpage();
-    IFISSOFTMODE for(i=63;i>0;i-=7) palto(0,0,0,i);
+    fadepal(0,0,0, 63,0,-7);
     totalclock = 0;
 	while( totalclock < (120*7) && !KB_KeyWaiting() ) {
 		handleevents();
@@ -7327,17 +7299,16 @@ if (VOLUMEALL) {
 
     KB_ClearKeysDown();	// JBF
 
-    IFISSOFTMODE for(i=0;i<64;i+=7) palto(0,0,0,i);
+    fadepal(0,0,0, 0,64,7);
     clearview(0L);
     nextpage();
 
     //ps[myconnectindex].palette = titlepal;
-    //setcurrentpalette(titlepal,3);	// JBF 20031231
-	setgamepalette(&ps[myconnectindex], titlepal, 3);	// JBF 20040308
+    setgamepalette(&ps[myconnectindex], titlepal, 3);	// JBF 20040308
     flushperms();
     rotatesprite(0,0,65536L,0,BETASCREEN,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
     KB_FlushKeyboardQueue();
-    IFISSOFTMODE for(i=63;i>0;i-=7) palto(0,0,0,i);
+    fadepal(0,0,0, 63,0,-7);
     totalclock = 0;
 
     while(totalclock < (860+120) && !KB_KeyWaiting())
@@ -7417,8 +7388,7 @@ if (PLUTOPAK) {	// JBF 20030804
     nextpage();
 
     //ps[myconnectindex].palette = palette;
-    //setcurrentpalette(palette,0);	// JBF 20031231
-	setgamepalette(&ps[myconnectindex], palette, 0);	// JBF 20040308
+    setgamepalette(&ps[myconnectindex], palette, 0);	// JBF 20040308
     sound(NITEVISION_ONOFF);
 
     //palto(0,0,0,0);
@@ -7932,7 +7902,6 @@ if (VOLUMEONE) {
         clearview(0L);
         //ps[myconnectindex].palette = palette;
         //palto(0,0,0,0);
-	//setcurrentpalette(palette,0);	// JBF 20031231
 	setgamepalette(&ps[myconnectindex], palette, 0);	// JBF 20040308
         rotatesprite(320<<15,200<<15,65536L,0,LOADSCREEN,0,0,2+8+64,0,0,xdim-1,ydim-1);
         menutext(160,105,0,0,"LOADING SAVED GAME...");
@@ -8248,14 +8217,13 @@ long playback(void)
             which_demo = 1;
             goto RECHECK;
         }
-        IFISSOFTMODE for(t=0;t<63;t+=7) palto(0,0,0,t);
-	//setcurrentpalette(palette,1);	// JBF 20031231
+        fadepal(0,0,0, 0,63,7);
 	setgamepalette(&ps[myconnectindex], palette, 1);	// JBF 20040308
         drawbackground();
         menus();
         //ps[myconnectindex].palette = palette;
         nextpage();
-        IFISSOFTMODE for(t=63;t>0;t-=7) palto(0,0,0,t);
+        fadepal(0,0,0, 63,0,-7);
         ud.reccnt = 0;
     }
     else
@@ -9089,36 +9057,31 @@ void doorders(void)
 
     setview(0,0,xdim-1,ydim-1);
 
-    IFISSOFTMODE for(i=0;i<63;i+=7) palto(0,0,0,i);
+    fadepal(0,0,0, 0,63,7);
     //ps[myconnectindex].palette = palette;
-    //setcurrentpalette(palette,1);	// JBF 20031231
-	setgamepalette(&ps[myconnectindex], palette, 1);	// JBF 20040308
-    totalclock = 0;
+    setgamepalette(&ps[myconnectindex], palette, 1);	// JBF 20040308
     KB_FlushKeyboardQueue();
     rotatesprite(0,0,65536L,0,ORDERING,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
-    IFISSOFTMODE for(i=63;i>0;i-=7) palto(0,0,0,i);
-    totalclock = 0;while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
+    fadepal(0,0,0, 63,0,-7);
+    while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
 
-    IFISSOFTMODE for(i=0;i<63;i+=7) palto(0,0,0,i);
-    totalclock = 0;
+    fadepal(0,0,0, 0,63,7);
     KB_FlushKeyboardQueue();
     rotatesprite(0,0,65536L,0,ORDERING+1,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
-    IFISSOFTMODE for(i=63;i>0;i-=7) palto(0,0,0,i);
-    totalclock = 0;while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
+    fadepal(0,0,0, 63,0,-7);
+    while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
 
-    IFISSOFTMODE for(i=0;i<63;i+=7) palto(0,0,0,i);
-    totalclock = 0;
+    fadepal(0,0,0, 0,63,7);
     KB_FlushKeyboardQueue();
     rotatesprite(0,0,65536L,0,ORDERING+2,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
-    IFISSOFTMODE for(i=63;i>0;i-=7) palto(0,0,0,i);
-    totalclock = 0;while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
+    fadepal(0,0,0, 63,0,-7);
+    while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
 
-    IFISSOFTMODE for(i=0;i<63;i+=7) palto(0,0,0,i);
-    totalclock = 0;
+    fadepal(0,0,0, 0,63,7);
     KB_FlushKeyboardQueue();
     rotatesprite(0,0,65536L,0,ORDERING+3,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
-    IFISSOFTMODE for(i=63;i>0;i-=7) palto(0,0,0,i);
-    totalclock = 0;while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
+    fadepal(0,0,0, 63,0,-7);
+    while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
 }
 
 void dobonus(char bonusonly)
@@ -9155,7 +9118,7 @@ void dobonus(char bonusonly)
 	
     bonuscnt = 0;
 
-    IFISSOFTMODE for(t=0;t<64;t+=7) palto(0,0,0,t);
+    fadepal(0,0,0, 0,64,7);
     setview(0,0,xdim-1,ydim-1);
     clearview(0L);
     nextpage();
@@ -9173,13 +9136,12 @@ void dobonus(char bonusonly)
         case 0:
             if(ud.lockout == 0)
             {
-		//setcurrentpalette(endingpal,3);	// JBF 20031231
-	setgamepalette(&ps[myconnectindex], endingpal, 3);	// JBF 20040308
+		setgamepalette(&ps[myconnectindex], endingpal, 3);	// JBF 20040308
                 clearview(0L);
                 rotatesprite(0,50<<16,65536L,0,VICTORY1,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
                 nextpage();
                 //ps[myconnectindex].palette = endingpal;
-		IFISSOFTMODE for(t=63;t>=0;t--) palto(0,0,0,t);
+		fadepal(0,0,0, 63,0,-1);
 
                 KB_FlushKeyboardQueue();
                 totalclock = 0; tinc = 0;
@@ -9223,17 +9185,16 @@ void dobonus(char bonusonly)
                 }
             }
 
-	    IFISSOFTMODE for(t=0;t<64;t++) palto(0,0,0,t);
+	    fadepal(0,0,0, 0,64,1);
 
             KB_FlushKeyboardQueue();
             //ps[myconnectindex].palette = palette;
-	    //setcurrentpalette(palette,3);	// JBF 20031231
-	setgamepalette(&ps[myconnectindex], palette, 3);	// JBF 20040308
+	    setgamepalette(&ps[myconnectindex], palette, 3);	// JBF 20040308
 
             rotatesprite(0,0,65536L,0,3292,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
-	    IFISSOFTMODE { for(t=63;t>=0;t--) palto(0,0,0,t); } else { nextpage(); }
+	    IFISSOFTMODE fadepal(0,0,0, 63,0,-1); else nextpage();
 		while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
-	    IFISSOFTMODE for(t=0;t<64;t++) palto(0,0,0,t);
+	    fadepal(0,0,0, 0,64,1);
             MUSIC_StopSong();
             FX_StopAllSounds();
             clearsoundlocks();
@@ -9253,16 +9214,15 @@ void dobonus(char bonusonly)
 
             sound(PIPEBOMB_EXPLODE);
 
-	    IFISSOFTMODE for(t=0;t<64;t++) palto(0,0,0,t);
+	    fadepal(0,0,0, 0,64,1);
             setview(0,0,xdim-1,ydim-1);
             KB_FlushKeyboardQueue();
             //ps[myconnectindex].palette = palette;
-	    //setcurrentpalette(palette,3);	// JBF 20031231
-	setgamepalette(&ps[myconnectindex], palette, 3);	// JBF 20040308
+	    setgamepalette(&ps[myconnectindex], palette, 3);	// JBF 20040308
             rotatesprite(0,0,65536L,0,3293,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
-	    IFISSOFTMODE { for(t=63;t>=0;t--) palto(0,0,0,t); } else { nextpage(); }
+	    IFISSOFTMODE fadepal(0,0,0, 63,0,-1); else nextpage();
             while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
-	    IFISSOFTMODE for(t=0;t<64;t++) palto(0,0,0,t);
+	    IFISSOFTMODE fadepal(0,0,0, 0,64,1);
 
             break;
 
@@ -9294,8 +9254,7 @@ void dobonus(char bonusonly)
             KB_FlushKeyBoardQueue();
 
             //ps[myconnectindex].palette = palette;
-	    //setcurrentpalette(palette,3);	// JBF 20031231
-	setgamepalette(&ps[myconnectindex], palette, 3);	// JBF 20040308
+	    setgamepalette(&ps[myconnectindex], palette, 3);	// JBF 20040308
             IFISSOFTMODE palto(0,0,0,63);
             clearview(0L);
             menutext(160,60,0,0,"THANKS TO ALL OUR");
@@ -9305,10 +9264,10 @@ void dobonus(char bonusonly)
             menutext(160,70+16+16+16+16,0,0,"SEQUEL SOON.");
             nextpage();
 
-	    IFISSOFTMODE for(t=63;t>=0;t-=3) palto(0,0,0,t);
+	    fadepal(0,0,0, 63,0,-3);
             KB_FlushKeyboardQueue();
             while(!KB_KeyWaiting()) { handleevents(); getpackets(); }
-	    IFISSOFTMODE for(t=0;t<64;t+=3) palto(0,0,0,t);
+	    fadepal(0,0,0, 0,64,3);
 
             clearview(0L);
             nextpage();
@@ -9335,7 +9294,7 @@ void dobonus(char bonusonly)
             nextpage();
             if(ud.lockout == 0)
             {
-		IFISSOFTMODE for(t=63;t>=0;t--) palto(0,0,0,t);
+		fadepal(0,0,0, 63,0,-1);
                 playanm("cineov3.anm",2);
                 KB_FlushKeyBoardQueue();
                 ototalclock = totalclock+200;
@@ -9386,8 +9345,7 @@ void dobonus(char bonusonly)
     FRAGBONUS:
 
     //ps[myconnectindex].palette = palette;
-    //setcurrentpalette(palette,3);
-	setgamepalette(&ps[myconnectindex], palette, 3);	// JBF 20040308
+    setgamepalette(&ps[myconnectindex], palette, 3);	// JBF 20040308
     IFISSOFTMODE palto(0,0,0,63);	// JBF 20031228
     KB_FlushKeyboardQueue();
     totalclock = 0; tinc = 0;
@@ -9472,8 +9430,7 @@ void dobonus(char bonusonly)
         minitext(45,96+(8*7),"DEATHS",8,2+8+16+128);
         nextpage();
 
-	IFISSOFTMODE for(t=0;t<64;t+=7)
-	    palto(0,0,0,63-t);
+	fadepal(0,0,0, 63,0,-7);
 
         KB_FlushKeyboardQueue();
         while(KB_KeyWaiting()==0) { handleevents(); getpackets(); }
@@ -9486,7 +9443,7 @@ void dobonus(char bonusonly)
 
         if(bonusonly || ud.multimode > 1) return;
 
-	IFISSOFTMODE for(t=0;t<64;t+=7) palto(0,0,0,t);
+	fadepal(0,0,0, 0,64,7);
     }
 
     if(bonusonly || ud.multimode > 1) return;
@@ -9513,7 +9470,7 @@ void dobonus(char bonusonly)
 
     nextpage();
     KB_FlushKeyboardQueue();
-    IFISSOFTMODE for(t=0;t<64;t++) palto(0,0,0,63-t);
+    fadepal(0,0,0, 63,0,-1);
     bonuscnt = 0;
     totalclock = 0; tinc = 0;
 
