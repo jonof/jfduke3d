@@ -4757,7 +4757,7 @@ void palto(char r,char g,char b,long e)
 	if (getrendermode() >= 3) pus = pub = NUMPAGES;	// JBF 20040110: redraw the status bar next time
     if ((e&128) == 0) {
 	    nextpage();
-	    for (tc = totalclock; totalclock < tc + 4; getpackets() );
+	    for (tc = totalclock; totalclock < tc + 4; handleevents(), getpackets() );
     }
 }
 
@@ -5254,7 +5254,7 @@ void playanm(char *fn,char t)
        {
           if( KB_KeyWaiting() )
               goto ENDOFANIMLOOP;
-          getpackets();
+		   handleevents(); getpackets();
        }
 
        if(t == 10) ototalclock += 14;

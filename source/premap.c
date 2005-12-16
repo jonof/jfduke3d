@@ -261,7 +261,7 @@ void precachenecessarysounds(void)
         {
             j++;
             if( (j&7) == 0 )
-                getpackets();
+                { handleevents(); getpackets(); }
             getsound(i);
         }
 }
@@ -330,7 +330,7 @@ void docacheit(void)
 		pc++;
 	} else continue;
 
-	if((j&7) == 0) getpackets();
+	if((j&7) == 0) { handleevents(); getpackets(); }
 	if (totalclock - tc > TICRATE/4) {
 		sprintf(tempbuf,"Loading textures ... %ld%%\n",min(100,100*pc/precachecount));
 		dofrontscreens(tempbuf);

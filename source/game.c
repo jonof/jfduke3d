@@ -411,8 +411,10 @@ void allowtimetocorrecterrorswhenquitting(void)
      {
           oldtotalclock = totalclock;
 
-          while (totalclock < oldtotalclock+TICSPERFRAME)
+		 while (totalclock < oldtotalclock+TICSPERFRAME) {
+			 handleevents();
               getpackets();
+		 }
 
           if(KB_KeyPressed(sc_Escape)) return;
 
@@ -454,13 +456,7 @@ void getpackets(void)
     long other, packbufleng;
     input *osyn, *nsyn;
 
-    if (handleevents()) {	// JBF
-	    if (quitevent) {
-		    KB_KeyDown[sc_Escape] = 1;
-		    quitevent = 0;
-	    }
-    }
-
+	sampletimer();
     AudioUpdate();	    
 
     // only dispatch commands here when not in a game
@@ -795,6 +791,7 @@ void faketimerhandler()
         gameexit("Quick Exit.");
     }
 
+	sampletimer();
     if ((totalclock < ototalclock+TICSPERFRAME) || (ready2send == 0)) return;
     ototalclock += TICSPERFRAME;
 
@@ -2072,13 +2069,13 @@ if (!VOLUMEALL) {
     KB_FlushKeyboardQueue();
     rotatesprite(0,0,65536L,0,3291,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
     IFISSOFTMODE { for(i=63;i>0;i-=7) palto(0,0,0,i); } else { nextpage(); }
-    while( !KB_KeyWaiting() ) getpackets();
+    while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
 
     IFISSOFTMODE for(i=0;i<64;i+=7) palto(0,0,0,i);
     KB_FlushKeyboardQueue();
     rotatesprite(0,0,65536L,0,3290,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
     IFISSOFTMODE { for(i=63;i>0;i-=7) palto(0,0,0,i); } else { nextpage(); }
-    while( !KB_KeyWaiting() ) getpackets();
+    while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
 }
 }
 /*
@@ -7323,8 +7320,10 @@ if (VOLUMEALL) {
     nextpage();
     IFISSOFTMODE for(i=63;i>0;i-=7) palto(0,0,0,i);
     totalclock = 0;
-    while( totalclock < (120*7) && !KB_KeyWaiting() )
+	while( totalclock < (120*7) && !KB_KeyWaiting() ) {
+		handleevents();
         getpackets();
+	}
 
     KB_ClearKeysDown();	// JBF
 
@@ -7392,6 +7391,7 @@ if (PLUTOPAK) {	// JBF 20030804
         }
 }
 
+		handleevents();
         getpackets();
         nextpage();
     }
@@ -8289,14 +8289,14 @@ long playback(void)
                 i = 0;
                 l = min(ud.reccnt,RECSYNCBUFSIZ);
                 if (kdfread(recsync,sizeof(input)*ud.multimode,l/ud.multimode,recfilep) != l/ud.multimode) {
-			OSD_Printf("Demo %d is corrupt.\n", which_demo-1);
-			foundemo = 0;
-			ud.reccnt = 0;
-			kclose(recfilep);
-			ps[myconnectindex].gm |= MODE_MENU;
-			break;
-		}
-            }
+					OSD_Printf("Demo %d is corrupt.\n", which_demo-1);
+					foundemo = 0;
+					ud.reccnt = 0;
+					kclose(recfilep);
+					ps[myconnectindex].gm |= MODE_MENU;
+					break;
+				}
+			}
 
             for(j=connecthead;j>=0;j=connectpoint2[j])
             {
@@ -8371,6 +8371,7 @@ if (VOLUMEONE) {
         if( ud.show_help == 0 && (ps[myconnectindex].gm&MODE_MENU) == 0 )
             rotatesprite((320-50)<<16,9<<16,65536L,0,BETAVERSION,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
 }
+		handleevents();
         getpackets();
         nextpage();
 
@@ -9096,28 +9097,28 @@ void doorders(void)
     KB_FlushKeyboardQueue();
     rotatesprite(0,0,65536L,0,ORDERING,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
     IFISSOFTMODE for(i=63;i>0;i-=7) palto(0,0,0,i);
-    totalclock = 0;while( !KB_KeyWaiting() ) getpackets();
+    totalclock = 0;while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
 
     IFISSOFTMODE for(i=0;i<63;i+=7) palto(0,0,0,i);
     totalclock = 0;
     KB_FlushKeyboardQueue();
     rotatesprite(0,0,65536L,0,ORDERING+1,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
     IFISSOFTMODE for(i=63;i>0;i-=7) palto(0,0,0,i);
-    totalclock = 0;while( !KB_KeyWaiting() ) getpackets();
+    totalclock = 0;while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
 
     IFISSOFTMODE for(i=0;i<63;i+=7) palto(0,0,0,i);
     totalclock = 0;
     KB_FlushKeyboardQueue();
     rotatesprite(0,0,65536L,0,ORDERING+2,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
     IFISSOFTMODE for(i=63;i>0;i-=7) palto(0,0,0,i);
-    totalclock = 0;while( !KB_KeyWaiting() ) getpackets();
+    totalclock = 0;while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
 
     IFISSOFTMODE for(i=0;i<63;i+=7) palto(0,0,0,i);
     totalclock = 0;
     KB_FlushKeyboardQueue();
     rotatesprite(0,0,65536L,0,ORDERING+3,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
     IFISSOFTMODE for(i=63;i>0;i-=7) palto(0,0,0,i);
-    totalclock = 0;while( !KB_KeyWaiting() ) getpackets();
+    totalclock = 0;while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
 }
 
 void dobonus(char bonusonly)
@@ -9215,6 +9216,7 @@ void dobonus(char bonusonly)
                         }
                     }
 
+					handleevents();
                     getpackets();
                     nextpage();
                     if( KB_KeyWaiting() ) break;
@@ -9230,7 +9232,7 @@ void dobonus(char bonusonly)
 
             rotatesprite(0,0,65536L,0,3292,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
 	    IFISSOFTMODE { for(t=63;t>=0;t--) palto(0,0,0,t); } else { nextpage(); }
-            while( !KB_KeyWaiting() ) getpackets();
+		while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
 	    IFISSOFTMODE for(t=0;t<64;t++) palto(0,0,0,t);
             MUSIC_StopSong();
             FX_StopAllSounds();
@@ -9259,7 +9261,7 @@ void dobonus(char bonusonly)
 	setgamepalette(&ps[myconnectindex], palette, 3);	// JBF 20040308
             rotatesprite(0,0,65536L,0,3293,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
 	    IFISSOFTMODE { for(t=63;t>=0;t--) palto(0,0,0,t); } else { nextpage(); }
-            while( !KB_KeyWaiting() ) getpackets();
+            while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
 	    IFISSOFTMODE for(t=0;t<64;t++) palto(0,0,0,t);
 
             break;
@@ -9305,7 +9307,7 @@ void dobonus(char bonusonly)
 
 	    IFISSOFTMODE for(t=63;t>=0;t-=3) palto(0,0,0,t);
             KB_FlushKeyboardQueue();
-            while(!KB_KeyWaiting()) getpackets();
+            while(!KB_KeyWaiting()) { handleevents(); getpackets(); }
 	    IFISSOFTMODE for(t=0;t<64;t+=3) palto(0,0,0,t);
 
             clearview(0L);
@@ -9314,7 +9316,7 @@ void dobonus(char bonusonly)
             playanm("DUKETEAM.ANM",4);
 
             KB_FlushKeyBoardQueue();
-            while(!KB_KeyWaiting()) getpackets();
+            while(!KB_KeyWaiting()) { handleevents(); getpackets(); }
 
             clearview(0L);
             nextpage();
@@ -9337,7 +9339,7 @@ void dobonus(char bonusonly)
                 playanm("cineov3.anm",2);
                 KB_FlushKeyBoardQueue();
                 ototalclock = totalclock+200;
-                while(totalclock < ototalclock) getpackets();
+                while(totalclock < ototalclock) { handleevents(); getpackets(); }
                 clearview(0L);
                 nextpage();
 
@@ -9350,24 +9352,24 @@ void dobonus(char bonusonly)
             if( ud.lockout == 0 && !KB_KeyWaiting() )
             {
                 sound(ENDSEQVOL3SND5);
-                while(Sound[ENDSEQVOL3SND5].lock>=200) getpackets();
+                while(Sound[ENDSEQVOL3SND5].lock>=200) { handleevents(); getpackets(); }
                 if(KB_KeyWaiting()) goto ENDANM;
                 sound(ENDSEQVOL3SND6);
-                while(Sound[ENDSEQVOL3SND6].lock>=200) getpackets();
+                while(Sound[ENDSEQVOL3SND6].lock>=200) { handleevents(); getpackets(); }
                 if(KB_KeyWaiting()) goto ENDANM;
                 sound(ENDSEQVOL3SND7);
-                while(Sound[ENDSEQVOL3SND7].lock>=200) getpackets();
+                while(Sound[ENDSEQVOL3SND7].lock>=200) { handleevents(); getpackets(); }
                 if(KB_KeyWaiting()) goto ENDANM;
                 sound(ENDSEQVOL3SND8);
-                while(Sound[ENDSEQVOL3SND8].lock>=200) getpackets();
+                while(Sound[ENDSEQVOL3SND8].lock>=200) { handleevents(); getpackets(); }
                 if(KB_KeyWaiting()) goto ENDANM;
                 sound(ENDSEQVOL3SND9);
-                while(Sound[ENDSEQVOL3SND9].lock>=200) getpackets();
+                while(Sound[ENDSEQVOL3SND9].lock>=200) { handleevents(); getpackets(); }
             }
 
             KB_FlushKeyBoardQueue();
             totalclock = 0;
-            while(!KB_KeyWaiting() && totalclock < 120) getpackets();
+            while(!KB_KeyWaiting() && totalclock < 120) { handleevents(); getpackets(); }
 
             ENDANM:
 
@@ -9474,7 +9476,7 @@ void dobonus(char bonusonly)
 	    palto(0,0,0,63-t);
 
         KB_FlushKeyboardQueue();
-        while(KB_KeyWaiting()==0) getpackets();
+        while(KB_KeyWaiting()==0) { handleevents(); getpackets(); }
 
         if( KB_KeyPressed( sc_F12 ) )
         {
