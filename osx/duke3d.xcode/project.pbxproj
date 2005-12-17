@@ -5,6 +5,18 @@
 	};
 	objectVersion = 39;
 	objects = {
+		AB085FB5095396E300EC67EF = {
+			containerPortal = AB3F27C80952B9CA002C4F84;
+			isa = PBXContainerItemProxy;
+			proxyType = 1;
+			remoteGlobalIDString = AB3AF5F408DEDABE00C0AA42;
+			remoteInfo = engine;
+		};
+		AB085FB6095396E300EC67EF = {
+			isa = PBXTargetDependency;
+			name = "engine (from engine.xcode)";
+			targetProxy = AB085FB5095396E300EC67EF;
+		};
 		AB3F27C00952B9AC002C4F84 = {
 			children = (
 				AB3F27C80952B9CA002C4F84,
@@ -394,6 +406,7 @@
 			buildPhases = (
 			);
 			buildSettings = {
+				PRODUCT_NAME = All;
 			};
 			dependencies = (
 				AB3F28850952CE61002C4F84,
@@ -708,7 +721,7 @@
 				WARNING_CFLAGS = "-Wno-four-char-constants -Wno-unknown-pragmas";
 			};
 			dependencies = (
-				AB3F284B0952CCD1002C4F84,
+				AB085FB6095396E300EC67EF,
 			);
 			isa = PBXNativeTarget;
 			name = game;
@@ -756,18 +769,6 @@
 			path = "/Users/jonof/ports/duke3d/osx/game-Info.plist";
 			refType = 0;
 			sourceTree = "<absolute>";
-		};
-		AB3F284A0952CCD1002C4F84 = {
-			containerPortal = AB3F27C80952B9CA002C4F84;
-			isa = PBXContainerItemProxy;
-			proxyType = 1;
-			remoteGlobalIDString = AB3AF9DD08DEE2CF00C0AA42;
-			remoteInfo = editor;
-		};
-		AB3F284B0952CCD1002C4F84 = {
-			isa = PBXTargetDependency;
-			name = "editor (from engine.xcode)";
-			targetProxy = AB3F284A0952CCD1002C4F84;
 		};
 		AB3F285B0952CDAB002C4F84 = {
 			fileRef = AB3F27DF0952BBAC002C4F84;

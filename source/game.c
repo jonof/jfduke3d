@@ -7711,8 +7711,10 @@ void app_main(int argc,char **argv)
 		if (getcwd(cwd,BMAX_PATH)) addsearchpath(cwd);
 		if ((homedir = Bgethomedir())) {
 			Bsnprintf(cwd,sizeof(cwd),"%s/"
-#if defined(_WIN32) || defined(__APPLE__)
+#if defined(_WIN32)
 				"JFDuke3D"
+#elif defined(__APPLE__)
+				"Library/Preferences/JFDuke3D"
 #else
 				".jfduke3d"
 #endif
