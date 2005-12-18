@@ -5194,7 +5194,6 @@ void endanimvol43(long fr)
 }
 
 
-long lastanimhack=0;
 void playanm(char *fn,char t)
 {
         char *animbuf, *palptr;
@@ -5218,10 +5217,7 @@ void playanm(char *fn,char t)
 
     walock[TILE_ANIM] = 219+t;
 
-    if(lastanimhack != t)
         allocache((long *)&animbuf,length,&walock[TILE_ANIM]);
-
-    lastanimhack = t;
 
     tilesizx[TILE_ANIM] = 200;
     tilesizy[TILE_ANIM] = 320;
