@@ -163,13 +163,14 @@ void setgamepalette(struct player_struct *player, char *pal, int set)
 	}
 
 	if (pal == palette || pal == waterpal || pal == slimepal) {
+		// only reset the palette to normal if the previous one wasn't handled by tinting
 		if (player->palette != palette && player->palette != waterpal && player->palette != slimepal)
 			setbrightness(ud.brightness>>2, palette, set);
 	} else {
 		setbrightness(ud.brightness>>2, pal, set);
 	}
 	player->palette = pal;
-	setpalettefade(0,0,0,0);
+	//setpalettefade(0,0,0,0);
 }
 
 int gametext(int x,int y,char *t,char s,short dabits)

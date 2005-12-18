@@ -3142,8 +3142,14 @@ if (PLUTOPAK) {
 	    menutext(c+16,50+16+16+22,0,changesmade==0,"APPLY CHANGES");
 	    
         menutext(c,50+62+16,SHX(-6),PHX(-6),"BRIGHTNESS");
-            bar(c+167,50+62+16,(short *)&ud.brightness,8,x==4,SHX(-6),PHX(-6));
-            if(x==4) setbrightness(ud.brightness>>2,&ps[myconnectindex].palette[0],0);
+		{
+			short ss = ud.brightness;
+            bar(c+167,50+62+16,&ss,8,x==4,SHX(-6),PHX(-6));
+            if(x==4) {
+				ud.brightness = ss;
+				setbrightness(ud.brightness>>2,&ps[myconnectindex].palette[0],0);
+			}
+		}
 
 #if defined(POLYMOST) && defined(USE_OPENGL)
 		menutext(c,50+62+16+16,0,bpp==8,"FILTERING");
