@@ -27,6 +27,8 @@ Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
 
 #include "duke3d.h"
 
+extern char pow2char[];
+
 extern char everyothertime;
 static short which_palookup = 9;
 char useprecache = 1;
@@ -37,25 +39,25 @@ static int  precachecount;
 static void tloadtile(short tilenume, char type)
 {
     if ((picanm[tilenume]&63) > 0) {
-	int i,j;
+		int i,j;
 
-	if ((picanm[tilenume]&192)==192) {
-		i = tilenume - (picanm[tilenume]&63);
-		j = tilenume;
-	} else {
-		i = tilenume;
-		j = tilenume + (picanm[tilenume]&63);
-	}
-	for (;i<=j;i++) {
-	    if (!(gotpic[i>>3] & (1<<(i&7)))) precachecount++;
-	    gotpic[i>>3] |= (1<<(i&7));
-	    precachehightile[type][i>>3] |= (1<<(i&7));
-	}
+		if ((picanm[tilenume]&192)==192) {
+			i = tilenume - (picanm[tilenume]&63);
+			j = tilenume;
+		} else {
+			i = tilenume;
+			j = tilenume + (picanm[tilenume]&63);
+		}
+		for (;i<=j;i++) {
+			if (!(gotpic[i>>3] & pow2char[i&7])) precachecount++;
+			gotpic[i>>3] |= pow2char[i&7];
+			precachehightile[type][i>>3] |= pow2char[i&7];
+		}
     } else {
-	if (!(gotpic[tilenume>>3] & (1<<(tilenume&7)))) precachecount++;
-	gotpic[tilenume>>3] |= (1<<(tilenume&7));
-	precachehightile[type][tilenume>>3] |= (1<<(tilenume&7));
-    }
+		if (!(gotpic[tilenume>>3] & pow2char[tilenume&7])) precachecount++;
+		gotpic[tilenume>>3] |= pow2char[tilenume&7];
+		precachehightile[type][tilenume>>3] |= pow2char[tilenume&7];
+	}
 }
 
 void cachespritenum(short i)
@@ -175,6 +177,18 @@ void cachespritenum(short i)
         case CAMERA1:
             maxc = 5;
             break;
+	
+		// caching of HUD sprites for weapons that may be in the level
+		case CHAINGUNSPRITE: for (j=CHAINGUN; j<=CHAINGUN+7; j++) tloadtile(j,1); break;
+		case RPGSPRITE: for (j=RPGGUN; j<=RPGGUN+2; j++) tloadtile(j,1); break;
+		case FREEZESPRITE: for (j=FREEZE; j<=FREEZE+5; j++) tloadtile(j,1); break;
+		case GROWSPRITEICON:
+		case SHRINKERSPRITE: for (j=SHRINKER-2; j<=SHRINKER+5; j++) tloadtile(j,1); break;
+		case HBOMBAMMO:
+		case HEAVYHBOMB: for (j=HANDREMOTE; j<=HANDREMOTE+5; j++) tloadtile(j,1); break;
+		case TRIPBOMBSPRITE: for (j=HANDHOLDINGLASER; j<=HANDHOLDINGLASER+4; j++) tloadtile(j,1); break;
+		case SHOTGUNSPRITE: tloadtile(SHOTGUNSHELL,1); for (j=SHOTGUN; j<=SHOTGUN+6; j++) tloadtile(j,1); break;
+		case DEVISTATORSPRITE: for (j=DEVISTATOR; j<=DEVISTATOR+1; j++) tloadtile(j,1); break;
     }
 
     for(j = PN; j < (PN+maxc); j++) {
@@ -279,8 +293,8 @@ void cacheit(void)
         tloadtile(wall[i].picnum, 0);
 
         if(wall[i].overpicnum >= 0) {
-	    tloadtile(wall[i].overpicnum, 0);
-	}
+			tloadtile(wall[i].overpicnum, 0);
+		}
     }
 
     for(i=0;i<numsectors;i++)
@@ -311,35 +325,38 @@ void docacheit(void)
 
     j = 0;
 
-    for(i=0;i<MAXTILES;i++) {
-        if( (gotpic[i>>3]&(1<<(i&7))) ) {
-		if (waloff[i] == 0)
-		    loadtile((short)i);
-
-		if (useprecache) { 
-			if (precachehightile[0][i>>3] & (1<<(i&7)))
-				for (k=0; k<MAXPALOOKUPS; k++)
-					polymost_precache(i,k,0);
-
-			if (precachehightile[1][i>>3] & (1<<(i&7)))
-				for (k=0; k<MAXPALOOKUPS; k++)
-					polymost_precache(i,k,1);
+	for(i=0;i<MAXTILES;i++) {
+		if (!(i&7) && !gotpic[i>>3]) {
+			i+=7;
+			continue;
 		}
+		if(gotpic[i>>3] & pow2char[i&7]) {
+			if (waloff[i] == 0)
+				loadtile((short)i);
 
-		j++;
-		pc++;
-	} else continue;
+			if (useprecache) { 
+				if (precachehightile[0][i>>3] & pow2char[i&7])
+					for (k=0; k<MAXPALOOKUPS; k++)
+						polymost_precache(i,k,0);
 
-	if((j&7) == 0) { handleevents(); getpackets(); }
-	if (totalclock - tc > TICRATE/4) {
-		sprintf(tempbuf,"Loading textures ... %ld%%\n",min(100,100*pc/precachecount));
-		dofrontscreens(tempbuf);
-		tc = totalclock;
-	}
+				if (precachehightile[1][i>>3] & pow2char[i&7])
+					for (k=0; k<MAXPALOOKUPS; k++)
+						polymost_precache(i,k,1);
+			}
+
+			j++;
+			pc++;
+		} else continue;
+
+		if((j&7) == 0) { handleevents(); getpackets(); }
+		if (totalclock - tc > TICRATE/4) {
+			sprintf(tempbuf,"Loading textures ... %ld%%\n",min(100,100*pc/precachecount));
+			dofrontscreens(tempbuf);
+			tc = totalclock;
+		}
     }
 
     clearbufbyte(gotpic,sizeof(gotpic),0L);
-
 }
 
 
