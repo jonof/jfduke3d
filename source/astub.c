@@ -1951,6 +1951,8 @@ int ExtInit(void)
 #if defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
 		addsearchpath("/usr/share/games/jfduke3d");
 		addsearchpath("/usr/local/games/jfduke3d");
+#elif defined(__APPLE__)
+		addsearchpath("/Library/Application Support/JFDuke3D");
 #endif
 		if (getcwd(cwd,BMAX_PATH)) addsearchpath(cwd);
 		if ((homedir = Bgethomedir())) {
@@ -1958,7 +1960,7 @@ int ExtInit(void)
 #if defined(_WIN32)
 				"JFDuke3D"
 #elif defined(__APPLE__)
-				"Library/Preferences/JFDuke3D"
+				"Library/Application Support/JFDuke3D"
 #else
 				".jfduke3d"
 #endif
