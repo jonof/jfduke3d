@@ -1837,6 +1837,7 @@ void displayweapon(short snum)
 
 long myaimmode = 0, myaimstat = 0, omyaimstat = 0;
 
+static ControlInfo lastinfo = { 0,0,0,0,0,0 };
 void getinput(short snum)
 {
 
@@ -1854,6 +1855,14 @@ void getinput(short snum)
     p = &ps[snum];
 
     CONTROL_GetInput( &info );
+
+	info.dx += lastinfo.dx;
+	info.dy += lastinfo.dy;
+	info.dz += lastinfo.dz;
+	info.dyaw   += lastinfo.dyaw;
+	info.dpitch += lastinfo.dpitch;
+	info.droll  += lastinfo.droll;
+	memset(&lastinfo.dx, 0, sizeof(lastinfo));
 
     if( (p->gm&MODE_MENU) || (p->gm&MODE_TYPE) || (ud.pause_on && !KB_KeyPressed(sc_Pause)) )
     {
@@ -1968,18 +1977,25 @@ if (!VOLUMEONE) {
     if( CONTROL_JoystickEnabled )
         if ( running ) info.dz *= 2;
 
-    if( BUTTON(gamefunc_Strafe) )
-       svel = -info.dyaw/8;
-    else angvel = info.dyaw/64;
+	if( BUTTON(gamefunc_Strafe) ) {
+		lastinfo.dyaw = info.dyaw % 8;
+		svel = -info.dyaw/8;
+    } else {
+		lastinfo.dyaw = info.dyaw % 64;
+		angvel = info.dyaw/64;
+	}
 
     if( myaimmode )
     {
+		lastinfo.dz = info.dz % (314-128);
         if(ud.mouseflip)
             horiz -= info.dz/(314-128);
         else horiz += info.dz/(314-128);
 
         info.dz = 0;
-    }
+    } else {
+		lastinfo.dz = info.dz % (1<<6);
+	}
 
     svel -= info.dx;
     vel = -info.dz>>6;

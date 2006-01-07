@@ -206,16 +206,16 @@ void CONFIG_SetDefaults( void )
 
    FXDevice = -1;
    MusicDevice = -1;
-   NumVoices = 4;
+   NumVoices = 8;		// DOS default = 4
    NumChannels = 2;
    NumBits = 8;
-   MixRate = 11025;
+   MixRate = 22050;		// DOS default = 11025
    SoundToggle = 1;
    MusicToggle = 1;
    VoiceToggle = 1;
    AmbienceToggle = 1;
-   FXVolume = 192;
-   MusicVolume = 128;
+   FXVolume = 220;
+   MusicVolume = 200;
    ReverseStereo = 0;
    myaimmode = ps[0].aim_mode = 0;
    MouseAiming = 0;

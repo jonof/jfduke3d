@@ -452,12 +452,6 @@ void getpackets(void)
     {
         switch(packbuf[0])
         {
-		/* JBF: Appears not to be in the Atomic 1.5 source
-            case 125:
-                cp = 0;
-                break;
-		*/
-
             case 126:
 						 //Slaves in M/S mode only send to master
 						 //Master re-transmits message to all others
@@ -2229,7 +2223,6 @@ void typemode(void)
                 j = 50;
                 gametext(320>>1,j,"SEND MESSAGE TO...",0,2+8+16); j += 8;
                 for(i=connecthead;i>=0;i=connectpoint2[i])
-//                for(i=0;i<ud.multimode;i++)
                 {
                      if (i == myconnectindex)
                      {
@@ -2245,11 +2238,6 @@ void typemode(void)
                 }
                 minitextshade((320>>1)-40-4+1,j+1,"    ESC - Abort",26,0,2+8+16);
                 minitext((320>>1)-40-4,j,"    ESC - Abort",0,2+8+16); j += 7;
-
-                //sprintf(buf,"PRESS 1-%ld FOR INDIVIDUAL PLAYER.",ud.multimode);
-                //gametext(320>>1,j,buf,0,2+8+16); j += 8;
-                //gametext(320>>1,j,"'A' OR 'ENTER' FOR ALL PLAYERS",0,2+8+16); j += 8;
-                //gametext(320>>1,j,"ESC ABORTS",0,2+8+16); j += 8;
 
                 if (ud.screen_size > 0) j = 200-45; else j = 200-8;
                 gametext(320>>1,j,typebuf,0,2+8+16);
@@ -2336,25 +2324,25 @@ void displayrest(long smoothratio)
 
     // this takes care of fullscreen tint for OpenGL
     if (getrendermode() >= 3) {
-   	if (pp->palette == waterpal) tintr=0,tintg=0,tintb=63,tintf=8;
- 	else if (pp->palette == slimepal) tintr=0,tintg=63,tintb=0,tintf=8;
+		if (pp->palette == waterpal) tintr=0,tintg=0,tintb=63,tintf=8;
+		else if (pp->palette == slimepal) tintr=0,tintg=63,tintb=0,tintf=8;
     }
 
     // this does pain tinting etc from the CON
     if( pp->pals_time >= 0 && pp->loogcnt == 0)	// JBF 20040101: pals_time > 0 now >= 0
     {
-	fader = pp->pals[0];
-	fadeg = pp->pals[1];
-	fadeb = pp->pals[2];
-	fadef = pp->pals_time;
-	restorepalette = 1;		// JBF 20040101
-	dotint = 1;
+		fader = pp->pals[0];
+		fadeg = pp->pals[1];
+		fadeb = pp->pals[2];
+		fadef = pp->pals_time;
+		restorepalette = 1;		// JBF 20040101
+		dotint = 1;
     }
     // reset a normal palette
     else if( restorepalette )
     {
         //setbrightness(ud.brightness>>2,&pp->palette[0],0);
-	setgamepalette(pp,pp->palette,0);
+		setgamepalette(pp,pp->palette,0);
         restorepalette = 0;
     }
     // loogies courtesy of being snotted on
@@ -2693,7 +2681,6 @@ void drawbackground(void)
 	y1 = 0; y2 = ydim;
 	//if( ready2send || ud.recstat == 2 )	// original
 	if ( (ready2send && ps[myconnectindex].gm == MODE_GAME) || ud.recstat == 2 )	// TerminX's solution
-	//if (ud.recstat == 0 || ud.recstat == 1 || (ud.recstat == 2 && ud.reccnt > 0))	// JBF 20040717
 	{
 		if (ud.screen_size == 8)
 			y1 = scale(ydim,200-scale(tilesizy[BOTTOMSTATUSBAR],ud.statusbarscale,100),200);
@@ -2953,9 +2940,6 @@ void displayrooms(short snum,long smoothratio)
 
     p = &ps[snum];
 
-//    if(screencapt == 0 && (p->gm&MODE_MENU) && ( (current_menu/100) == 3 ) || (current_menu >= 1000 && current_menu < 2999 ) )
-  //      return;
-
     if(pub > 0 || getrendermode() >= 3)	// JBF 20040101: redraw background always
     {
         if(ud.screen_size > 8 || (ud.screen_size == 8 && ud.statusbarscale<100)) drawbackground();
@@ -3006,7 +2990,7 @@ void displayrooms(short snum,long smoothratio)
 
         if(screencapt)
         {
-            walock[TILE_SAVESHOT] = 254;
+            walock[TILE_SAVESHOT] = 199;
             if (waloff[TILE_SAVESHOT] == 0)
                 allocache((long *)&waloff[TILE_SAVESHOT],200*320,&walock[TILE_SAVESHOT]);
             setviewtotile(TILE_SAVESHOT,200L,320L);
@@ -3152,8 +3136,8 @@ void displayrooms(short snum,long smoothratio)
         if(screencapt == 1)
         {
             setviewback();
-            walock[TILE_SAVESHOT] = 1;
             screencapt = 0;
+//            walock[TILE_SAVESHOT] = 1;
         }
         else if( getrendermode() == 0 && ( ( ud.screen_tilting && p->rotscrnang) || ud.detail==0 ) )
         {
@@ -7472,6 +7456,10 @@ void compilecons(void)
 	   label = newlabel;
 	   labelcode = newlabelcode;
    }
+   
+   clearbufbyte(&sprite[0], sizeof(sprite), 0);
+   clearbufbyte(&sector[0], sizeof(sector), 0);
+   clearbufbyte(&wall[0], sizeof(wall), 0);
 }
 
 
@@ -7543,6 +7531,9 @@ void Startup(void)
 	if (loadpics("tiles000.art",32*1048576) < 0)
 		gameexit("Failed loading art.");
 
+	initprintf("Loading palette/lookups.\n");
+	genspriteremaps();
+	
 	readsavenames();
 
 	tilesizx[MIRROR] = tilesizy[MIRROR] = 0;
@@ -7571,6 +7562,8 @@ void Startup(void)
 
 	if(networkmode == 255)
 	   networkmode = 1;
+	
+	getnames();
 }
 
 
@@ -7614,25 +7607,12 @@ void getnames(void)
 				if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
 		  }
 
-	/* JBF: Apparently not in Atomic 1.5
-        if(cp == 0)
-        {
-            buf[0] = 125;
-
-            for(i=connecthead;i>=0;i=connectpoint2[i])
-				{
-					 if(i != myconnectindex) sendpacket(i,buf,1);
-					 if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
-				}
-        }
-	*/
-
         getpackets();
 
         waitforeverybody();
     }
 
-    if(cp == 1)
+    if(cp == 1 && numplayers < 2)
         gameexit("Please put the Duke Nukem 3D Atomic Edition CD in the CD-ROM drive.");
 }
 
@@ -7841,8 +7821,6 @@ if (VOLUMEALL) {
         ud.warp_on = 1;
     }
 
-    getnames();
-
     if(ud.multimode > 1)
     {
         playerswhenstarted = ud.multimode;
@@ -7887,8 +7865,6 @@ if (VOLUMEALL) {
    initprintf("Checking sound inits.\n");
    SoundStartup();
    loadtmb();
-    
-    genspriteremaps();
 
 if (VOLUMEONE) {
         if(numplayers > 4 || ud.multimode > 4)

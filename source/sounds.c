@@ -60,16 +60,12 @@ void SoundStartup( void )
       if (ReverseStereo == 1) {
          FX_SetReverseStereo(!FX_GetReverseStereo());
       }
-   }
-      
-   if ( status != FX_Ok ) {
-      Error( "Sound startup error: %s", FX_ErrorString( FX_Error ));
-   }
-
-   status = FX_SetCallBack( testcallback );
+	  status = FX_SetCallBack( testcallback );
+  }
 
    if ( status != FX_Ok ) {
-      Error( "Sound startup error: %s", FX_ErrorString( FX_Error ));
+	  sprintf(tempbuf, "Sound startup error: %s", FX_ErrorString( FX_Error ));
+	  gameexit(tempbuf);
    }
 }
 
@@ -91,7 +87,8 @@ void SoundShutdown( void )
 
    status = FX_Shutdown();
    if ( status != FX_Ok ) {
-      Error( "Sound shutdown error: %s", FX_ErrorString( FX_Error ));
+	  sprintf(tempbuf, "Sound shutdown error: %s", FX_ErrorString( FX_Error ));
+      gameexit(tempbuf);
    }
 }
 

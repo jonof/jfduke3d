@@ -254,7 +254,7 @@ char getsound(unsigned short num)
     if( (ud.level_number == 0 && ud.volume_number == 0 && (num == 189 || num == 232 || num == 99 || num == 233 || num == 17 ) ) ||
         ( l < 12288 ) )
     {
-        Sound[num].lock = 2;
+        Sound[num].lock = 199;
         allocache((long *)&Sound[num].ptr,l,(char *)&Sound[num].lock);
         if(Sound[num].ptr != NULL)
             kread( fp, Sound[num].ptr , l);
@@ -282,8 +282,9 @@ void precachenecessarysounds(void)
 
 void cacheit(void)
 {
-    short i,j;
-
+    long i,j,k, pc=0;
+    long tc;
+	
     precachenecessarysounds();
 
     cachegoodsprites();
@@ -316,13 +317,7 @@ void cacheit(void)
         }
     }
 
-}
-
-void docacheit(void)
-{
-    long i,j,k, pc=0;
-    long tc = totalclock;
-
+    tc = totalclock;
     j = 0;
 
 	for(i=0;i<MAXTILES;i++) {
@@ -1019,9 +1014,8 @@ void newgame(char vn,char ln,char sk)
         playanm("vol41a.anm",6);
         clearview(0L);
         nextpage();
+
         playanm("vol42a.anm",7);
-//        clearview(0L);
-  //      nextpage();
         playanm("vol43a.anm",9);
         clearview(0L);
         nextpage();
@@ -1491,7 +1485,6 @@ if (!VOLUMEONE) {
     if(ud.recstat != 2) MUSIC_StopSong();
 
     cacheit();
-    docacheit();
 
     if(ud.recstat != 2)
     {
@@ -1559,6 +1552,7 @@ if (VOLUMEONE) {
      vscrn();
      clearview(0L);
      drawbackground();
+     displayrooms(myconnectindex,65536);
 
      clearbufbyte(playerquitflag,MAXPLAYERS,0x01010101);
      ps[myconnectindex].over_shoulder_on = 0;

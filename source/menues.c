@@ -86,13 +86,14 @@ void cmenu(short cm)
 
 void savetemp(char *fn,long daptr,long dasiz)
 {
-    int fp;
+    FILE *fp;
 
-    fp = Bopen(fn,BO_WRONLY|BO_CREAT|BO_TRUNC|BO_BINARY,0/*BS_IRUSR|BS_IWUSR|S_IRGRP|S_IWGRP*/);
+	if ((fp = fopen(fn,"wb")) == (FILE *)NULL)
+		return;
 
-    Bwrite(fp,(char *)daptr,dasiz);
+    fwrite((char *)daptr,dasiz,1,fp);
 
-    Bclose(fp);
+    fclose(fp);
 }
 
 void getangplayers(short snum)
@@ -158,7 +159,7 @@ corrupt:
 
 int loadplayer(signed char spot)
 {
-     short k,music_changed;
+     short k;
      char fn[13];
      char mpfn[13];
      char *fnptr, scriptptrs[MAXSCRIPTSIZE];
@@ -240,7 +241,7 @@ int loadplayer(signed char spot)
          if (kdfread(&ud.savegame[spot][0],19,1,fil) != 1) goto corrupt;
 	 }
 
-     music_changed = (music_select != (ud.volume_number*11) + ud.level_number);
+//     music_changed = (music_select != (ud.volume_number*11) + ud.level_number);
 
          if (kdfread(&ud.volume_number,sizeof(ud.volume_number),1,fil) != 1) goto corrupt;
          if (kdfread(&ud.level_number,sizeof(ud.level_number),1,fil) != 1) goto corrupt;
@@ -380,10 +381,8 @@ int loadplayer(signed char spot)
      clearbufbyte(gotpic,sizeof(gotpic),0L);
      clearsoundlocks();
          cacheit();
-     docacheit();
 
-//     if(music_changed == 0)	// JBF: why, pray-tell?
-        music_select = (ud.volume_number*11) + ud.level_number;
+     music_select = (ud.volume_number*11) + ud.level_number;
      playmusic(&music_fn[0][music_select][0]);
 
      ps[myconnectindex].gm = MODE_GAME;
@@ -535,6 +534,13 @@ int saveplayer(signed char spot)
      dfwrite(&ud.level_number,sizeof(ud.level_number),1,fil);
          dfwrite(&ud.player_skill,sizeof(ud.player_skill),1,fil);
      dfwrite(&boardfilename[0],BMAX_PATH,1,fil);
+	 
+	 if (!waloff[TILE_SAVESHOT]) {
+		 walock[TILE_SAVESHOT] = 254;
+		 allocache((long *)&waloff[TILE_SAVESHOT],200*320,&walock[TILE_SAVESHOT]);
+		 clearbuf((void*)waloff[TILE_SAVESHOT],(200*320)/4,0);
+		 walock[TILE_SAVESHOT] = 1;
+	 }
      dfwrite((char *)waloff[TILE_SAVESHOT],320,200,fil);
 
          dfwrite(&numwalls,2,1,fil);

@@ -12,7 +12,7 @@ USE_A_C = 0
 NOASM = 0
 
 # Debugging options
-RELEASE?=0
+RELEASE?=1
 
 # build locations
 SRC=source/
