@@ -641,6 +641,7 @@ void getpackets(void)
 
 				ps[other].aim_mode = packbuf[i++];
 				ps[other].auto_aim = packbuf[i++];
+				ps[other].weaponswitch = packbuf[i++];
 					 
                 break;
             case 7:
@@ -7598,8 +7599,9 @@ void getnames(void)
 				buf[l++] = (char)ud.wchoice[0][i];
           }
 
-		  buf[l++] = ps[myconnectindex].aim_mode = MouseAiming;
+		  buf[l++] = ps[myconnectindex].aim_mode = ud.mouseaiming;
 		  buf[l++] = ps[myconnectindex].auto_aim = AutoAim;
+		  buf[l++] = ps[myconnectindex].weaponswitch = ud.weaponswitch;
 
           for(i=connecthead;i>=0;i=connectpoint2[i])
 		  {
@@ -7916,8 +7918,9 @@ if (VOLUMEONE) {
 
     ud.auto_run = RunMode;
 	ud.showweapons = ShowOpponentWeapons;
-    ps[myconnectindex].aim_mode = MouseAiming;
+    ps[myconnectindex].aim_mode = ud.mouseaiming;
     ps[myconnectindex].auto_aim = AutoAim;
+	ps[myconnectindex].weaponswitch = ud.weaponswitch;
 
     ud.warp_on = 0;
     KB_KeyDown[sc_Pause] = 0;	// JBF: I hate the pause key
@@ -8077,8 +8080,9 @@ char opendemoread(char which_demo) // 0 = mine
      }
 
 	for(i=0;i<ud.multimode;i++) {
-       if (kread(recfilep,(int32 *)&ps[i].aim_mode,sizeof(char)) != sizeof(char)) goto corrupt;
-	   if (kread(recfilep,(int32 *)&ps[i].auto_aim,sizeof(char)) != sizeof(char)) goto corrupt;	// JBF 20031126
+       if (kread(recfilep,(int32 *)&ps[i].aim_mode,sizeof(int32)) != sizeof(int32)) goto corrupt;
+	   if (kread(recfilep,(int32 *)&ps[i].auto_aim,sizeof(int32)) != sizeof(int32)) goto corrupt;	// JBF 20031126
+	   if (kread(recfilep,(int32 *)&ps[i].weaponswitch,sizeof(int32)) != sizeof(int32)) goto corrupt;
 	}
 
      ud.god = ud.cashman = ud.eog = ud.showallmap = 0;
@@ -8125,8 +8129,9 @@ void opendemowrite(void)
     fwrite((char *)boardfilename,sizeof(boardfilename),1,frecfilep);
 
     for(i=0;i<ud.multimode;i++) {
-        fwrite((int32 *)&ps[i].aim_mode,sizeof(char),1,frecfilep);
-		fwrite((int32 *)&ps[i].auto_aim,sizeof(char),1,frecfilep);		// JBF 20031126
+        fwrite((int32 *)&ps[i].aim_mode,sizeof(int32),1,frecfilep);
+		fwrite((int32 *)&ps[i].auto_aim,sizeof(int32),1,frecfilep);		// JBF 20031126
+		fwrite(&ps[i].weaponswitch,sizeof(int32),1,frecfilep);
     }
 
     totalreccnt = 0;

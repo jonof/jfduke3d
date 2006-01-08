@@ -310,7 +310,7 @@ struct user_defs
     long camera_time,folfvel,folavel,folx,foly,fola;
     long reccnt;
 
-    int32 runkey_mode,statusbarscale;	// JBF 20031125
+    int32 runkey_mode,statusbarscale,mouseaiming,weaponswitch;
 
     int32 entered_name,screen_tilting,shadows,fta_on,executions,auto_run;
     int32 coords,tickrate,levelstats,m_coop,coop,screen_size,lockout,crosshair;
@@ -348,7 +348,7 @@ struct player_struct
     long bobcounter,weapon_sway;
     long pals_time,randomflamex,crack_time;
 
-    int32 aim_mode,auto_aim;
+    int32 aim_mode,auto_aim,weaponswitch;
 
     short ang,oang,angvel,cursectnum,look_ang,last_extra,subweapon;
     short ammo_amount[MAX_WEAPONS],wackedbyactor,frag,fraggedself;

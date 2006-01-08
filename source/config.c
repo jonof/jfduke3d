@@ -65,7 +65,6 @@ int32 MixRate;
 int32 ReverseStereo;
 
 int32 ControllerType;
-int32 MouseAiming;
 int32 RunMode;
 int32 AutoAim;	// JBF 20031125
 int32 ShowOpponentWeapons;
@@ -218,7 +217,8 @@ void CONFIG_SetDefaults( void )
    MusicVolume = 200;
    ReverseStereo = 0;
    myaimmode = ps[0].aim_mode = 0;
-   MouseAiming = 0;
+   ud.mouseaiming = 0;
+   ud.weaponswitch = 3;	// new+empty
    AutoAim = 1;
    ControllerType = 1;
    ud.mouseflip = 0;
@@ -621,13 +621,14 @@ void CONFIG_ReadSetup( void )
  
       SCRIPT_GetNumber( scripthandle, "Controls","ControllerType",&ControllerType);
       SCRIPT_GetNumber( scripthandle, "Controls","MouseAimingFlipped",&ud.mouseflip);	// mouse aiming inverted
-      SCRIPT_GetNumber( scripthandle, "Controls","MouseAiming",&MouseAiming);		// 1=momentary/0=toggle
+      SCRIPT_GetNumber( scripthandle, "Controls","MouseAiming",&ud.mouseaiming);		// 1=momentary/0=toggle
       //SCRIPT_GetNumber( scripthandle, "Controls","GameMouseAiming",(int32 *)&ps[0].aim_mode);	// dupe of below (?)
-      ps[0].aim_mode = MouseAiming;
+      ps[0].aim_mode = ud.mouseaiming;
       SCRIPT_GetNumber( scripthandle, "Controls","AimingFlag",(int32 *)&myaimmode);	// (if toggle mode) gives state
       SCRIPT_GetNumber( scripthandle, "Controls","RunKeyBehaviour",&ud.runkey_mode);	// JBF 20031125
       SCRIPT_GetNumber( scripthandle, "Controls","AutoAim",&AutoAim);			// JBF 20031125
       ps[0].auto_aim = AutoAim;
+	  SCRIPT_GetNumber( scripthandle, "Controls","WeaponSwitchMode",&ud.weaponswitch);
 	  }
 
    CONFIG_ReadKeys();
@@ -688,11 +689,12 @@ void CONFIG_WriteSetup( void )
    SCRIPT_PutNumber( scripthandle, "Misc", "ShowOpponentWeapons",ShowOpponentWeapons,false,false);
    SCRIPT_PutNumber( scripthandle, "Misc", "UsePrecache",useprecache,false,false);
    SCRIPT_PutNumber( scripthandle, "Controls", "MouseAimingFlipped",ud.mouseflip,false,false);
-   SCRIPT_PutNumber( scripthandle, "Controls","MouseAiming",MouseAiming,false,false);
+   SCRIPT_PutNumber( scripthandle, "Controls","MouseAiming",ud.mouseaiming,false,false);
    //SCRIPT_PutNumber( scripthandle, "Controls","GameMouseAiming",(int32) ps[myconnectindex].aim_mode,false,false);
    SCRIPT_PutNumber( scripthandle, "Controls","AimingFlag",(long) myaimmode,false,false);
    SCRIPT_PutNumber( scripthandle, "Controls","RunKeyBehaviour",ud.runkey_mode,false,false);
    SCRIPT_PutNumber( scripthandle, "Controls","AutoAim",AutoAim,false,false);
+   SCRIPT_PutNumber( scripthandle, "Controls","WeaponSwitchMode",ud.weaponswitch,false,false);
 
    // JBF 20031211
    for(dummy=0;dummy<NUMGAMEFUNCTIONS;dummy++) {

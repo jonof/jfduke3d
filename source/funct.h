@@ -279,6 +279,7 @@ extern void restoreinterpolations(void);
 extern long ceilingspace(short sectnum);
 extern long floorspace(short sectnum);
 extern void addammo(short weapon,struct player_struct *p,short amount);
+extern void addweaponnoswitch(struct player_struct *p,short weapon);
 extern void addweapon(struct player_struct *p,short weapon);
 extern void checkavailinven(struct player_struct *p);
 extern void checkavailweapon(struct player_struct *p);

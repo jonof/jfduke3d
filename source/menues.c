@@ -2809,23 +2809,27 @@ if (PLUTOPAK) {
 							}
 						}
 						break;
-					case 3:  enabled = !MouseAiming;
+					case 3:  enabled = !ud.mouseaiming;
 						 if (enabled && x==io) myaimmode = 1-myaimmode;
 						 gametextpal(d,yy, myaimmode ? "On" : "Off", enabled?0:10, 0); break;
 					case 4:  if (x==io) ud.mouseflip = 1-ud.mouseflip;
 						 gametextpal(d,yy, ud.mouseflip ? "On" : "Off", 0, 0); break;
 					case 5:  if (ps[myconnectindex].gm&MODE_GAME || numplayers > 1) enabled = 0;
-						 if (enabled && x==io) MouseAiming = 1-MouseAiming;
+						 if (enabled && x==io) ud.mouseaiming = 1-ud.mouseaiming;
 		    					// don't change when in a multiplayer game
 		    					// because the state is sent during getnames()
 							// however, this will be fixed later
-						 gametextpal(d,yy, MouseAiming ? "Held" : "Toggle", enabled?0:10, 0); break;
+						 gametextpal(d,yy, ud.mouseaiming ? "Held" : "Toggle", enabled?0:10, 0); break;
 					case 6:  if (ps[myconnectindex].gm&MODE_GAME || numplayers > 1) enabled = 0;
 						 if (enabled && x==io) AutoAim = 1-AutoAim;
-					         gametextpal(d,yy, AutoAim ? "On" : "Off", enabled?0:10, 0); break;
+						 gametextpal(d,yy, AutoAim ? "On" : "Off", enabled?0:10, 0); break;
 					case 7:  if (x==io) ud.runkey_mode = 1-ud.runkey_mode;
 						 gametextpal(d,yy, ud.runkey_mode ? "Classic" : "Modern", 0, 0); break;
-					case 8:  enabled = 0; break;	// auto weapon switch
+					case 8:  if (ps[myconnectindex].gm&MODE_GAME || numplayers > 1) enabled = 0;
+						 if (enabled && x==io) { ud.weaponswitch = (ud.weaponswitch == 3) ? 0 : ud.weaponswitch+1; }
+							 { char *s[] = { "Off", "New", "Empty", "New+Empty" };
+								 gametextpal(d,yy, s[ud.weaponswitch], enabled?0:10, 0); break; }
+						 break;
 					case 9:  barsm(d+8,yy+7, (short *)&ud.screen_size,-4,x==io,SHX(-5),PHX(-5)); break;
 					case 10: if (x==io) ud.detail = 1-ud.detail;
 						 gametextpal(d,yy, ud.detail ? "High" : "Low", 0, 0); break;

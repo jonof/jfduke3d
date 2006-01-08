@@ -120,15 +120,19 @@ void addammo( short weapon,struct player_struct *p,short amount)
         p->ammo_amount[weapon] = max_ammo_amount[weapon];
 }
 
-void addweapon( struct player_struct *p,short weapon)
+void addweaponnoswitch( struct player_struct *p, short weapon)
 {
-    if ( p->gotweapon[weapon] == 0 )
+	if ( p->gotweapon[weapon] == 0 )
     {
         p->gotweapon[weapon] = 1;
         if(weapon == SHRINKER_WEAPON)
             p->gotweapon[GROW_WEAPON] = 1;
-    }
+    }	
+}
 
+void addweapon( struct player_struct *p,short weapon)
+{
+	addweaponnoswitch(p,weapon);
     p->random_club_frame = 0;
 
     if(p->holster_weapon == 0)
@@ -199,15 +203,15 @@ void checkavailweapon( struct player_struct *p )
     weap = p->curr_weapon;
     if( p->gotweapon[weap] && p->ammo_amount[weap] > 0 )
         return;
-
+	if( p->gotweapon[weap] && !(p->weaponswitch & 2))
+		return;
+	
     snum = sprite[p->i].yvel;
 
     for(i=0;i<10;i++)
     {
         weap = ud.wchoice[snum][i];
-if (VOLUMEONE) {
-        if(weap > 6) continue;
-}
+		if (VOLUMEONE && weap > 6) continue;
 
         if(weap == 0) weap = 9;
         else weap--;

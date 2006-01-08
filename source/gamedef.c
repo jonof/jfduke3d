@@ -2558,7 +2558,10 @@ char parse(void)
             break;
         case 23:
             insptr++;
-            if( ps[g_p].gotweapon[*insptr] == 0 ) addweapon( &ps[g_p], *insptr );
+            if( ps[g_p].gotweapon[*insptr] == 0 ) {
+				if (!(ps[g_p].weaponswitch & 1)) addweaponnoswitch(&ps[g_p], *insptr);
+				else addweapon( &ps[g_p], *insptr );
+			}
             else if( ps[g_p].ammo_amount[*insptr] >= max_ammo_amount[*insptr] )
             {
                  killit_flag = 2;
@@ -2566,7 +2569,7 @@ char parse(void)
             }
             addammo( *insptr, &ps[g_p], *(insptr+1) );
             if(ps[g_p].curr_weapon == KNEE_WEAPON)
-                if( ps[g_p].gotweapon[*insptr] )
+                if( ps[g_p].gotweapon[*insptr] && (ps[g_p].weaponswitch & 1) )
                     addweapon( &ps[g_p], *insptr );
             insptr+=2;
             break;

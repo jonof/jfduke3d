@@ -1886,7 +1886,7 @@ void getinput(short snum)
     }
 #endif
 
-    if (MouseAiming)
+    if (ud.mouseaiming)
           myaimmode = BUTTON(gamefunc_Mouse_Aiming);
      else
 	 {
@@ -3209,11 +3209,6 @@ void processinput(short snum)
 
         k = sintable[p->bobcounter&2047]>>12;
 
-        /* JBF 20040825: Todd had this. I've changed it according to what I think
-		 * he intended to do judging by the indentation
-		 * if(truefdist < PHEIGHT+(8<<8) )
-         *   if( k == 1 || k == 3 )
-		 */
         if(truefdist < PHEIGHT+(8<<8) && ( k == 1 || k == 3 ))
         {
             if(p->spritebridge == 0 && p->walking_snd_toggle == 0 && p->on_ground)
@@ -3427,7 +3422,7 @@ void processinput(short snum)
     if( p->show_empty_weapon > 0)
     {
         p->show_empty_weapon--;
-        if(p->show_empty_weapon == 0)
+        if(p->show_empty_weapon == 0 && (p->weaponswitch & 2))
         {
             if(p->last_full_weapon == GROW_WEAPON)
                 p->subweapon |= (1<<GROW_WEAPON);
@@ -3571,7 +3566,7 @@ void processinput(short snum)
                     (*kb)=1;
                 break;
             case TRIPBOMB_WEAPON:
-		if (VOLUMEONE) break;
+                if (VOLUMEONE) break;
                 if ( p->ammo_amount[TRIPBOMB_WEAPON] > 0 )
                 {
                     long sx,sy,sz;
@@ -3614,7 +3609,7 @@ void processinput(short snum)
 
             case SHRINKER_WEAPON:
             case GROW_WEAPON:
-		if (VOLUMEONE) break;
+                if (VOLUMEONE) break;
                 if( p->curr_weapon == GROW_WEAPON )
                 {
                     if( p->ammo_amount[GROW_WEAPON] > 0 )
@@ -3631,7 +3626,7 @@ void processinput(short snum)
                 break;
 
             case FREEZE_WEAPON:
-		if (VOLUMEONE) break;
+                if (VOLUMEONE) break;
                 if( p->ammo_amount[FREEZE_WEAPON] > 0 )
                 {
                     (*kb) = 1;
@@ -3639,7 +3634,7 @@ void processinput(short snum)
                 }
                 break;
             case DEVISTATOR_WEAPON:
-		if (VOLUMEONE) break;
+                if (VOLUMEONE) break;
                 if( p->ammo_amount[DEVISTATOR_WEAPON] > 0 )
                 {
                     (*kb) = 1;
