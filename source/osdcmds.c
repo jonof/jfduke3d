@@ -22,11 +22,12 @@ int osdcmd_quit(const osdfuncparm_t *parm)
 
 int osdcmd_echo(const osdfuncparm_t *parm)
 {
-	const char *c;
-
-	for (c = parm->raw; *c && *c != ' '; c++) ;
-	for (; *c && *c == ' '; c++) ;
-	OSD_Printf("%s\n", c);
+	int i;
+	for (i = 0; i < parm->numparms; i++) {
+		if (i > 0) OSD_Printf(" ");
+		OSD_Printf("%s", parm->parms[i]);
+	}
+	OSD_Printf("\n");
 	
 	return OSDCMD_OK;
 }
