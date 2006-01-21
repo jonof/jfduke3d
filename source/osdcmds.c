@@ -338,6 +338,36 @@ static int osdcmd_spawn(const osdfuncparm_t *parm)
 	return OSDCMD_OK;
 }
 
+static int osdcmd_vars(const osdfuncparm_t *parm)
+{
+	int showval = (parm->numparms < 1);
+	
+	if (!Bstrcasecmp(parm->name, "myname")) {
+		if (showval) { OSD_Printf("Your name is \"%s\"\n", myname); }
+		else {
+			Bstrncpy(myname, parm->parms[0], sizeof(myname)-1);
+			myname[sizeof(myname)-1] = 0;
+			// XXX: now send the update over the wire
+		}
+		return OSDCMD_OK;
+	}
+	else if (!Bstrcasecmp(parm->name, "showfps")) {
+		if (showval) { OSD_Printf("showfps is %d\n", ud.tickrate); }
+		else ud.tickrate = (atoi(parm->parms[0]) != 0);
+		return OSDCMD_OK;
+	}
+	else if (!Bstrcasecmp(parm->name, "showcoords")) {
+		if (showval) { OSD_Printf("showcoords is %d\n", ud.coords); }
+		else ud.coords = (atoi(parm->parms[0]) != 0);
+		return OSDCMD_OK;
+	}
+	else if (!Bstrcasecmp(parm->name, "useprecache")) {
+		if (showval) { OSD_Printf("useprecache is %d\n", useprecache); }
+		else useprecache = (atoi(parm->parms[0]) != 0);
+		return OSDCMD_OK;
+	}
+	return OSDCMD_SHOWHELP;
+}
 
 void onvideomodechange(int newmode)
 {
@@ -379,10 +409,10 @@ if (VOLUMEONE) {
 	OSD_RegisterFunction("fileinfo","fileinfo <file>: gets a file's information", osdcmd_fileinfo);
 	OSD_RegisterFunction("quit","quit: exits the game immediately", osdcmd_quit);
 
-	OSD_RegisterVariable("myname",OSDVAR_STRING,myname,32,NULL);
-	OSD_RegisterVariable("showfps",OSDVAR_INTEGER,&ud.tickrate,1,osd_internal_validate_boolean);
-	OSD_RegisterVariable("showcoords",OSDVAR_INTEGER,&ud.coords,1,osd_internal_validate_boolean);
-	OSD_RegisterVariable("useprecache",OSDVAR_INTEGER,&useprecache,1,osd_internal_validate_boolean);
+	OSD_RegisterFunction("myname","myname: change your multiplayer nickname", osdcmd_vars);
+	OSD_RegisterFunction("showfps","showfps: show the frame rate counter", osdcmd_vars);
+	OSD_RegisterFunction("showcoords","showcoords: show your position in the game world", osdcmd_vars);
+	OSD_RegisterFunction("useprecache","useprecache: enable/disable the pre-level caching routine", osdcmd_vars);
 
 	OSD_RegisterFunction("restartvid","restartvid: reinitialised the video mode",osdcmd_restartvid);
 	OSD_RegisterFunction("vidmode","vidmode [xdim ydim] [bpp] [fullscreen]: immediately change the video mode",osdcmd_vidmode);
