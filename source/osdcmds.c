@@ -10,12 +10,18 @@ struct osdcmd_cheatsinfo osdcmd_cheatsinfo_stat;
 
 int osdcmd_quit(const osdfuncparm_t *parm)
 {
+	extern long quittimer;
 	parm=parm;
-	if (numplayers > 1) {
-		if(!(ps[myconnectindex].gm&MODE_GAME))
+	if (!gamequit && numplayers > 1) {
+		if((ps[myconnectindex].gm&MODE_GAME)) {
+			gamequit = 1;
+			quittimer = totalclock+120;
+		} else {
 			sendlogoff();
-	}
-	gameexit(" ");
+			gameexit(" ");
+		}
+	} else if (numplayers < 2)
+		gameexit(" ");
 
 	return OSDCMD_OK;
 }
@@ -169,7 +175,7 @@ int osdcmd_noclip(const osdfuncparm_t *parm)
 	if (numplayers == 1 && ps[myconnectindex].gm & MODE_GAME) {
 		osdcmd_cheatsinfo_stat.cheatnum = 20;
 	} else {
-		OSD_Printf("god: Not in a single-player game.\n");
+		OSD_Printf("noclip: Not in a single-player game.\n");
 	}
 	
 	return OSDCMD_OK;

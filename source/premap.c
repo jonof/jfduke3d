@@ -284,6 +284,9 @@ void cacheit(void)
 {
     long i,j,k, pc=0;
     long tc;
+	unsigned long starttime, endtime;
+	
+	starttime = getticks();
 	
     precachenecessarysounds();
 
@@ -352,6 +355,9 @@ void cacheit(void)
     }
 
     clearbufbyte(gotpic,sizeof(gotpic),0L);
+	
+	endtime = getticks();
+	OSD_Printf("Cache time: %dms\n", endtime-starttime);
 }
 
 
