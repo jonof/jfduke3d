@@ -276,10 +276,10 @@ static int osdcmd_setstatusbarscale(const osdfuncparm_t *parm)
 
 static int osdcmd_spawn(const osdfuncparm_t *parm)
 {
-	long x,y,z;
-	unsigned short cstat,picnum;
-	unsigned char pal;
-	short ang;
+	long x=0,y=0,z=0;
+	unsigned short cstat=0,picnum=0;
+	unsigned char pal=0;
+	short ang=0;
 	short set=0, idx;
 
 	if (numplayers > 1 || !(ps[myconnectindex].gm & MODE_GAME)) {

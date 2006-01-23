@@ -26,6 +26,7 @@ Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
 //-------------------------------------------------------------------------
 
 #include "duke3d.h"
+#include "osd.h"
 
 extern char pow2char[];
 

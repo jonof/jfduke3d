@@ -6,7 +6,7 @@ $(OBJ)gamedef.$o: $(SRC)gamedef.c $(duke3d_h)
 $(OBJ)global.$o: $(SRC)global.c $(duke3d_h)
 $(OBJ)menues.$o: $(SRC)menues.c $(duke3d_h) $(SRC)jmact/mouse.h $(SRC)jmact/animlib.h
 $(OBJ)player.$o: $(SRC)player.c $(duke3d_h)
-$(OBJ)premap.$o: $(SRC)premap.c $(duke3d_h)
+$(OBJ)premap.$o: $(SRC)premap.c $(duke3d_h) $(EINC)osd.h
 $(OBJ)sector.$o: $(SRC)sector.c $(duke3d_h)
 $(OBJ)sounds.$o: $(SRC)sounds.c $(duke3d_h)
 $(OBJ)jfaud_sounds.$o: $(SRC)jfaud_sounds.c $(duke3d_h)
