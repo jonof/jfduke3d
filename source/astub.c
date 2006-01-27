@@ -1950,7 +1950,7 @@ int ExtInit(void)
 
 #if defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
 		addsearchpath("/usr/share/games/jfduke3d");
-		addsearchpath("/usr/local/games/jfduke3d");
+		addsearchpath("/usr/local/share/games/jfduke3d");
 #elif defined(__APPLE__)
 		addsearchpath("/Library/Application Support/JFDuke3D");
 #endif

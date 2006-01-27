@@ -127,7 +127,18 @@ void addweaponnoswitch( struct player_struct *p, short weapon)
         p->gotweapon[weapon] = 1;
         if(weapon == SHRINKER_WEAPON)
             p->gotweapon[GROW_WEAPON] = 1;
-    }	
+    }
+
+    switch(weapon)
+    {
+        case KNEE_WEAPON:
+        case TRIPBOMB_WEAPON:
+        case HANDREMOTE_WEAPON:
+        case HANDBOMB_WEAPON:     break;
+        case SHOTGUN_WEAPON:      spritesound(SHOTGUN_COCK,p->i);break;
+        case PISTOL_WEAPON:       spritesound(INSERT_CLIP,p->i);break;
+		default:      spritesound(SELECT_WEAPON,p->i);break;
+    }
 }
 
 void addweapon( struct player_struct *p,short weapon)
@@ -149,17 +160,6 @@ void addweapon( struct player_struct *p,short weapon)
 
     p->kickback_pic = 0;
     p->curr_weapon = weapon;
-
-    switch(weapon)
-    {
-        case KNEE_WEAPON:
-        case TRIPBOMB_WEAPON:
-        case HANDREMOTE_WEAPON:
-        case HANDBOMB_WEAPON:     break;
-        case SHOTGUN_WEAPON:      spritesound(SHOTGUN_COCK,p->i);break;
-        case PISTOL_WEAPON:       spritesound(INSERT_CLIP,p->i);break;
-                    default:      spritesound(SELECT_WEAPON,p->i);break;
-    }
 }
 
 void checkavailinven( struct player_struct *p )
