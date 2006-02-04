@@ -229,7 +229,7 @@ extern void loadtmb(void );
 extern void compilecons(void );
 extern void Startup(void );
 extern void getnames(void );
-extern void main(int argc,char **argv);
+extern int main(int argc,char **argv);
 extern char opendemoread(char which_demo);
 extern void opendemowrite(void );
 extern void record(void );

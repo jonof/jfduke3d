@@ -19,6 +19,7 @@
 		};
 		AB3F27C00952B9AC002C4F84 = {
 			children = (
+				AB9E89310993976100CDF978,
 				AB3F27C80952B9CA002C4F84,
 				AB3F27D20952B9DD002C4F84,
 				AB3F27DA0952BAA6002C4F84,
@@ -63,6 +64,10 @@
 				{
 					ProductGroup = AB3F27CE0952B9D8002C4F84;
 					ProjectRef = AB3F27C80952B9CA002C4F84;
+				},
+				{
+					ProductGroup = AB9E894C0993977D00CDF978;
+					ProjectRef = AB9E89310993976100CDF978;
 				},
 			);
 			targets = (
@@ -213,6 +218,7 @@
 				AB3F28070952BCE5002C4F84,
 				AB3F28080952BCE5002C4F84,
 				AB3F28090952BCE5002C4F84,
+				AB9E89290993973800CDF978,
 				AB3F280A0952BCE5002C4F84,
 				AB3F280B0952BCE5002C4F84,
 			);
@@ -533,6 +539,8 @@
 		};
 		AB3F28230952BF3C002C4F84 = {
 			children = (
+				AB9E896E099397A500CDF978,
+				AB9E89330993977500CDF978,
 				AB3F28280952BF6E002C4F84,
 				AB3F28240952BF5E002C4F84,
 				AB3F28250952BF5E002C4F84,
@@ -669,10 +677,7 @@
 				AB3F28690952CDB8002C4F84,
 				AB3F286A0952CDB8002C4F84,
 				AB3F286B0952CDB8002C4F84,
-				AB3F286C0952CDB9002C4F84,
 				AB3F286D0952CDB9002C4F84,
-				AB3F28720952CDFE002C4F84,
-				AB3F28730952CDFE002C4F84,
 				AB3F287C0952CE35002C4F84,
 				AB3F287D0952CE35002C4F84,
 				AB3F287E0952CE35002C4F84,
@@ -681,6 +686,7 @@
 				AB3F28810952CE35002C4F84,
 				AB3F28820952CE35002C4F84,
 				AB3F28830952CE35002C4F84,
+				AB9E892A0993973800CDF978,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -692,6 +698,8 @@
 				AB3F28880952CE7B002C4F84,
 				AB3F28890952CE7B002C4F84,
 				AB3F288A0952CE7C002C4F84,
+				AB9E89340993977500CDF978,
+				AB9E896F099397A500CDF978,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -701,10 +709,12 @@
 				AB3F28430952CCAA002C4F84,
 				AB3F28440952CCAA002C4F84,
 				AB3F28450952CCAA002C4F84,
+				AB9E896D0993978900CDF978,
 			);
 			buildRules = (
 			);
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = /Users/jonof/ports/jfaud/osx/build;
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
@@ -866,12 +876,6 @@
 			settings = {
 			};
 		};
-		AB3F286C0952CDB9002C4F84 = {
-			fileRef = AB3F280A0952BCE5002C4F84;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		AB3F286D0952CDB9002C4F84 = {
 			fileRef = AB3F280B0952BCE5002C4F84;
 			isa = PBXBuildFile;
@@ -921,18 +925,6 @@
 			path = ../source/jaudiolib/audiolib_musicstub.c;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
-		};
-		AB3F28720952CDFE002C4F84 = {
-			fileRef = AB3F28700952CDFE002C4F84;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		AB3F28730952CDFE002C4F84 = {
-			fileRef = AB3F28710952CDFE002C4F84;
-			isa = PBXBuildFile;
-			settings = {
-			};
 		};
 		AB3F28740952CE35002C4F84 = {
 			fileEncoding = 30;
@@ -1095,6 +1087,129 @@
 			isa = PBXBuildFile;
 			settings = {
 			};
+		};
+		AB9E89290993973800CDF978 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = jfaud_sounds.cpp;
+			path = ../source/jfaud_sounds.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		AB9E892A0993973800CDF978 = {
+			fileRef = AB9E89290993973800CDF978;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		AB9E89310993976100CDF978 = {
+			isa = PBXFileReference;
+			lastKnownFileType = "wrapper.pb-project";
+			name = jfaud.xcode;
+			path = ../../jfaud/osx/jfaud.xcode;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		AB9E89330993977500CDF978 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.framework;
+			name = OpenAL.framework;
+			path = /Library/Frameworks/OpenAL.framework;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		AB9E89340993977500CDF978 = {
+			fileRef = AB9E89330993977500CDF978;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		AB9E894C0993977D00CDF978 = {
+			children = (
+				AB9E894D0993977D00CDF978,
+				AB9E894E0993977D00CDF978,
+				AB9E894F0993977D00CDF978,
+			);
+			isa = PBXGroup;
+			name = Products;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		AB9E894D0993977D00CDF978 = {
+			fileType = wrapper.framework;
+			isa = PBXReferenceProxy;
+			path = jfaud.framework;
+			refType = 3;
+			remoteRef = AB9E8983099397BA00CDF978;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		AB9E894E0993977D00CDF978 = {
+			fileType = archive.ar;
+			isa = PBXReferenceProxy;
+			path = libmpadec.a;
+			refType = 3;
+			remoteRef = AB9E8984099397BA00CDF978;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		AB9E894F0993977D00CDF978 = {
+			fileType = wrapper.application;
+			isa = PBXReferenceProxy;
+			path = jfaudtest.app;
+			refType = 3;
+			remoteRef = AB9E8985099397BA00CDF978;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		AB9E896D0993978900CDF978 = {
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				AB9E8982099397B100CDF978,
+			);
+			isa = PBXCopyFilesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AB9E896E099397A500CDF978 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.framework;
+			name = jfaud.framework;
+			path = /Users/jonof/ports/jfaud/osx/build/jfaud.framework;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		AB9E896F099397A500CDF978 = {
+			fileRef = AB9E896E099397A500CDF978;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		AB9E8982099397B100CDF978 = {
+			fileRef = AB9E896E099397A500CDF978;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		AB9E8983099397BA00CDF978 = {
+			containerPortal = AB9E89310993976100CDF978;
+			isa = PBXContainerItemProxy;
+			proxyType = 2;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
+			remoteInfo = jfaud;
+		};
+		AB9E8984099397BA00CDF978 = {
+			containerPortal = AB9E89310993976100CDF978;
+			isa = PBXContainerItemProxy;
+			proxyType = 2;
+			remoteGlobalIDString = ABE7399C095277C50040A74A;
+			remoteInfo = mpadec;
+		};
+		AB9E8985099397BA00CDF978 = {
+			containerPortal = AB9E89310993976100CDF978;
+			isa = PBXContainerItemProxy;
+			proxyType = 2;
+			remoteGlobalIDString = ABE7394E09526A5B0040A74A;
+			remoteInfo = jfaudtest;
 		};
 	};
 	rootObject = AB3F27C40952B9AC002C4F84;
