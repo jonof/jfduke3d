@@ -85,6 +85,32 @@ static JFAudFile *openfile(const char *fn, const char *subfn)
 
 static void logfunc(const char *s) { initprintf("%s", s); }
 
+#define PITCHRANGE 2		// octave range in each direction
+#define PITCHSTEPS 24		// pitch points per octave
+static float pitchtable[PITCHRANGE*PITCHSTEPS*2+1];
+static void buildpitchtable(void)
+{
+	int i,j;
+	
+	for (i=-PITCHRANGE*PITCHSTEPS; i<=PITCHRANGE*PITCHSTEPS; i++) {
+		pitchtable[i+PITCHRANGE*PITCHSTEPS] = pow(1.0005777895, (1200.0/PITCHSTEPS)*(float)i);
+	}
+}
+static float translatepitch(int p)
+{
+	float t;
+	int x;
+	x = (p * PITCHSTEPS / 1200) + PITCHRANGE*PITCHSTEPS;
+	if (x < 0) x = 0;
+	else if (x > sizeof(pitchtable)/sizeof(float)) x = sizeof(pitchtable)/sizeof(float);
+	t = pitchtable[x];
+	if (t > 2.0) {
+		initprintf("translatepitch(%d) > 2.0\n", p);
+		t = 2.0;
+	}
+	return t;
+}
+
 typedef struct {
 	JFAudMixerChannel *chan;
 	int owner;	// sprite number
@@ -146,11 +172,11 @@ static int keephandle(JFAudMixerChannel *handle, int soundnum, int owner)
 {
 	int i, freeh=-1;
 	for (i=NumVoices-1;i>=0;i--) {
-		if (!chans[i].chan && freeh<0) freeh=i;
+		if ((!chans[i].chan || !jfaud->IsValidSound(chans[i].chan)) && freeh<0) freeh=i;
 		else if (chans[i].chan == handle) { freeh=i; break; }
 	}
 	if (freeh<0) {
-		OSD_Printf("Warning: keephandle() exhausted handle space!\n");
+		initprintf("Warning: keephandle() exhausted handle space!\n");
 		return -1;
 	}
 
@@ -168,6 +194,7 @@ void SoundStartup(void)
 	int i;
 
 	if (jfaud) return;
+	buildpitchtable();
 
 	JFAud_SetLogFunc(logfunc);
 
@@ -256,7 +283,7 @@ void playmusic(char *fn)
 {
 	char dafn[BMAX_PATH], *dotpos;
 	int i;
-	const char *extns[] = { ".ogg",".mp3",".mid", NULL };
+	const char *extns[] = { ".ogg",".mp3", NULL };
 
 	if (!jfaud) return;
 
@@ -270,10 +297,12 @@ void playmusic(char *fn)
 		if (!dotpos) dotpos = dafn+strlen(dafn);
 
 		for (i=0; extns[i]; i++) {
-			if (!havemidi && !Bstrcmp(extns[i],".mid")) continue;
 			Bstrcpy(dotpos, extns[i]);
 			if (jfaud->PlayMusic(dafn, NULL)) return;
 		}
+		
+		Bstrcpy(dotpos, ".mid");
+		jfaud->PlayMusic(dafn, NULL);
 	}
 }
 
@@ -298,7 +327,7 @@ int xyzsound(short num, short i, long x, long y, long z)
 {
 	JFAudMixerChannel *chan;
 	int r, global = 0;
-	float gain = 1.0;
+	float gain = 1.0, pitch = 1.0;
 
 	if (!jfaud ||
 	    num >= NUM_SOUNDS ||
@@ -308,13 +337,13 @@ int xyzsound(short num, short i, long x, long y, long z)
 	    (ps[myconnectindex].gm & MODE_MENU)
 	   ) return -1;
 
-	x = -x;
-	z >>= 4;
-	
 	if (soundm[num] & 128) {
 		sound(num);
 		return 0;
 	}
+	
+	x = -x;
+	z >>= 4;
 	
 	if (soundm[num] & 4) {
 		// Duke speech, one at a time only
@@ -330,9 +359,16 @@ int xyzsound(short num, short i, long x, long y, long z)
 		}
 	}
 	
-	// XXX: here goes musicandsfx ranging
+	// XXX: here goes musicandsfx ranging. This will change the refdist.
 	
-	// XXX: pitch
+	{
+		int ps = soundps[num], pe = soundpe[num], cx;
+		cx = klabs(pe-ps);
+		if (cx) {
+			if (ps < pe) pitch = translatepitch(ps + rand()%cx);
+			else pitch = translatepitch(pe + rand()%cx);
+		} else pitch = translatepitch(ps);
+	}
 	
 	// XXX: gain
 	
@@ -367,7 +403,7 @@ int xyzsound(short num, short i, long x, long y, long z)
 	if (!chan) return -1;
 	
 	chan->SetGain(gain);
-	// chan->SetPitch(pitch);
+	chan->SetPitch(pitch);
 	if (soundm[num] & 1) chan->SetLoop(true);
 	if (soundm[num] & 16) global = 1;
 	
@@ -394,6 +430,7 @@ void sound(short num)
 {
 	JFAudMixerChannel *chan;
 	int r;
+	float pitch = 1.0;
 
 	if (!jfaud ||
 	    num >= NUM_SOUNDS ||
@@ -402,13 +439,20 @@ void sound(short num)
 	    ((soundm[num] & 8) && ud.lockout)	// parental mode
 	   ) return;
 
-	// XXX: pitch
-
+	{
+		int ps = soundps[num], pe = soundpe[num], cx;
+		cx = klabs(pe-ps);
+		if (cx) {
+			if (ps < pe) pitch = translatepitch(ps + rand()%cx);
+			else pitch = translatepitch(pe + rand()%cx);
+		} else pitch = translatepitch(ps);
+	}
+	
 	chan = jfaud->PlaySound(sounds[num], NULL, soundpr[num]);
 	if (!chan) return;
 
 	chan->SetGain(1.0);
-	// chan->SetPitch(pitch);
+	chan->SetPitch(pitch);
 	if (soundm[num] & 1) chan->SetLoop(true);
 	chan->SetRolloff(0.0);
 	chan->SetFollowListener(true);
