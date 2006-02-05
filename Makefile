@@ -33,11 +33,14 @@ else
 endif
 
 CC=gcc
+CXX=g++
 CFLAGS=-march=pentium $(debug)
 override CFLAGS+= -W -Wall -Wimplicit -Wno-char-subscripts -Wno-unused \
 	-funsigned-char -fno-strict-aliasing -DNO_GCC_BUILTINS -DNOCOPYPROTECT \
-	-I$(INC:/=) -I$(EINC:/=) -I$(SRC)jmact -I$(SRC)jaudiolib #-I../jfaud/inc
-LIBS=-lm #../jfaud/libjfaud.a -lmodplug # -L../jfaud -ljfaud
+	-I$(INC:/=) -I$(EINC:/=) -I$(SRC)jmact -I$(SRC)jaudiolib -I../jfaud/src
+CXXFLAGS=-fno-exceptions -fno-rtti
+LIBS=-lm
+JFAUDLIBS=../jfaud/libjfaud.a ../jfaud/mpadec/libmpadec/libmpadec.a
 NASMFLAGS=-s #-g
 EXESUFFIX=
 
@@ -51,7 +54,7 @@ JMACTOBJ=$(OBJ)util_lib.$o \
 
 AUDIOLIB_FX_STUB=$(OBJ)audiolib_fxstub.$o
 AUDIOLIB_MUSIC_STUB=$(OBJ)audiolib_musicstub.$o
-#AUDIOLIB_FX=$(OBJ)audiolib_fx_fmod.$o
+AUDIOLIB_JFAUD=$(OBJ)jfaud_sounds.$o
 AUDIOLIB_FX=$(OBJ)mv_mix.$o \
 	  $(OBJ)mv_mix16.$o \
 	  $(OBJ)mvreverb.$o \
@@ -72,7 +75,7 @@ GAMEOBJS=$(OBJ)game.$o \
 	$(OBJ)player.$o \
 	$(OBJ)premap.$o \
 	$(OBJ)sector.$o \
-	$(OBJ)sounds.$o \
+	$(OBJ)jfaud_sounds.$o \
 	$(OBJ)rts.$o \
 	$(OBJ)config.$o \
 	$(OBJ)animlib.$o \
@@ -109,10 +112,12 @@ ifeq ($(RENDERTYPE),SDL)
 	EDITOROBJS+= $(OBJ)build_icon.$o
 endif
 ifeq ($(RENDERTYPE),WIN)
-	AUDIOLIBOBJ=$(AUDIOLIB_MUSIC) $(AUDIOLIB_FX)
+	#AUDIOLIBOBJ=$(AUDIOLIB_MUSIC) $(AUDIOLIB_FX)
+	AUDIOLIBOBJ=$(AUDIOLIB_JFAUD)
 endif
 
 GAMEOBJS+= $(AUDIOLIBOBJ)
+CXXFLAGS+= $(CFLAGS)
 
 .PHONY: clean all engine $(EOBJ)$(ENGINELIB) $(EOBJ)$(EDITORLIB)
 
@@ -133,7 +138,7 @@ endif
 all: duke3d$(EXESUFFIX) build$(EXESUFFIX)
 
 duke3d$(EXESUFFIX): $(GAMEOBJS) $(EOBJ)$(ENGINELIB)
-	$(CC) $(CFLAGS) -o $@ $^ $(LIBS) -Wl,-Map=$@.map
+	$(CC) $(CFLAGS) -o $@ $^ $(JFAUDLIBS) $(LIBS) $(STDCPPLIB) -Wl,-Map=$@.map
 	
 build$(EXESUFFIX): $(EDITOROBJS) $(EOBJ)$(EDITORLIB) $(EOBJ)$(ENGINELIB)
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS) -Wl,-Map=$@.map
@@ -159,6 +164,8 @@ $(OBJ)%.$o: $(SRC)jaudiolib/%.nasm
 
 $(OBJ)%.$o: $(SRC)%.c
 	$(CC) $(CFLAGS) -c $< -o $@ 2>&1
+$(OBJ)%.$o: $(SRC)%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@ 2>&1
 $(OBJ)%.$o: $(SRC)jmact/%.c
 	$(CC) $(CFLAGS) -c $< -o $@ 2>&1
 $(OBJ)%.$o: $(SRC)jaudiolib/%.c

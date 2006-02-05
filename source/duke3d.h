@@ -25,19 +25,13 @@ Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
 */
 //-------------------------------------------------------------------------
 
-/*
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <malloc.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <time.h>
-#include <ctype.h>
-*/
+#include "compat.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // JBF
-#include "compat.h"
 #include "a.h"
 #include "build.h"
 #include "cache1d.h"
@@ -568,4 +562,8 @@ void onvideomodechange(int newmode);
 #define TILE_VIEWSCR  (MAXTILES-5)
 
 extern char useprecache;
+
+#ifdef __cplusplus
+}
+#endif
 

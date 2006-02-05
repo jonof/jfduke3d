@@ -766,6 +766,7 @@ void faketimerhandler()
     }
 
 	sampletimer();
+	AudioUpdate();
     if ((totalclock < ototalclock+TICSPERFRAME) || (ready2send == 0)) return;
     ototalclock += TICSPERFRAME;
 

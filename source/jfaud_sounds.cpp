@@ -21,13 +21,17 @@
  * Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
  */
 
-#include <jfaud/jfaud.hpp>
+#ifdef __APPLE__
+# include <jfaud/jfaud.hpp>
+#else
+# include "jfaud.hpp"
+#endif
 
 #include "types.h"
-extern "C" {
 #include "duke3d.h"
+extern "C" {
 #include "osd.h"
-	long numenvsnds;
+long numenvsnds;
 }
 
 #include <cmath>
@@ -102,7 +106,7 @@ static float translatepitch(int p)
 	int x;
 	x = (p * PITCHSTEPS / 1200) + PITCHRANGE*PITCHSTEPS;
 	if (x < 0) x = 0;
-	else if (x > sizeof(pitchtable)/sizeof(float)) x = sizeof(pitchtable)/sizeof(float);
+	else if (x > (int)(sizeof(pitchtable)/sizeof(float))) x = sizeof(pitchtable)/sizeof(float);
 	t = pitchtable[x];
 	if (t > 2.0) {
 		initprintf("translatepitch(%d) > 2.0\n", p);
@@ -283,7 +287,7 @@ void playmusic(char *fn)
 {
 	char dafn[BMAX_PATH], *dotpos;
 	int i;
-	const char *extns[] = { ".ogg",".mp3", NULL };
+	const char *extns[] = { ".ogg",".mp3",".mid", NULL };
 
 	if (!jfaud) return;
 
@@ -300,9 +304,6 @@ void playmusic(char *fn)
 			Bstrcpy(dotpos, extns[i]);
 			if (jfaud->PlayMusic(dafn, NULL)) return;
 		}
-		
-		Bstrcpy(dotpos, ".mid");
-		jfaud->PlayMusic(dafn, NULL);
 	}
 }
 
@@ -475,6 +476,7 @@ void stopsound(short num)
 {
 	int j;
 	
+	if (!jfaud) return;
 	for (j=NumVoices-1;j>=0;j--) {
 		if (!chans[j].chan || !jfaud->IsValidSound(chans[j].chan) || chans[j].soundnum != num) continue;
 		
@@ -489,6 +491,7 @@ void stopenvsound(short num, short i)
 {
 	int j;
 	
+	if (!jfaud) return;
 	for (j=NumVoices-1;j>=0;j--) {
 		if (!chans[j].chan || !jfaud->IsValidSound(chans[j].chan) || chans[j].owner != i) continue;
 
@@ -605,6 +608,7 @@ int FX_VoiceAvailable( int priority )
 {
 	int j;
 	
+	if (!jfaud) return 0;
 	for (j=NumVoices-1;j>=0;j--) {
 		if (!chans[j].chan || !jfaud->IsValidSound(chans[j].chan)) return 1;
 	}
@@ -635,6 +639,7 @@ int FX_StopAllSounds( void )
 {
 	int j;
 	
+	if (!jfaud) return 0;
 	for (j=NumVoices-1; j>=0; j--) {
 		if (!chans[j].chan || !jfaud->IsValidSound(chans[j].chan)) continue;
 
