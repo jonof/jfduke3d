@@ -502,11 +502,11 @@ void stopenvsound(short num, short i)
 void pan3dsound(void)
 {
 	JFAudMixer *mix;
-	int j, global=0;
+	int j, global;
 	short i;
 	long cx, cy, cz;
 	short ca,cs;
-	float gain = 1.0;
+	float gain;
 
 	numenvsnds = 0;
 	if (!jfaud) return;
@@ -536,6 +536,8 @@ void pan3dsound(void)
 	for (j=NumVoices-1; j>=0; j--) {
 		if (!chans[j].chan || !jfaud->IsValidSound(chans[j].chan) || chans[j].owner < 0) continue;
 
+		global = 0;
+		gain = 1.0;
 		i = chans[j].owner;
 
 		cx = sprite[i].x;
@@ -546,9 +548,9 @@ void pan3dsound(void)
 		cz >>= 4;
 
 		if(PN == MUSICANDSFX && SLT < 999) numenvsnds++;
-		if( soundm[j]&16 ) global = 1;
+		if( soundm[ chans[j].soundnum ]&16 ) global = 1;
 		
-		switch(j) {
+		switch(chans[j].soundnum) {
 			case PIPEBOMB_EXPLODE:
 			case LASERTRIP_EXPLODE:
 			case RPG_EXPLODE:
