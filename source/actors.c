@@ -2516,7 +2516,7 @@ void moveweapons(void)
             case COOLEXPLOSION1:
 
                 if( s->picnum == COOLEXPLOSION1 )
-                    if( Sound[WIERDSHOT_FLY].num == 0 )
+                    if( !issoundplaying(WIERDSHOT_FLY) )
                         spritesound(WIERDSHOT_FLY,i);
 
                 p = -1;
@@ -2632,7 +2632,7 @@ void moveweapons(void)
 
                                 if(ps[p].loogcnt == 0)
                                 {
-                                    if(Sound[DUKE_LONGTERM_PAIN].num < 1)
+                                    if( isspritemakingsound(ps[p].i, DUKE_LONGTERM_PAIN) < 0 )
                                         spritesound(DUKE_LONGTERM_PAIN,ps[p].i);
 
                                     j = 3+(TRAND&3);
@@ -3557,10 +3557,7 @@ void moveactors(void)
                     else s->z -= 1024;
                 }
 
-		// JBF 20040906 FIXME: maybe this should see if a sound is already
-		// playing for this guy so that we can have multiple cars each
-		// making engine sounds
-                if(Sound[RECO_ROAM].num == 0 )
+                if( isspritemakingsound(i,RECO_ROAM) < 0 )
                     spritesound(RECO_ROAM,i);
 
                 ssp(i,CLIPMASK0);
@@ -4240,7 +4237,7 @@ void moveactors(void)
                 {
                     if( (TRAND&255) < 16 )
                     {
-                        if(Sound[DUKE_LONGTERM_PAIN].num < 1)
+                        if( isspritemakingsound(ps[p].i, DUKE_LONGTERM_PAIN) < 0)
                             spritesound(DUKE_LONGTERM_PAIN,ps[p].i);
 
                         spritesound(SHORT_CIRCUIT,i);
@@ -4513,7 +4510,7 @@ void moveexplosions(void)  // STATNUM 5
                         l = getflorzofslope(sect,s->x,s->y)-s->z;
                         if( l > (16<<8) ) KILLIT(i);
                     }
-                    else */ if(Sound[ITEM_SPLASH].num == 0)
+                    else */ if (!issoundplaying(ITEM_SPLASH))
                         spritesound(ITEM_SPLASH,i);
                 }
                 if(t[0] == 3)
@@ -4756,7 +4753,7 @@ void moveexplosions(void)  // STATNUM 5
                             ps[p].boot_amount--;
                         else
                         {
-                            if(Sound[DUKE_LONGTERM_PAIN].num < 1)
+                            if(isspritemakingsound(ps[p].i,DUKE_LONGTERM_PAIN) < 0)
                                 spritesound(DUKE_LONGTERM_PAIN,ps[p].i);
                             sprite[ps[p].i].extra --;
                             ps[p].pals_time = 32;
@@ -5209,7 +5206,7 @@ void moveeffectors(void)   //STATNUM 3
                     {
                         if( (sc->floorstat&1) == 0 && (sc->ceilingstat&1) == 0 )
                         {
-                            if( Sound[hittype[i].lastvx].num == 0 )
+                            if( !issoundplaying(hittype[i].lastvx) )
                                 spritesound(hittype[i].lastvx,i);
                         }
                         else if( ud.monsters_off == 0 && sc->floorpal == 0 && (sc->floorstat&1) && rnd(8) )
@@ -5226,7 +5223,7 @@ void moveeffectors(void)   //STATNUM 3
                     }
 
                     if(s->xvel <= 64 && (sc->floorstat&1) == 0 && (sc->ceilingstat&1) == 0 )
-                        stopsound(hittype[i].lastvx);
+                        stopspritesound(hittype[i].lastvx,i);
 
                     if( (sc->floorz-sc->ceilingz) < (108<<8) )
                     {
@@ -6840,7 +6837,7 @@ void moveeffectors(void)   //STATNUM 3
                                     x = ldist(&sprite[ps[p].i], &sprite[j]);
                                     if( x < 768 )
                                     {
-                                        if(Sound[DUKE_LONGTERM_PAIN].num < 1)
+                                        if(isspritemakingsound(ps[p].i,DUKE_LONGTERM_PAIN) < 0)
                                             spritesound(DUKE_LONGTERM_PAIN,ps[p].i);
                                         spritesound(SHORT_CIRCUIT,ps[p].i);
                                         sprite[ps[p].i].extra -= 8+(TRAND&7);

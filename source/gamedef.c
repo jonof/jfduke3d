@@ -2344,7 +2344,7 @@ char parse(void)
             break;
         case 97:
             insptr++;
-            if(Sound[g_sp->yvel].num == 0)
+            if(isspritemakingsound(g_i,g_sp->yvel) < 0)
                 spritesound(g_sp->yvel,g_i);
             break;
         case 96:
@@ -2394,14 +2394,14 @@ char parse(void)
             break;
         case 87:
             insptr++;
-            if( Sound[*insptr].num == 0 )
+            if( isspritemakingsound(g_i,*insptr) < 0 )
                 spritesound((short) *insptr,g_i);
             insptr++;
             break;
         case 89:
             insptr++;
-            if( Sound[*insptr].num > 0 )
-                stopsound((short)*insptr);
+            if( isspritemakingsound(g_i,*insptr) >= 0 )
+                stopspritesound((short)*insptr,g_i);
             insptr++;
             break;
         case 92:

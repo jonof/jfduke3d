@@ -9298,19 +9298,19 @@ void dobonus(char bonusonly)
             if( ud.lockout == 0 && !KB_KeyWaiting() )
             {
                 sound(ENDSEQVOL3SND5);
-                while(Sound[ENDSEQVOL3SND5].lock>=200) { handleevents(); getpackets(); }
+                while(issoundplaying(ENDSEQVOL3SND5)) { handleevents(); getpackets(); }
                 if(KB_KeyWaiting()) goto ENDANM;
                 sound(ENDSEQVOL3SND6);
-                while(Sound[ENDSEQVOL3SND6].lock>=200) { handleevents(); getpackets(); }
+                while(issoundplaying(ENDSEQVOL3SND6)) { handleevents(); getpackets(); }
                 if(KB_KeyWaiting()) goto ENDANM;
                 sound(ENDSEQVOL3SND7);
-                while(Sound[ENDSEQVOL3SND7].lock>=200) { handleevents(); getpackets(); }
+                while(issoundplaying(ENDSEQVOL3SND7)) { handleevents(); getpackets(); }
                 if(KB_KeyWaiting()) goto ENDANM;
                 sound(ENDSEQVOL3SND8);
-                while(Sound[ENDSEQVOL3SND8].lock>=200) { handleevents(); getpackets(); }
+                while(issoundplaying(ENDSEQVOL3SND8)) { handleevents(); getpackets(); }
                 if(KB_KeyWaiting()) goto ENDANM;
                 sound(ENDSEQVOL3SND9);
-                while(Sound[ENDSEQVOL3SND9].lock>=200) { handleevents(); getpackets(); }
+                while(issoundplaying(ENDSEQVOL3SND9)) { handleevents(); getpackets(); }
             }
 
             KB_FlushKeyBoardQueue();

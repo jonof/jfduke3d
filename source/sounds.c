@@ -463,6 +463,11 @@ int spritesound(unsigned short num, short i)
     return xyzsound(num,i,SX,SY,SZ);
 }
 
+void stopspritesound(short num, short i)
+{
+	stopsound(num);
+}
+
 void stopsound(short num)
 {
     if(Sound[num].num > 0)
@@ -617,5 +622,15 @@ void clearsoundlocks(void)
     for(i=0;i<11;i++)
         if(lumplockbyte[i] >= 200)
             lumplockbyte[i] = 199;
+}
+
+int isspritemakingsound(short i, int num)
+{
+	return issoundplaying(num) ? num : -1;
+}
+
+int issoundplaying(int num)
+{
+	return Sound[num].num;
 }
 

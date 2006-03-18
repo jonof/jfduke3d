@@ -34,6 +34,15 @@ extern "C" {
 long numenvsnds;
 }
 
+#define SOUNDM_LOOP   1
+#define SOUNDM_MSFX   2
+#define SOUNDM_DUKE   4
+#define SOUNDM_PARENT 8
+#define SOUNDM_GLOBAL 16
+#define SOUNDM_PLAYER 128
+
+#define UNITSPERMETRE 512.0
+
 #include <cmath>
 
 class KenFile : public JFAudFile {
@@ -53,12 +62,12 @@ public:
 
 	virtual bool IsOpen(void) const { return fh >= 0; }
 
-	virtual int Read(int nbytes, void *buf)
+	virtual long Read(long nbytes, void *buf)
 	{
 		if (fh < 0) return -1;
 		return kread(fh, buf, nbytes);
 	}
-	virtual int Seek(int pos, SeekFrom where)
+	virtual long Seek(long pos, SeekFrom where)
 	{
 		int when;
 		if (fh < 0) return -1;
@@ -70,12 +79,12 @@ public:
 		}
 		return klseek(fh, pos, when);
 	}
-	virtual int Tell(void) const
+	virtual long Tell(void) const
 	{
 		if (fh < 0) return -1;
 		return klseek(fh, 0, SEEK_CUR);
 	}
-	virtual int Length(void) const
+	virtual long Length(void) const
 	{
 		if (fh < 0) return -1;
 		return kfilelength(fh);
@@ -87,7 +96,7 @@ static JFAudFile *openfile(const char *fn, const char *subfn)
 	return static_cast<JFAudFile*>(new KenFile(fn,subfn));
 }
 
-static void logfunc(const char *s) { initprintf("%s", s); }
+static void logfunc(const char *s) { initprintf("jfaud: %s", s); }
 
 #define PITCHRANGE 2		// octave range in each direction
 #define PITCHSTEPS 24		// pitch points per octave
@@ -108,10 +117,10 @@ static float translatepitch(int p)
 	if (x < 0) x = 0;
 	else if (x > (int)(sizeof(pitchtable)/sizeof(float))) x = sizeof(pitchtable)/sizeof(float);
 	t = pitchtable[x];
-	if (t > 2.0) {
+	/*if (t > 2.0) {
 		initprintf("translatepitch(%d) > 2.0\n", p);
 		t = 2.0;
-	}
+	}*/
 	return t;
 }
 
@@ -132,44 +141,10 @@ static void stopcallback(int r)
 	jfaud->FreeSound(chans[r].chan);
 	chans[r].chan = NULL;
 	chans[r].owner = -1;
-	
-	testcallback(chans[r].soundnum);
 }
 
 void testcallback(unsigned long num)
 {
-	short tempi,tempj,tempk;
-	
-	if ((long)num < 0) {
-		if(lumplockbyte[-num] >= 200) lumplockbyte[-num]--;
-		return;
-	}
-	
-	tempk = Sound[num].num;
-	
-	if(tempk > 0)
-	{
-		if( (soundm[num]&16) == 0)
-			for(tempj=0;tempj<tempk;tempj++)
-            {
-                tempi = SoundOwner[num][tempj].i;
-                if(sprite[tempi].picnum == MUSICANDSFX && sector[sprite[tempi].sectnum].lotag < 3 && sprite[tempi].lotag < 999)
-                {
-                    hittype[tempi].temp_data[0] = 0;
-                    if( (tempj + 1) < tempk )
-                    {
-                        SoundOwner[num][tempj].voice = SoundOwner[num][tempk-1].voice;
-                        SoundOwner[num][tempj].i     = SoundOwner[num][tempk-1].i;
-                    }
-                    break;
-                }
-            }
-				
-				Sound[num].num--;
-		SoundOwner[num][tempk-1].i = -1;
-	}
-	
-	Sound[num].lock--;
 }
 
 static int keephandle(JFAudMixerChannel *handle, int soundnum, int owner)
@@ -184,8 +159,6 @@ static int keephandle(JFAudMixerChannel *handle, int soundnum, int owner)
 		return -1;
 	}
 
-	if (chans[freeh].chan >= 0) Sound[soundnum].num--;
-
 	chans[freeh].chan = handle;
 	chans[freeh].soundnum = soundnum;
 	chans[freeh].owner = owner;
@@ -196,6 +169,8 @@ static int keephandle(JFAudMixerChannel *handle, int soundnum, int owner)
 void SoundStartup(void)
 {
 	int i;
+
+	if (FXDevice < 0) return;
 
 	if (jfaud) return;
 	buildpitchtable();
@@ -257,16 +232,6 @@ void AudioUpdate(void)
 }
 
 
-// soundm&1 = loop
-// soundm&2 = musicandsfx
-// soundm&4 = duke speech
-// soundm&8 = parental lockout
-// soundm&16 = no rolloff
-// soundm&128 = player local
-
-#define UNITSPERMETRE 512.0
-
-
 static char menunum = 0;
 void intomenusounds(void)
 {
@@ -289,6 +254,7 @@ void playmusic(char *fn)
 	int i;
 	const char *extns[] = { ".ogg",".mp3",".mid", NULL };
 
+    if (!MusicToggle) return;
 	if (!jfaud) return;
 
 	dotpos = Bstrrchr(fn,'.');
@@ -324,6 +290,19 @@ int isspritemakingsound(short i, int num)	// if num<0, check if making any sound
 	return -1;
 }
 
+int issoundplaying(int num)
+{
+	int j,n=0;
+	
+	if (!jfaud) return -1;
+	for (j=NumVoices-1; j>=0; j--) {
+		if (!chans[j].chan || !jfaud->IsValidSound(chans[j].chan)) continue;
+		if (chans[j].soundnum == num) n++;
+	}
+	
+	return n;
+}
+
 int xyzsound(short num, short i, long x, long y, long z)
 {
 	JFAudMixerChannel *chan;
@@ -332,21 +311,21 @@ int xyzsound(short num, short i, long x, long y, long z)
 
 	if (!jfaud ||
 	    num >= NUM_SOUNDS ||
-	    ((soundm[num] & 8) && ud.lockout) ||	// parental mode
+	    ((soundm[num] & SOUNDM_PARENT) && ud.lockout) ||	// parental mode
 	    SoundToggle == 0 ||
 	    (ps[myconnectindex].timebeforeexit > 0 && ps[myconnectindex].timebeforeexit <= 26*3) ||
 	    (ps[myconnectindex].gm & MODE_MENU)
 	   ) return -1;
 
-	if (soundm[num] & 128) {
+	if (soundm[num] & SOUNDM_PLAYER) {
 		sound(num);
 		return 0;
 	}
 	
-	x = -x;
-	z >>= 4;
+	swaplong(&y,&z);
+	y = -y>>4;
 	
-	if (soundm[num] & 4) {
+	if (soundm[num] & SOUNDM_DUKE) {
 		// Duke speech, one at a time only
 		int j;
 		
@@ -356,7 +335,7 @@ int xyzsound(short num, short i, long x, long y, long z)
 
 		for (j=NumVoices-1; j>=0; j--) {
 			if (!chans[j].chan || chans[j].owner < 0) continue;
-			if (soundm[ chans[j].soundnum ] & 4) return -1;
+			if (soundm[ chans[j].soundnum ] & SOUNDM_DUKE) return -1;
 		}
 	}
 	
@@ -371,9 +350,11 @@ int xyzsound(short num, short i, long x, long y, long z)
 		} else pitch = translatepitch(ps);
 	}
 	
-	// XXX: gain
-	
-	// XXX: occlusion fakery
+	//gain += soundvo[num];
+	if (PN != MUSICANDSFX &&
+		!cansee(ps[screenpeek].oposx,ps[screenpeek].oposy,ps[screenpeek].oposz-(24<<8),
+		ps[screenpeek].cursectnum,SX,SY,SZ-(24<<8),SECT) )
+        gain *= 1.0/32.0;
 	
 	switch(num)
 	{
@@ -382,16 +363,17 @@ int xyzsound(short num, short i, long x, long y, long z)
 		case RPG_EXPLODE:
 			gain = 1.0;
 			global = 1;
-			//if (sector[ps[screenpeek].cursectnum].lotag == 2) pitch -= 1024;
+			if (sector[ps[screenpeek].cursectnum].lotag == 2) pitch -= translatepitch(1024);
 			break;
 		default:
-			//if(sector[ps[screenpeek].cursectnum].lotag == 2 && (soundm[num]&4) == 0)
-			//	pitch = -768;
+			if(sector[ps[screenpeek].cursectnum].lotag == 2 && (soundm[num]&SOUNDM_DUKE) == 0)
+				pitch = translatepitch(-768);
 			//if( sndist > 31444 && PN != MUSICANDSFX)
 			//	return -1;
 			break;
 	}
 
+/*
 	// XXX: this is shit
 	if( Sound[num].num > 0 && PN != MUSICANDSFX )
 	{
@@ -399,14 +381,15 @@ int xyzsound(short num, short i, long x, long y, long z)
 		else if( Sound[num].num > 1 ) stopsound(num);
 		else if( badguy(&sprite[i]) && sprite[i].extra <= 0 ) stopsound(num);
 	}
+*/
 	
 	chan = jfaud->PlaySound(sounds[num], NULL, soundpr[num]);
 	if (!chan) return -1;
 	
 	chan->SetGain(gain);
 	chan->SetPitch(pitch);
-	if (soundm[num] & 1) chan->SetLoop(true);
-	if (soundm[num] & 16) global = 1;
+	chan->SetLoop(soundm[num] & SOUNDM_LOOP);
+	if (soundm[num] & SOUNDM_GLOBAL) global = 1;
 	
 	if (PN == APLAYER && sprite[i].yvel == screenpeek) {
 		chan->SetRolloff(0.0);
@@ -422,8 +405,6 @@ int xyzsound(short num, short i, long x, long y, long z)
 	if (r >= 0) chan->SetStopCallback(stopcallback, r);
 	chan->Play();
 	
-	Sound[num].num++;
-
 	return 0;
 }
 
@@ -436,8 +417,8 @@ void sound(short num)
 	if (!jfaud ||
 	    num >= NUM_SOUNDS ||
 	    SoundToggle == 0 ||
-	    ((soundm[num] & 4) && VoiceToggle == 0) ||
-	    ((soundm[num] & 8) && ud.lockout)	// parental mode
+	    ((soundm[num] & SOUNDM_DUKE) && VoiceToggle == 0) ||
+	    ((soundm[num] & SOUNDM_PARENT) && ud.lockout)	// parental mode
 	   ) return;
 
 	{
@@ -454,7 +435,7 @@ void sound(short num)
 
 	chan->SetGain(1.0);
 	chan->SetPitch(pitch);
-	if (soundm[num] & 1) chan->SetLoop(true);
+	chan->SetLoop(soundm[num] & SOUNDM_LOOP);
 	chan->SetRolloff(0.0);
 	chan->SetFollowListener(true);
 	chan->SetPosition(0.0, 0.0, 0.0);
@@ -462,8 +443,6 @@ void sound(short num)
 	r = keephandle(chan, num, -1);
 	if (r >= 0) chan->SetStopCallback(stopcallback, r);
 	chan->Play();
-
-	Sound[num].num++;
 }
 
 int spritesound(unsigned short num, short i)
@@ -483,7 +462,21 @@ void stopsound(short num)
 		jfaud->FreeSound(chans[j].chan);
 		chans[j].chan = NULL;
 		chans[j].owner = -1;
-		Sound[num].num--;
+	}
+}
+
+void stopspritesound(short num, short i)
+{
+	int j;
+	
+	if (!jfaud) return;
+	for (j=NumVoices-1;j>=0;j--) {
+		if (!chans[j].chan || !jfaud->IsValidSound(chans[j].chan) || chans[j].owner != i || chans[j].soundnum != num) continue;
+		
+		jfaud->FreeSound(chans[j].chan);
+		chans[j].chan = NULL;
+		chans[j].owner = -1;
+		return;
 	}
 }
 
@@ -498,7 +491,6 @@ void stopenvsound(short num, short i)
 		jfaud->FreeSound(chans[j].chan);
 		chans[j].chan = NULL;
 		chans[j].owner = -1;
-		Sound[chans[j].soundnum].num--;
 	}
 }
 
@@ -507,34 +499,32 @@ void pan3dsound(void)
 	JFAudMixer *mix;
 	int j, global;
 	short i;
-	long cx, cy, cz;
+	long cx, cy, cz, sx,sy,sz;
 	short ca,cs;
 	float gain;
 
 	numenvsnds = 0;
 	if (!jfaud) return;
+	mix = jfaud->GetWave();
+	if (!mix) return;
 
 	if(ud.camerasprite == -1) {
 		cx = ps[screenpeek].oposx;
-		cy = ps[screenpeek].oposy;
-		cz = ps[screenpeek].oposz;
+		cy = -ps[screenpeek].oposz>>4;
+		cz = ps[screenpeek].oposy;
 		cs = ps[screenpeek].cursectnum;
 		ca = ps[screenpeek].ang+ps[screenpeek].look_ang;
 	} else {
 		cx = sprite[ud.camerasprite].x;
-		cy = sprite[ud.camerasprite].y;
-		cz = sprite[ud.camerasprite].z;
+		cy = -sprite[ud.camerasprite].z>>4;
+		cz = sprite[ud.camerasprite].y;
 		cs = sprite[ud.camerasprite].sectnum;
 		ca = sprite[ud.camerasprite].ang;
 	}
 
-	cx = -cx;
-	cz >>= 4;
-
-	mix = jfaud->GetWave();
 	mix->SetListenerPosition((float)cx/UNITSPERMETRE, (float)cy/UNITSPERMETRE, (float)cz/UNITSPERMETRE);
-	mix->SetListenerOrientation((float)sintable[(ca-512)&2047]/16384.0, (float)sintable[ca&2047]/16384.0, 0.0,
-		0.0, 0.0, 1.0);
+	mix->SetListenerOrientation((float)sintable[(ca-512)&2047]/16384.0, 0.0, (float)sintable[ca&2047]/16384.0,
+		0.0, 1.0, 0.0);
 	
 	for (j=NumVoices-1; j>=0; j--) {
 		if (!chans[j].chan || !jfaud->IsValidSound(chans[j].chan) || chans[j].owner < 0) continue;
@@ -543,15 +533,16 @@ void pan3dsound(void)
 		gain = 1.0;
 		i = chans[j].owner;
 
-		cx = sprite[i].x;
-		cy = sprite[i].y;
-		cz = sprite[i].z;
+		sx = sprite[i].x;
+		sy = -sprite[i].z >> 4;
+		sz = sprite[i].y;
 
-		cx = -cx;
-		cz >>= 4;
-
+		//gain += soundvo[num];
+		if (PN != MUSICANDSFX && !cansee(cx,cy,cz-(24<<8),cs,sx,sy,sz-(24<<8),SECT) )
+			gain *= 1.0/32.0;
+		
 		if(PN == MUSICANDSFX && SLT < 999) numenvsnds++;
-		if( soundm[ chans[j].soundnum ]&16 ) global = 1;
+		if( soundm[ chans[j].soundnum ]&SOUNDM_GLOBAL ) global = 1;
 		
 		switch(chans[j].soundnum) {
 			case PIPEBOMB_EXPLODE:
@@ -570,6 +561,7 @@ void pan3dsound(void)
 		
 		// A sound may move from player-relative 3D if the viewpoint shifts from the player
 		// through a viewscreen or viewpoint switching
+		chans[j].chan->SetGain(gain);
 		if (PN == APLAYER && sprite[i].yvel == screenpeek) {
 			chans[j].chan->SetRolloff(0.0);
 			chans[j].chan->SetFollowListener(true);
@@ -577,9 +569,7 @@ void pan3dsound(void)
 		} else {
 			chans[j].chan->SetRolloff(global ? 0.0 : 1.0);
 			chans[j].chan->SetFollowListener(false);
-			chans[j].chan->SetPosition((float)cx/UNITSPERMETRE, (float)cy/UNITSPERMETRE, (float)cz/UNITSPERMETRE);
-
-			// XXX: gain and occlusion
+			chans[j].chan->SetPosition((float)sx/UNITSPERMETRE, (float)sy/UNITSPERMETRE, (float)sz/UNITSPERMETRE);
 		}
 	}
 }
@@ -646,7 +636,6 @@ int FX_StopAllSounds( void )
 		jfaud->FreeSound(chans[j].chan);
 		chans[j].chan = NULL;
 		chans[j].owner = -1;
-		Sound[chans[j].soundnum].num--;
 	}
 
 	return 0;

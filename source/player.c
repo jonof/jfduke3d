@@ -2190,8 +2190,8 @@ char doincrements(struct player_struct *p)
             p->jetpack_on = 0;
             checkavailinven(p);
             spritesound(DUKE_JETPACK_OFF,p->i);
-            stopsound(DUKE_JETPACK_IDLE);
-            stopsound(DUKE_JETPACK_ON);
+            stopspritesound(DUKE_JETPACK_IDLE,p->i);
+            stopspritesound(DUKE_JETPACK_ON,p->i);
         }
     }
 
@@ -2564,7 +2564,7 @@ void processinput(short snum)
             p->jetpack_on = 0;
             p->holoduke_on = -1;
 
-            stopsound(DUKE_JETPACK_IDLE);
+            stopspritesound(DUKE_JETPACK_IDLE,p->i);
             if(p->scream_voice > FX_Ok)
             {
                 FX_StopSound(p->scream_voice);
@@ -2772,7 +2772,7 @@ void processinput(short snum)
         p->pycount &= 2047;
         p->pyoff = sintable[p->pycount]>>7;
 
-        if( Sound[DUKE_UNDERWATER].num == 0 )
+        if( isspritemakingsound(pi,DUKE_UNDERWATER) < 0 )
             spritesound(DUKE_UNDERWATER,pi);
 
         if ( sb_snum&1 )
@@ -2846,7 +2846,7 @@ void processinput(short snum)
             p->jetpack_on++;
             p->posz -= (p->jetpack_on<<7); //Goin up
         }
-        else if(p->jetpack_on == 11 && Sound[DUKE_JETPACK_IDLE].num < 1)
+        else if(p->jetpack_on == 11 && isspritemakingsound(pi,DUKE_JETPACK_IDLE) < 0)
             spritesound(DUKE_JETPACK_IDLE,pi);
 
         if(shrunk) j = 512;
@@ -3130,7 +3130,7 @@ void processinput(short snum)
             }
             else
             {
-                if(Sound[DUKE_LONGTERM_PAIN].num < 1)
+                if(isspritemakingsound(pi,DUKE_LONGTERM_PAIN) < 0)
                     spritesound(DUKE_LONGTERM_PAIN,pi);
                 p->pals[0] = 0; p->pals[1] = 8; p->pals[2] = 0;
                 p->pals_time = 32;
@@ -3151,12 +3151,12 @@ void processinput(short snum)
                             k = 1;
                         else
                         {
-                            if(Sound[DUKE_LONGTERM_PAIN].num < 1)
+                            if(isspritemakingsound(pi,DUKE_LONGTERM_PAIN) < 0)
                                 spritesound(DUKE_LONGTERM_PAIN,pi);
                             p->pals[0] = 64; p->pals[1] = 64; p->pals[2] = 64;
                             p->pals_time = 32;
                             s->extra -= 1+(TRAND&3);
-                            if(Sound[SHORT_CIRCUIT].num < 1)
+                            if(isspritemakingsound(pi,SHORT_CIRCUIT) < 0)
                                 spritesound(SHORT_CIRCUIT,pi);
                         }
                     }
@@ -3168,7 +3168,7 @@ void processinput(short snum)
                             k = 1;
                         else
                         {
-                            if(Sound[DUKE_LONGTERM_PAIN].num < 1)
+                            if(isspritemakingsound(pi,DUKE_LONGTERM_PAIN) < 0)
                                 spritesound(DUKE_LONGTERM_PAIN,pi);
                             p->pals[0] = 0; p->pals[1] = 8; p->pals[2] = 0;
                             p->pals_time = 32;
@@ -3183,7 +3183,7 @@ void processinput(short snum)
                             k = 1;
                         else
                         {
-                            if(Sound[DUKE_LONGTERM_PAIN].num < 1)
+                            if(isspritemakingsound(pi,DUKE_LONGTERM_PAIN) < 0)
                                 spritesound(DUKE_LONGTERM_PAIN,pi);
                             p->pals[0] = 8; p->pals[1] = 0; p->pals[2] = 0;
                             p->pals_time = 32;
@@ -3338,7 +3338,7 @@ void processinput(short snum)
         }
 
         if(truefdist < PHEIGHT && p->on_ground && psectlotag != 1 && shrunk == 0 && sector[p->cursectnum].lotag == 1)
-            if( Sound[DUKE_ONWATER].num == 0 )
+            if(isspritemakingsound(pi,DUKE_ONWATER) < 0)
                 spritesound(DUKE_ONWATER,pi);
 
         if (p->cursectnum != s->sectnum)

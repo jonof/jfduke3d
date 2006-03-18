@@ -317,4 +317,8 @@ extern void setstatusbarscale(long sc);
 extern void setgamepalette(struct player_struct *player, char *pal, int set);
 extern void fadepal(int r, int g, int b, int start, int end, int step);
 
+extern int isspritemakingsound(short i, int num);
+extern int issoundplaying(int num);
+extern void stopspritesound(short num, short i);
+
 #endif // __funct_h__

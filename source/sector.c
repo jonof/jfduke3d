@@ -58,7 +58,7 @@ short callsound(short sn,short whatsprite)
                     {
                         spritesound(SLT,whatsprite);
                         if(SHT && SLT != SHT && SHT < NUM_SOUNDS)
-                            stopsound(SHT);
+                            stopspritesound(SHT,whatsprite);
                     }
 
                     if( (sector[SECT].lotag&0xff) != 22)
@@ -69,7 +69,7 @@ short callsound(short sn,short whatsprite)
             {
                 if(SHT) spritesound(SHT,whatsprite);
                 if( (soundm[SLT]&1) || ( SHT && SHT != SLT ) )
-                    stopsound(SLT);
+                    stopspritesound(SLT,whatsprite);
                 T1 = 0;
             }
             return SLT;
@@ -1970,7 +1970,7 @@ void checkhitsprite(short i,short sn)
                 sprite[sn].xvel = (sprite[i].xvel>>1)+(sprite[i].xvel>>2);
                 sprite[sn].ang -= (SA<<1)+1024;
                 SA = getangle(SX-sprite[sn].x,SY-sprite[sn].y)-512;
-                if(Sound[POOLBALLHIT].num < 2)
+                if(issoundplaying(POOLBALLHIT) < 2)
                     spritesound(POOLBALLHIT,i);
             }
             else
@@ -2910,8 +2910,8 @@ void cheatkeys(short snum)
                     p->hard_landing = 0;
                     p->poszv = 0;
                     spritesound(DUKE_JETPACK_OFF,p->i);
-                    stopsound(DUKE_JETPACK_IDLE);
-                    stopsound(DUKE_JETPACK_ON);
+                    stopspritesound(DUKE_JETPACK_IDLE,p->i);
+                    stopspritesound(DUKE_JETPACK_ON,p->i);
                     FTA(53,p);
                 }
             }
@@ -3013,7 +3013,7 @@ void checksectors(short snum)
         i = hitawall(p,&hitscanwall);
 
         if(i < 1280 && hitscanwall >= 0 && wall[hitscanwall].overpicnum == MIRROR)
-            if( wall[hitscanwall].lotag > 0 && Sound[wall[hitscanwall].lotag].num == 0 && snum == screenpeek)
+            if( wall[hitscanwall].lotag > 0 && isspritemakingsound(p->i,wall[hitscanwall].lotag) < 0 && snum == screenpeek)
         {
             spritesound(wall[hitscanwall].lotag,p->i);
             return;
@@ -3108,8 +3108,8 @@ void checksectors(short snum)
                         else if(sprite[p->i].extra < max_player_health )
                              sprite[p->i].extra = max_player_health;
                     }
-                    else if(Sound[FLUSH_TOILET].num == 0)
-                        spritesound(FLUSH_TOILET,p->i);
+                    else if(isspritemakingsound(neartagsprite,FLUSH_TOILET) < 0)
+                        spritesound(FLUSH_TOILET,neartagsprite);
                     return;
 
                 case NUKEBUTTON:
