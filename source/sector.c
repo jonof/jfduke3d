@@ -3013,7 +3013,7 @@ void checksectors(short snum)
         i = hitawall(p,&hitscanwall);
 
         if(i < 1280 && hitscanwall >= 0 && wall[hitscanwall].overpicnum == MIRROR)
-            if( wall[hitscanwall].lotag > 0 && isspritemakingsound(p->i,wall[hitscanwall].lotag) < 0 && snum == screenpeek)
+            if( wall[hitscanwall].lotag > 0 && !isspritemakingsound(p->i,wall[hitscanwall].lotag) && snum == screenpeek)
         {
             spritesound(wall[hitscanwall].lotag,p->i);
             return;
@@ -3108,7 +3108,7 @@ void checksectors(short snum)
                         else if(sprite[p->i].extra < max_player_health )
                              sprite[p->i].extra = max_player_health;
                     }
-                    else if(isspritemakingsound(neartagsprite,FLUSH_TOILET) < 0)
+                    else if(!isspritemakingsound(neartagsprite,FLUSH_TOILET))
                         spritesound(FLUSH_TOILET,neartagsprite);
                     return;
 

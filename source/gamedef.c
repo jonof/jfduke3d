@@ -2344,7 +2344,7 @@ char parse(void)
             break;
         case 97:
             insptr++;
-            if(isspritemakingsound(g_i,g_sp->yvel) < 0)
+            if(!isspritemakingsound(g_i,g_sp->yvel))
                 spritesound(g_sp->yvel,g_i);
             break;
         case 96:
@@ -2394,13 +2394,13 @@ char parse(void)
             break;
         case 87:
             insptr++;
-            if( isspritemakingsound(g_i,*insptr) < 0 )
+            if(!isspritemakingsound(g_i,*insptr))
                 spritesound((short) *insptr,g_i);
             insptr++;
             break;
         case 89:
             insptr++;
-            if( isspritemakingsound(g_i,*insptr) >= 0 )
+            if(isspritemakingsound(g_i,*insptr))
                 stopspritesound((short)*insptr,g_i);
             insptr++;
             break;

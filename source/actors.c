@@ -2632,7 +2632,7 @@ void moveweapons(void)
 
                                 if(ps[p].loogcnt == 0)
                                 {
-                                    if( isspritemakingsound(ps[p].i, DUKE_LONGTERM_PAIN) < 0 )
+                                    if(!isspritemakingsound(ps[p].i, DUKE_LONGTERM_PAIN))
                                         spritesound(DUKE_LONGTERM_PAIN,ps[p].i);
 
                                     j = 3+(TRAND&3);
@@ -3557,7 +3557,7 @@ void moveactors(void)
                     else s->z -= 1024;
                 }
 
-                if( isspritemakingsound(i,RECO_ROAM) < 0 )
+                if(!isspritemakingsound(i,RECO_ROAM))
                     spritesound(RECO_ROAM,i);
 
                 ssp(i,CLIPMASK0);
@@ -4237,7 +4237,7 @@ void moveactors(void)
                 {
                     if( (TRAND&255) < 16 )
                     {
-                        if( isspritemakingsound(ps[p].i, DUKE_LONGTERM_PAIN) < 0)
+                        if(!isspritemakingsound(ps[p].i, DUKE_LONGTERM_PAIN))
                             spritesound(DUKE_LONGTERM_PAIN,ps[p].i);
 
                         spritesound(SHORT_CIRCUIT,i);
@@ -4753,7 +4753,7 @@ void moveexplosions(void)  // STATNUM 5
                             ps[p].boot_amount--;
                         else
                         {
-                            if(isspritemakingsound(ps[p].i,DUKE_LONGTERM_PAIN) < 0)
+                            if(!isspritemakingsound(ps[p].i,DUKE_LONGTERM_PAIN))
                                 spritesound(DUKE_LONGTERM_PAIN,ps[p].i);
                             sprite[ps[p].i].extra --;
                             ps[p].pals_time = 32;
@@ -6837,7 +6837,7 @@ void moveeffectors(void)   //STATNUM 3
                                     x = ldist(&sprite[ps[p].i], &sprite[j]);
                                     if( x < 768 )
                                     {
-                                        if(isspritemakingsound(ps[p].i,DUKE_LONGTERM_PAIN) < 0)
+                                        if(!isspritemakingsound(ps[p].i,DUKE_LONGTERM_PAIN))
                                             spritesound(DUKE_LONGTERM_PAIN,ps[p].i);
                                         spritesound(SHORT_CIRCUIT,ps[p].i);
                                         sprite[ps[p].i].extra -= 8+(TRAND&7);

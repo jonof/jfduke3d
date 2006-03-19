@@ -277,17 +277,15 @@ char loadsound(unsigned short num) { return 1; }
 
 int isspritemakingsound(short i, int num)	// if num<0, check if making any sound at all
 {
-	int j;
+	int j,n=0;
 	
 	if (!jfaud) return -1;
 	for (j=NumVoices-1; j>=0; j--) {
 		if (!chans[j].chan || !jfaud->IsValidSound(chans[j].chan)) continue;
 		if (chans[j].owner == i)
-			if (num < 0 || (/*num >= 0 &&*/ chans[j].soundnum == num))
-				return chans[j].soundnum;
+			if (num < 0 || chans[j].soundnum == num) n++;
 	}
-
-	return -1;
+	return n;
 }
 
 int issoundplaying(int num)

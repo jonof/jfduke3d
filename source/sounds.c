@@ -626,7 +626,8 @@ void clearsoundlocks(void)
 
 int isspritemakingsound(short i, int num)
 {
-	return issoundplaying(num) ? num : -1;
+	if (num < 0) num=0;	// FIXME
+	return issoundplaying(num) > 0;
 }
 
 int issoundplaying(int num)
