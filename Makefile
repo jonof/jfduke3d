@@ -1,7 +1,7 @@
 # Duke3D Makefile for GNU Make
 
 # SDK locations - adjust to match your setup
-DXROOT=c:/sdks/msc/dx61
+DXROOT=c:/sdks/directx/dx61
 
 # Engine options
 SUPERBUILD = 1
@@ -74,7 +74,6 @@ GAMEOBJS=$(OBJ)game.$o \
 	$(OBJ)player.$o \
 	$(OBJ)premap.$o \
 	$(OBJ)sector.$o \
-	$(OBJ)jfaud_sounds.$o \
 	$(OBJ)rts.$o \
 	$(OBJ)config.$o \
 	$(OBJ)animlib.$o \
@@ -99,7 +98,8 @@ endif
 
 ifeq ($(RENDERTYPE),SDL)
 	OURCFLAGS+= $(subst -Dmain=SDL_main,,$(shell sdl-config --cflags))
-	AUDIOLIBOBJ=$(AUDIOLIB_MUSIC_STUB) $(AUDIOLIB_FX_STUB)
+	#AUDIOLIBOBJ=$(AUDIOLIB_MUSIC_STUB) $(AUDIOLIB_FX_STUB) $(OBJ)sounds.$o
+	AUDIOLIBOBJ=$(AUDIOLIB_JFAUD)
 
 	ifeq (1,$(HAVE_GTK2))
 		OURCFLAGS+= -DHAVE_GTK2 $(shell pkg-config --cflags gtk+-2.0)
@@ -111,7 +111,7 @@ ifeq ($(RENDERTYPE),SDL)
 	EDITOROBJS+= $(OBJ)build_icon.$o
 endif
 ifeq ($(RENDERTYPE),WIN)
-	#AUDIOLIBOBJ=$(AUDIOLIB_MUSIC) $(AUDIOLIB_FX)
+	#AUDIOLIBOBJ=$(AUDIOLIB_MUSIC) $(AUDIOLIB_FX) $(OBJ)sounds.$o
 	AUDIOLIBOBJ=$(AUDIOLIB_JFAUD)
 endif
 
