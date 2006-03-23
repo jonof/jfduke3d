@@ -30,6 +30,9 @@
 #include "types.h"
 #include "duke3d.h"
 extern "C" {
+#ifdef RENDERTYPEWIN
+# include "winlayer.h"
+#endif
 #include "osd.h"
 long numenvsnds;
 }
@@ -39,6 +42,7 @@ long numenvsnds;
 #define SOUNDM_DUKE   4
 #define SOUNDM_PARENT 8
 #define SOUNDM_GLOBAL 16
+#define SOUNDM_NICE   64	// Added for JFDuke3D so JFAud doesn't use nearest filtering for the sound
 #define SOUNDM_PLAYER 128
 
 #define UNITSPERMETRE 512.0
@@ -133,7 +137,7 @@ typedef struct {
 static SoundChannel *chans = NULL;
 static JFAud *jfaud = NULL;
 
-static bool havemidi = false;
+static bool havemidi = false, havewave = false;
 
 
 static void stopcallback(int r)
@@ -181,7 +185,9 @@ void SoundStartup(void)
 	if (!jfaud) return;
 
 	jfaud->SetUserOpenFunc(openfile);
+	jfaud->SetWindowHandle((void*)win_gethwnd());
 
+	havewave = havemidi = false;
 	if (!jfaud->InitWave(NULL, NumVoices, MixRate)) {
 		delete jfaud;
 		jfaud = NULL;
@@ -194,6 +200,8 @@ void SoundStartup(void)
 		jfaud = NULL;
 		return;
 	}
+
+	havewave = true;
 
 	for (i=NumVoices-1; i>=0; i--) {
 		chans[i].owner = -1;
@@ -208,7 +216,7 @@ void SoundShutdown(void)
 	if (chans) delete [] chans;
 	jfaud = NULL;
 	chans = NULL;
-	havemidi = false;
+	havewave = havemidi = false;
 }
 
 void MusicStartup(void)
@@ -224,6 +232,7 @@ void AudioUpdate(void)
 	int i;
 
 	if (!jfaud) return;
+	if (havewave)
 	for (i=NumVoices-1; i>=0; i--) {
 		if (chans[i].chan && !jfaud->IsValidSound(chans[i].chan))
 			chans[i].chan = NULL;
@@ -254,7 +263,7 @@ void playmusic(char *fn)
 	int i;
 	const char *extns[] = { ".ogg",".mp3",".mid", NULL };
 
-    if (!MusicToggle) return;
+	if (!MusicToggle) return;
 	if (!jfaud) return;
 
 	dotpos = Bstrrchr(fn,'.');
@@ -279,7 +288,7 @@ int isspritemakingsound(short i, int num)	// if num<0, check if making any sound
 {
 	int j,n=0;
 	
-	if (!jfaud) return -1;
+	if (!jfaud || !havewave) return 0;
 	for (j=NumVoices-1; j>=0; j--) {
 		if (!chans[j].chan || !jfaud->IsValidSound(chans[j].chan)) continue;
 		if (chans[j].owner == i)
@@ -292,7 +301,7 @@ int issoundplaying(int num)
 {
 	int j,n=0;
 	
-	if (!jfaud) return -1;
+	if (!jfaud || !havewave) return 0;
 	for (j=NumVoices-1; j>=0; j--) {
 		if (!chans[j].chan || !jfaud->IsValidSound(chans[j].chan)) continue;
 		if (chans[j].soundnum == num) n++;
@@ -307,7 +316,7 @@ int xyzsound(short num, short i, long x, long y, long z)
 	int r, global = 0;
 	float gain = 1.0, pitch = 1.0;
 
-	if (!jfaud ||
+	if (!jfaud || !havewave ||
 	    num >= NUM_SOUNDS ||
 	    ((soundm[num] & SOUNDM_PARENT) && ud.lockout) ||	// parental mode
 	    SoundToggle == 0 ||
@@ -388,6 +397,7 @@ int xyzsound(short num, short i, long x, long y, long z)
 	chan->SetPitch(pitch);
 	chan->SetLoop(soundm[num] & SOUNDM_LOOP);
 	if (soundm[num] & SOUNDM_GLOBAL) global = 1;
+	chan->SetFilter((soundm[num]&SOUNDM_NICE) ? JFAudMixerChannel::Filter4Point : JFAudMixerChannel::FilterNearest);
 	
 	if (PN == APLAYER && sprite[i].yvel == screenpeek) {
 		chan->SetRolloff(0.0);
@@ -412,7 +422,7 @@ void sound(short num)
 	int r;
 	float pitch = 1.0;
 
-	if (!jfaud ||
+	if (!jfaud || !havewave ||
 	    num >= NUM_SOUNDS ||
 	    SoundToggle == 0 ||
 	    ((soundm[num] & SOUNDM_DUKE) && VoiceToggle == 0) ||
@@ -437,6 +447,7 @@ void sound(short num)
 	chan->SetRolloff(0.0);
 	chan->SetFollowListener(true);
 	chan->SetPosition(0.0, 0.0, 0.0);
+	chan->SetFilter((soundm[num]&SOUNDM_NICE) ? JFAudMixerChannel::Filter4Point : JFAudMixerChannel::FilterNearest);
 
 	r = keephandle(chan, num, -1);
 	if (r >= 0) chan->SetStopCallback(stopcallback, r);
@@ -453,7 +464,7 @@ void stopsound(short num)
 {
 	int j;
 	
-	if (!jfaud) return;
+	if (!jfaud || !havewave) return;
 	for (j=NumVoices-1;j>=0;j--) {
 		if (!chans[j].chan || !jfaud->IsValidSound(chans[j].chan) || chans[j].soundnum != num) continue;
 		
@@ -467,7 +478,7 @@ void stopspritesound(short num, short i)
 {
 	int j;
 	
-	if (!jfaud) return;
+	if (!jfaud || !havewave) return;
 	for (j=NumVoices-1;j>=0;j--) {
 		if (!chans[j].chan || !jfaud->IsValidSound(chans[j].chan) || chans[j].owner != i || chans[j].soundnum != num) continue;
 		
@@ -482,7 +493,7 @@ void stopenvsound(short num, short i)
 {
 	int j;
 	
-	if (!jfaud) return;
+	if (!jfaud || !havewave) return;
 	for (j=NumVoices-1;j>=0;j--) {
 		if (!chans[j].chan || !jfaud->IsValidSound(chans[j].chan) || chans[j].owner != i) continue;
 
@@ -502,7 +513,7 @@ void pan3dsound(void)
 	float gain;
 
 	numenvsnds = 0;
-	if (!jfaud) return;
+	if (!jfaud || !havewave) return;
 	mix = jfaud->GetWave();
 	if (!mix) return;
 
@@ -627,7 +638,7 @@ int FX_StopAllSounds( void )
 {
 	int j;
 	
-	if (!jfaud) return 0;
+	if (!jfaud || !havewave) return 0;
 	for (j=NumVoices-1; j>=0; j--) {
 		if (!chans[j].chan || !jfaud->IsValidSound(chans[j].chan)) continue;
 

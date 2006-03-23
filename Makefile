@@ -39,7 +39,7 @@ OURCFLAGS=$(debug) -W -Wall -Wimplicit -Wno-char-subscripts -Wno-unused \
 	-I$(INC:/=) -I$(EINC:/=) -I$(SRC)jmact -I$(SRC)jaudiolib -I../jfaud/src
 OURCXXFLAGS=-fno-exceptions -fno-rtti
 LIBS=-lm
-JFAUDLIBS=../jfaud/libjfaud.a ../jfaud/mpadec/libmpadec/libmpadec.a
+JFAUDLIBS=../jfaud/libjfaud.a #../jfaud/mpadec/libmpadec/libmpadec.a
 NASMFLAGS=-s #-g
 EXESUFFIX=
 
