@@ -185,7 +185,9 @@ void SoundStartup(void)
 	if (!jfaud) return;
 
 	jfaud->SetUserOpenFunc(openfile);
+#ifdef _WIN32
 	jfaud->SetWindowHandle((void*)win_gethwnd());
+#endif
 
 	havewave = havemidi = false;
 	if (!jfaud->InitWave(NULL, NumVoices, MixRate)) {
