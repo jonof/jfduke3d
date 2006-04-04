@@ -190,7 +190,7 @@ void SoundStartup(void)
 #endif
 
 	havewave = havemidi = false;
-	if (!jfaud->InitWave(NULL, NumVoices, MixRate)) {
+	if (!jfaud->InitWave("software", NumVoices, MixRate)) {
 		delete jfaud;
 		jfaud = NULL;
 		return;
@@ -521,20 +521,20 @@ void pan3dsound(void)
 
 	if(ud.camerasprite == -1) {
 		cx = ps[screenpeek].oposx;
-		cy = -ps[screenpeek].oposz>>4;
-		cz = ps[screenpeek].oposy;
+		cy = ps[screenpeek].oposy;
+		cz = ps[screenpeek].oposz;
 		cs = ps[screenpeek].cursectnum;
 		ca = ps[screenpeek].ang+ps[screenpeek].look_ang;
 	} else {
 		cx = sprite[ud.camerasprite].x;
-		cy = -sprite[ud.camerasprite].z>>4;
-		cz = sprite[ud.camerasprite].y;
+		cy = sprite[ud.camerasprite].y;
+		cz = sprite[ud.camerasprite].z;
 		cs = sprite[ud.camerasprite].sectnum;
 		ca = sprite[ud.camerasprite].ang;
 	}
 
-	mix->SetListenerPosition((float)cx/UNITSPERMETRE, (float)cy/UNITSPERMETRE, (float)cz/UNITSPERMETRE);
-	mix->SetListenerOrientation((float)sintable[(ca-512)&2047]/16384.0, 0.0, (float)sintable[ca&2047]/16384.0,
+	mix->SetListenerPosition((float)cx/UNITSPERMETRE, (float)(-cz>>4)/UNITSPERMETRE, (float)cy/UNITSPERMETRE);
+	mix->SetListenerOrientation((float)sintable[(ca+512)&2047]/16384.0, 0.0, (float)sintable[ca&2047]/16384.0,
 		0.0, 1.0, 0.0);
 	
 	for (j=NumVoices-1; j>=0; j--) {
@@ -545,8 +545,8 @@ void pan3dsound(void)
 		i = chans[j].owner;
 
 		sx = sprite[i].x;
-		sy = -sprite[i].z >> 4;
-		sz = sprite[i].y;
+		sy = sprite[i].y;
+		sz = sprite[i].z;
 
 		//gain += soundvo[num];
 		if (PN != MUSICANDSFX && !cansee(cx,cy,cz-(24<<8),cs,sx,sy,sz-(24<<8),SECT) )
@@ -580,7 +580,7 @@ void pan3dsound(void)
 		} else {
 			chans[j].chan->SetRolloff(global ? 0.0 : 1.0);
 			chans[j].chan->SetFollowListener(false);
-			chans[j].chan->SetPosition((float)sx/UNITSPERMETRE, (float)sy/UNITSPERMETRE, (float)sz/UNITSPERMETRE);
+			chans[j].chan->SetPosition((float)sx/UNITSPERMETRE, (float)(-sz>>4)/UNITSPERMETRE, (float)sy/UNITSPERMETRE);
 		}
 	}
 }
