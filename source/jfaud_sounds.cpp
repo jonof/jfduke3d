@@ -208,6 +208,7 @@ void SoundStartup(void)
 		else
 			k = Bgetsysmemsize()/100*50 - MAXCACHE1DSIZE;
 		jfaud->SetCacheSize(k,k/2);
+		jfaud->SetCacheItemAge(24*120);	// 24 movements per second, 120 seconds max lifetime
 	}
 	
 	chans = new SoundChannel[NumVoices];
@@ -253,7 +254,7 @@ void AudioUpdate(void)
 		if (chans[i].chan && !jfaud->IsValidSound(chans[i].chan))
 			chans[i].chan = NULL;
 	}
-	jfaud->Update();
+	jfaud->Update(false);	// don't age the cache here
 }
 
 
@@ -530,6 +531,8 @@ void pan3dsound(void)
 	mix = jfaud->GetWave();
 	if (!mix) return;
 
+	jfaud->AgeCache();
+	
 	if(ud.camerasprite == -1) {
 		cx = ps[screenpeek].oposx;
 		cy = ps[screenpeek].oposy;
