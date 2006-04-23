@@ -630,39 +630,37 @@ const char *ExtGetSpriteCaption(short spritenum)
 
 void TotalMem()
 {
-    char incache[8192];
+    char incache[MAXTILES];
     int i,j,tottiles,totsprites,totactors;
 
-    for(i=0;i<4096;i++) incache[i] = 0;
+    memset(incache, 0, sizeof(incache));
 
-        for(i=0;i<numsectors;i++)
-        {
-                incache[sector[i].ceilingpicnum] = 1;
-                incache[sector[i].floorpicnum] = 1;
-        }
-        for(i=0;i<numwalls;i++)
-        {
-                incache[wall[i].picnum] = 1;
-                if (wall[i].overpicnum >= 0)
-                        incache[wall[i].overpicnum] = 1;
-        }
+	for(i=0;i<numsectors;i++)
+	{
+		incache[sector[i].ceilingpicnum] = 1;
+		incache[sector[i].floorpicnum] = 1;
+	}
+	for(i=0;i<numwalls;i++)
+	{
+		incache[wall[i].picnum] = 1;
+		if (wall[i].overpicnum >= 0)
+			incache[wall[i].overpicnum] = 1;
+	}
 
-        tottiles = 0;
-        for(i=0;i<4096;i++)
-                if (incache[i] > 0)
-                        tottiles += tilesizx[i]*tilesizy[i];
+	tottiles = 0;
+	for(i=0;i<MAXTILES;i++)
+		if (incache[i] > 0)
+			tottiles += tilesizx[i]*tilesizy[i];
 
-
-
-        for(i=0;i<4096;i++) incache[i] = 0;
+    memset(incache, 0, sizeof(incache));
 
         for(i=0;i<MAXSPRITES;i++)
                 if (sprite[i].statnum < MAXSTATUS)
                         incache[sprite[i].picnum] = 1;
         totsprites = 0;
+	totactors = 0;
 
-
-        for(i=0;i<4096;i++)
+        for(i=0;i<MAXTILES;i++)
     {
                 if (incache[i] > 0)
         {

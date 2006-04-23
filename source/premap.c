@@ -1302,7 +1302,7 @@ void waitforeverybody()
 
 void dofrontscreens(char *statustext)
 {
-    long tincs,i,j;
+    long tincs,i=0,j;
 
     if(ud.recstat != 2)
     {
