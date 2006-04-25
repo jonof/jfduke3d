@@ -194,8 +194,8 @@ void CONFIG_SetDefaults( void )
 	int32 i,f;
 	byte k1,k2;
 
-	FXDevice = -1;
-	MusicDevice = -1;
+	FXDevice = 0;
+	MusicDevice = 0;
 	NumVoices = 8;		// DOS default = 4
 	NumChannels = 2;
 	NumBits = 8;
@@ -533,8 +533,9 @@ void readsavenames(void)
 
 void CONFIG_ReadSetup( void )
 {
-	int32 dummy;
+	int32 dummy,i;
 	char commmacro[] = "CommbatMacro# ";
+	extern int32 CommandWeaponChoice;
 
 	CONTROL_ClearAssignments();
 	CONFIG_SetDefaults();
@@ -583,24 +584,13 @@ void CONFIG_ReadSetup( void )
 	SCRIPT_GetNumber( scripthandle, "Misc", "ShowLevelStats",&ud.levelstats);
 	SCRIPT_GetNumber( scripthandle, "Misc", "ShowOpponentWeapons",&ShowOpponentWeapons);
 	dummy = useprecache; SCRIPT_GetNumber( scripthandle, "Misc", "UsePrecache",&dummy); useprecache = dummy != 0;
-	if(ud.wchoice[0][0] == 0 && ud.wchoice[0][1] == 0)
+	// weapon choices are defaulted in checkcommandline, which may override them
+	if (!CommandWeaponChoice) for(i=0;i<10;i++)
 	{
-		ud.wchoice[0][0] = 3;
-		ud.wchoice[0][1] = 4;
-		ud.wchoice[0][2] = 5;
-		ud.wchoice[0][3] = 7;
-		ud.wchoice[0][4] = 8;
-		ud.wchoice[0][5] = 6;
-		ud.wchoice[0][6] = 0;
-		ud.wchoice[0][7] = 2;
-		ud.wchoice[0][8] = 9;
-		ud.wchoice[0][9] = 1;
-
-		for(dummy=0;dummy<10;dummy++)
-		{
-			Bsprintf(buf,"WeaponChoice%ld",dummy);
-			SCRIPT_GetNumber( scripthandle, "Misc", buf, &ud.wchoice[0][dummy]);
-		}
+		Bsprintf(buf,"WeaponChoice%ld",i);
+		dummy = -1;
+		SCRIPT_GetNumber( scripthandle, "Misc", buf, &dummy);
+		if (dummy >= 0) ud.wchoice[0][i] = dummy;
 	}
 
 	SCRIPT_GetNumber( scripthandle, "Sound Setup", "FXDevice",&FXDevice);

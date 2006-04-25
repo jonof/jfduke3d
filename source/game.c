@@ -73,6 +73,7 @@ static int32 CommandSoundToggleOff = 0;
 static int32 CommandMusicToggleOff = 0;
 static char *CommandMap = NULL;
 static char *CommandName = NULL;
+int32 CommandWeaponChoice = 0;
 
 char confilename[128] = {"GAME.CON"},boardfilename[BMAX_PATH] = {0};
 char waterpal[768], slimepal[768], titlepal[768], drealms[768], endingpal[768];
@@ -6880,6 +6881,16 @@ void checkcommandline(int argc,char **argv)
     ud.warp_on = 0;
     ud.cashman = 0;
     ud.m_player_skill = ud.player_skill = 2;
+    ud.wchoice[0][0] = 3;
+    ud.wchoice[0][1] = 4;
+    ud.wchoice[0][2] = 5;
+    ud.wchoice[0][3] = 7;
+    ud.wchoice[0][4] = 8;
+    ud.wchoice[0][5] = 6;
+    ud.wchoice[0][6] = 0;
+    ud.wchoice[0][7] = 2;
+    ud.wchoice[0][8] = 9;
+    ud.wchoice[0][9] = 1;
 
 #ifdef BETA
     return;
@@ -7158,6 +7169,7 @@ else
                         break;
                     case 'u':
                     case 'U':
+		        CommandWeaponChoice = 1;
                         c++;
                         j = 0;
                         if(*c)
