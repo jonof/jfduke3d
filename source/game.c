@@ -7471,8 +7471,7 @@ void Startup(void)
 
 	CONFIG_ReadSetup();
 
-	compilecons();	// JBF 20040116: Moved to below setup reading, because otherwise blown
-			// cons blow the configuration file.
+	compilecons();
 
 #ifdef AUSTRALIA
 	ud.lockout = 1;
@@ -7854,7 +7853,7 @@ if (VOLUMEALL) {
 
     if( setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP) < 0 )
     {
-        initprintf("Failure setting video mode %dx%dx%d %s! Attempting safer mode...",
+        initprintf("Failure setting video mode %dx%dx%d %s! Attempting safer mode...\n",
 				ScreenWidth,ScreenHeight,ScreenBPP,ScreenMode?"fullscreen":"windowed");
         ScreenMode = 0;		// JBF: was 2
         ScreenWidth = 320;

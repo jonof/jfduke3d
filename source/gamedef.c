@@ -1627,8 +1627,8 @@ void loadefs(char *filenam)
      * If someone really wants them they can Kextract them.
     if(!SafeFileExists(filenam) && loadfromgrouponly == 0)
     {
-        initprintf("Missing external con file(s).\n");
-        initprintf("COPY INTERNAL DEFAULTS TO DIRECTORY(Y/n)?\n");
+        //initprintf("Missing external con file(s).\n");
+        //initprintf("COPY INTERNAL DEFAULTS TO DIRECTORY(Y/n)?\n");
 
 	i=wm_ynbox("Missing CON file(s)", "Missing external CON file(s). "
 			"Copy internal defaults to directory?");
@@ -1698,7 +1698,7 @@ void loadefs(char *filenam)
     {
         if( groupfile != -1 && loadfromgrouponly == 0 )
         {
-            initprintf("Warnings found when compiling CON files. Use default CONs instead? (Y/N)\n");
+            //initprintf("Warnings found when compiling CON files. Use default CONs instead? (Y/N)\n");
 	    i=wm_ynbox("CON File Compilation Warning", "Warnings found when compiling CON files. Use default CONs instead?");
 	    if (i) i = 'y';
 	    if(i == 'y' || i == 'Y' )
@@ -1721,7 +1721,7 @@ void loadefs(char *filenam)
         {
             if( groupfile != -1 && loadfromgrouponly == 0 )
             {
-                initprintf("Errors found when compiling CON files.  Use default CONs instead? (Y/N)\n");
+                //initprintf("Errors found when compiling CON files.  Use default CONs instead? (Y/N)\n");
 		i=wm_ynbox("CON File Compilation Error", "Errors found when compiling CON files. Use default CONs instead?");
 		if (i) i = 'y';
                 if( i == 'y' || i == 'Y' )
