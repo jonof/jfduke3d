@@ -255,7 +255,7 @@ void CONFIG_SetDefaults( void )
 	for (i=0; i<MAXMOUSEBUTTONS; i++) {
 		MouseFunctions[i][0] = CONFIG_FunctionNameToNum( mousedefaults[i] );
 		CONTROL_MapButton( MouseFunctions[i][0], i, 0, controldevice_mouse );
-		if (i<4) continue;
+		if (i>=4) continue;
 
 		MouseFunctions[i][1] = CONFIG_FunctionNameToNum( mouseclickeddefaults[i] );
 		CONTROL_MapButton( MouseFunctions[i][1], i, 1, controldevice_mouse );
