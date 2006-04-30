@@ -8823,7 +8823,7 @@ FAKEHORIZONLY:
         }
 
         if(p->aim_mode)
-            myhoriz += syn->horz>>1;
+            myhoriz += syn->horz/2;//>>1;
         else
         {
             if( myhoriz > 95 && myhoriz < 105) myhoriz = 100;

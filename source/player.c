@@ -3407,7 +3407,7 @@ void processinput(short snum)
         }
 
         if(p->aim_mode)
-            p->horiz += sync[snum].horz>>1;
+            p->horiz += sync[snum].horz/2;//>>1;
         else
         {
              if( p->horiz > 95 && p->horiz < 105) p->horiz = 100;
