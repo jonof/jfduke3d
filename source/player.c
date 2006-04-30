@@ -1862,7 +1862,7 @@ void getinput(short snum)
 	info.dyaw   += lastinfo.dyaw;
 	info.dpitch += lastinfo.dpitch;
 	info.droll  += lastinfo.droll;
-	memset(&lastinfo.dx, 0, sizeof(lastinfo));
+	memset(&lastinfo, 0, sizeof(lastinfo));
 
     if( (p->gm&MODE_MENU) || (p->gm&MODE_TYPE) || (ud.pause_on && !KB_KeyPressed(sc_Pause)) )
     {
