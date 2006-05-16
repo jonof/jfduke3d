@@ -3321,6 +3321,10 @@ if (PLUTOPAK) {
 				else l = analog_turning;
 				MouseAnalogueAxes[x-6] = l;
 				CONTROL_MapAnalogAxis(x-6,l,controldevice_mouse);
+				{
+					extern int32 mouseyaxismode;	// player.c
+					mouseyaxismode = -1;
+				}
 				break;
 
 		}

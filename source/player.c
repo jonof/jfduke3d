@@ -1836,13 +1836,12 @@ void displayweapon(short snum)
 #define MAXHORIZ     127
 
 long myaimmode = 0, myaimstat = 0, omyaimstat = 0;
-
+int32 mouseyaxismode = -1;
 static ControlInfo lastinfo = { 0,0,0,0,0,0 };
 void getinput(short snum)
 {
 
     short j, daang;
-// MED
     ControlInfo info;
     int32 tics;
     boolean running;
@@ -1854,6 +1853,41 @@ void getinput(short snum)
     momx = momy = 0;
     p = &ps[snum];
 
+    if( (p->gm&MODE_MENU) || (p->gm&MODE_TYPE) || (ud.pause_on && !KB_KeyPressed(sc_Pause)) )
+    {
+         CONTROL_GetInput( &info );
+	     memset(&lastinfo, 0, sizeof(lastinfo));
+         loc.fvel = vel = 0;
+         loc.svel = svel = 0;
+         loc.avel = angvel = 0;
+         loc.horz = horiz = 0;
+         loc.bits = (((long)gamequit)<<26);
+         return;
+    }
+
+    if (ud.mouseaiming)
+          myaimmode = BUTTON(gamefunc_Mouse_Aiming);
+    else
+	{
+		  omyaimstat = myaimstat; myaimstat = BUTTON(gamefunc_Mouse_Aiming);
+		  if (myaimstat > omyaimstat)
+          {
+				myaimmode ^= 1;
+                FTA(44+myaimmode,p);
+          }
+	}
+
+	{
+		int32 i;
+		if (myaimmode) i = analog_lookingupanddown;
+		else i = MouseAnalogueAxes[1];
+
+		if (i != mouseyaxismode) {
+			CONTROL_MapAnalogAxis(1, i, controldevice_mouse);
+			mouseyaxismode = i;
+		}
+	}
+
     CONTROL_GetInput( &info );
 
 	info.dx += lastinfo.dx;
@@ -1863,17 +1897,6 @@ void getinput(short snum)
 	info.dpitch += lastinfo.dpitch;
 	info.droll  += lastinfo.droll;
 	memset(&lastinfo, 0, sizeof(lastinfo));
-
-    if( (p->gm&MODE_MENU) || (p->gm&MODE_TYPE) || (ud.pause_on && !KB_KeyPressed(sc_Pause)) )
-    {
-         loc.fvel = vel = 0;
-         loc.svel = svel = 0;
-         loc.avel = angvel = 0;
-         loc.horz = horiz = 0;
-         loc.bits = (((long)gamequit)<<26);
-         info.dz = info.dyaw = 0;
-         return;
-    }
 
     tics = totalclock-lastcontroltime;
     lastcontroltime = totalclock;
@@ -1885,18 +1908,6 @@ void getinput(short snum)
 	KB_KeyDown[sc_BackSlash] = 0;
     }
 #endif
-
-    if (ud.mouseaiming)
-          myaimmode = BUTTON(gamefunc_Mouse_Aiming);
-     else
-	 {
-		  omyaimstat = myaimstat; myaimstat = BUTTON(gamefunc_Mouse_Aiming);
-		  if (myaimstat > omyaimstat)
-          {
-				myaimmode ^= 1;
-                FTA(44+myaimmode,p);
-          }
-	 }
 
     if(multiflag == 1)
     {
@@ -1982,19 +1993,14 @@ if (!VOLUMEONE) {
 		angvel = info.dyaw/64;
 	}
 
-    if( myaimmode )
-    {
-		lastinfo.dz = info.dz % (314-128);
-        if(ud.mouseflip)
-            horiz -= info.dz/(314-128);
-        else horiz += info.dz/(314-128);
-
-        info.dz = 0;
-    } else {
-		lastinfo.dz = info.dz % (1<<6);
-	}
+	lastinfo.dpitch = info.dpitch % (314-128);
+	if (ud.mouseflip)
+		horiz -= info.dpitch / (314-128);
+	else
+		horiz += info.dpitch / (314-128);
 
     svel -= info.dx;
+	lastinfo.dz = info.dz % (1<<6);
     vel = -info.dz>>6;
 
     if (running)
@@ -3362,6 +3368,7 @@ void processinput(short snum)
                 activatebysector(psect,pi);
         }
 
+		i = 0;
         if( sb_snum&(1<<18) || p->hard_landing)
             p->return_to_center = 9;
 
@@ -3370,6 +3377,7 @@ void processinput(short snum)
             p->return_to_center = 9;
             if( sb_snum&(1<<5) ) p->horiz += 12;
             p->horiz += 12;
+			i++;
         }
 
         else if( sb_snum&(1<<14) )
@@ -3377,39 +3385,43 @@ void processinput(short snum)
             p->return_to_center = 9;
             if( sb_snum&(1<<5) ) p->horiz -= 12;
             p->horiz -= 12;
+			i++;
         }
 
         else if( sb_snum&(1<<3) )
         {
             if( sb_snum&(1<<5) ) p->horiz += 6;
             p->horiz += 6;
+			i++;
         }
 
         else if( sb_snum&(1<<4) )
         {
             if( sb_snum&(1<<5) ) p->horiz -= 6;
             p->horiz -= 6;
+			i++;
         }
         if(p->return_to_center > 0)
             if( (sb_snum&(1<<13)) == 0 && (sb_snum&(1<<14)) == 0 )
         {
             p->return_to_center--;
             p->horiz += 33-(p->horiz/3);
+			i++;
         }
 
         if(p->hard_landing > 0)
         {
             p->hard_landing--;
             p->horiz -= (p->hard_landing<<4);
+			i++;
         }
 
-        if(p->aim_mode)
-            p->horiz += sync[snum].horz/2;//>>1;
-        else
+        if(i)
         {
              if( p->horiz > 95 && p->horiz < 105) p->horiz = 100;
              if( p->horizoff > -5 && p->horizoff < 5) p->horizoff = 0;
         }
+        p->horiz += sync[snum].horz/2;//>>1;
 
         if(p->horiz > 299) p->horiz = 299;
         else if(p->horiz < -99) p->horiz = -99;
