@@ -7523,7 +7523,7 @@ void Startup(void)
 	   exit(1);
 	}
 
-	if (CONTROL_Startup( ControllerType, &GetTime, TICRATE )) {
+	if (CONTROL_Startup( 1, &GetTime, TICRATE )) {
 		uninitengine();
 		exit(1);
 	}
@@ -7531,11 +7531,12 @@ void Startup(void)
 	CONFIG_SetupMouse();
 	CONFIG_SetupJoystick();
 
+	CONTROL_JoystickEnabled = (UseJoystick && CONTROL_JoyPresent);
+	CONTROL_MouseEnabled = (UseMouse && CONTROL_MousePresent);
+
 	// JBF 20040215: evil and nasty place to do this, but joysticks are evil and nasty too
-	if (ControllerType == controltype_keyboardandjoystick) {
-		for (i=0;i<joynumaxes;i++)
-			setjoydeadzone(i,JoystickAnalogueDead[i],JoystickAnalogueSaturate[i]);
-	}
+	for (i=0;i<joynumaxes;i++)
+		setjoydeadzone(i,JoystickAnalogueDead[i],JoystickAnalogueSaturate[i]);
 
 	inittimer(TICRATE);
 
@@ -7850,16 +7851,6 @@ if (VOLUMEALL) {
 
    RTS_Init(ud.rtsname);
    if(numlumps) initprintf("Using .RTS file:%s\n",ud.rtsname);
-
-   if (CONTROL_JoystickEnabled)
-       CONTROL_CenterJoystick
-          (
-          CenterCenter,
-          UpperLeft,
-          LowerRight,
-          CenterThrottle,
-          CenterRudder
-          );
 
         initprintf("Loading palette/lookups.\n");
 

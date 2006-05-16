@@ -1974,9 +1974,6 @@ if (!VOLUMEONE) {
 	running = ud.auto_run ^ BUTTON(gamefunc_Run);	// modern
     svel = vel = angvel = horiz = 0;
 
-    if( CONTROL_JoystickEnabled )
-        if ( running ) info.dz *= 2;
-
 	if( BUTTON(gamefunc_Strafe) ) {
 		lastinfo.dyaw = info.dyaw % 8;
 		svel = -info.dyaw/8;

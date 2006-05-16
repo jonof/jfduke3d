@@ -713,13 +713,10 @@ static int probe_(int type,int x,int y,int i,int n)
 
     s = 1+(CONTROL_GetMouseSensitivity()>>4);
 
-    if( ControllerType == 1 && CONTROL_MousePresent )
     {
         CONTROL_GetInput( &minfo );
         mi += minfo.dz;
     }
-
-    else minfo.dz = minfo.dyaw = 0;
 
     if( x == (320>>1) )
         centre = 320>>2;
@@ -1161,7 +1158,6 @@ void menus(void)
 
     getpackets();
 
-    if(ControllerType == 1 && CONTROL_MousePresent)
     {
         if(buttonstat != 0 && !onbar)
         {
@@ -1172,7 +1168,6 @@ void menus(void)
         else
             buttonstat = MOUSE_GetButtons();
     }
-    else buttonstat = 0;
 
     if( (ps[myconnectindex].gm&MODE_MENU) == 0 )
     {
@@ -2709,7 +2704,7 @@ if (PLUTOPAK) {
 		    currentlist = 0;
 		case 4:
 		case 5:
-			if (x==5 && (!CONTROL_JoystickEnabled || !CONTROL_JoyPresent)) break;
+			if (x==5 && !CONTROL_JoyPresent) break;
 		    cmenu(204+x-3);
 		    break;
 
@@ -2725,7 +2720,7 @@ if (PLUTOPAK) {
 	    menutext(160,c-18,      0,0,"VIDEO SETTINGS");
 	    menutext(160,c,         0,0,"KEYS SETUP");
 	    menutext(160,c+18,      0,0,"MOUSE SETUP");
-		menutext(160,c+18+18,   0,CONTROL_JoyPresent==0 || CONTROL_JoystickEnabled==0,"JOYSTICK SETUP");
+		menutext(160,c+18+18,   0,CONTROL_JoyPresent==0,"JOYSTICK SETUP");
 #ifndef AUSTRALIA
 		menutext(160,c+18+18+18,0,0,"PARENTAL LOCK");
 #else
