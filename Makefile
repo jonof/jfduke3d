@@ -19,6 +19,7 @@ SRC=source/
 RSRC=rsrc/
 OBJ=obj/
 EROOT=../build/
+ESRC=$(EROOT)src/
 EINC=$(EROOT)include/
 EOBJ=eobj/
 INC=$(SRC)
@@ -92,7 +93,7 @@ endif
 ifeq ($(PLATFORM),WINDOWS)
 	OURCFLAGS+= -DUNDERSCORES -I$(DXROOT)/include
 	NASMFLAGS+= -DUNDERSCORES -f win32
-	GAMEOBJS+= $(OBJ)gameres.$o $(OBJ)winbits.$o
+	GAMEOBJS+= $(OBJ)gameres.$o $(OBJ)winbits.$o $(OBJ)startwin.game.$o
 	EDITOROBJS+= $(OBJ)buildres.$o
 endif
 
@@ -171,7 +172,7 @@ $(OBJ)%.$o: $(SRC)jaudiolib/%.c
 	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@ 2>&1
 
 $(OBJ)%.$o: $(SRC)misc/%.rc
-	windres -i $< -o $@
+	windres -i $< -o $@ --include-dir=$(EINC) --include-dir=$(SRC)
 
 $(OBJ)%.$o: $(SRC)util/%.c
 	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@ 2>&1

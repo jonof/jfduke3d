@@ -69,6 +69,7 @@ long cameradist = 0, cameraclock = 0;
 char playerswhenstarted;
 char qe,cp;
 
+static int32 CommandSetup = 0;
 static int32 CommandSoundToggleOff = 0;
 static int32 CommandMusicToggleOff = 0;
 static char *CommandMap = NULL;
@@ -6861,7 +6862,9 @@ void comlinehelp(char **argv)
 		"/#\t\tLoad and run a game (slot 0-9)\n"
 		"-map FILE\tUse a map FILE\n"
 		"-name NAME\tFoward NAME\n"
-		"-net\t\tNet mode game";
+		"-net\t\tNet mode game\n"
+		"-setup\t\ttDisplays the configuration dialogue box\n"
+		;
 	wm_msgbox(apptitle,s);
 }
 
@@ -6923,6 +6926,11 @@ void checkcommandline(int argc,char **argv)
 						CommandMap = argv[i+1];
 						i++;
 					}
+					i++;
+					continue;
+				}
+				if (!Bstrcasecmp(c+1,"setup")) {
+					CommandSetup = 1;
 					i++;
 					continue;
 				}
@@ -7476,13 +7484,29 @@ void compilecons(void)
    clearbufbyte(&wall[0], sizeof(wall), 0);
 }
 
+extern int startwin_run(void);
 
 void Startup(void)
 {
 	int i;
 
-	CONFIG_ReadSetup();
+	i = CONFIG_ReadSetup();
 
+	if (initengine()) {
+	   wm_msgbox("Build Engine Initialisation Error",
+			   "There was a problem initialising the Build engine: %s", engineerrstr);
+	   exit(1);
+	}
+
+#if defined RENDERTYPEWIN || (defined __APPLE__ && !defined RENDERTYPESDL)
+	if (i < 0 || ForceSetup || CommandSetup) {
+		if (!startwin_run()) {
+			uninitengine();
+			exit(0);
+		}
+	}
+#endif
+	
 	compilecons();
 
 #ifdef AUSTRALIA
@@ -7515,12 +7539,6 @@ void Startup(void)
 	if (VOLUMEONE) {
 	   initprintf("*** You have run Duke Nukem 3D %ld times. ***\n\n",ud.executions);
 	   if(ud.executions >= 50) initprintf("IT IS NOW TIME TO UPGRADE TO THE COMPLETE VERSION!!!\n");
-	}
-
-	if (initengine()) {
-	   wm_msgbox("Build Engine Initialisation Error",
-			   "There was a problem initialising the Build engine: %s", engineerrstr);
-	   exit(1);
 	}
 
 	if (CONTROL_Startup( 1, &GetTime, TICRATE )) {
@@ -7810,9 +7828,6 @@ if (VOLUMEONE) {
     registerosdcommands();
     Startup();
 	if (quitevent) return;
-
-	// KJS: Hack to make sure ps[*].palette is never NULL!
-    //for(i=connecthead;i>=0;i=connectpoint2[i]) ps[i].palette = palette;
 
     if (!loaddefinitionsfile(duke3ddef)) initprintf("Definitions file loaded.\n");
 

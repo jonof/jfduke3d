@@ -83,6 +83,7 @@ int32 ScreenMode = 1;
 int32 ScreenWidth = 640;
 int32 ScreenHeight = 480;
 int32 ScreenBPP = 8;
+int32 ForceSetup = 1;
 
 static char setupfilename[256]={SETUPFILENAME};
 static int32 scripthandle = -1;
@@ -532,7 +533,7 @@ void readsavenames(void)
 ===================
 */
 
-void CONFIG_ReadSetup( void )
+int32 CONFIG_ReadSetup( void )
 {
 	int32 dummy,i;
 	char commmacro[] = "CommbatMacro# ";
@@ -546,7 +547,7 @@ void CONFIG_ReadSetup( void )
 	if (SafeFileExists(setupfilename))	// JBF 20031211
 	   scripthandle = SCRIPT_Load( setupfilename );
 
-	if (scripthandle < 0) return;
+	if (scripthandle < 0) return -1;
 
 	for(dummy = 0;dummy < 10;dummy++)
 	{
@@ -578,6 +579,7 @@ void CONFIG_ReadSetup( void )
 	SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLUseCompressedTextureCache", &glusetexcache);
 	SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLUseTextureCacheCompression", &glusetexcachecompression);
 
+	SCRIPT_GetNumber( scripthandle, "Setup", "ForceSetup",&ForceSetup);
 	SCRIPT_GetNumber( scripthandle, "Misc", "Executions",&ud.executions); ud.executions++;
 	SCRIPT_GetNumber( scripthandle, "Misc", "RunMode",&RunMode);
 	SCRIPT_GetNumber( scripthandle, "Misc", "Crosshairs",&ud.crosshair);
@@ -624,6 +626,7 @@ void CONFIG_ReadSetup( void )
 
 	//CONFIG_SetupMouse(scripthandle);
 	//CONFIG_SetupJoystick(scripthandle);
+	return 0;
 }
 
 /*
@@ -671,6 +674,7 @@ void CONFIG_WriteSetup( void )
 	SCRIPT_PutNumber( scripthandle, "Sound Setup", "MusicToggle",MusicToggle,false,false);
 	SCRIPT_PutNumber( scripthandle, "Sound Setup", "ReverseStereo",ReverseStereo,false,false);
 
+	SCRIPT_PutNumber( scripthandle, "Setup", "ForceSetup",ForceSetup,false,false);
 	SCRIPT_PutNumber( scripthandle, "Misc", "Executions",ud.executions,false,false);
 	SCRIPT_PutNumber( scripthandle, "Misc", "RunMode",RunMode,false,false);
 	SCRIPT_PutNumber( scripthandle, "Misc", "Crosshairs",ud.crosshair,false,false);

@@ -2674,7 +2674,7 @@ if (PLUTOPAK) {
 		case 2:
 			{
 				int dax = xdim, day = ydim, daz;
-				curvidmode = newvidmode = checkvideomode(&dax,&day,bpp,fullscreen);
+				curvidmode = newvidmode = checkvideomode(&dax,&day,bpp,fullscreen,0);
 				if (newvidmode == 0x7fffffffl) newvidmode = validmodecnt;
 				newfullscreen = fullscreen;
 				changesmade = 0;
