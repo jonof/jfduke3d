@@ -24,6 +24,7 @@ static struct {
 	int fullscreen;
 	int xdim, ydim, bpp;
 	int forcesetup;
+	int usemouse, usejoy;
 } settings;
 
 static HWND startupdlg = NULL;
@@ -53,7 +54,7 @@ static void PopulateForm(void)
 
 	Button_SetCheck(GetDlgItem(pages[TAB_CONFIG], IDCFULLSCREEN), (settings.fullscreen ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheck(GetDlgItem(pages[TAB_CONFIG], IDCALWAYSSHOW), (settings.forcesetup ? BST_CHECKED : BST_UNCHECKED));
-	
+
 	ComboBox_ResetContent(hwnd);
 	for (i=0; i<validmodecnt; i++) {
 		if (validmode[i].fs != settings.fullscreen) continue;
@@ -64,6 +65,9 @@ static void PopulateForm(void)
 		ComboBox_SetItemData(hwnd, j, i);
 		if (i == mode) ComboBox_SetCurSel(hwnd, j);
 	}
+
+	Button_SetCheck(GetDlgItem(pages[TAB_CONFIG], IDCINPUTMOUSE), (settings.usemouse ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheck(GetDlgItem(pages[TAB_CONFIG], IDCINPUTJOY), (settings.usejoy ? BST_CHECKED : BST_UNCHECKED));
 }
 
 static INT_PTR CALLBACK ConfigPageProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -89,6 +93,12 @@ static INT_PTR CALLBACK ConfigPageProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, L
 					return TRUE;
 				case IDCALWAYSSHOW:
 					settings.forcesetup = IsDlgButtonChecked(hwndDlg, IDCALWAYSSHOW) == BST_CHECKED;
+					return TRUE;
+				case IDCINPUTMOUSE:
+					settings.usemouse = IsDlgButtonChecked(hwndDlg, IDCINPUTMOUSE) == BST_CHECKED;
+					return TRUE;
+				case IDCINPUTJOY:
+					settings.usejoy = IsDlgButtonChecked(hwndDlg, IDCINPUTJOY) == BST_CHECKED;
 					return TRUE;
 				default: break;
 			}
@@ -117,6 +127,8 @@ static void EnableConfig(int n)
 	EnableWindow(GetDlgItem(startupdlg, WIN_STARTWIN_START), n);
 	EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDCFULLSCREEN), n);
 	EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDCVMODE), n);
+	EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDCINPUTMOUSE), n);
+	EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDCINPUTJOY), n);
 }
 
 static INT_PTR CALLBACK startup_dlgproc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -386,6 +398,8 @@ int startwin_run(void)
 	settings.ydim = ScreenHeight;
 	settings.bpp = ScreenBPP;
 	settings.forcesetup = ForceSetup;
+	settings.usemouse = UseMouse;
+	settings.usejoy = UseJoystick;
 	PopulateForm();
 
 	while (done < 0) {
@@ -408,6 +422,8 @@ int startwin_run(void)
 		ScreenHeight = settings.ydim;
 		ScreenBPP = settings.bpp;
 		ForceSetup = settings.forcesetup;
+		UseMouse = settings.usemouse;
+		UseJoystick = settings.usejoy;
 	}
 
 	return done;
