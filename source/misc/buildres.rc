@@ -31,3 +31,4 @@ BEGIN
 	CONTROL "&Always show configuration on start", IDCALWAYSSHOW, "BUTTON", BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 118, 116, 140, 8
 END
 
+1 24 "rsrc/manifest.build.xml"
