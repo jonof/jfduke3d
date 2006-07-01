@@ -15,6 +15,10 @@
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
+#ifndef LINKED_GTK
+# include "dynamicgtk.h"
+#endif
+
 #include "duke3d.h"
 #include "build.h"
 #include "compat.h"
