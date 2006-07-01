@@ -3860,7 +3860,7 @@ void processinput(short snum)
                         p->visibility = 0;
                         checkavailweapon(p);
 
-                        if( ( sb_snum&(1<<2) ) == 0 )
+                        if( ( sb_snum&(1<<2) ) == 0 || p->ammo_amount[CHAINGUN_WEAPON] <= 0 )
                         {
                             *kb = 0;
                             break;
@@ -3922,6 +3922,7 @@ void processinput(short snum)
                         shoot(pi,RPG);
                         p->ammo_amount[DEVISTATOR_WEAPON]--;
                         checkavailweapon(p);
+			if (p->ammo_amount[DEVISTATOR_WEAPON] <= 0) *kb = 0;
                     }
                     if((*kb) > 5) (*kb) = 0;
                 }
@@ -3944,7 +3945,7 @@ void processinput(short snum)
                 }
                 else
                 {
-                    if( sb_snum&(1<<2))
+                    if( (sb_snum&(1<<2)) && p->ammo_amount[FREEZE_WEAPON] > 0)
                     {
                         *kb = 1;
                         spritesound(CAT_FIRE,pi);
