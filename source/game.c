@@ -7500,7 +7500,7 @@ void Startup(void)
 
 #if defined RENDERTYPEWIN || (defined RENDERTYPESDL && !defined __APPLE__ && defined HAVE_GTK2)
 	if (i < 0 || ForceSetup || CommandSetup) {
-		if (!startwin_run()) {
+		if (quitevent || !startwin_run()) {
 			uninitengine();
 			exit(0);
 		}
