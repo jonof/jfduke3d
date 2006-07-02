@@ -30,11 +30,11 @@ CC=cl
 AS=ml
 LINK=link /opt:nowin98 /nologo /opt:ref
 CFLAGS= /MD /J /nologo $(flags_cl)  \
-	/I$(INC) /I$(EINC) /I$(SRC)jmact /I$(SRC)jaudiolib /I..\jfaud\src \
+	/I$(INC) /I$(EINC) /I$(SRC)jmact /I$(SRC)jaudiolib /I..\jfaud\inc \
 	/DNOCOPYPROTECT $(ENGINEOPTS) \
 	/I$(DXROOT)\include /DRENDERTYPEWIN=1
-LIBS=user32.lib gdi32.lib shell32.lib dxguid.lib winmm.lib wsock32.lib \
-     ..\jfaud\jfaud.lib ..\jfaud\mpadec\mpadec.lib /NODEFAULTLIB:libFLAC.lib \
+LIBS=user32.lib gdi32.lib shell32.lib dxguid.lib winmm.lib wsock32.lib comctl32.lib \
+     ..\jfaud\jfaud.lib /NODEFAULTLIB:libFLAC.lib \
      #opengl32.lib
 ASFLAGS=/nologo /coff
 EXESUFFIX=.exe
@@ -81,7 +81,7 @@ GAMEOBJS=$(OBJ)game.$o \
 	$(OBJ)osdcmds.$o \
 	$(JMACTOBJ) \
 	$(AUDIOLIBOBJ) \
-	$(OBJ)winbits.$o $(OBJ)gameres.res
+	$(OBJ)winbits.$o $(OBJ)gameres.res $(OBJ)startwin.game.$o
 
 EDITOROBJS=$(OBJ)astub.$o \
 	$(OBJ)buildres.res
@@ -112,7 +112,7 @@ EDITOROBJS=$(OBJ)astub.$o \
 	$(CC) /c $(CFLAGS) /Fo$@ $<
 
 {$(SRC)misc}.rc{$(OBJ)}.res:
-	$(RC) /fo$@ /r $<
+	$(RC) /i$(EINC) /i$(SRC) /fo$@ /r $<
 
 
 # TARGETS

@@ -364,7 +364,7 @@ int xyzsound(short num, short i, long x, long y, long z)
 	
 	{
 		int ps = soundps[num], pe = soundpe[num], cx;
-		cx = klabs(pe-ps);
+		cx = labs(pe-ps);
 		if (cx) {
 			if (ps < pe) pitch = translatepitch(ps + rand()%cx);
 			else pitch = translatepitch(pe + rand()%cx);
@@ -445,7 +445,7 @@ void sound(short num)
 
 	{
 		int ps = soundps[num], pe = soundpe[num], cx;
-		cx = klabs(pe-ps);
+		cx = labs(pe-ps);
 		if (cx) {
 			if (ps < pe) pitch = translatepitch(ps + rand()%cx);
 			else pitch = translatepitch(pe + rand()%cx);
