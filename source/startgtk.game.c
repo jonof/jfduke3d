@@ -157,10 +157,6 @@ static void on_sounddrvcombo_changed(GtkComboBox *combobox, gpointer user_data)
 {
 }
 
-static void on_cddrvcombo_changed(GtkComboBox *combobox, gpointer user_data)
-{
-}
-
 static void on_inputmousecheck_toggled(GtkToggleButton *togglebutton, gpointer user_data)
 {
 	settings.usemouse = (gtk_toggle_button_get_active(togglebutton) == TRUE);
@@ -192,9 +188,7 @@ static GtkWidget *create_window(void)
   GtkWidget *vmode3dlabel;
   GtkWidget *inputdevlabel;
   GtkWidget *sounddrvlabel;
-  GtkWidget *cddrvlabel;
   GtkWidget *sounddrvcombo;
-  GtkWidget *cddrvcombo;
   GtkWidget *inputmousecheck;
   GtkWidget *inputjoycheck;
   GtkWidget *vmode3dcombo;
@@ -290,12 +284,6 @@ static GtkWidget *create_window(void)
   gtk_widget_set_size_request (sounddrvlabel, 88, 29);
   gtk_misc_set_alignment (GTK_MISC (sounddrvlabel), 0, 0.5);
 
-  cddrvlabel = gtk_label_new_with_mnemonic ("C_D drive:");
-  gtk_widget_show (cddrvlabel);
-  gtk_fixed_put (GTK_FIXED (configlayout), cddrvlabel, 0, 72);
-  gtk_widget_set_size_request (cddrvlabel, 88, 29);
-  gtk_misc_set_alignment (GTK_MISC (cddrvlabel), 0, 0.5);
-
   sounddrvcombo = gtk_combo_box_new_text ();
   gtk_widget_show (sounddrvcombo);
   gtk_fixed_put (GTK_FIXED (configlayout), sounddrvcombo, 88, 40);
@@ -303,11 +291,6 @@ static GtkWidget *create_window(void)
   gtk_widget_add_accelerator (sounddrvcombo, "grab_focus", accel_group,
                               GDK_O, GDK_MOD1_MASK,
                               GTK_ACCEL_VISIBLE);
-
-  cddrvcombo = gtk_combo_box_new_text ();
-  gtk_widget_show (cddrvcombo);
-  gtk_fixed_put (GTK_FIXED (configlayout), cddrvcombo, 88, 72);
-  gtk_widget_set_size_request (cddrvcombo, 31, 30);
 
   inputmousecheck = gtk_check_button_new_with_mnemonic ("Mo_use");
   gtk_widget_show (inputmousecheck);
@@ -451,9 +434,6 @@ static GtkWidget *create_window(void)
   g_signal_connect ((gpointer) sounddrvcombo, "changed",
                     G_CALLBACK (on_sounddrvcombo_changed),
                     NULL);
-  g_signal_connect ((gpointer) cddrvcombo, "changed",
-                    G_CALLBACK (on_cddrvcombo_changed),
-                    NULL);
   g_signal_connect ((gpointer) inputmousecheck, "toggled",
                     G_CALLBACK (on_inputmousecheck_toggled),
                     NULL);
@@ -476,7 +456,6 @@ static GtkWidget *create_window(void)
   // Associate labels with their controls
   gtk_label_set_mnemonic_widget (GTK_LABEL (vmode3dlabel), vmode3dcombo);
   gtk_label_set_mnemonic_widget (GTK_LABEL (sounddrvlabel), sounddrvcombo);
-  gtk_label_set_mnemonic_widget (GTK_LABEL (cddrvlabel), cddrvcombo);
 
   /* Store pointers to all widgets, for use by lookup_widget(). */
   GLADE_HOOKUP_OBJECT_NO_REF (startwin, startwin, "startwin");
@@ -490,9 +469,7 @@ static GtkWidget *create_window(void)
   GLADE_HOOKUP_OBJECT (startwin, vmode3dlabel, "vmode3dlabel");
   GLADE_HOOKUP_OBJECT (startwin, inputdevlabel, "inputdevlabel");
   GLADE_HOOKUP_OBJECT (startwin, sounddrvlabel, "sounddrvlabel");
-  GLADE_HOOKUP_OBJECT (startwin, cddrvlabel, "cddrvlabel");
   GLADE_HOOKUP_OBJECT (startwin, sounddrvcombo, "sounddrvcombo");
-  GLADE_HOOKUP_OBJECT (startwin, cddrvcombo, "cddrvcombo");
   GLADE_HOOKUP_OBJECT (startwin, inputmousecheck, "inputmousecheck");
   GLADE_HOOKUP_OBJECT (startwin, inputjoycheck, "inputjoycheck");
   GLADE_HOOKUP_OBJECT (startwin, vmode3dcombo, "vmode3dcombo");
