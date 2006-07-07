@@ -588,8 +588,6 @@ int startwin_idle(void *s)
   	return 0;
 }
 
-extern int xdimgame, ydimgame, bppgame, forcesetup;
-
 int startwin_run(void)
 {
 	if (!gtkenabled) return 0;

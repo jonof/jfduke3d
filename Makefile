@@ -93,7 +93,7 @@ endif
 ifeq ($(PLATFORM),WINDOWS)
 	OURCFLAGS+= -DUNDERSCORES -I$(DXROOT)/include
 	NASMFLAGS+= -DUNDERSCORES -f win32
-	GAMEOBJS+= $(OBJ)gameres.$o $(OBJ)winbits.$o $(OBJ)startwin.game.$o
+	GAMEOBJS+= $(OBJ)gameres.$o $(OBJ)winbits.$o $(OBJ)startwin.game.$o $(OBJ)startdlg.$o
 	EDITOROBJS+= $(OBJ)buildres.$o
 endif
 
@@ -104,7 +104,7 @@ ifeq ($(RENDERTYPE),SDL)
 
 	ifeq (1,$(HAVE_GTK2))
 		OURCFLAGS+= -DHAVE_GTK2 $(shell pkg-config --cflags gtk+-2.0)
-		GAMEOBJS+= $(OBJ)game_banner.$o $(OBJ)startgtk.game.$o
+		GAMEOBJS+= $(OBJ)game_banner.$o $(OBJ)startgtk.game.$o $(OBJ)startdlg.$o
 		EDITOROBJS+= $(OBJ)editor_banner.$o
 	endif
 

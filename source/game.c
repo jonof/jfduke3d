@@ -141,7 +141,7 @@ void pitch_test( void );
 char restorepalette,screencapt,nomorelogohack;
 int sendmessagecommand = -1;
 
-static char *duke3dgrp = "duke3d.grp";	// JBF 20030925
+char *duke3dgrp = "duke3d.grp";	// JBF 20030925
 static char *duke3ddef = "duke3d.def";
 
 //task *TimerPtr=NULL;
@@ -6930,7 +6930,6 @@ void checkcommandline(int argc,char **argv)
 					continue;
 				}
 				if (!Bstrcasecmp(c+1,"setup")) {
-					CommandSetup = 1;
 					i++;
 					continue;
 				}
@@ -6949,22 +6948,12 @@ void checkcommandline(int argc,char **argv)
 				continue;
 			}
 
-            if(*c == '?')
-            {
-                comlinehelp(argv);
-                exit(-1);
-            }
-
 			if((*c == '/') || (*c == '-'))
             {
                 c++;
                 switch(*c)
                 {
-                    default:
-  //                      printf("Unknown command line parameter '%s'\n",argv[i]);
-                    case '?':
-                        comlinehelp(argv);
-                        exit(0);
+                    default: break;
                     case 'x':
                     case 'X':
                         c++;
@@ -7490,23 +7479,12 @@ void Startup(void)
 {
 	int i;
 
-	i = CONFIG_ReadSetup();
-
 	if (initengine()) {
 	   wm_msgbox("Build Engine Initialisation Error",
 			   "There was a problem initialising the Build engine: %s", engineerrstr);
 	   exit(1);
 	}
 
-#if defined RENDERTYPEWIN || (defined RENDERTYPESDL && !defined __APPLE__ && defined HAVE_GTK2)
-	if (i < 0 || ForceSetup || CommandSetup) {
-		if (quitevent || !startwin_run()) {
-			uninitengine();
-			exit(0);
-		}
-	}
-#endif
-	
 	compilecons();
 
 #ifdef AUSTRALIA
@@ -7696,7 +7674,6 @@ void backtomenu(void)
 #include "osdcmds.h"
 
 int shareware = 0;
-char *startwin_labeltext = "Starting Duke Nukem 3D...";
 
 void app_main(int argc,char **argv)
 {
@@ -7748,42 +7725,38 @@ void app_main(int argc,char **argv)
 
 	OSD_SetLogFile("duke3d.log");
 
-#if 0
-    setvmode(0x03);
-
-    printstr(0,0,"                                                                                ",79);
-
-#ifdef VOLUMEALL
-    #ifdef AUSTRALIA
-        printstr(40-(strlen(HEAD2A)>>1),0,HEAD2A,79);
-    #else
-        printstr(40-(strlen(HEAD2)>>1),0,HEAD2,79);
-    #endif
-#else
-    #ifdef AUSTRALIA
-        printstr(40-(strlen(HEADA)>>1),0,HEADA,79);
-    #else
-        printstr(40-(strlen(HEAD)>>1),0,HEAD,79);
-    #endif
-#endif
-
-#ifdef BETA
-    printstr(0,1,"BETA VERSION BETA VERSION BETA VERSION BETA VERSION BETA VERSION BETA VERSION ",79);
-#endif
-
-    printstr(0,1,"                   Copyright (c) 1996 3D Realms Entertainment                   ",79);
-
-//    printstr(0,2,"  ***     DUKE NUKEM v1.4 BETA VERSION.  USED FOR INTERNAL USE ONLY!!!     ***  ",79);
-
-    printf("\n\n");
-#endif
-
-    // JBF 20030925: Because it's annoying renaming GRP files whenever I want to test different game data
     if (getenv("DUKE3DGRP")) {
 	    duke3dgrp = getenv("DUKE3DGRP");
 	    initprintf("Using %s as main GRP file\n", duke3dgrp);
     }
     
+	for (i=1;i<argc;i++) {
+		if (argv[i][0] != '-' && argv[i][0] != '/') continue;
+		if (!Bstrcasecmp(argv[i]+1, "setup")) CommandSetup = TRUE;
+		else if (!Bstrcasecmp(argv[i]+1, "?")) {
+			comlinehelp(argv);
+			exit(0);
+		}
+    }
+	
+	wm_setapptitle("Duke Nukem 3D");
+	if (preinitengine()) {
+	   wm_msgbox("Build Engine Initialisation Error",
+			   "There was a problem initialising the Build engine: %s", engineerrstr);
+	   exit(1);
+	}
+
+	i = CONFIG_ReadSetup();
+
+#if defined RENDERTYPEWIN || (defined RENDERTYPESDL && !defined __APPLE__ && defined HAVE_GTK2)
+	if (i < 0 || ForceSetup || CommandSetup) {
+		if (quitevent || !startwin_run()) {
+			uninitengine();
+			exit(0);
+		}
+	}
+#endif
+	
     initgroupfile(duke3dgrp);
     i = kopen4load("DUKESW.BIN",1);	// JBF 20030810
     if (i!=-1) {
