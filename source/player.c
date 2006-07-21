@@ -1654,6 +1654,22 @@ void displayweapon(short snum)
                     myospal(124+((*kb)<<1)-(p->look_ang>>1),looking_arc+430-gun_pos-((*kb)<<3),FIRSTGUN+6,gs,o,pal);
                     myospal(224-(p->look_ang>>1),looking_arc+220-gun_pos,FIRSTGUN+5,gs,o,pal);
                 }
+				else if (NAM)
+				{
+#define WEAPON2_RELOAD_TIME 50
+					if((*kb) < (WEAPON2_RELOAD_TIME - 12))
+					{
+						myospal(184-(p->look_ang>>1),looking_arc+235-gun_pos,FIRSTGUN+8,gs,o,pal);
+						myospal(224-(p->look_ang>>1),looking_arc+210-gun_pos,FIRSTGUN+5,gs,o,pal);
+					}
+					else if((*kb) < (WEAPON2_RELOAD_TIME - 6))
+					{
+						myospal(164-(p->look_ang>>1),looking_arc+245-gun_pos,FIRSTGUN+8,gs,o,pal);
+						myospal(224-(p->look_ang>>1),looking_arc+220-gun_pos,FIRSTGUN+5,gs,o,pal);
+					}
+					else if((*kb) < (WEAPON2_RELOAD_TIME) )
+						myospal(194-(p->look_ang>>1),looking_arc+235-gun_pos,FIRSTGUN+5,gs,o,pal);
+				}
                 else if((*kb) < 23)
                 {
                     myospal(184-(p->look_ang>>1),looking_arc+235-gun_pos,FIRSTGUN+8,gs,o,pal);
@@ -3527,7 +3543,6 @@ void processinput(short snum)
 		{
 			if( p->curr_weapon == PISTOL_WEAPON)
 			{
-//				long lWeaponClip[PISTOL_WEAPON]=GetGameDef("WEAPON2_CLIP",WEAPON2_CLIP);
 				if( p->ammo_amount[PISTOL_WEAPON] > 20)
 				{
 					// throw away the remaining clip

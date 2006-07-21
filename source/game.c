@@ -76,7 +76,7 @@ static char *CommandMap = NULL;
 static char *CommandName = NULL;
 int32 CommandWeaponChoice = 0;
 
-char confilename[128] = {"GAME.CON"},boardfilename[BMAX_PATH] = {0};
+char confilename[128] = {"game.con"},boardfilename[BMAX_PATH] = {0};
 char waterpal[768], slimepal[768], titlepal[768], drealms[768], endingpal[768];
 char firstdemofile[80] = { '\0' };
 
@@ -6866,7 +6866,7 @@ void comlinehelp(char **argv)
 		"/a\t\tUse player AI (fake multiplayer only)\n"
 		"/i#\t\tNetwork mode (1/0) (multiplayer only) (default == 1)\n"
 		"/f#\t\tSend fewer packets (1, 2, 4) (multiplayer only)\n"
-		"/gFILE\t\tUse multiple group files (must be last on command line)\n"
+		"/gFILE\t\tUse multiple group files\n"
 		"/hFILE\t\tUse FILE instead of DUKE3D.DEF\n"
 		"/xFILE\t\tCompile FILE (default GAME.CON)\n"
 		"/u#########\tUser's favorite weapon order (default: 3425689071)\n"
@@ -6874,6 +6874,7 @@ void comlinehelp(char **argv)
 		"-map FILE\tUse a map FILE\n"
 		"-name NAME\tFoward NAME\n"
 		"-net\t\tNet mode game\n"
+		"-nam\t\tActivates NAM compatibility mode (sets CON to NAM.CON and GRP to NAM.GRP)\n"
 		"-setup\t\ttDisplays the configuration dialogue box\n"
 		;
 	wm_msgbox(apptitle,s);
@@ -6942,7 +6943,6 @@ void checkcommandline(int argc,char **argv)
 				}
 				if (!Bstrcasecmp(c+1,"nam")) {
 					i++;
-					namversion = 1;
 					continue;
 				}
             }
@@ -7292,6 +7292,7 @@ if (VOLUMEALL) {
 }
 
     playmusic(&env_music_fn[0][0]);
+	if (!NAM) {
     fadepal(0,0,0, 0,64,7);
     //ps[myconnectindex].palette = drealms;
     //palto(0,0,0,63);
@@ -7306,6 +7307,7 @@ if (VOLUMEALL) {
 	}
 
     KB_ClearKeysDown();	// JBF
+	}
 
     fadepal(0,0,0, 0,64,7);
     clearview(0L);
@@ -7738,20 +7740,25 @@ void app_main(int argc,char **argv)
 
 	OSD_SetLogFile("duke3d.log");
 
-    if (getenv("DUKE3DGRP")) {
-	    duke3dgrp = getenv("DUKE3DGRP");
-	    initprintf("Using %s as main GRP file\n", duke3dgrp);
-    }
-    
 	for (i=1;i<argc;i++) {
 		if (argv[i][0] != '-' && argv[i][0] != '/') continue;
 		if (!Bstrcasecmp(argv[i]+1, "setup")) CommandSetup = TRUE;
+		else if (!Bstrcasecmp(argv[i]+1, "nam")) {
+			namversion = 1;
+			duke3dgrp = "nam.grp";
+			strcpy(confilename, "nam.con");
+		}
 		else if (!Bstrcasecmp(argv[i]+1, "?")) {
 			comlinehelp(argv);
 			exit(0);
 		}
     }
 	
+    if (getenv("DUKE3DGRP")) {
+	    duke3dgrp = getenv("DUKE3DGRP");
+	    initprintf("Using %s as main GRP file\n", duke3dgrp);
+    }
+    
 	wm_setapptitle("Duke Nukem 3D");
 	if (preinitengine()) {
 	   wm_msgbox("Build Engine Initialisation Error",
@@ -7771,7 +7778,7 @@ void app_main(int argc,char **argv)
 #endif
 
 	initgroupfile(duke3dgrp);
-    i = kopen4load("DUKESW.BIN",1);	// JBF 20030810
+    i = kopen4load("DUKESW.BIN",1);
     if (i!=-1) {
 	    initprintf("Using Shareware GRP file.\n");
 	    shareware = 1;
