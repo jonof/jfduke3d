@@ -76,7 +76,11 @@ static char *CommandMap = NULL;
 static char *CommandName = NULL;
 int32 CommandWeaponChoice = 0;
 
-char confilename[128] = {"game.con"},boardfilename[BMAX_PATH] = {0};
+char defaultduke3dgrp[BMAX_PATH] = "duke3d.grp";
+char defaultconfilename[BMAX_PATH] = "game.con";
+char *confilename = defaultconfilename, *duke3dgrp = defaultduke3dgrp;
+
+char boardfilename[BMAX_PATH] = {0};
 char waterpal[768], slimepal[768], titlepal[768], drealms[768], endingpal[768];
 char firstdemofile[80] = { '\0' };
 
@@ -141,7 +145,6 @@ void pitch_test( void );
 char restorepalette,screencapt,nomorelogohack;
 int sendmessagecommand = -1;
 
-char *duke3dgrp = "duke3d.grp";	// JBF 20030925
 static char *duke3ddef = "duke3d.def";
 
 //task *TimerPtr=NULL;
@@ -6971,7 +6974,7 @@ void checkcommandline(int argc,char **argv)
                         c++;
                         if(*c)
                         {
-                            strcpy(confilename,c);
+							confilename = c;
                             /*if(SafeFileExists(c) == 0)
                             {
                                 initprintf("Could not find con file '%s'.\n",confilename );
@@ -7744,9 +7747,8 @@ void app_main(int argc,char **argv)
 		if (argv[i][0] != '-' && argv[i][0] != '/') continue;
 		if (!Bstrcasecmp(argv[i]+1, "setup")) CommandSetup = TRUE;
 		else if (!Bstrcasecmp(argv[i]+1, "nam")) {
+			strcpy(defaultduke3dgrp, "nam.grp");
 			namversion = 1;
-			duke3dgrp = "nam.grp";
-			strcpy(confilename, "nam.con");
 		}
 		else if (!Bstrcasecmp(argv[i]+1, "?")) {
 			comlinehelp(argv);
@@ -7776,6 +7778,13 @@ void app_main(int argc,char **argv)
 		}
 	}
 #endif
+
+	if (namversion) {
+		// overwrite the default GRP and CON so that if the user chooses
+		// something different, they get what they asked for
+		strcpy(defaultduke3dgrp,"nam.grp");
+		strcpy(defaultconfilename, "nam.con");
+	}
 
 	initgroupfile(duke3dgrp);
     i = kopen4load("DUKESW.BIN",1);
