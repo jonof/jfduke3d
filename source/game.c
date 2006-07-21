@@ -1798,53 +1798,53 @@ void coolgaugetext(short snum)
 	 //14 - update keys
 	 //15 - update kills
 	 //16 - update FREEZE_WEAPON ammo
-
+#define SBY (200-tilesizy[BOTTOMSTATUSBAR])
 	 if (u == -1)
 	 {
 		  patchstatusbar(0,0,320,200);
 		  if (ud.multimode > 1 && ud.coop != 1)
-				rotatesprite(sbarx(277+1),sbary(200-27-1),sbarsc(65536L),0,KILLSICON,0,0,10+16+128,0,0,xdim-1,ydim-1);
+				rotatesprite(sbarx(277+1),sbary(SBY+7-1),sbarsc(65536L),0,KILLSICON,0,0,10+16+128,0,0,xdim-1,ydim-1);
 	 }
 	 if (ud.multimode > 1 && ud.coop != 1)
 	 {
 		  if (u&32768)
 		  {
-				if (u != -1) patchstatusbar(276,183,299,193);
-				digitalnumber(287,200-17,max(p->frag-p->fraggedself,0),-16,10+16+128);
+				if (u != -1) patchstatusbar(276,SBY+17,299,SBY+17+10);
+				digitalnumber(287,SBY+17,max(p->frag-p->fraggedself,0),-16,10+16+128);
 		  }
 	 }
 	 else
 	 {
 		  if (u&16384)
 		  {
-				if (u != -1) patchstatusbar(275,182,299,194);
-				if (p->got_access&4) rotatesprite(sbarx(275),sbary(182),sbarsc(65536L),0,ACCESS_ICON,0,23,10+16+128,0,0,xdim-1,ydim-1);
-				if (p->got_access&2) rotatesprite(sbarx(288),sbary(182),sbarsc(65536L),0,ACCESS_ICON,0,21,10+16+128,0,0,xdim-1,ydim-1);
-				if (p->got_access&1) rotatesprite(sbarx(281),sbary(189),sbarsc(65536L),0,ACCESS_ICON,0,0,10+16+128,0,0,xdim-1,ydim-1);
+				if (u != -1) patchstatusbar(275,SBY+18,299,SBY+18+12);
+				if (p->got_access&4) rotatesprite(sbarx(275),sbary(SBY+16),sbarsc(65536L),0,ACCESS_ICON,0,23,10+16+128,0,0,xdim-1,ydim-1);
+				if (p->got_access&2) rotatesprite(sbarx(288),sbary(SBY+16),sbarsc(65536L),0,ACCESS_ICON,0,21,10+16+128,0,0,xdim-1,ydim-1);
+				if (p->got_access&1) rotatesprite(sbarx(281),sbary(SBY+23),sbarsc(65536L),0,ACCESS_ICON,0,0,10+16+128,0,0,xdim-1,ydim-1);
 		  }
 	 }
-	 if (u&(4+8+16+32+64+128+256+512+65536L)) weapon_amounts(p,96,182,u);
+	 if (u&(4+8+16+32+64+128+256+512+65536L)) weapon_amounts(p,96,SBY+16,u);
 
 	 if (u&1)
 	 {
-		  if (u != -1) patchstatusbar(20,183,43,194); //Original code:(20,183,43,193);
+		  if (u != -1) patchstatusbar(20,SBY+17,43,SBY+17+11);
 		  if (sprite[p->i].pal == 1 && p->last_extra < 2)
-				 digitalnumber(32,200-17,1,-16,10+16+128);
-		  else digitalnumber(32,200-17,p->last_extra,-16,10+16+128);
+				 digitalnumber(32,SBY+17,1,-16,10+16+128);
+		  else digitalnumber(32,SBY+17,p->last_extra,-16,10+16+128);
 	 }
 	 if (u&2)
 	 {
-		  if (u != -1) patchstatusbar(52,183,75,194); //Original code:(52,183,75,193);
-		  digitalnumber(64,200-17,p->shield_amount,-16,10+16+128);
+		  if (u != -1) patchstatusbar(52,SBY+17,75,SBY+17+11);
+		  digitalnumber(64,SBY+17,p->shield_amount,-16,10+16+128);
 	 }
 
 	 if (u&1024)
 	 {
-		  if (u != -1) patchstatusbar(196,183,219,194); //Original code:(196,183,219,193);
+		  if (u != -1) patchstatusbar(196,SBY+17,219,SBY+17+11);
 		  if (p->curr_weapon != KNEE_WEAPON)
 		  {
 				if (p->curr_weapon == HANDREMOTE_WEAPON) i = HANDBOMB_WEAPON; else i = p->curr_weapon;
-				digitalnumber(230-22,200-17,p->ammo_amount[i],-16,10+16+128);
+				digitalnumber(230-22,SBY+17,p->ammo_amount[i],-16,10+16+128);
 		  }
 	 }
 
@@ -1852,8 +1852,8 @@ void coolgaugetext(short snum)
 	 {
 		  if (u != -1)
 		  {
-				if (u&(2048+4096)) { patchstatusbar(231,179,265,197); }
-								  else { patchstatusbar(250,190,261,196); } //Original code:(250,190,261,195);
+				if (u&(2048+4096)) { patchstatusbar(231,SBY+13,265,SBY+13+18); }
+								  else { patchstatusbar(250,SBY+24,261,SBY+24+6); }
 		  }
 		  if (p->inven_icon)
 		  {
@@ -1871,9 +1871,9 @@ void coolgaugetext(short snum)
 						  case 6: i = AIRTANK_ICON; break;
 						  case 7: i = BOOT_ICON; break;
 					 }
-					 rotatesprite(sbarx(231-o),sbary(200-21),sbarsc(65536L),0,i,0,0,10+16+permbit,0,0,xdim-1,ydim-1);
-					 minitext(292-30-o,190,"%",6,10+16+permbit + 256);
-					 if (p->inven_icon >= 6) minitext(284-35-o,180,"AUTO",2,10+16+permbit + 256);
+					 rotatesprite(sbarx(231-o),sbary(SBY+13),sbarsc(65536L),0,i,0,0,10+16+permbit,0,0,xdim-1,ydim-1);
+					 minitext(292-30-o,SBY+24,"%",6,10+16+permbit + 256);
+					 if (p->inven_icon >= 6) minitext(284-35-o,SBY+14,"AUTO",2,10+16+permbit + 256);
 				}
 				if (u&(2048+4096))
 				{
@@ -1884,8 +1884,8 @@ void coolgaugetext(short snum)
 						  case 5: j = p->heat_on; break;
 						  default: j = 0x80000000;
 					 }
-					 if (j > 0) minitext(288-30-o,180,"ON",0,10+16+permbit + 256);
-					 else if ((unsigned long)j != 0x80000000) minitext(284-30-o,180,"OFF",2,10+16+permbit + 256);
+					 if (j > 0) minitext(288-30-o,SBY+14,"ON",0,10+16+permbit + 256);
+					 else if ((unsigned long)j != 0x80000000) minitext(284-30-o,SBY+14,"OFF",2,10+16+permbit + 256);
 				}
 				if (u&8192)
 				{
@@ -1899,7 +1899,7 @@ void coolgaugetext(short snum)
 						  case 6: i = ((p->scuba_amount+63)>>6); break;
 						  case 7: i = (p->boot_amount>>1); break;
 					 }
-					 invennum(284-30-o,200-6,(char)i,0,10+permbit);
+					 invennum(284-30-o,SBY+28,(char)i,0,10+permbit);
 				}
 		  }
 	 }
