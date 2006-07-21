@@ -1585,6 +1585,7 @@ if (VOLUMEALL) {
 
         case 10000:
         case 10001:
+			if (NAM) { cmenu(0); break; }
 
             c = 60;
             rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
@@ -2656,7 +2657,7 @@ if (PLUTOPAK) {
 	    c = 200>>1;
 
             onbar = 0;
-            x = probe(160,c-18-18-18,18,7);
+            x = probe(160,c-18-18-18,18,7-NAM);
 
 	    switch (x) {
 		case -1:
@@ -2721,11 +2722,13 @@ if (PLUTOPAK) {
 	    menutext(160,c,         0,0,"KEYS SETUP");
 	    menutext(160,c+18,      0,0,"MOUSE SETUP");
 		menutext(160,c+18+18,   0,CONTROL_JoyPresent==0,"JOYSTICK SETUP");
+		if (!NAM) {
 #ifndef AUSTRALIA
 		menutext(160,c+18+18+18,0,0,"PARENTAL LOCK");
 #else
 		menutext(160,c+18+18+18,0,1,"PARENTAL LOCK");
 #endif
+		}
 	    break;
 
 	    // JBF 20031206: Video settings menu
@@ -4474,8 +4477,8 @@ if (VOLUMEALL) {
             c += 40;
 
             if(ud.m_coop==1) gametext(c+70,57-7-9,"COOPERATIVE PLAY",0,2+8+16);
-            else if(ud.m_coop==2) gametext(c+70,57-7-9,"DUKEMATCH (NO SPAWN)",0,2+8+16);
-            else gametext(c+70,57-7-9,"DUKEMATCH (SPAWN)",0,2+8+16);
+            else if(ud.m_coop==2) gametext(c+70,57-7-9,NAM?"GRUNTMATCH (NO SPAWN)":"DUKEMATCH (NO SPAWN)",0,2+8+16);
+            else gametext(c+70,57-7-9,NAM?"GRUNTMATCH (SPAWN)":"DUKEMATCH (SPAWN)",0,2+8+16);
 
 if (VOLUMEONE) {
             gametext(c+70,57+16-7-9,volume_names[ud.m_volume_number],0,2+8+16);

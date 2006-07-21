@@ -3134,6 +3134,7 @@ void moveactors(void)
     short a, i, j, nexti, nextj, sect, p;
     spritetype *s;
     unsigned short k;
+    char namBoom = 0;
 
     i = headspritestat[1];
     while(i >= 0)
@@ -4094,7 +4095,19 @@ void moveactors(void)
 
                 DETONATEB:
 
-                if( ( l >= 0 && ps[l].hbomb_on == 0 ) || t[3] == 1)
+		namBoom = 0;
+		if( ( l >= 0 && ps[l].hbomb_on == 0 ) || t[3] == 1)
+			namBoom=1;
+		if (NAM) {
+			if( s->picnum == HEAVYHBOMB)
+			{
+				s->extra--;	// FIXME: bug
+				if(s->extra <= 0)
+					namBoom=1;
+			}
+		}
+
+		if (namBoom)
                 {
                     t[4]++;
 

@@ -1137,14 +1137,18 @@ void shoot(short i,short atwith)
             if( s->extra >= 0 ) s->shade = -96;
             if(p >= 0)
             {
-                j = aim( s, AUTO_AIM_ANGLE );
-                if(j >= 0)
-                {
-                    dal = ((sprite[j].xrepeat*tilesizy[sprite[j].picnum])<<1);
-                    zvel = ( (sprite[j].z-sz-dal-(4<<8))*768) / (ldist( &sprite[ps[p].i], &sprite[j]));
-                    sa = getangle(sprite[j].x-sx,sprite[j].y-sy);
-                }
-                else zvel = (100-ps[p].horiz-ps[p].horizoff)*98;
+				if (NAM) {
+					zvel = (100-ps[p].horiz-ps[p].horizoff)*98;
+				} else {
+					j = aim( s, AUTO_AIM_ANGLE );
+					if(j >= 0)
+					{
+						dal = ((sprite[j].xrepeat*tilesizy[sprite[j].picnum])<<1);
+						zvel = ( (sprite[j].z-sz-dal-(4<<8))*768) / (ldist( &sprite[ps[p].i], &sprite[j]));
+						sa = getangle(sprite[j].x-sx,sprite[j].y-sy);
+					}
+					else zvel = (100-ps[p].horiz-ps[p].horizoff)*98;
+				}
             }
             else if(s->statnum != 3)
             {
@@ -3517,6 +3521,25 @@ void processinput(short snum)
     // HACKS
 
     SHOOTINCODE:
+	if (NAM) {
+		// reload clip
+		if( sb_snum & (1<<19) ) // 'Holster Weapon
+		{
+			if( p->curr_weapon == PISTOL_WEAPON)
+			{
+//				long lWeaponClip[PISTOL_WEAPON]=GetGameDef("WEAPON2_CLIP",WEAPON2_CLIP);
+				if( p->ammo_amount[PISTOL_WEAPON] > 20)
+				{
+					// throw away the remaining clip
+					p->ammo_amount[PISTOL_WEAPON]-=
+							   p->ammo_amount[PISTOL_WEAPON] % 20;
+					(*kb) = 3;	// animate, but don't shoot...
+					sb_snum &= ~(1<<2); // not firing...
+				}
+				return;
+			}
+		}
+	}
 
     if( p->curr_weapon == SHRINKER_WEAPON || p->curr_weapon == GROW_WEAPON )
         p->random_club_frame += 64; // Glowing
@@ -3695,6 +3718,15 @@ void processinput(short snum)
                         p->posz,HEAVYHBOMB,-16,9,9,
                         p->ang,(k+(p->hbomb_hold_delay<<5)),i,pi,1);
 
+					if (NAM) {
+						long lGrenadeLifetime=NAM_GRENADE_LIFETIME;
+						long lGrenadeLifetimeVar=NAM_GRENADE_LIFETIME_VAR;
+						// set timer.  blows up when at zero....
+						sprite[j].extra=lGrenadeLifetime	// FIXME: bug
+								+ mulscale(krand(),lGrenadeLifetimeVar, 14)
+								- lGrenadeLifetimeVar;
+					}
+
                     if(k == 15)
                     {
                         sprite[j].yvel = 3;
@@ -3717,9 +3749,14 @@ void processinput(short snum)
                 else if( (*kb) > 19 )
                 {
                     (*kb) = 0;
-                    p->curr_weapon = HANDREMOTE_WEAPON;
-                    p->last_weapon = -1;
-                    p->weapon_pos = 10;
+					if (NAM) {
+						// don't change to remote when in NAM: grenades are timed
+						checkavailweapon(p);
+					} else {
+	                    p->curr_weapon = HANDREMOTE_WEAPON;
+    	                p->last_weapon = -1;
+        	            p->weapon_pos = 10;
+					}
                 }
 
                 break;
@@ -3737,9 +3774,16 @@ void processinput(short snum)
                 if((*kb) == 10)
                 {
                     (*kb) = 0;
-                    if(p->ammo_amount[HANDBOMB_WEAPON] > 0)
-                        addweapon(p,HANDBOMB_WEAPON);
-                    else checkavailweapon(p);
+					if (NAM) {
+						if(p->ammo_amount[TRIPBOMB_WEAPON] > 0)
+							addweapon(p,TRIPBOMB_WEAPON);
+						else
+							checkavailweapon(p);
+					} else {
+	                    if(p->ammo_amount[HANDBOMB_WEAPON] > 0)
+    	                    addweapon(p,HANDBOMB_WEAPON);
+        	            else checkavailweapon(p);
+					}
                 }
                 break;
 
@@ -3759,7 +3803,7 @@ void processinput(short snum)
 
                 if((*kb) >= 5)
                 {
-                    if( p->ammo_amount[PISTOL_WEAPON] <= 0 || (p->ammo_amount[PISTOL_WEAPON]%12) )
+                    if( p->ammo_amount[PISTOL_WEAPON] <= 0 || (p->ammo_amount[PISTOL_WEAPON]%(NAM?20:12)) )
                     {
                         (*kb)=0;
                         checkavailweapon(p);
@@ -3778,7 +3822,7 @@ void processinput(short snum)
                     }
                 }
 
-                if((*kb) == 27)
+                if((*kb) == (NAM?50:27))
                 {
                     (*kb) = 0;
                     checkavailweapon(p);
@@ -3880,33 +3924,79 @@ void processinput(short snum)
 
                 if(p->curr_weapon == GROW_WEAPON)
                 {
-                    if((*kb) > 3)
-                    {
-                        *kb = 0;
-                        if( screenpeek == snum ) pus = 1;
-                        p->ammo_amount[GROW_WEAPON]--;
-                        shoot(pi,GROWSPARK);
+					if (NAM) {
+						(*kb)++;
+						if ((*kb) == 3)
+						{
+							// fire now, but don't reload right away...
+							*kb ++;
+							if(p->ammo_amount[p->curr_weapon]<=1)
+								*kb=0;
+							if( screenpeek == snum ) pus = 1;
+							p->ammo_amount[GROW_WEAPON]--;
+							shoot(pi,GROWSPARK);
+						}
+						if((*kb) > 0)
+						{
+							// reload now...
+							*kb=0;
+							p->visibility = 0;
+							lastvisinc = totalclock+32;
+        	                checkavailweapon(p);
+						}
+						
+					} else {
+						if((*kb) > 3)
+						{
+							*kb = 0;
+							if( screenpeek == snum ) pus = 1;
+							p->ammo_amount[GROW_WEAPON]--;
+							shoot(pi,GROWSPARK);
 
-                        p->visibility = 0;
-                        lastvisinc = totalclock+32;
-                        checkavailweapon(p);
-                    }
-                    else (*kb)++;
+							p->visibility = 0;
+							lastvisinc = totalclock+32;
+							checkavailweapon(p);
+						}
+						else (*kb)++;
+					}
                 }
                 else
                 {
-                    if( (*kb) > 10)
-                    {
-                        (*kb) = 0;
+					if (NAM) {
+						if( (*kb) == 10)
+						{
+							// fire now, but wait for reload...
+							(*kb)++;
 
-                        p->ammo_amount[SHRINKER_WEAPON]--;
-                        shoot(pi,SHRINKER);
+							p->ammo_amount[SHRINKER_WEAPON]--;
+							shoot(pi,SHRINKER);
 
-                        p->visibility = 0;
-                        lastvisinc = totalclock+32;
-                        checkavailweapon(p);
-                    }
-                    else (*kb)++;
+							// make them visible if not set...
+							p->visibility = 0;
+							lastvisinc = totalclock+32;
+						}
+						else if((*kb) > 30)
+						{
+							*kb=0;
+            	            p->visibility = 0;
+                	        lastvisinc = totalclock+32;
+                    	    checkavailweapon(p);
+						}
+						else (*kb)++;
+					} else {
+						if( (*kb) > 10)
+						{
+							(*kb) = 0;
+
+							p->ammo_amount[SHRINKER_WEAPON]--;
+							shoot(pi,SHRINKER);
+
+							p->visibility = 0;
+							lastvisinc = totalclock+32;
+							checkavailweapon(p);
+						}
+						else (*kb)++;
+					}
                 }
                 break;
 
@@ -3915,14 +4005,27 @@ void processinput(short snum)
                 {
                     (*kb)++;
 
-                    if( (*kb) & 1 )
+					if (NAM) {
+						if( ((*kb) >= 2) &&
+							(*kb) < 5 &&
+							( (*kb) & 1))
+	                    {
+							p->visibility = 0;
+							lastvisinc = totalclock+32;
+	                        shoot(pi,RPG);
+    	                    p->ammo_amount[DEVISTATOR_WEAPON]--;
+        	                checkavailweapon(p);
+            	        }
+						if((*kb) > 5) (*kb) = 0;
+					}
+					else if( (*kb) & 1 )
                     {
                         p->visibility = 0;
                         lastvisinc = totalclock+32;
                         shoot(pi,RPG);
                         p->ammo_amount[DEVISTATOR_WEAPON]--;
                         checkavailweapon(p);
-			if (p->ammo_amount[DEVISTATOR_WEAPON] <= 0) *kb = 0;
+						if (p->ammo_amount[DEVISTATOR_WEAPON] <= 0) *kb = 0;
                     }
                     if((*kb) > 5) (*kb) = 0;
                 }

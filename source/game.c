@@ -2006,8 +2006,10 @@ void operatefta(void)
      j = ps[screenpeek].fta;
      if (j > 4)
           gametext(320>>1,k,fta_quotes[ps[screenpeek].ftq],0,2+8+16);
+     else 
+		 if (NAM && ps[screenpeek].ftq == 99) gametext(320>>1,k,"Matt Saettler.  matts@saettler.com",0,2+8+16+1);
      else
-         if (j > 2) gametext(320>>1,k,fta_quotes[ps[screenpeek].ftq],0,2+8+16+1);
+		 if (j > 2) gametext(320>>1,k,fta_quotes[ps[screenpeek].ftq],0,2+8+16+1);
      else
          gametext(320>>1,k,fta_quotes[ps[screenpeek].ftq],0,2+8+16+1+32);
 }
@@ -3987,8 +3989,14 @@ short spawn( short j, short pn )
 
                     sp->shade = -8;
 
-                    sp->ang = a-512;
-                    sp->xvel = 20;
+					if (NAM) {
+						// to the right, with feeling
+						sp->ang = a+512;
+						sp->xvel = 30;
+					} else {
+                        sp->ang = a-512;
+                        sp->xvel = 20;
+					}
 
                     sp->xrepeat=sp->yrepeat=4;
 
@@ -6397,8 +6405,11 @@ void nonsharedkeys(void)
 
     if( KB_KeyPressed( sc_F12 ) )
     {
+		char *tpl;
+		if (NAM) tpl = "nam00000.pcx";
+		else tpl = "duke0000.pcx";
         KB_ClearKeyDown( sc_F12 );
-	screencapture("duke0000.tga",0);
+	screencapture(tpl,0);
 	FTA(103,&ps[myconnectindex]);
     }
 
@@ -6895,10 +6906,6 @@ void checkcommandline(int argc,char **argv)
     ud.wchoice[0][8] = 9;
     ud.wchoice[0][9] = 1;
 
-#ifdef BETA
-    return;
-#endif
-
     if(argc > 1)
     {
         while(i < argc)
@@ -6931,6 +6938,11 @@ void checkcommandline(int argc,char **argv)
 				}
 				if (!Bstrcasecmp(c+1,"setup")) {
 					i++;
+					continue;
+				}
+				if (!Bstrcasecmp(c+1,"nam")) {
+					i++;
+					namversion = 1;
 					continue;
 				}
             }
@@ -7674,6 +7686,7 @@ void backtomenu(void)
 #include "osdcmds.h"
 
 int shareware = 0;
+int namversion = 0;
 
 void app_main(int argc,char **argv)
 {
@@ -7756,28 +7769,33 @@ void app_main(int argc,char **argv)
 		}
 	}
 #endif
-	
-    initgroupfile(duke3dgrp);
+
+	initgroupfile(duke3dgrp);
     i = kopen4load("DUKESW.BIN",1);	// JBF 20030810
     if (i!=-1) {
 	    initprintf("Using Shareware GRP file.\n");
 	    shareware = 1;
 	    kclose(i);
     }
-    
+   
     copyprotect();
 	if (cp) return;
 
-	if (VOLUMEALL) wm_setapptitle(HEAD2);
-	else wm_setapptitle(HEAD);
-
-    initprintf("%s\n",apptitle);
-    initprintf("Copyright (c) 1996 3D Realms Entertainment\n");
-
+    checkcommandline(argc,argv);
+	if (NAM) {
+		if (VOLUMEALL) wm_setapptitle("NAM Full Version v"VERSION);
+		else wm_setapptitle("NAM ? Version v"VERSION);
+    	initprintf("%s\n",apptitle);
+		initprintf("Copyright (c) 1998 GT Interactive. (c) 1996 3D Realms Entertainment\n");
+		initprintf("NAM modifications by Matt Saettler\n");
+	} else {
+		if (VOLUMEALL) wm_setapptitle(HEAD2);
+		else wm_setapptitle(HEAD);
+    	initprintf("%s\n",apptitle);
+	    initprintf("Copyright (c) 1996 3D Realms Entertainment\n");
+	}
 
     ud.multimode = 1;
-
-    checkcommandline(argc,argv);
 	if (netparamcount > 0) _buildargc = (argc -= netparamcount+1);	// crop off the net parameters
 
     RegisterShutdownFunction( Shutdown );
@@ -7805,11 +7823,11 @@ if (VOLUMEONE) {
     if (!loaddefinitionsfile(duke3ddef)) initprintf("Definitions file loaded.\n");
 
     // gotta set the proper title after we compile the CONs if this is the full version
-if (VOLUMEALL) {
+if (!NAM && VOLUMEALL) {
 	if (PLUTOPAK)
-        	strcpy(apptitle,HEAD2P);
+        	wm_setapptitle(HEAD2P);
 	else
-		strcpy(apptitle,HEAD2S);
+		wm_setapptitle(HEAD2S);
 }
     
     if(numplayers > 1)
@@ -9414,8 +9432,11 @@ void dobonus(char bonusonly)
 
         if( KB_KeyPressed( sc_F12 ) )
         {
+			char *tpl;
+			if (NAM) tpl = "nam00000.tga";
+			else tpl = "duke0000.tga";
             KB_ClearKeyDown( sc_F12 );
-            screencapture("duke0000.tga",0);
+            screencapture(tpl,0);
         }
 
         if(bonusonly || ud.multimode > 1) return;
@@ -9531,6 +9552,7 @@ void dobonus(char bonusonly)
             {
                 gametext(10,59+9,"Your Time:",0,2+8+16);
                 gametext(10,69+9,"Par time:",0,2+8+16);
+				if (!NAM)
                 gametext(10,78+9,"3D Realms' Time:",0,2+8+16);
                 if(bonuscnt == 0)
                     bonuscnt++;
@@ -9553,10 +9575,12 @@ void dobonus(char bonusonly)
                         (partime[ud.volume_number*11+ud.last_level-1]/26)%60);
                     gametext((320>>2)+71,69+9,tempbuf,0,2+8+16);
 
+					if (!NAM) {
                     sprintf(tempbuf,"%0*ld:%02ld",clockpad,
                         (designertime[ud.volume_number*11+ud.last_level-1]/(26*60)),
                         (designertime[ud.volume_number*11+ud.last_level-1]/26)%60);
                     gametext((320>>2)+71,78+9,tempbuf,0,2+8+16);
+					}
 
                 }
             }
@@ -9624,8 +9648,11 @@ void dobonus(char bonusonly)
 		MOUSE_ClearButton(7);
                 if( KB_KeyPressed( sc_F12 ) )
                 {
+					char *tpl;
+					if (NAM) tpl = "nam00000.tga";
+					else tpl = "duke0000.tga";
                     KB_ClearKeyDown( sc_F12 );
-                    screencapture("duke0000.tga",0);
+                    screencapture(tpl,0);
                 }
 
                 if( totalclock < (60*13) )

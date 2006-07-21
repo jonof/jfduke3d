@@ -42,12 +42,12 @@ extern "C" {
 
 #include "function.h"
 
-extern int conversion;
-extern int shareware;
+extern int conversion,shareware,namversion;
 
 #define VOLUMEALL (shareware==0)
 #define PLUTOPAK (conversion==14)
 #define VOLUMEONE (shareware==1)
+#define NAM (namversion==1)
 
 // #define TEN
 // #define BETA
@@ -564,6 +564,9 @@ void onvideomodechange(int newmode);
 #define TILE_VIEWSCR  (MAXTILES-5)
 
 extern char useprecache;
+
+#define NAM_GRENADE_LIFETIME	120
+#define NAM_GRENADE_LIFETIME_VAR	30
 
 #ifdef __cplusplus
 }
