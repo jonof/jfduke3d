@@ -7689,9 +7689,10 @@ void backtomenu(void)
 
 #include "osdfuncs.h"
 #include "osdcmds.h"
+#include "grpscan.h"
 
 int shareware = 0;
-int namversion = 0;
+int gametype = 0;
 
 void app_main(int argc,char **argv)
 {
@@ -7748,7 +7749,6 @@ void app_main(int argc,char **argv)
 		if (!Bstrcasecmp(argv[i]+1, "setup")) CommandSetup = TRUE;
 		else if (!Bstrcasecmp(argv[i]+1, "nam")) {
 			strcpy(defaultduke3dgrp, "nam.grp");
-			namversion = 1;
 		}
 		else if (!Bstrcasecmp(argv[i]+1, "?")) {
 			comlinehelp(argv);
@@ -7756,10 +7756,7 @@ void app_main(int argc,char **argv)
 		}
     }
 	
-    if (getenv("DUKE3DGRP")) {
-	    duke3dgrp = getenv("DUKE3DGRP");
-	    initprintf("Using %s as main GRP file\n", duke3dgrp);
-    }
+    if (getenv("DUKE3DGRP")) duke3dgrp = getenv("DUKE3DGRP");
     
 	wm_setapptitle("Duke Nukem 3D");
 	if (preinitengine()) {
@@ -7770,6 +7767,28 @@ void app_main(int argc,char **argv)
 
 	i = CONFIG_ReadSetup();
 
+	ScanGroups();
+	{	// try and identify the 'defaultduke3dgrp' in the set of GRPs.
+		// if it is found, set up the environment accordingly for the game it represents.
+		// if it is not found, choose the first GRP from the list of 
+		struct grpfile *fg, *first = NULL;
+		int i;
+		for (fg = foundgrps; fg; fg=fg->next) {
+			for (i = 0; i<numgrpfiles; i++) if (fg->crcval == grpfiles[i].crcval) break;
+			if (i == numgrpfiles) continue;	// unrecognised grp file
+			fg->game = grpfiles[i].game;
+			if (!first) first = fg;
+			if (!Bstrcasecmp(fg->name, defaultduke3dgrp)) {
+				gametype = grpfiles[i].game;
+				break;
+			}
+		}
+		if (!fg && first) {
+			Bstrcpy(defaultduke3dgrp, first->name);
+			gametype = first->game;
+		}
+	}
+
 #if defined RENDERTYPEWIN || (defined RENDERTYPESDL && !defined __APPLE__ && defined HAVE_GTK2)
 	if (i < 0 || ForceSetup || CommandSetup) {
 		if (quitevent || !startwin_run()) {
@@ -7779,21 +7798,23 @@ void app_main(int argc,char **argv)
 	}
 #endif
 
-	if (namversion) {
+	FreeGroups();
+
+	if (NAM) {
 		// overwrite the default GRP and CON so that if the user chooses
 		// something different, they get what they asked for
 		strcpy(defaultduke3dgrp,"nam.grp");
 		strcpy(defaultconfilename, "nam.con");
 	}
 
+	initprintf("GRP file: %s\n", duke3dgrp);
 	initgroupfile(duke3dgrp);
     i = kopen4load("DUKESW.BIN",1);
     if (i!=-1) {
-	    initprintf("Using Shareware GRP file.\n");
 	    shareware = 1;
 	    kclose(i);
     }
-   
+
     copyprotect();
 	if (cp) return;
 

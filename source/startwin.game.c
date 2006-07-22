@@ -9,7 +9,7 @@
 #include "winlayer.h"
 #include "compat.h"
 
-#include "startdlg.h"
+#include "grpscan.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -117,12 +117,9 @@ static void PopulateForm(int pgs)
 		hwnd = GetDlgItem(pages[TAB_GAME], IDGDATA);
 
 		for (fg = foundgrps; fg; fg=fg->next) {
-			for (i = 0; i<numgrpfiles; i++)
-				if (fg->crcval == grpfiles[i].crcval) break;
+			for (i = 0; i<numgrpfiles; i++) if (fg->crcval == grpfiles[i].crcval) break;
 			if (i == numgrpfiles) continue;	// unrecognised grp file
-
 			Bsprintf(buf, "%s\t%s", grpfiles[i].name, fg->name);
-			fg->game = grpfiles[i].game;
 			j = ListBox_AddString(hwnd, buf);
 			ListBox_SetItemData(hwnd, j, (LPARAM)fg);
 			if (!Bstrcasecmp(fg->name, settings.selectedgrp)) ListBox_SetCurSel(hwnd, j);
@@ -503,7 +500,6 @@ int startwin_run(void)
 
 	done = -1;
 
-	ScanGroups();
 	EnumAudioDevs(&wavedevs, NULL, NULL);
 
 	SetPage(TAB_CONFIG);
@@ -516,7 +512,7 @@ int startwin_run(void)
 	settings.forcesetup = ForceSetup;
 	settings.usemouse = UseMouse;
 	settings.usejoy = UseJoystick;
-	settings.game = namversion;
+	settings.game = gametype;
 	strncpy(settings.selectedgrp, duke3dgrp, BMAX_PATH);
 	PopulateForm(-1);
 
@@ -543,7 +539,7 @@ int startwin_run(void)
 		UseMouse = settings.usemouse;
 		UseJoystick = settings.usejoy;
 		duke3dgrp = settings.selectedgrp;
-		namversion = settings.game;
+		gametype = settings.game;
 	}
 
 	if (wavedevs) {

@@ -79,9 +79,12 @@ GAMEOBJS=$(OBJ)game.$o \
 	$(OBJ)testcd.$o \
 	$(OBJ)osdfuncs.$o \
 	$(OBJ)osdcmds.$o \
+	$(OBJ)grpscan.$o \
+	$(OBJ)winbits.$o \
+	$(OBJ)gameres.res \
+	$(OBJ)startwin.game.$o \
 	$(JMACTOBJ) \
-	$(AUDIOLIBOBJ) \
-	$(OBJ)winbits.$o $(OBJ)gameres.res $(OBJ)startwin.game.$o $(OBJ)startdlg.$o
+	$(AUDIOLIBOBJ)
 
 EDITOROBJS=$(OBJ)astub.$o \
 	$(OBJ)buildres.res

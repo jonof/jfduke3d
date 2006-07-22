@@ -5,7 +5,8 @@
 #include "cache1d.h"
 #include "crc32.h"
 
-#include "startdlg.h"
+#include "duke3d.h"
+#include "grpscan.h"
 
 struct grpfile grpfiles[numgrpfiles] = {
 	{ "Registered Version 1.3d",	0xBBC9CE44, 26524524, GAMEDUKE, NULL },

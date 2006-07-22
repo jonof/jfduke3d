@@ -42,12 +42,15 @@ extern "C" {
 
 #include "function.h"
 
-extern int conversion,shareware,namversion;
+extern int conversion,shareware,gametype;
+
+#define GAMEDUKE 0
+#define GAMENAM 1
 
 #define VOLUMEALL (shareware==0)
 #define PLUTOPAK (conversion==14)
 #define VOLUMEONE (shareware==1)
-#define NAM (namversion==1)
+#define NAM (gametype==1)
 
 // #define TEN
 // #define BETA
