@@ -5,11 +5,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>Build Editor for JFDuke3D</string>
+	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIconFile</key>
-	<string>build_icon.icns</string>
+	<string>game_icon</string>
 	<key>CFBundleIdentifier</key>
-	<string>au.id.jonof.build.sw</string>
+	<string>au.id.jonof.jfduke3d</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>
@@ -19,7 +19,7 @@
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>NSMainNibFile</key>
-	<string>build.osxmain</string>
+	<string>game.osxmain</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>

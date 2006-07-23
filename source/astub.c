@@ -100,10 +100,6 @@ extern long zlock;
 extern short editstatus, searchit;
 extern long searchx, searchy;                          //search input
 
-//static short temppicnum, tempcstat;
-static char /*tempshade, tempxrepeat, tempyrepeat,*/ somethingintab = 255;
-//static long temphitag,templotag;
-
 static long ototalclock = 0;
 
 static long clockval[16], clockcnt = 0;
