@@ -67,6 +67,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		AB2A91E30A776FBF00C8D71F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ABD7691B0A73CE1A006C27C1 /* jfaud.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = ABF441750A2828620057225F /* jfaud */;
+			remoteInfo = jfaud;
+		};
 		AB69BD5B0A73C46200F3DCB8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
@@ -113,28 +120,28 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = AB735F480A29A2DC003261DC /* engine */;
+			remoteGlobalIDString = AB735F480A29A2DC003261DC;
 			remoteInfo = engine;
 		};
 		ABD769680A73D12E006C27C1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = AB735FCB0A29A916003261DC /* editor */;
+			remoteGlobalIDString = AB735FCB0A29A916003261DC;
 			remoteInfo = editor;
 		};
 		ABD769770A73D18A006C27C1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BCF50A73C1A800F3DCB8 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = AB69BD040A73C21E00F3DCB8 /* JFDuke3D */;
+			remoteGlobalIDString = AB69BD040A73C21E00F3DCB8;
 			remoteInfo = JFDuke3D;
 		};
 		ABD769790A73D18A006C27C1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BCF50A73C1A800F3DCB8 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = ABD7695D0A73D116006C27C1 /* Build Editor */;
+			remoteGlobalIDString = ABD7695D0A73D116006C27C1;
 			remoteInfo = "Build Editor";
 		};
 /* End PBXContainerItemProxy section */
@@ -202,7 +209,7 @@
 		ABD769280A73CE40006C27C1 /* game_icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = game_icon.icns; path = ../rsrc/game_icon.icns; sourceTree = SOURCE_ROOT; };
 		ABD769290A73CE40006C27C1 /* game.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; name = game.bmp; path = ../rsrc/game.bmp; sourceTree = SOURCE_ROOT; };
 		ABD769300A73CE6D006C27C1 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
-		ABD7695E0A73D116006C27C1 /* Build Editor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Build Editor.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		ABD7695E0A73D116006C27C1 /* Build Editor for JFDuke3D.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Build Editor for JFDuke3D.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABD769600A73D116006C27C1 /* Build Editor-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Build Editor-Info.plist"; sourceTree = "<group>"; };
 		ABD7696D0A73D164006C27C1 /* build.osxmain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = build.osxmain.h; sourceTree = "<group>"; };
 		ABD7696E0A73D164006C27C1 /* build.osxmain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = build.osxmain.m; sourceTree = "<group>"; };
@@ -240,10 +247,6 @@
 		AB69BCF30A73C1A800F3DCB8 = {
 			isa = PBXGroup;
 			children = (
-				ABD76A440A73D411006C27C1 /* build_icon.icns */,
-				ABD76A450A73D411006C27C1 /* build.bmp */,
-				ABD769280A73CE40006C27C1 /* game_icon.icns */,
-				ABD769290A73CE40006C27C1 /* game.bmp */,
 				ABD7691B0A73CE1A006C27C1 /* jfaud.xcodeproj */,
 				AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */,
 				AB69BD000A73C1F700F3DCB8 /* Editor */,
@@ -284,6 +287,8 @@
 			children = (
 				AB69BCFE0A73C1B200F3DCB8 /* source */,
 				AB69BD450A73C41B00F3DCB8 /* osx */,
+				ABD769280A73CE40006C27C1 /* game_icon.icns */,
+				ABD769290A73CE40006C27C1 /* game.bmp */,
 			);
 			name = Game;
 			sourceTree = "<group>";
@@ -293,6 +298,8 @@
 			children = (
 				ABD7696B0A73D135006C27C1 /* source */,
 				ABD7696C0A73D13B006C27C1 /* osx */,
+				ABD76A440A73D411006C27C1 /* build_icon.icns */,
+				ABD76A450A73D411006C27C1 /* build.bmp */,
 			);
 			name = Editor;
 			sourceTree = "<group>";
@@ -301,7 +308,7 @@
 			isa = PBXGroup;
 			children = (
 				AB69BD050A73C21E00F3DCB8 /* JFDuke3D.app */,
-				ABD7695E0A73D116006C27C1 /* Build Editor.app */,
+				ABD7695E0A73D116006C27C1 /* Build Editor for JFDuke3D.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -418,15 +425,16 @@
 			);
 			dependencies = (
 				ABD769110A73CD6E006C27C1 /* PBXTargetDependency */,
+				AB2A91E40A776FBF00C8D71F /* PBXTargetDependency */,
 			);
 			name = JFDuke3D;
 			productName = JFDuke3D;
 			productReference = AB69BD050A73C21E00F3DCB8 /* JFDuke3D.app */;
 			productType = "com.apple.product-type.application";
 		};
-		ABD7695D0A73D116006C27C1 /* Build Editor */ = {
+		ABD7695D0A73D116006C27C1 /* Build Editor for JFDuke3D */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = ABD769610A73D117006C27C1 /* Build configuration list for PBXNativeTarget "Build Editor" */;
+			buildConfigurationList = ABD769610A73D117006C27C1 /* Build configuration list for PBXNativeTarget "Build Editor for JFDuke3D" */;
 			buildPhases = (
 				ABD7695A0A73D116006C27C1 /* Resources */,
 				ABD7695B0A73D116006C27C1 /* Sources */,
@@ -438,9 +446,9 @@
 				ABD769670A73D12E006C27C1 /* PBXTargetDependency */,
 				ABD769690A73D12E006C27C1 /* PBXTargetDependency */,
 			);
-			name = "Build Editor";
+			name = "Build Editor for JFDuke3D";
 			productName = "Build Editor";
-			productReference = ABD7695E0A73D116006C27C1 /* Build Editor.app */;
+			productReference = ABD7695E0A73D116006C27C1 /* Build Editor for JFDuke3D.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -466,7 +474,7 @@
 			targets = (
 				ABD769760A73D186006C27C1 /* all */,
 				AB69BD040A73C21E00F3DCB8 /* JFDuke3D */,
-				ABD7695D0A73D116006C27C1 /* Build Editor */,
+				ABD7695D0A73D116006C27C1 /* Build Editor for JFDuke3D */,
 			);
 		};
 /* End PBXProject section */
@@ -579,6 +587,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		AB2A91E40A776FBF00C8D71F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = jfaud;
+			targetProxy = AB2A91E30A776FBF00C8D71F /* PBXContainerItemProxy */;
+		};
 		ABD769110A73CD6E006C27C1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = engine;
@@ -601,7 +614,7 @@
 		};
 		ABD7697A0A73D18A006C27C1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = ABD7695D0A73D116006C27C1 /* Build Editor */;
+			target = ABD7695D0A73D116006C27C1 /* Build Editor for JFDuke3D */;
 			targetProxy = ABD769790A73D18A006C27C1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -713,7 +726,7 @@
 					"-leditor",
 					"-lengine",
 				);
-				PRODUCT_NAME = "Build Editor";
+				PRODUCT_NAME = "Build Editor for JFDuke3D";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -727,7 +740,7 @@
 					"-leditor",
 					"-lengine",
 				);
-				PRODUCT_NAME = "Build Editor";
+				PRODUCT_NAME = "Build Editor for JFDuke3D";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -775,7 +788,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		ABD769610A73D117006C27C1 /* Build configuration list for PBXNativeTarget "Build Editor" */ = {
+		ABD769610A73D117006C27C1 /* Build configuration list for PBXNativeTarget "Build Editor for JFDuke3D" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				ABD769620A73D117006C27C1 /* Debug */,
