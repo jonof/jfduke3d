@@ -1,10 +1,5 @@
 # Duke3D Makefile for Watcom Make
 
-# OpenWatcom 1.2 or older users should uncomment this line
-# to enable some compatibility files that work around some
-# missing header files in those versions
-#WATCOMHAX=-i=watcomhax
-
 SRC=source
 OBJ=obj
 EROOT=..\build
@@ -27,7 +22,7 @@ ENGINEOPTS=-dSUPERBUILD -dPOLYMOST -dUSE_OPENGL -dDYNAMIC_OPENGL
 CC=wcc386
 CXX=wpp386
 CFLAGS= -zq -5r -s -orb -fp5 -d2 -db &
-	$(WATCOMHAX) -i=$(INC) -i=$(EINC) -i=$(SRC)\jmact -i=$(SRC)\jaudiolib -i=$(DXROOT)\include &
+	-i=$(INC) -i=$(EINC) -i=$(SRC)\jmact -i=$(SRC)\jaudiolib -i=$(DXROOT)\include &
 	-dRENDERTYPEWIN=1 -dNOCOPYPROTECT $(ENGINEOPTS) -i=..\jfaud\inc
 LIBS=wsock32.lib dxguid.lib ..\jfaud\jfaud.lib winmm.lib #opengl32.lib
 WASMFLAGS=-d1
