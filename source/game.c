@@ -75,6 +75,10 @@ static int32 CommandMusicToggleOff = 0;
 static char *CommandMap = NULL;
 static char *CommandName = NULL;
 int32 CommandWeaponChoice = 0;
+static struct strllist {
+	struct strllist *next;
+	char *str;
+} *CommandPaths = NULL, *CommandGrps = NULL;
 
 char defaultduke3dgrp[BMAX_PATH] = "duke3d.grp";
 char defaultconfilename[BMAX_PATH] = "game.con";
@@ -6870,6 +6874,7 @@ void comlinehelp(char **argv)
 		"/i#\t\tNetwork mode (1/0) (multiplayer only) (default == 1)\n"
 		"/f#\t\tSend fewer packets (1, 2, 4) (multiplayer only)\n"
 		"/gFILE\t\tUse multiple group files\n"
+		"/jDIRECTORY\t\tAdd a directory to the file path stack\n"
 		"/hFILE\t\tUse FILE instead of DUKE3D.DEF\n"
 		"/xFILE\t\tCompile FILE (default GAME.CON)\n"
 		"/u#########\tUser's favorite weapon order (default: 3425689071)\n"
@@ -6941,11 +6946,11 @@ void checkcommandline(int argc,char **argv)
 					continue;
 				}
 				if (!Bstrcasecmp(c+1,"setup")) {
-					i++;
+					CommandSetup = TRUE;
 					continue;
 				}
 				if (!Bstrcasecmp(c+1,"nam")) {
-					i++;
+					strcpy(defaultduke3dgrp, "nam.grp");
 					continue;
 				}
             }
@@ -6968,78 +6973,14 @@ void checkcommandline(int argc,char **argv)
                 c++;
                 switch(*c)
                 {
-                    default: break;
-                    case 'x':
-                    case 'X':
-                        c++;
-                        if(*c)
-                        {
-							confilename = c;
-                            /*if(SafeFileExists(c) == 0)
-                            {
-                                initprintf("Could not find con file '%s'.\n",confilename );
-                                exit(-1);
-                            }
-                            else*/ initprintf("Using con file: '%s'\n",confilename);
-                        }
-                        break;
-                    case 'g':
-                    case 'G':
-                        c++;
-                        if(*c)
-                        {
-				strcpy(tempbuf,c);
-                            if( strchr(tempbuf,'.') == 0)
-                               strcat(tempbuf,".grp");
-
-                            j = initgroupfile(tempbuf);
-                            if( j == -1 )
-                                initprintf("Could not find group file %s.\n",tempbuf);
-                            else
-                            {
-                                groupfile = j;
-                                initprintf("Using group file %s.\n",tempbuf);
-                            }
-                        }
-                        break;
-		    case 'h':
-		    case 'H':
-			c++;
-			if (*c) {
-				duke3ddef = c;
-				initprintf("Using DEF file %s.\n",duke3ddef);
-			}
-			break;
+					case '?':
+						comlinehelp(argv);
+						exit(0);
+						break;
                     case 'a':
                     case 'A':
                         ud.playerai = 1;
                         initprintf("Other player AI.\n");
-                        break;
-                    case 'n':
-                    case 'N':
-                        c++;
-                        if(*c == 's' || *c == 'S')
-                        {
-                            CommandSoundToggleOff = 2;
-                            initprintf("Sound off.\n");
-                        }
-                        else if(*c == 'm' || *c == 'M')
-                        {
-                            CommandMusicToggleOff = 1;
-                            initprintf("Music off.\n");
-                        }
-                        else
-                        {
-                            comlinehelp(argv);
-                            exit(-1);
-                        }
-                        break;
-                    case 'i':
-                    case 'I':
-                        c++;
-                        if(*c == '0') networkmode = 0;
-                        if(*c == '1') networkmode = 1;
-                        initprintf("Network Mode %d\n",networkmode);
                         break;
                     case 'c':
                     case 'C':
@@ -7062,6 +7003,14 @@ void checkcommandline(int argc,char **argv)
                         }
 
                         break;
+                    case 'd':
+                    case 'D':
+                        c++;
+                        if( strchr(c,'.') == 0)
+                            strcat(c,".dmo");
+                        initprintf("Play demo %s.\n",c);
+                        strcpy(firstdemofile,c);
+                        break;
                     case 'f':
                     case 'F':
                         c++;
@@ -7075,19 +7024,64 @@ void checkcommandline(int argc,char **argv)
                             setpackettimeout(0x3fffffff,0x3fffffff);
                         }
                         break;
-                    case 't':
-                    case 'T':
+                    case 'g':
+                    case 'G':
                         c++;
-                        if(*c == '1') ud.m_respawn_monsters = 1;
-                        else if(*c == '2') ud.m_respawn_items = 1;
-                        else if(*c == '3') ud.m_respawn_inventory = 1;
-                        else
-                        {
-                            ud.m_respawn_monsters = 1;
-                            ud.m_respawn_items = 1;
-                            ud.m_respawn_inventory = 1;
+                        if(!*c) break;
+                        strcpy(tempbuf,c);
+                        if( strchr(tempbuf,'.') == 0)
+                            strcat(tempbuf,".grp");
+
+						{
+							struct strllist *s;
+							s = (struct strllist *)calloc(1,sizeof(struct strllist));
+							s->str = strdup(tempbuf);
+							if (CommandGrps) {
+								struct strllist *t;
+								for (t = CommandGrps; t->next; t=t->next) ;
+								t->next = s;
+							} else {
+								CommandGrps = s;
+							}
+						}
+                        break;
+                    case 'h':
+                    case 'H':
+                        c++;
+                        if (*c) {
+                            duke3ddef = c;
+                            initprintf("Using DEF file %s.\n",duke3ddef);
                         }
-                        initprintf("Respawn on.\n");
+                        break;
+                    case 'i':
+                    case 'I':
+                        c++;
+                        if(*c == '0') networkmode = 0;
+                        if(*c == '1') networkmode = 1;
+                        initprintf("Network Mode %d\n",networkmode);
+                        break;
+                    case 'j':
+                    case 'J':
+                        c++;
+                        if(!*c) break;
+						{
+							struct strllist *s;
+							s = (struct strllist *)calloc(1,sizeof(struct strllist));
+							s->str = strdup(c);
+							if (CommandPaths) {
+								struct strllist *t;
+								for (t = CommandPaths; t->next; t=t->next) ;
+								t->next = s;
+							} else {
+								CommandPaths = s;
+							}
+						}
+                        break;
+                    case 'l':
+                    case 'L':
+                        ud.warp_on = 1;
+                        c++;
+                        ud.m_level_number = ud.level_number = (atol(c)-1)%11;
                         break;
                     case 'm':
                     case 'M':
@@ -7098,9 +7092,24 @@ void checkcommandline(int argc,char **argv)
                             initprintf("Monsters off.\n");
                         }
                         break;
-                    case 'w':
-                    case 'W':
-                        ud.coords = 1;
+                    case 'n':
+                    case 'N':
+                        c++;
+                        if(*c == 's' || *c == 'S')
+                        {
+                            CommandSoundToggleOff = 2;
+                            initprintf("Sound off.\n");
+                        }
+                        else if(*c == 'm' || *c == 'M')
+                        {
+                            CommandMusicToggleOff = 1;
+                            initprintf("Music off.\n");
+                        }
+                        else
+                        {
+                            comlinehelp(argv);
+                            exit(-1);
+                        }
                         break;
                     case 'q':
                     case 'Q':
@@ -7119,65 +7128,31 @@ void checkcommandline(int argc,char **argv)
                         ud.m_recstat = 1;
                         initprintf("Demo record mode on.\n");
                         break;
-                    case 'd':
-                    case 'D':
+                    case 't':
+                    case 'T':
                         c++;
-                        if( strchr(c,'.') == 0)
-                            strcat(c,".dmo");
-                        initprintf("Play demo %s.\n",c);
-                        strcpy(firstdemofile,c);
+                        if(*c == '1') ud.m_respawn_monsters = 1;
+                        else if(*c == '2') ud.m_respawn_items = 1;
+                        else if(*c == '3') ud.m_respawn_inventory = 1;
+                        else
+                        {
+                            ud.m_respawn_monsters = 1;
+                            ud.m_respawn_items = 1;
+                            ud.m_respawn_inventory = 1;
+                        }
+                        initprintf("Respawn on.\n");
                         break;
-                    case 'l':
-                    case 'L':
-                        ud.warp_on = 1;
-                        c++;
-                        ud.m_level_number = ud.level_number = (atol(c)-1)%11;
+                    case 'w':
+                    case 'W':
+                        ud.coords = 1;
                         break;
-                    case 'j':
-                    case 'J':
-if (VOLUMEALL) {
-    #ifdef AUSTRALIA
-        initprintf(HEAD2A);
-    #else
-if (PLUTOPAK)	// JBF 20030804
-        initprintf(HEAD2P);
-else
-	initprintf(HEAD2S);
-    #endif
-} else {
-    #ifdef AUSTRALIA
-        initprintf(HEADA);
-    #else
-        initprintf(HEAD);
-    #endif
-}
 
-                        exit(0);
-
-                    case 'v':
-                    case 'V':
-                        c++;
-                        ud.warp_on = 1;
-                        ud.m_volume_number = ud.volume_number = atol(c)-1;
-                        break;
                     case 's':
                     case 'S':
                         c++;
                         ud.m_player_skill = ud.player_skill = (atol(c)%5);
                         if(ud.m_player_skill == 4)
                             ud.m_respawn_monsters = ud.respawn_monsters = 1;
-                        break;
-                    case '0':
-                    case '1':
-                    case '2':
-                    case '3':
-                    case '4':
-                    case '5':
-                    case '6':
-                    case '7':
-                    case '8':
-                    case '9':
-                        ud.warp_on = 2 + (*c) - '0';
                         break;
                     case 'u':
                     case 'U':
@@ -7219,6 +7194,39 @@ else
                         }
 
                         break;
+                    case 'v':
+                    case 'V':
+                        c++;
+                        ud.warp_on = 1;
+                        ud.m_volume_number = ud.volume_number = atol(c)-1;
+                        break;
+                    case 'x':
+                    case 'X':
+                        c++;
+                        if(*c)
+                        {
+							confilename = c;
+                            /*if(SafeFileExists(c) == 0)
+                            {
+                                initprintf("Could not find con file '%s'.\n",confilename );
+                                exit(-1);
+                            }
+                            else*/ initprintf("Using con file: '%s'\n",confilename);
+                        }
+                        break;
+                    case '0':
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                    case '8':
+                    case '9':
+                        ud.warp_on = 2 + (*c) - '0';
+                        break;
+                    default: break;
                 }
             }
             i++;
@@ -7706,6 +7714,27 @@ void app_main(int argc,char **argv)
 	}
 #endif
 
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+	addsearchpath("/usr/share/games/jfduke3d");
+	addsearchpath("/usr/local/share/games/jfduke3d");
+#elif defined(__APPLE__)
+	addsearchpath("/Library/Application Support/JFDuke3D");
+#endif
+
+	checkcommandline(argc,argv);
+
+	{
+		struct strllist *s;
+		while (CommandPaths) {
+			s = CommandPaths->next;
+			addsearchpath(CommandPaths->str);
+
+			free(CommandPaths->str);
+			free(CommandPaths);
+			CommandPaths = s;
+		}
+	}
+
 #ifdef _WIN32
 	if (!access("user_profiles_enabled", F_OK))
 #endif
@@ -7714,12 +7743,6 @@ void app_main(int argc,char **argv)
 		char *homedir;
 		int asperr;
 
-#if defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
-		addsearchpath("/usr/share/games/jfduke3d");
-		addsearchpath("/usr/local/share/games/jfduke3d");
-#elif defined(__APPLE__)
-		addsearchpath("/Library/Application Support/JFDuke3D");
-#endif
 		if (getcwd(cwd,BMAX_PATH)) addsearchpath(cwd);
 		if ((homedir = Bgethomedir())) {
 			Bsnprintf(cwd,sizeof(cwd),"%s/"
@@ -7744,20 +7767,6 @@ void app_main(int argc,char **argv)
 
 	OSD_SetLogFile("duke3d.log");
 
-	for (i=1;i<argc;i++) {
-		if (argv[i][0] != '-' && argv[i][0] != '/') continue;
-		if (!Bstrcasecmp(argv[i]+1, "setup")) CommandSetup = TRUE;
-		else if (!Bstrcasecmp(argv[i]+1, "nam")) {
-			strcpy(defaultduke3dgrp, "nam.grp");
-		}
-		else if (!Bstrcasecmp(argv[i]+1, "?")) {
-			comlinehelp(argv);
-			exit(0);
-		}
-    }
-	
-    if (getenv("DUKE3DGRP")) duke3dgrp = getenv("DUKE3DGRP");
-    
 	wm_setapptitle("Duke Nukem 3D");
 	if (preinitengine()) {
 	   wm_msgbox("Build Engine Initialisation Error",
@@ -7766,6 +7775,7 @@ void app_main(int argc,char **argv)
 	}
 
 	i = CONFIG_ReadSetup();
+    if (getenv("DUKE3DGRP")) duke3dgrp = getenv("DUKE3DGRP");
 
 	ScanGroups();
 	{	// try and identify the 'defaultduke3dgrp' in the set of GRPs.
@@ -7815,10 +7825,26 @@ void app_main(int argc,char **argv)
 	    kclose(i);
     }
 
+	{
+		struct strllist *s;
+		while (CommandGrps) {
+			s = CommandGrps->next;
+			j = initgroupfile(CommandGrps->str);
+            if( j == -1 ) initprintf("Warning: could not find group file %s.\n",CommandGrps->str);
+            else {
+                groupfile = j;
+                initprintf("Using group file %s.\n",CommandGrps->str);
+            }
+
+			free(CommandGrps->str);
+			free(CommandGrps);
+			CommandGrps = s;
+		}
+	}
+
     copyprotect();
 	if (cp) return;
 
-    checkcommandline(argc,argv);
 	if (NAM) {
 		if (VOLUMEALL) wm_setapptitle("NAM Full Version v"VERSION);
 		else wm_setapptitle("NAM ? Version v"VERSION);
