@@ -71,7 +71,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = ABD7691B0A73CE1A006C27C1 /* jfaud.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = ABF441750A2828620057225F /* jfaud */;
+			remoteGlobalIDString = ABF441750A2828620057225F;
 			remoteInfo = jfaud;
 		};
 		AB69BD5B0A73C46200F3DCB8 /* PBXContainerItemProxy */ = {

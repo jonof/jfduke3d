@@ -2076,6 +2076,7 @@ cheat_for_port_credits:
 							"",
 							"Thanks to these people for their input and contributions:",
 							"",
+							"Michael Burgwin",
 							"Richard \"TerminX\" Gobeille, ",
 							"Par \"Parkar\" Karlsson", // "Pär \"Parkar\" Karlsson",
 							"Matthieu Klein",
