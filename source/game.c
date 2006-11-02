@@ -9150,6 +9150,7 @@ void dobonus(char bonusonly)
 	int clockpad = 2;
 	char *lastmapname;
 	int32 playerbest = -1;
+	char *yourtime = "Your Time:", *besttime = "Your Best Time:";
 
     long breathe[] =
     {
@@ -9537,9 +9538,14 @@ void dobonus(char bonusonly)
     totalclock = 0; tinc = 0;
 
     playerbest = CONFIG_GetMapBestTime(level_file_names[ud.volume_number*11+ud.last_level-1]);
-    if (ps[myconnectindex].player_par < playerbest)
+    if (ps[myconnectindex].player_par < playerbest || playerbest < 0) {
 	    CONFIG_SetMapBestTime(level_file_names[ud.volume_number*11+ud.last_level-1], ps[myconnectindex].player_par);
-
+	    if (playerbest >= 0) {
+		    yourtime = "New Best Time:";
+		    besttime = "Previous Best:";
+	    }
+    }
+    
 	{
 		int ii, ij;
 
@@ -9623,10 +9629,10 @@ void dobonus(char bonusonly)
             if( totalclock > (60*3) )
             {
 		    yy = zz = 59;
-                gametext(10,yy+9,"Your Time:",0,2+8+16); yy+=10;
+                gametext(10,yy+9,yourtime,0,2+8+16); yy+=10;
                 gametext(10,yy+9,"Par Time:",0,2+8+16); yy+=10;
 		if (!NAM) { gametext(10,yy+9,"3D Realms' Time:",0,2+8+16); yy+=10; }
-		if (playerbest > 0) { gametext(10,yy+9,"Your Best Time:",0,2+8+16); yy += 10; }
+		gametext(10,yy+9,besttime,0,2+8+16); yy += 10;
 		
                 if(bonuscnt == 0)
                     bonuscnt++;
@@ -9661,8 +9667,11 @@ void dobonus(char bonusonly)
 				sprintf(tempbuf,"%0*ld:%02ld",clockpad,
 					(playerbest/(26*60)),
 					(playerbest/26)%60);
-				gametext((320>>2)+71,yy+9,tempbuf,0,2+8+16); yy+=10;
+			} else {
+				strcpy(tempbuf,"None");
 			}
+			gametext((320>>2)+71,yy+9,tempbuf,0,2+8+16); yy+=10;
+
                 }
             }
 	    
