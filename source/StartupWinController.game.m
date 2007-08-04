@@ -1,18 +1,34 @@
 #import <Cocoa/Cocoa.h>
 
+#define GetTime xGetTime
+#include "duke3d.h"
+#undef GetTime
+#include "build.h"
+#include "compat.h"
 #include "baselayer.h"
+
+static struct {
+	int fullscreen;
+	int xdim3d, ydim3d, bpp3d;
+	int forcesetup;
+} settings;
 
 @interface StartupWinController : NSWindowController
 {
+	NSMutableArray *modeslist3d;
+
 	IBOutlet NSButton *alwaysShowButton;
 	IBOutlet NSButton *fullscreenButton;
 	IBOutlet NSTextView *messagesView;
 	IBOutlet NSTabView *tabView;
-	IBOutlet NSComboBox *videoModeCbox;
+	IBOutlet NSPopUpButton *videoMode3DPUButton;
 	
 	IBOutlet NSButton *cancelButton;
 	IBOutlet NSButton *startButton;
 }
+
+- (void)dealloc;
+- (void)populateVideoModes:(BOOL)firstTime;
 
 - (IBAction)alwaysShowClicked:(id)sender;
 - (IBAction)fullscreenClicked:(id)sender;
@@ -28,13 +44,66 @@
 
 @implementation StartupWinController
 
+- (void)dealloc
+{
+	[modeslist3d release];
+	[super dealloc];
+}
+
+- (void)populateVideoModes:(BOOL)firstTime
+{
+	int i, mode3d, fullscreen = ([fullscreenButton state] == NSOnState);
+	int idx3d = -1;
+	int xdim, ydim, bpp;
+	
+	if (firstTime) {
+		xdim = settings.xdim3d;
+		ydim = settings.ydim3d;
+		bpp  = settings.bpp3d;
+	} else {
+		mode3d = [[modeslist3d objectAtIndex:[videoMode3DPUButton indexOfSelectedItem]] intValue];
+		if (mode3d >= 0) {
+			xdim = validmode[mode3d].xdim;
+			ydim = validmode[mode3d].ydim;
+			bpp = validmode[mode3d].bpp;
+		}
+		
+	}
+	mode3d = checkvideomode(&xdim, &ydim, bpp, fullscreen, 1);
+	if (mode3d < 0) {
+		int i, cd[] = { 32, 24, 16, 15, 8, 0 };
+		for (i=0; cd[i]; ) { if (cd[i] >= bpp) i++; else break; }
+		for ( ; cd[i]; i++) {
+			mode3d = checkvideomode(&xdim, &ydim, cd[i], fullscreen, 1);
+			if (mode3d < 0) continue;
+			break;
+		}
+	}
+	
+	[modeslist3d release];
+	[videoMode3DPUButton removeAllItems];
+
+	modeslist3d = [[NSMutableArray alloc] init];
+
+	for (i = 0; i < validmodecnt; i++) {
+		if (fullscreen == validmode[i].fs) {
+			if (i == mode3d) idx3d = [modeslist3d count];
+			[modeslist3d addObject:[NSNumber numberWithInt:i]];
+			[videoMode3DPUButton addItemWithTitle:[NSString stringWithFormat:@"%d %C %d %d-bpp",
+				validmode[i].xdim, 0xd7, validmode[i].ydim, validmode[i].bpp]];
+		}
+	}
+
+	if (idx3d >= 0) [videoMode3DPUButton selectItemAtIndex:idx3d];
+}
+
 - (IBAction)alwaysShowClicked:(id)sender
 {
 }
 
 - (IBAction)fullscreenClicked:(id)sender
 {
-	// XXX: recalculate the video modes list to take into account the fullscreen status
+	[self populateVideoModes:NO];
 }
 
 - (IBAction)cancel:(id)sender
@@ -44,24 +113,37 @@
 
 - (IBAction)start:(id)sender
 {
-	// XXX: write the states of the form controls to their respective homes
+	int mode = [[modeslist3d objectAtIndex:[videoMode3DPUButton indexOfSelectedItem]] intValue];
+	if (mode >= 0) {
+		settings.xdim3d = validmode[mode].xdim;
+		settings.ydim3d = validmode[mode].ydim;
+		settings.bpp3d = validmode[mode].bpp;
+		settings.fullscreen = validmode[mode].fs;
+	}
+		
+	settings.forcesetup = [alwaysShowButton state] == NSOnState;
+
 	[NSApp stopModal];
 }
 
 - (void)setupRunMode
 {
-	// XXX: populate the lists and set everything up to represent the current options
+	getvalidmodes();
+
+	[fullscreenButton setState: (settings.fullscreen ? NSOnState : NSOffState)];
+	[alwaysShowButton setState: (settings.forcesetup ? NSOnState : NSOffState)];
+	[self populateVideoModes:YES];
 
 	// enable all the controls on the Configuration page
 	NSEnumerator *enumerator = [[[[tabView tabViewItemAtIndex:0] view] subviews] objectEnumerator];
 	NSControl *control;
-	while (control = [enumerator nextObject])
-		[control setEnabled:true];
+	while (control = [enumerator nextObject]) [control setEnabled:true];
 	
 	[cancelButton setEnabled:true];
 	[startButton setEnabled:true];
 
 	[tabView selectTabViewItemAtIndex:0];
+	[NSCursor unhide];	// Why should I need to do this?
 }
 
 - (void)setupMessagesMode
@@ -119,8 +201,8 @@ int startwin_open(void)
 	startwin = [[StartupWinController alloc] initWithWindowNibName:@"startwin.game"];
 	if (startwin == nil) return -1;
 
-	[startwin showWindow:nil];
 	[startwin setupMessagesMode];
+	[startwin showWindow:nil];
 
 	return 0;
 }
@@ -130,6 +212,7 @@ int startwin_close(void)
 	if (startwin == nil) return 1;
 
 	[startwin close];
+	[startwin release];
 	startwin = nil;
 
 	return 0;
@@ -174,6 +257,12 @@ int startwin_run(void)
 	int retval;
 	
 	if (startwin == nil) return 0;
+
+	settings.fullscreen = ScreenMode;
+	settings.xdim3d = ScreenWidth;
+	settings.ydim3d = ScreenHeight;
+	settings.bpp3d = ScreenBPP;
+	settings.forcesetup = ForceSetup;
 	
 	[startwin setupRunMode];
 	
@@ -184,6 +273,14 @@ int startwin_run(void)
 	}
 	
 	[startwin setupMessagesMode];
+
+	if (retval) {
+		ScreenMode = settings.fullscreen;
+		ScreenWidth = settings.xdim3d;
+		ScreenHeight = settings.ydim3d;
+		ScreenBPP = settings.bpp3d;
+		ForceSetup = settings.forcesetup;
+	}
 	
 	return retval;
 }

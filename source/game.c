@@ -6947,10 +6947,12 @@ void checkcommandline(int argc,char **argv)
 				}
 				if (!Bstrcasecmp(c+1,"setup")) {
 					CommandSetup = TRUE;
+					i++;
 					continue;
 				}
 				if (!Bstrcasecmp(c+1,"nam")) {
 					strcpy(defaultduke3dgrp, "nam.grp");
+					i++;
 					continue;
 				}
             }
@@ -7799,7 +7801,7 @@ void app_main(int argc,char **argv)
 		}
 	}
 
-#if defined RENDERTYPEWIN || (defined RENDERTYPESDL && !defined __APPLE__ && defined HAVE_GTK2)
+#if defined RENDERTYPEWIN || (defined RENDERTYPESDL && (defined __APPLE__ || defined HAVE_GTK2))
 	if (i < 0 || ForceSetup || CommandSetup) {
 		if (quitevent || !startwin_run()) {
 			uninitengine();

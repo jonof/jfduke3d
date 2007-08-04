@@ -12,7 +12,8 @@
                 messagesView = NSTextView; 
                 startButton = NSButton; 
                 tabView = NSTabView; 
-                videoModeCbox = NSComboBox; 
+                videoMode2DPUButton = NSPopUpButton; 
+                videoMode3DPUButton = NSPopUpButton; 
             }; 
             SUPERCLASS = NSWindowController; 
         }
