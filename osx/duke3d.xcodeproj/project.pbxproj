@@ -39,10 +39,10 @@
 		AB69BD310A73C36100F3DCB8 /* testcd.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD210A73C36100F3DCB8 /* testcd.c */; };
 		AB69BD360A73C3EC00F3DCB8 /* game.osxmain.nib in Resources */ = {isa = PBXBuildFile; fileRef = AB69BD330A73C3EC00F3DCB8 /* game.osxmain.nib */; };
 		AB69BD370A73C3EC00F3DCB8 /* startwin.game.nib in Resources */ = {isa = PBXBuildFile; fileRef = AB69BD340A73C3EC00F3DCB8 /* startwin.game.nib */; };
+		AB8F60220C65892D00202E11 /* libeditorsupp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABB4AA9F0C64BD5200F28920 /* libeditorsupp.a */; };
+		AB8F60230C65892E00202E11 /* libeditor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB69BD5C0A73C46200F3DCB8 /* libeditor.a */; };
 		ABB4AAD20C64BD9E00F28920 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL.framework */; };
 		ABB4AAD70C64BDC400F28920 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL.framework */; };
-		ABB4AAE20C64BF3500F28920 /* libeditor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB69BD5C0A73C46200F3DCB8 /* libeditor.a */; };
-		ABB4AAE30C64BF3500F28920 /* libeditorsupp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABB4AA9F0C64BD5200F28920 /* libeditorsupp.a */; };
 		ABB4AAE40C64BF3600F28920 /* libengine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABD768C80A73CAF2006C27C1 /* libengine.a */; };
 		ABD768EC0A73CB63006C27C1 /* animlib.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD768DA0A73CB63006C27C1 /* animlib.c */; };
 		ABD768ED0A73CB63006C27C1 /* control.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD768DC0A73CB63006C27C1 /* control.c */; };
@@ -188,7 +188,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		AB69BD050A73C21E00F3DCB8 /* JFDuke3D.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JFDuke3D.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB69BD050A73C21E00F3DCB8 /* JFDuke3D.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = JFDuke3D.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB69BD080A73C21E00F3DCB8 /* JFDuke3D-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "JFDuke3D-Info.plist"; sourceTree = "<group>"; };
 		AB69BD120A73C36100F3DCB8 /* actors.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = actors.c; sourceTree = "<group>"; };
 		AB69BD130A73C36100F3DCB8 /* config.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = config.c; sourceTree = "<group>"; };
@@ -263,9 +263,9 @@
 			files = (
 				ABD76A1F0A73D1A5006C27C1 /* AppKit.framework in Frameworks */,
 				ABD76A200A73D1A6006C27C1 /* SDL.framework in Frameworks */,
-				ABB4AAE20C64BF3500F28920 /* libeditor.a in Frameworks */,
-				ABB4AAE30C64BF3500F28920 /* libeditorsupp.a in Frameworks */,
 				ABB4AAE40C64BF3600F28920 /* libengine.a in Frameworks */,
+				AB8F60220C65892D00202E11 /* libeditorsupp.a in Frameworks */,
+				AB8F60230C65892E00202E11 /* libeditor.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -759,7 +759,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				INFOPLIST_FILE = "Build Editor-Info.plist";
-				LIBRARY_SEARCH_PATHS = "$(CONFIGURATION_BUILD_DIR)";
 				PRODUCT_NAME = "Build Editor for JFDuke3D";
 				WRAPPER_EXTENSION = app;
 			};
@@ -769,7 +768,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				INFOPLIST_FILE = "Build Editor-Info.plist";
-				LIBRARY_SEARCH_PATHS = "$(CONFIGURATION_BUILD_DIR)";
 				PRODUCT_NAME = "Build Editor for JFDuke3D";
 				WRAPPER_EXTENSION = app;
 			};
