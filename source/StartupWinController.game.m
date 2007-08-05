@@ -1,3 +1,5 @@
+// Objective-C programmers shall recoil in fear at this mess
+
 #import <Cocoa/Cocoa.h>
 
 #define GetTime xGetTime
@@ -6,22 +8,143 @@
 #include "build.h"
 #include "compat.h"
 #include "baselayer.h"
+#include "grpscan.h"
 
 static struct {
 	int fullscreen;
 	int xdim3d, ydim3d, bpp3d;
 	int forcesetup;
+	char selectedgrp[BMAX_PATH+1];
+	int game;
 } settings;
+
+@interface GrpFile : NSObject
+{
+	NSString *name;
+	struct grpfile *fg;
+}
+- (id)initWithGrpfile:(struct grpfile *)grpfile andName:(NSString*)aName;
+- (void)dealloc;
+- (NSString *)name;
+- (NSString *)grpname;
+- (struct grpfile *)entryptr;
+@end
+
+@implementation GrpFile
+- (id)initWithGrpfile:(struct grpfile *)grpfile andName:(NSString*)aName
+{
+	self = [super init];
+	if (self) {
+		fg = grpfile;
+		name = aName;
+		[aName retain];
+	}
+	return self;
+}
+- (void)dealloc
+{
+	[name release];
+	[super dealloc];
+}
+- (NSString *)name
+{
+	return name;
+}
+- (NSString *)grpname
+{
+	return [NSString stringWithCString:(fg->name)];
+}
+- (struct grpfile *)entryptr
+{
+	return fg;
+}
+@end
+
+@interface GameListSource : NSObject
+{
+	NSMutableArray *list;
+}
+- (id)init;
+- (void)dealloc;
+- (GrpFile*)grpAtIndex:(int)index;
+- (int)findIndexForGrpname:(NSString*)grpname;
+- (id)tableView:(NSTableView *)aTableView
+    objectValueForTableColumn:(NSTableColumn *)aTableColumn
+	    row:(int)rowIndex;
+- (int)numberOfRowsInTableView:(NSTableView *)aTableView;
+@end
+
+@implementation GameListSource
+- (id)init
+{
+	self = [super init];
+	if (self) {
+		struct grpfile *p;
+		int i;
+		
+		list = [[NSMutableArray alloc] init];
+		
+		for (p = foundgrps; p; p=p->next) {
+			for (i=0; i<numgrpfiles; i++) if (p->crcval == grpfiles[i].crcval) break;
+			if (i == numgrpfiles) continue;
+			[list addObject:[[GrpFile alloc] initWithGrpfile:p andName:[NSString stringWithCString:grpfiles[i].name]]];
+		}
+	}
+	
+	return self;
+}
+
+- (void)dealloc
+{
+	[list release];
+	[super dealloc];
+}
+
+- (GrpFile*)grpAtIndex:(int)index
+{
+	return [list objectAtIndex:index];
+}
+
+- (int)findIndexForGrpname:(NSString*)grpname
+{
+	int i;
+	for (i=0; i<[list count]; i++) {
+		if ([[[list objectAtIndex:i] grpname] isEqual:grpname]) return i;
+	}
+	return -1;
+}
+
+- (id)tableView:(NSTableView *)aTableView
+    objectValueForTableColumn:(NSTableColumn *)aTableColumn
+	    row:(int)rowIndex
+{
+	NSParameterAssert(rowIndex >= 0 && rowIndex < [list count]);
+	switch ([[aTableColumn identifier] intValue]) {
+		case 0:	// name column
+			return [[list objectAtIndex:rowIndex] name];
+		case 1:	// grp column
+			return [[list objectAtIndex:rowIndex] grpname];
+		default: return nil;
+	}
+}
+
+- (int)numberOfRowsInTableView:(NSTableView *)aTableView
+{
+	return [list count];
+}
+@end
 
 @interface StartupWinController : NSWindowController
 {
 	NSMutableArray *modeslist3d;
+	GameListSource *gamelistsrc;
 
 	IBOutlet NSButton *alwaysShowButton;
 	IBOutlet NSButton *fullscreenButton;
 	IBOutlet NSTextView *messagesView;
 	IBOutlet NSTabView *tabView;
 	IBOutlet NSPopUpButton *videoMode3DPUButton;
+	IBOutlet NSScrollView *gameList;
 	
 	IBOutlet NSButton *cancelButton;
 	IBOutlet NSButton *startButton;
@@ -46,6 +169,7 @@ static struct {
 
 - (void)dealloc
 {
+	[gamelistsrc release];
 	[modeslist3d release];
 	[super dealloc];
 }
@@ -120,6 +244,15 @@ static struct {
 		settings.bpp3d = validmode[mode].bpp;
 		settings.fullscreen = validmode[mode].fs;
 	}
+	
+	int row = [[gameList documentView] selectedRow];
+	if (row >= 0) {
+		struct grpfile *p = [[gamelistsrc grpAtIndex:row] entryptr];
+		if (p) {
+			strcpy(settings.selectedgrp, p->name);
+			settings.game = p->game;
+		}
+	}
 		
 	settings.forcesetup = [alwaysShowButton state] == NSOnState;
 
@@ -139,6 +272,20 @@ static struct {
 	NSControl *control;
 	while (control = [enumerator nextObject]) [control setEnabled:true];
 	
+	gamelistsrc = [[GameListSource alloc] init];
+	[[gameList documentView] setDataSource:gamelistsrc];
+	[[gameList documentView] deselectAll:nil];
+
+	int row = [gamelistsrc findIndexForGrpname:[NSString stringWithCString:settings.selectedgrp]];
+	if (row >= 0) {
+		[[gameList documentView] scrollRowToVisible:row];
+#if defined(MAC_OS_X_VERSION_10_3) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_3)
+		[[gameList documentView] selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+#else
+		[[gameList documentView] selectRow:row byExtendingSelection:NO];
+#endif
+	}
+	
 	[cancelButton setEnabled:true];
 	[startButton setEnabled:true];
 
@@ -148,7 +295,7 @@ static struct {
 
 - (void)setupMessagesMode
 {
-	[tabView selectTabViewItemAtIndex:1];
+	[tabView selectTabViewItemAtIndex:2];
 
 	// disable all the controls on the Configuration page except "always show", so the
 	// user can enable it if they want to while waiting for something else to happen
@@ -252,6 +399,8 @@ int startwin_idle(void *v)
 	return 0;
 }
 
+extern char *duke3dgrp;
+
 int startwin_run(void)
 {
 	int retval;
@@ -263,6 +412,8 @@ int startwin_run(void)
 	settings.ydim3d = ScreenHeight;
 	settings.bpp3d = ScreenBPP;
 	settings.forcesetup = ForceSetup;
+	settings.game = gametype;
+	strncpy(settings.selectedgrp, duke3dgrp, BMAX_PATH);
 	
 	[startwin setupRunMode];
 	
@@ -280,6 +431,8 @@ int startwin_run(void)
 		ScreenHeight = settings.ydim3d;
 		ScreenBPP = settings.bpp3d;
 		ForceSetup = settings.forcesetup;
+		duke3dgrp = settings.selectedgrp;
+		gametype = settings.game;
 	}
 	
 	return retval;

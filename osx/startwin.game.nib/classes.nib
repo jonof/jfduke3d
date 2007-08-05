@@ -1,6 +1,7 @@
 {
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {CLASS = GameListSource; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             ACTIONS = {alwaysShowClicked = id; cancel = id; fullscreenClicked = id; start = id; }; 
             CLASS = StartupWinController; 
@@ -9,6 +10,7 @@
                 alwaysShowButton = NSButton; 
                 cancelButton = NSButton; 
                 fullscreenButton = NSButton; 
+                gameList = NSScrollView; 
                 messagesView = NSTextView; 
                 startButton = NSButton; 
                 tabView = NSTabView; 

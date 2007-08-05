@@ -88,14 +88,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = AB3FE4550C04336F00D5DBDC /* libeditorsupp.a */;
+			remoteGlobalIDString = AB3FE4550C04336F00D5DBDC;
 			remoteInfo = editorsupp;
 		};
 		ABB4AAE00C64BF0D00F28920 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = AB3FE44A0C04336F00D5DBDC /* editorsupp */;
+			remoteGlobalIDString = AB3FE44A0C04336F00D5DBDC;
 			remoteInfo = editorsupp;
 		};
 		ABD768C70A73CAF2006C27C1 /* PBXContainerItemProxy */ = {
