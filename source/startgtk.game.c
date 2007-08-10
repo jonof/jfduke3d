@@ -76,6 +76,7 @@ static void SetPage(int n)
 }
 
 static void on_vmode3dcombo_changed(GtkComboBox *, gpointer);
+static void on_gamelist_selection_changed(GtkTreeSelection *, gpointer);
 static void PopulateForm(int pgs)
 {
 	if (pgs & (1<<TAB_CONFIG)) {
@@ -142,10 +143,9 @@ static void PopulateForm(int pgs)
 			gtk_list_store_set(list, &iter, 0, grpfiles[i].name, 1, fg->name, 2, (gpointer)fg, -1);
 			if (!Bstrcasecmp(fg->name, settings.selectedgrp)) {
 				GtkTreeSelection *sel = gtk_tree_view_get_selection(gamelist);
+				g_signal_handlers_block_by_func(sel, on_gamelist_selection_changed, NULL);
 				gtk_tree_selection_select_iter(sel, &iter);
-				/*g_signal_handlers_block_by_func(list, on_vmode3dcombo_changed, NULL);
-				gtk_tree_view_set_active_iter(box3d, &iter);
-				g_signal_handlers_unblock_by_func(list, on_vmode3dcombo_changed, NULL);*/
+				g_signal_handlers_unblock_by_func(sel, on_gamelist_selection_changed, NULL);
 			}
 		}
 	}
@@ -222,6 +222,22 @@ static gboolean on_startwin_delete_event(GtkWidget *widget, GdkEvent *event, gpo
 	return TRUE;	// FALSE would let the event go through. we want the game to decide when to close
 }
 
+
+static gint name_sorter(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer user_data)
+{
+	gchar *as, *bs;
+	gint r;
+	
+	gtk_tree_model_get(model, a, 0, &as, -1);
+	gtk_tree_model_get(model, b, 0, &bs, -1);
+	
+	r = g_utf8_collate(as,bs);
+	
+	g_free(as);
+	g_free(bs);
+	
+	return r;
+}
 
 static GtkWidget *create_window(void)
 {
@@ -417,6 +433,9 @@ static GtkWidget *create_window(void)
 	GtkListStore *list = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
 	GtkCellRenderer *cell;
 	GtkTreeViewColumn *col;
+	
+	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(list), 0, name_sorter, NULL, NULL);
+	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(list), 0, GTK_SORT_ASCENDING);
 
 	gamelist = gtk_tree_view_new_with_model (GTK_TREE_MODEL(list));
 	g_object_unref(G_OBJECT(list));
