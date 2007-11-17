@@ -22,6 +22,10 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		AB17504A0CEF5A19003AF128 /* libengine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB1750450CEF5A0D003AF128 /* libengine.a */; };
+		AB1750590CEF5A4D003AF128 /* libengine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB1750450CEF5A0D003AF128 /* libengine.a */; };
+		AB17505A0CEF5A51003AF128 /* libeditor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB1750470CEF5A0D003AF128 /* libeditor.a */; };
+		AB17505B0CEF5A52003AF128 /* libeditor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB1750490CEF5A0D003AF128 /* libeditor.a */; };
 		AB69BD220A73C36100F3DCB8 /* actors.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD120A73C36100F3DCB8 /* actors.c */; };
 		AB69BD230A73C36100F3DCB8 /* config.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD130A73C36100F3DCB8 /* config.c */; };
 		AB69BD240A73C36100F3DCB8 /* game.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD140A73C36100F3DCB8 /* game.c */; };
@@ -39,11 +43,8 @@
 		AB69BD310A73C36100F3DCB8 /* testcd.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD210A73C36100F3DCB8 /* testcd.c */; };
 		AB69BD360A73C3EC00F3DCB8 /* game.osxmain.nib in Resources */ = {isa = PBXBuildFile; fileRef = AB69BD330A73C3EC00F3DCB8 /* game.osxmain.nib */; };
 		AB69BD370A73C3EC00F3DCB8 /* startwin.game.nib in Resources */ = {isa = PBXBuildFile; fileRef = AB69BD340A73C3EC00F3DCB8 /* startwin.game.nib */; };
-		AB8F60220C65892D00202E11 /* libeditorsupp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABB4AA9F0C64BD5200F28920 /* libeditorsupp.a */; };
-		AB8F60230C65892E00202E11 /* libeditor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB69BD5C0A73C46200F3DCB8 /* libeditor.a */; };
 		ABB4AAD20C64BD9E00F28920 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL.framework */; };
 		ABB4AAD70C64BDC400F28920 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL.framework */; };
-		ABB4AAE40C64BF3600F28920 /* libengine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABD768C80A73CAF2006C27C1 /* libengine.a */; };
 		ABD768EC0A73CB63006C27C1 /* animlib.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD768DA0A73CB63006C27C1 /* animlib.c */; };
 		ABD768ED0A73CB63006C27C1 /* control.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD768DC0A73CB63006C27C1 /* control.c */; };
 		ABD768EE0A73CB63006C27C1 /* file_lib.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD768DF0A73CB63006C27C1 /* file_lib.c */; };
@@ -53,7 +54,6 @@
 		ABD768F20A73CB63006C27C1 /* scriplib.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD768E70A73CB63006C27C1 /* scriplib.c */; };
 		ABD768F30A73CB63006C27C1 /* util_lib.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD768EA0A73CB63006C27C1 /* util_lib.c */; };
 		ABD769040A73CBDE006C27C1 /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL.framework */; };
-		ABD769130A73CD8F006C27C1 /* libengine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABD768C80A73CAF2006C27C1 /* libengine.a */; };
 		ABD769180A73CDF6006C27C1 /* StartupWinController.game.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD769170A73CDF6006C27C1 /* StartupWinController.game.m */; };
 		ABD769270A73CE22006C27C1 /* jfaud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABD769240A73CE1A006C27C1 /* jfaud.framework */; };
 		ABD7692A0A73CE40006C27C1 /* game_icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = ABD769280A73CE40006C27C1 /* game_icon.icns */; };
@@ -70,47 +70,61 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		AB1750440CEF5A0D003AF128 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = AB735F490A29A2DC003261DC /* libengine.a */;
+			remoteInfo = engine;
+		};
+		AB1750460CEF5A0D003AF128 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = AB735FCC0A29A916003261DC /* libeditor.a */;
+			remoteInfo = editor;
+		};
+		AB1750480CEF5A0D003AF128 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = AB3FE4550C04336F00D5DBDC /* libeditor.a */;
+			remoteInfo = editorsupp;
+		};
+		AB1751120CEF5AA2003AF128 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = AB735F480A29A2DC003261DC /* engine */;
+			remoteInfo = engine;
+		};
+		AB1751140CEF5ABA003AF128 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = AB735F480A29A2DC003261DC /* engine */;
+			remoteInfo = engine;
+		};
+		AB1751160CEF5ABA003AF128 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = AB735FCB0A29A916003261DC /* editor */;
+			remoteInfo = editor;
+		};
+		AB1751180CEF5ABA003AF128 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = AB3FE44A0C04336F00D5DBDC /* editorsupp */;
+			remoteInfo = editorsupp;
+		};
 		AB2A91E30A776FBF00C8D71F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = ABD7691B0A73CE1A006C27C1 /* jfaud.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = ABF441750A2828620057225F;
 			remoteInfo = jfaud;
-		};
-		AB69BD5B0A73C46200F3DCB8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = AB735FCC0A29A916003261DC;
-			remoteInfo = editor;
-		};
-		ABB4AA9E0C64BD5200F28920 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = AB3FE4550C04336F00D5DBDC;
-			remoteInfo = editorsupp;
-		};
-		ABB4AAE00C64BF0D00F28920 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = AB3FE44A0C04336F00D5DBDC;
-			remoteInfo = editorsupp;
-		};
-		ABD768C70A73CAF2006C27C1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = AB735F490A29A2DC003261DC;
-			remoteInfo = engine;
-		};
-		ABD769100A73CD6E006C27C1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = AB735F480A29A2DC003261DC;
-			remoteInfo = engine;
 		};
 		ABD769230A73CE1A006C27C1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -125,20 +139,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = ABF441320A2825040057225F;
 			remoteInfo = mpadec;
-		};
-		ABD769660A73D12E006C27C1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = AB735F480A29A2DC003261DC;
-			remoteInfo = engine;
-		};
-		ABD769680A73D12E006C27C1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = AB735FCB0A29A916003261DC;
-			remoteInfo = editor;
 		};
 		ABD769770A73D18A006C27C1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -200,7 +200,7 @@
 		AB69BD210A73C36100F3DCB8 /* testcd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = testcd.c; sourceTree = "<group>"; };
 		AB69BD330A73C3EC00F3DCB8 /* game.osxmain.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = game.osxmain.nib; sourceTree = "<group>"; };
 		AB69BD340A73C3EC00F3DCB8 /* startwin.game.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = startwin.game.nib; sourceTree = "<group>"; };
-		AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = engine.xcodeproj; path = ../../build/osx/engine.xcodeproj; sourceTree = SOURCE_ROOT; };
+		AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = engine.xcodeproj; path = ../engine/osx/engine.xcodeproj; sourceTree = "<group>"; };
 		ABD768D80A73CB63006C27C1 /* _control.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _control.h; sourceTree = "<group>"; };
 		ABD768D90A73CB63006C27C1 /* _scrplib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _scrplib.h; sourceTree = "<group>"; };
 		ABD768DA0A73CB63006C27C1 /* animlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = animlib.c; sourceTree = "<group>"; };
@@ -243,10 +243,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ABD769130A73CD8F006C27C1 /* libengine.a in Frameworks */,
 				ABD769270A73CE22006C27C1 /* jfaud.framework in Frameworks */,
 				ABD769040A73CBDE006C27C1 /* SDL.framework in Frameworks */,
 				ABD769310A73CE6D006C27C1 /* AppKit.framework in Frameworks */,
+				AB17504A0CEF5A19003AF128 /* libengine.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,15 +256,25 @@
 			files = (
 				ABD76A1F0A73D1A5006C27C1 /* AppKit.framework in Frameworks */,
 				ABD76A200A73D1A6006C27C1 /* SDL.framework in Frameworks */,
-				ABB4AAE40C64BF3600F28920 /* libengine.a in Frameworks */,
-				AB8F60220C65892D00202E11 /* libeditorsupp.a in Frameworks */,
-				AB8F60230C65892E00202E11 /* libeditor.a in Frameworks */,
+				AB1750590CEF5A4D003AF128 /* libengine.a in Frameworks */,
+				AB17505A0CEF5A51003AF128 /* libeditor.a in Frameworks */,
+				AB17505B0CEF5A52003AF128 /* libeditor.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		AB17503F0CEF5A0D003AF128 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AB1750450CEF5A0D003AF128 /* libengine.a */,
+				AB1750470CEF5A0D003AF128 /* libeditor.a */,
+				AB1750490CEF5A0D003AF128 /* libeditor.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		AB69BCF30A73C1A800F3DCB8 = {
 			isa = PBXGroup;
 			children = (
@@ -342,16 +352,6 @@
 				AB69BD340A73C3EC00F3DCB8 /* startwin.game.nib */,
 			);
 			name = osx;
-			sourceTree = "<group>";
-		};
-		AB69BD510A73C45700F3DCB8 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				ABD768C80A73CAF2006C27C1 /* libengine.a */,
-				AB69BD5C0A73C46200F3DCB8 /* libeditor.a */,
-				ABB4AA9F0C64BD5200F28920 /* libeditorsupp.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		ABD768D70A73CB4D006C27C1 /* jmact */ = {
@@ -442,8 +442,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				ABD769110A73CD6E006C27C1 /* PBXTargetDependency */,
 				AB2A91E40A776FBF00C8D71F /* PBXTargetDependency */,
+				AB1751130CEF5AA2003AF128 /* PBXTargetDependency */,
 			);
 			name = JFDuke3D;
 			productName = JFDuke3D;
@@ -462,9 +462,9 @@
 			buildRules = (
 			);
 			dependencies = (
-				ABD769670A73D12E006C27C1 /* PBXTargetDependency */,
-				ABD769690A73D12E006C27C1 /* PBXTargetDependency */,
-				ABB4AAE10C64BF0D00F28920 /* PBXTargetDependency */,
+				AB1751150CEF5ABA003AF128 /* PBXTargetDependency */,
+				AB1751170CEF5ABA003AF128 /* PBXTargetDependency */,
+				AB1751190CEF5ABA003AF128 /* PBXTargetDependency */,
 			);
 			name = "Build Editor for JFDuke3D";
 			productName = "Build Editor";
@@ -484,7 +484,7 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = AB69BD510A73C45700F3DCB8 /* Products */;
+					ProductGroup = AB17503F0CEF5A0D003AF128 /* Products */;
 					ProjectRef = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
 				},
 				{
@@ -502,25 +502,25 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		AB69BD5C0A73C46200F3DCB8 /* libeditor.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libeditor.a;
-			remoteRef = AB69BD5B0A73C46200F3DCB8 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		ABB4AA9F0C64BD5200F28920 /* libeditorsupp.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libeditorsupp.a;
-			remoteRef = ABB4AA9E0C64BD5200F28920 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		ABD768C80A73CAF2006C27C1 /* libengine.a */ = {
+		AB1750450CEF5A0D003AF128 /* libengine.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libengine.a;
-			remoteRef = ABD768C70A73CAF2006C27C1 /* PBXContainerItemProxy */;
+			remoteRef = AB1750440CEF5A0D003AF128 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		AB1750470CEF5A0D003AF128 /* libeditor.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libeditor.a;
+			remoteRef = AB1750460CEF5A0D003AF128 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		AB1750490CEF5A0D003AF128 /* libeditor.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libeditor.a;
+			remoteRef = AB1750480CEF5A0D003AF128 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		ABD769240A73CE1A006C27C1 /* jfaud.framework */ = {
@@ -607,30 +607,30 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		AB1751130CEF5AA2003AF128 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = engine;
+			targetProxy = AB1751120CEF5AA2003AF128 /* PBXContainerItemProxy */;
+		};
+		AB1751150CEF5ABA003AF128 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = engine;
+			targetProxy = AB1751140CEF5ABA003AF128 /* PBXContainerItemProxy */;
+		};
+		AB1751170CEF5ABA003AF128 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = editor;
+			targetProxy = AB1751160CEF5ABA003AF128 /* PBXContainerItemProxy */;
+		};
+		AB1751190CEF5ABA003AF128 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = editorsupp;
+			targetProxy = AB1751180CEF5ABA003AF128 /* PBXContainerItemProxy */;
+		};
 		AB2A91E40A776FBF00C8D71F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = jfaud;
 			targetProxy = AB2A91E30A776FBF00C8D71F /* PBXContainerItemProxy */;
-		};
-		ABB4AAE10C64BF0D00F28920 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = editorsupp;
-			targetProxy = ABB4AAE00C64BF0D00F28920 /* PBXContainerItemProxy */;
-		};
-		ABD769110A73CD6E006C27C1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = engine;
-			targetProxy = ABD769100A73CD6E006C27C1 /* PBXContainerItemProxy */;
-		};
-		ABD769670A73D12E006C27C1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = engine;
-			targetProxy = ABD769660A73D12E006C27C1 /* PBXContainerItemProxy */;
-		};
-		ABD769690A73D12E006C27C1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = editor;
-			targetProxy = ABD769680A73D12E006C27C1 /* PBXContainerItemProxy */;
 		};
 		ABD769780A73D18A006C27C1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -674,7 +674,7 @@
 				GCC_VERSION_ppc = 3.3;
 				HEADER_SEARCH_PATHS = (
 					../source,
-					../../build/include,
+					../engine/include,
 				);
 				MACOSX_DEPLOYMENT_TARGET_i386 = 10.4;
 				MACOSX_DEPLOYMENT_TARGET_ppc = 10.2;
@@ -711,7 +711,7 @@
 				GCC_VERSION_ppc = 3.3;
 				HEADER_SEARCH_PATHS = (
 					../source,
-					../../build/include,
+					../engine/include,
 				);
 				MACOSX_DEPLOYMENT_TARGET_i386 = 10.4;
 				MACOSX_DEPLOYMENT_TARGET_ppc = 10.2;
