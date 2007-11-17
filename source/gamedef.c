@@ -1622,40 +1622,26 @@ void loadefs(char *filenam)
     int i;
     long fs,fp;
 
-
-    /* JBF 20040109: Don't prompt to extract CONs from GRP if they're missing.
-     * If someone really wants them they can Kextract them.
-    if(!SafeFileExists(filenam) && loadfromgrouponly == 0)
-    {
-        //initprintf("Missing external con file(s).\n");
-        //initprintf("COPY INTERNAL DEFAULTS TO DIRECTORY(Y/n)?\n");
-
-	i=wm_ynbox("Missing CON file(s)", "Missing external CON file(s). "
-			"Copy internal defaults to directory?");
-	if (i) i = 'y';
-        if(i == 'y' || i == 'Y' )
-        {
-            initprintf(" Yes\n");
-            copydefaultcons();
-        }
-    }
-    */
-
     fp = kopen4load(filenam,loadfromgrouponly);
-    if( fp == -1 )	// JBF: was 0
+    if( fp == -1 )
     {
         if( loadfromgrouponly == 1 )
             gameexit("\nMissing con file(s).");
-	else {
-		sprintf(tempbuf,"CON file \"%s\" missing.", filenam);
-		gameexit(tempbuf);
-		return;
-	}
-	
+		else {
+			sprintf(tempbuf,
+				"CON file \"%s\" was not found.\n"
+				"\n"
+				"Check that the \"%s\" file is in the JFDuke3D directory "
+				"and try running the game again.",
+				filenam, defaultduke3dgrp);
+			gameexit(tempbuf);
+			return;
+		}
+		
         //loadfromgrouponly = 1;
         return; //Not there
     }
-
+	
     fs = kfilelength(fp);
 
     initprintf("Compiling: %s (%ld bytes)\n",filenam,fs);

@@ -2045,38 +2045,24 @@ void showtwoscreens(void)
 {
     short i;
 
-if (!VOLUMEALL) {
-    setview(0,0,xdim-1,ydim-1);
-    flushperms();
-    //ps[myconnectindex].palette = palette;
-    setgamepalette(&ps[myconnectindex], palette, 1);	// JBF 20040308
-    fadepal(0,0,0, 0,64,7);
-    KB_FlushKeyboardQueue();
-    rotatesprite(0,0,65536L,0,3291,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
-    IFISSOFTMODE fadepal(0,0,0, 63,0,-7); else nextpage();
-    while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
+	if (!VOLUMEALL) {
+		setview(0,0,xdim-1,ydim-1);
+		flushperms();
+		//ps[myconnectindex].palette = palette;
+		setgamepalette(&ps[myconnectindex], palette, 1);
+		fadepal(0,0,0, 0,64,7);
+		KB_FlushKeyboardQueue();
+		rotatesprite(0,0,65536L,0,3291,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+		IFISSOFTMODE fadepal(0,0,0, 63,0,-7); else nextpage();
+		while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
 
-    fadepal(0,0,0, 0,64,7);
-    KB_FlushKeyboardQueue();
-    rotatesprite(0,0,65536L,0,3290,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
-    IFISSOFTMODE fadepal(0,0,0, 63,0,-7); else nextpage();
-    while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
+		fadepal(0,0,0, 0,64,7);
+		KB_FlushKeyboardQueue();
+		rotatesprite(0,0,65536L,0,3290,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+		IFISSOFTMODE fadepal(0,0,0, 63,0,-7); else nextpage();
+		while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
+	}
 }
-}
-/*
-void binscreen(void)
-{
-    long fil;
-#ifdef VOLUMEONE
-    fil = kopen4load("dukesw.bin",1);
-#else
-    fil = kopen4load("duke3d.bin",1);
-#endif
-    if(fil == -1) return;
-    kread(fil,(char *)0xb8000,4000);
-    kclose(fil);
-}
-*/
 
 void gameexit(char *t)
 {
@@ -2111,10 +2097,6 @@ void gameexit(char *t)
 
     if(*t != 0)
     {
-        //setvmode(0x3);	// JBF
-        //binscreen();
-//            if(*t == ' ' && *(t+1) == 0) *t = 0;
-            //printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 		if (!(t[0] == ' ' && t[1] == 0)) {
 			wm_msgbox("Duke Nukem 3D", t);
 		}

@@ -504,6 +504,8 @@ extern char cachedebug,earthquaketime;
 extern char networkmode;
 extern char lumplockbyte[11];
 
+extern char defaultduke3dgrp[BMAX_PATH];
+
     //DUKE3D.H - replace the end "my's" with this
 extern long myx, omyx, myxvel, myy, omyy, myyvel, myz, omyz, myzvel;
 extern short myhoriz, omyhoriz, myhorizoff, omyhorizoff, globalskillsound;

@@ -105,13 +105,6 @@
 			remoteGlobalIDString = AB735F490A29A2DC003261DC;
 			remoteInfo = engine;
 		};
-		ABD768C90A73CAF2006C27C1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = AB7360030A29A9B3003261DC;
-			remoteInfo = enginez;
-		};
 		ABD769100A73CD6E006C27C1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
@@ -188,7 +181,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		AB69BD050A73C21E00F3DCB8 /* JFDuke3D.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = JFDuke3D.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB69BD050A73C21E00F3DCB8 /* JFDuke3D.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JFDuke3D.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB69BD080A73C21E00F3DCB8 /* JFDuke3D-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "JFDuke3D-Info.plist"; sourceTree = "<group>"; };
 		AB69BD120A73C36100F3DCB8 /* actors.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = actors.c; sourceTree = "<group>"; };
 		AB69BD130A73C36100F3DCB8 /* config.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = config.c; sourceTree = "<group>"; };
@@ -230,7 +223,7 @@
 		ABD768EB0A73CB63006C27C1 /* util_lib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util_lib.h; sourceTree = "<group>"; };
 		ABD768F60A73CB8B006C27C1 /* fx_man.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fx_man.h; sourceTree = "<group>"; };
 		ABD768F70A73CB8B006C27C1 /* music.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = music.h; sourceTree = "<group>"; };
-		ABD769030A73CBDE006C27C1 /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL.framework; path = /Library/Frameworks/SDL.framework; sourceTree = "<absolute>"; };
+		ABD769030A73CBDE006C27C1 /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL.framework; path = /Users/jonof/Library/Frameworks/SDL.framework; sourceTree = "<absolute>"; };
 		ABD769170A73CDF6006C27C1 /* StartupWinController.game.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StartupWinController.game.m; sourceTree = "<group>"; };
 		ABD7691B0A73CE1A006C27C1 /* jfaud.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jfaud.xcodeproj; path = ../../jfaud/osx/jfaud.xcodeproj; sourceTree = SOURCE_ROOT; };
 		ABD769280A73CE40006C27C1 /* game_icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = game_icon.icns; path = ../rsrc/game_icon.icns; sourceTree = SOURCE_ROOT; };
@@ -356,7 +349,6 @@
 			children = (
 				ABD768C80A73CAF2006C27C1 /* libengine.a */,
 				AB69BD5C0A73C46200F3DCB8 /* libeditor.a */,
-				ABD768CA0A73CAF2006C27C1 /* libenginez.a */,
 				ABB4AA9F0C64BD5200F28920 /* libeditorsupp.a */,
 			);
 			name = Products;
@@ -485,6 +477,7 @@
 		AB69BCF50A73C1A800F3DCB8 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = AB69BCF60A73C1A800F3DCB8 /* Build configuration list for PBXProject "duke3d" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 0;
 			mainGroup = AB69BCF30A73C1A800F3DCB8;
 			productRefGroup = AB69BD060A73C21E00F3DCB8 /* Products */;
@@ -499,6 +492,7 @@
 					ProjectRef = ABD7691B0A73CE1A006C27C1 /* jfaud.xcodeproj */;
 				},
 			);
+			projectRoot = "";
 			targets = (
 				ABD769760A73D186006C27C1 /* all */,
 				AB69BD040A73C21E00F3DCB8 /* JFDuke3D */,
@@ -527,13 +521,6 @@
 			fileType = archive.ar;
 			path = libengine.a;
 			remoteRef = ABD768C70A73CAF2006C27C1 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		ABD768CA0A73CAF2006C27C1 /* libenginez.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libenginez.a;
-			remoteRef = ABD768C90A73CAF2006C27C1 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		ABD769240A73CE1A006C27C1 /* jfaud.framework */ = {
