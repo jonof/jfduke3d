@@ -25,7 +25,7 @@
 		AB17504A0CEF5A19003AF128 /* libengine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB1750450CEF5A0D003AF128 /* libengine.a */; };
 		AB1750590CEF5A4D003AF128 /* libengine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB1750450CEF5A0D003AF128 /* libengine.a */; };
 		AB17505A0CEF5A51003AF128 /* libeditor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB1750470CEF5A0D003AF128 /* libeditor.a */; };
-		AB17505B0CEF5A52003AF128 /* libeditor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB1750490CEF5A0D003AF128 /* libeditor.a */; };
+		AB17505B0CEF5A52003AF128 /* libeditorsupp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB1750490CEF5A0D003AF128 /* libeditorsupp.a */; };
 		AB69BD220A73C36100F3DCB8 /* actors.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD120A73C36100F3DCB8 /* actors.c */; };
 		AB69BD230A73C36100F3DCB8 /* config.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD130A73C36100F3DCB8 /* config.c */; };
 		AB69BD240A73C36100F3DCB8 /* game.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD140A73C36100F3DCB8 /* game.c */; };
@@ -74,49 +74,49 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = AB735F490A29A2DC003261DC /* libengine.a */;
+			remoteGlobalIDString = AB735F490A29A2DC003261DC;
 			remoteInfo = engine;
 		};
 		AB1750460CEF5A0D003AF128 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = AB735FCC0A29A916003261DC /* libeditor.a */;
+			remoteGlobalIDString = AB735FCC0A29A916003261DC;
 			remoteInfo = editor;
 		};
 		AB1750480CEF5A0D003AF128 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = AB3FE4550C04336F00D5DBDC /* libeditor.a */;
+			remoteGlobalIDString = AB3FE4550C04336F00D5DBDC;
 			remoteInfo = editorsupp;
 		};
 		AB1751120CEF5AA2003AF128 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = AB735F480A29A2DC003261DC /* engine */;
+			remoteGlobalIDString = AB735F480A29A2DC003261DC;
 			remoteInfo = engine;
 		};
 		AB1751140CEF5ABA003AF128 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = AB735F480A29A2DC003261DC /* engine */;
+			remoteGlobalIDString = AB735F480A29A2DC003261DC;
 			remoteInfo = engine;
 		};
 		AB1751160CEF5ABA003AF128 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = AB735FCB0A29A916003261DC /* editor */;
+			remoteGlobalIDString = AB735FCB0A29A916003261DC;
 			remoteInfo = editor;
 		};
 		AB1751180CEF5ABA003AF128 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = AB3FE44A0C04336F00D5DBDC /* editorsupp */;
+			remoteGlobalIDString = AB3FE44A0C04336F00D5DBDC;
 			remoteInfo = editorsupp;
 		};
 		AB2A91E30A776FBF00C8D71F /* PBXContainerItemProxy */ = {
@@ -258,7 +258,7 @@
 				ABD76A200A73D1A6006C27C1 /* SDL.framework in Frameworks */,
 				AB1750590CEF5A4D003AF128 /* libengine.a in Frameworks */,
 				AB17505A0CEF5A51003AF128 /* libeditor.a in Frameworks */,
-				AB17505B0CEF5A52003AF128 /* libeditor.a in Frameworks */,
+				AB17505B0CEF5A52003AF128 /* libeditorsupp.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -270,7 +270,7 @@
 			children = (
 				AB1750450CEF5A0D003AF128 /* libengine.a */,
 				AB1750470CEF5A0D003AF128 /* libeditor.a */,
-				AB1750490CEF5A0D003AF128 /* libeditor.a */,
+				AB1750490CEF5A0D003AF128 /* libeditorsupp.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -516,10 +516,10 @@
 			remoteRef = AB1750460CEF5A0D003AF128 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		AB1750490CEF5A0D003AF128 /* libeditor.a */ = {
+		AB1750490CEF5A0D003AF128 /* libeditorsupp.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libeditor.a;
+			path = libeditorsupp.a;
 			remoteRef = AB1750480CEF5A0D003AF128 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
