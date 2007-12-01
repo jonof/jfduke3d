@@ -2,9 +2,9 @@
 
 SRC=source
 OBJ=obj
-EROOT=..\build
+EROOT=engine
 EINC=$(EROOT)\include
-EOBJ=eobj
+ELIB=$(EROOT)\obj.msc
 INC=$(SRC)
 o=obj
 
@@ -121,29 +121,33 @@ EDITOROBJS=$(OBJ)\astub.$o \
 # TARGETS
 all: duke3d$(EXESUFFIX) build$(EXESUFFIX) ;
 
-duke3d$(EXESUFFIX): $(GAMEOBJS) $(EOBJ)\$(ENGINELIB)
+duke3d$(EXESUFFIX): $(GAMEOBJS) $(ELIB)\$(ENGINELIB)
 	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS /LIBPATH:$(DXROOT)\lib $(flags_link) /MAP $** $(LIBS) msvcrt.lib
 	
-build$(EXESUFFIX): $(EDITOROBJS) $(EOBJ)\$(ENGINELIB) $(EOBJ)\$(EDITORLIB)
+build$(EXESUFFIX): $(EDITOROBJS) $(ELIB)\$(ENGINELIB) $(ELIB)\$(EDITORLIB)
 	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS /LIBPATH:$(DXROOT)\lib $(flags_link) /MAP $** $(LIBS) msvcrt.lib
 
 !include Makefile.deps
 
 enginelib editorlib: AlwaysBuild
-	-mkdir $(EOBJ)
-	echo OBJ=$(MAKEDIR)\$(EOBJ) > $(EOBJ)\overrides.mak
-	echo CFLAGS=$(ENGINEOPTS) >> $(EOBJ)\overrides.mak
+	echo CFLAGS=$(ENGINEOPTS) > engineoverrides.mak
 	cd $(EROOT)
-	nmake /f Makefile.msvc "OVERRIDES=$(MAKEDIR)\$(EOBJ)\overrides.mak" $@
+	nmake /f Makefile.msvc "OVERRIDES=$(MAKEDIR)\engineoverrides.mak" $@
 	cd $(MAKEDIR)
 
 AlwaysBuild: ;
-$(EOBJ)\$(EDITORLIB): editorlib ;
-$(EOBJ)\$(ENGINELIB): enginelib ;
+$(ELIB)\$(EDITORLIB): editorlib ;
+$(ELIB)\$(ENGINELIB): enginelib ;
 
 # PHONIES	
 clean:
-	-del /q $(OBJ)\* duke3d$(EXESUFFIX) build$(EXESUFFIX)
+	-del /q $(OBJ)\*
+	cd $(EROOT)
+	nmake /f Makefile.msvc $@
+	cd $(MAKEDIR)
 	
 veryclean: clean
-	-del /q $(EOBJ)\*
+	-del /q duke3d$(EXESUFFIX) build$(EXESUFFIX)
+	cd $(EROOT)
+	nmake /f Makefile.msvc $@
+	cd $(MAKEDIR)

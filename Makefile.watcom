@@ -2,9 +2,9 @@
 
 SRC=source
 OBJ=obj
-EROOT=..\build
+EROOT=engine
 EINC=$(EROOT)\include
-EOBJ=eobj
+ELIB=$(EROOT)\obj.watcom
 INC=$(SRC)
 o=obj
 
@@ -103,43 +103,41 @@ EDITOROBJS=$(OBJ)\astub.$o
 all: duke3d$(EXESUFFIX) build$(EXESUFFIX) .SYMBOLIC
 	%null
 
-duke3d$(EXESUFFIX): $(GAMEOBJS) $(OBJ)\gameres.res $(EOBJ)\$(ENGINELIB)
+duke3d$(EXESUFFIX): $(GAMEOBJS) $(OBJ)\gameres.res $(ELIB)\$(ENGINELIB)
 	wlink	NAME     $@ &
 		SYSTEM   WIN95 &
 		DEBUG    ALL &
 		FILE     { $(GAMEOBJS) $(ENGINEOBJS) } &
 		RESOURCE $(OBJ)\gameres.res &
 		LIBPATH  $(DXROOT)\lib &
-		LIBPATH  $(EOBJ) &
+		LIBPATH  $(ELIB) &
 		LIBRARY  { $(ENGINELIB) $(LIBS) }
 	
-build$(EXESUFFIX): $(EDITOROBJS) $(OBJ)\buildres.res $(EOBJ)\$(ENGINELIB) $(EOBJ)\$(EDITORLIB)
+build$(EXESUFFIX): $(EDITOROBJS) $(OBJ)\buildres.res $(ELIB)\$(ENGINELIB) $(ELIB)\$(EDITORLIB)
 	wlink	NAME     $@ &
 		SYSTEM   WIN95 &
 		DEBUG    ALL &
 		FILE     { $(EDITOROBJS) } &
 		RESOURCE $(OBJ)\buildres.res &
 		LIBPATH  $(DXROOT)\lib &
-		LIBPATH  $(EOBJ) &
+		LIBPATH  $(ELIB) &
 		LIBRARY  { $(LIBS) $(ENGINELIB) $(EDITORLIB) }
 
 !include Makefile.deps
 
 cwd=$+ $(%cwd) $-
 enginelib editorlib: .SYMBOLIC
-	-mkdir $(EOBJ)
-	%write $(EOBJ)\overrides.mak OBJ=$(cwd)\$(EOBJ)
-	%write $(EOBJ)\overrides.mak CFLAGS=$(ENGINEOPTS)
+	%write engineoverrides.makw CFLAGS=$(ENGINEOPTS)
 	cd $(EROOT)
-	wmake -f Makefile.watcom OVERRIDES=$(cwd)\$(EOBJ)\overrides.mak $@
+	wmake -f Makefile.watcom OVERRIDES=$(cwd)\engineoverrides.makw $@
 	cd $(cwd)
 
-$(EOBJ)\$(EDITORLIB): editorlib .SYMBOLIC
-$(EOBJ)\$(ENGINELIB): enginelib .SYMBOLIC
+$(ELIB)\$(EDITORLIB): editorlib .SYMBOLIC
+$(ELIB)\$(ENGINELIB): enginelib .SYMBOLIC
 
 # PHONIES	
 clean: .SYMBOLIC
-	-del /q $(OBJ)\* duke3d$(EXESUFFIX) build$(EXESUFFIX)
+	-del /q $(OBJ)\*
 	
 veryclean: clean .SYMBOLIC
-	-del /q $(EOBJ)\*
+	-del /q duke3d$(EXESUFFIX) build$(EXESUFFIX)

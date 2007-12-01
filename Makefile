@@ -18,10 +18,10 @@ RELEASE?=1
 SRC=source
 RSRC=rsrc
 OBJ=obj
-EROOT=../build
+EROOT=engine
 ESRC=$(EROOT)/src
 EINC=$(EROOT)/include
-EOBJ=eobj
+ELIB=$(EROOT)/obj.gnu
 INC=$(SRC)
 o=o
 
@@ -120,16 +120,16 @@ endif
 GAMEOBJS+= $(AUDIOLIBOBJ)
 OURCFLAGS+= $(BUILDCFLAGS)
 
-.PHONY: clean all engine $(EOBJ)/$(ENGINELIB) $(EOBJ)/$(EDITORLIB)
+.PHONY: clean all engine $(ELIB)/$(ENGINELIB) $(ELIB)/$(EDITORLIB)
 
 # TARGETS
 
 # Invoking Make from the terminal in OSX just chains the build on to xcode
 ifeq ($(PLATFORM),DARWIN)
 ifeq ($(RELEASE),0)
-style=Development
+style=Debug
 else
-style=Deployment
+style=Release
 endif
 .PHONY: alldarwin
 alldarwin:
@@ -138,24 +138,23 @@ endif
 
 all: duke3d$(EXESUFFIX) build$(EXESUFFIX)
 
-duke3d$(EXESUFFIX): $(GAMEOBJS) $(EOBJ)/$(ENGINELIB)
+duke3d$(EXESUFFIX): $(GAMEOBJS) $(ELIB)/$(ENGINELIB)
 	$(CC) $(CFLAGS) $(OURCFLAGS) -o $@ $^ $(JFAUDLIBS) $(LIBS) $(STDCPPLIB) -Wl,-Map=$@.map
 	
-build$(EXESUFFIX): $(EDITOROBJS) $(EOBJ)/$(EDITORLIB) $(EOBJ)/$(ENGINELIB)
+build$(EXESUFFIX): $(EDITOROBJS) $(ELIB)/$(EDITORLIB) $(ELIB)/$(ENGINELIB)
 	$(CC) $(CFLAGS) $(OURCFLAGS) -o $@ $^ $(LIBS) -Wl,-Map=$@.map
 
 include Makefile.deps
 
 .PHONY: enginelib editorlib
 enginelib editorlib:
-	-mkdir $(EOBJ)
-	$(MAKE) -C $(EROOT) "OBJ=$(CURDIR)/$(EOBJ)" \
+	$(MAKE) -C $(EROOT) \
 		SUPERBUILD=$(SUPERBUILD) POLYMOST=$(POLYMOST) \
 		USE_OPENGL=$(USE_OPENGL) DYNAMIC_OPENGL=$(DYNAMIC_OPENGL) \
 		NOASM=$(NOASM) RELEASE=$(RELEASE) $@
 	
-$(EOBJ)/$(ENGINELIB): enginelib
-$(EOBJ)/$(EDITORLIB): editorlib
+$(ELIB)/$(ENGINELIB): enginelib
+$(ELIB)/$(EDITORLIB): editorlib
 
 # RULES
 $(OBJ)/%.$o: $(SRC)/%.nasm
@@ -196,10 +195,12 @@ ifeq ($(PLATFORM),DARWIN)
 	cd osx && xcodebuild -target All clean
 else
 	-rm -f $(OBJ)/*
+	$(MAKE) -C $(EROOT) clean
 endif
 	
 veryclean: clean
 ifeq ($(PLATFORM),DARWIN)
 else
-	-rm -f $(EOBJ)/* duke3d$(EXESUFFIX) build$(EXESUFFIX) core*
+	-rm -f duke3d$(EXESUFFIX) build$(EXESUFFIX) core*
+	$(MAKE) -C $(EROOT) veryclean
 endif
