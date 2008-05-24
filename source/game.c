@@ -47,7 +47,7 @@ Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
 
 #include "util_lib.h"
 
-#define VERSION "1.999"
+#define VERSION "20080524"
 
 #define HEAD   "Duke Nukem 3D Unregistered Shareware v"VERSION" "
 
