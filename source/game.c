@@ -9372,9 +9372,27 @@ void dobonus(char bonusonly)
 
             KB_FlushKeyBoardQueue();
             totalclock = 0;
-            while(!KB_KeyWaiting() && totalclock < 120) { handleevents(); getpackets(); }
+			if (PLUTOPAK) {
+                while(!KB_KeyWaiting() && totalclock < 120) { handleevents(); getpackets(); }
+			} else {
+                while(!KB_KeyWaiting()) { handleevents(); getpackets(); }
+			}
 
             ENDANM:
+
+			if (!PLUTOPAK) {
+				FX_StopAllSounds();
+				clearsoundlocks();
+				sound(ENDSEQVOL3SND4);
+
+				clearview(0l);
+				nextpage();
+
+				playanm("DUKETEAM.ANM",4);
+
+				KB_FlushKeyboardQueue();
+                while(!KB_KeyWaiting()) { handleevents(); getpackets(); }
+			}
 
             FX_StopAllSounds();
             clearsoundlocks();
