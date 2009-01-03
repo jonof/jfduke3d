@@ -34,12 +34,9 @@ extern char everyothertime;
 static short which_palookup = 9;
 char useprecache = 1;
 
-static char precachehightile[2][MAXTILES>>3];
-static int  precachecount;
-
 static void tloadtile(short tilenume, char type)
 {
-    if ((picanm[tilenume]&63) > 0) {
+	if ((picanm[tilenume]&63) > 0) {
 		int i,j;
 
 		if ((picanm[tilenume]&192)==192) {
@@ -50,14 +47,12 @@ static void tloadtile(short tilenume, char type)
 			j = tilenume + (picanm[tilenume]&63);
 		}
 		for (;i<=j;i++) {
-			if (!(gotpic[i>>3] & pow2char[i&7])) precachecount++;
+			if (useprecache) polymost_precache(tilenume, 0, type);
 			gotpic[i>>3] |= pow2char[i&7];
-			precachehightile[type][i>>3] |= pow2char[i&7];
 		}
-    } else {
-		if (!(gotpic[tilenume>>3] & pow2char[tilenume&7])) precachecount++;
+	} else {
+		if (useprecache) polymost_precache(tilenume, 0, type);
 		gotpic[tilenume>>3] |= pow2char[tilenume&7];
-		precachehightile[type][tilenume>>3] |= pow2char[tilenume&7];
 	}
 }
 
@@ -283,11 +278,13 @@ void precachenecessarysounds(void)
 
 void cacheit(void)
 {
-    long i,j,k, pc=0;
+    long i,j,k;
     long tc;
 	unsigned long starttime, endtime;
+	int done, total;
 	
 	starttime = getticks();
+	polymost_precache_begin();
 	
     precachenecessarysounds();
 
@@ -306,7 +303,7 @@ void cacheit(void)
     {
         tloadtile( sector[i].floorpicnum, 0 );
         tloadtile( sector[i].ceilingpicnum, 0 );
-        if( sector[i].ceilingpicnum == LA)	// JBF 20040509: if( waloff[sector[i].ceilingpicnum] == LA) WTF??!??!?!?
+        if( sector[i].ceilingpicnum == LA)
         {
             tloadtile(LA+1, 0);
             tloadtile(LA+2, 0);
@@ -321,42 +318,29 @@ void cacheit(void)
         }
     }
 
-    tc = totalclock;
-    j = 0;
-
-	for(i=0;i<MAXTILES;i++) {
-		if (!(i&7) && !gotpic[i>>3]) {
-			i+=7;
-			continue;
-		}
-		if(gotpic[i>>3] & pow2char[i&7]) {
-			if (waloff[i] == 0)
-				loadtile((short)i);
-
-			if (useprecache) { 
-				if (precachehightile[0][i>>3] & pow2char[i&7])
-					for (k=0; k<MAXPALOOKUPS; k++)
-						polymost_precache(i,k,0);
-
-				if (precachehightile[1][i>>3] & pow2char[i&7])
-					for (k=0; k<MAXPALOOKUPS; k++)
-						polymost_precache(i,k,1);
-			}
-
-			j++;
-			pc++;
-		} else continue;
-
-		if((j&7) == 0) { handleevents(); getpackets(); }
-		if (totalclock - tc > TICRATE/4) {
-			sprintf(tempbuf,"Loading textures ... %ld%%\n",min(100,100*pc/precachecount));
-			dofrontscreens(tempbuf);
-			tc = totalclock;
-		}
+    if (useprecache) {
+        while (polymost_precache_run(&done, &total)) {
+		handleevents();
+		getpackets();
+		sprintf(tempbuf,"Loading textures ... %d / %d\n",done,total);
+		dofrontscreens(tempbuf);
+	}
     }
 
-    clearbufbyte(gotpic,sizeof(gotpic),0L);
-	
+    j = 0;
+    for(i=0;i<MAXTILES;i++) {
+	if(gotpic[i>>3] & pow2char[i&7]) {
+		if (waloff[i] == 0)
+			loadtile((short)i);
+
+		j++;
+	} else continue;
+
+	if((j&7) == 0) { handleevents(); getpackets(); }
+    }
+
+	clearbufbyte(gotpic,sizeof(gotpic),0L);
+
 	endtime = getticks();
 	OSD_Printf("Cache time: %dms\n", endtime-starttime);
 }
@@ -1478,9 +1462,7 @@ if (!VOLUMEONE) {
     }
 }
 
-    precachecount = 0;
     clearbufbyte(gotpic,sizeof(gotpic),0L);
-    clearbufbyte(precachehightile, sizeof(precachehightile), 0l);
     //clearbufbyte(hittype,sizeof(hittype),0l);	// JBF 20040531: yes? no?
 
     prelevel(g);
