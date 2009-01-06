@@ -577,7 +577,6 @@ int32 CONFIG_ReadSetup( void )
 	SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLAnisotropy", &glanisotropy);
 	SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLUseTextureCompr", &glusetexcompr);
 	SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLUseCompressedTextureCache", &glusetexcache);
-	SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLUseTextureCacheCompression", &glusetexcachecompression);
 
 	SCRIPT_GetNumber( scripthandle, "Setup", "ForceSetup",&ForceSetup);
 	SCRIPT_GetNumber( scripthandle, "Misc", "Executions",&ud.executions); ud.executions++;
@@ -651,10 +650,10 @@ void CONFIG_WriteSetup( void )
 	SCRIPT_PutNumber( scripthandle, "Screen Setup", "Tilt",ud.screen_tilting,false,false);
 	SCRIPT_PutNumber( scripthandle, "Screen Setup", "Messages",ud.fta_on,false,false);
 	SCRIPT_PutNumber( scripthandle, "Screen Setup", "Out",ud.lockout,false,false);
-	SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenWidth",ScreenWidth,false,false);	// JBF 20031206
-	SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenHeight",ScreenHeight,false,false);	// JBF 20031206
-	SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenMode",ScreenMode,false,false);	// JBF 20031206
-	SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenBPP",ScreenBPP,false,false);	// JBF 20040523
+	SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenWidth",ScreenWidth,false,false);
+	SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenHeight",ScreenHeight,false,false);
+	SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenMode",ScreenMode,false,false);
+	SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenBPP",ScreenBPP,false,false);
 #ifdef RENDERTYPEWIN
 	SCRIPT_PutNumber( scripthandle, "Screen Setup", "MaxRefreshFreq",maxrefreshfreq,false,false);
 #endif
@@ -662,7 +661,6 @@ void CONFIG_WriteSetup( void )
 	SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLAnisotropy",glanisotropy,false,false);
 	SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLUseTextureCompr",glusetexcompr,false,false);
 	SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLUseCompressedTextureCache", glusetexcache,false,false);
-	SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLUseTextureCacheCompression", glusetexcachecompression,false,false);
 	SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenSize",ud.screen_size,false,false);
 	SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenGamma",ud.brightness,false,false);
 
