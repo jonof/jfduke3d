@@ -282,7 +282,7 @@ void cacheit(void)
     long tc;
 	unsigned long starttime, endtime;
 	int done, total, percent;
-	int lastdone = -1, lasttotal = -1, lastpercent = -1;
+	int lastdone = -1, lasttotal = -1, lastpercent = -1, lastclock;
 	
 	starttime = getticks();
 	polymost_precache_begin();
@@ -321,6 +321,7 @@ void cacheit(void)
 
     if (useprecache) {
 	int cycles = 0;
+	lastclock = totalclock;
         while (polymost_precache_run(&done, &total)) {
 		if (done == lastdone && total == lasttotal && (cycles++ & 1023) > 0) {
 			continue;
@@ -333,11 +334,12 @@ void cacheit(void)
 		handleevents();
 		getpackets();
 
-		if (percent == lastpercent) {
+		if (percent == lastpercent || lastclock - totalclock == 0) {
 			continue;
 		}
 
-		lastpercent = percent;		
+		lastpercent = percent;
+		lastclock = totalclock;
 
 		sprintf(tempbuf,"Loading textures ... %d%%\n",percent);
 		dofrontscreens(tempbuf);
