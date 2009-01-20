@@ -7488,6 +7488,8 @@ void Startup(void)
 {
 	int i;
 
+	polymosttexfullbright = 240;
+	
 	if (initengine()) {
 	   wm_msgbox("Build Engine Initialisation Error",
 			   "There was a problem initialising the Build engine: %s", engineerrstr);

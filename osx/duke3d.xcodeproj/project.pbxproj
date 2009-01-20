@@ -22,10 +22,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		AB17504A0CEF5A19003AF128 /* libengine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB1750450CEF5A0D003AF128 /* libengine.a */; };
-		AB1750590CEF5A4D003AF128 /* libengine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB1750450CEF5A0D003AF128 /* libengine.a */; };
-		AB17505A0CEF5A51003AF128 /* libeditor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB1750470CEF5A0D003AF128 /* libeditor.a */; };
-		AB17505B0CEF5A52003AF128 /* libeditorsupp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB1750490CEF5A0D003AF128 /* libeditorsupp.a */; };
+		AB6724E00F0F0F51000C7D92 /* libengine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB6724C90F0F0E9A000C7D92 /* libengine.a */; };
 		AB69BD220A73C36100F3DCB8 /* actors.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD120A73C36100F3DCB8 /* actors.c */; };
 		AB69BD230A73C36100F3DCB8 /* config.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD130A73C36100F3DCB8 /* config.c */; };
 		AB69BD240A73C36100F3DCB8 /* game.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD140A73C36100F3DCB8 /* game.c */; };
@@ -70,54 +67,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		AB1750440CEF5A0D003AF128 /* PBXContainerItemProxy */ = {
+		AB081C790F174BF500B59763 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = AB735F490A29A2DC003261DC;
-			remoteInfo = engine;
-		};
-		AB1750460CEF5A0D003AF128 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = AB735FCC0A29A916003261DC;
-			remoteInfo = editor;
-		};
-		AB1750480CEF5A0D003AF128 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = AB3FE4550C04336F00D5DBDC;
-			remoteInfo = editorsupp;
-		};
-		AB1751120CEF5AA2003AF128 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = AB735F480A29A2DC003261DC;
-			remoteInfo = engine;
-		};
-		AB1751140CEF5ABA003AF128 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = AB735F480A29A2DC003261DC;
-			remoteInfo = engine;
-		};
-		AB1751160CEF5ABA003AF128 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = AB735FCB0A29A916003261DC;
-			remoteInfo = editor;
-		};
-		AB1751180CEF5ABA003AF128 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = AB3FE44A0C04336F00D5DBDC;
-			remoteInfo = editorsupp;
+			remoteGlobalIDString = AB67256E0F0F6622000C7D92 /* texcachegen */;
+			remoteInfo = texcachegen;
 		};
 		AB2A91E30A776FBF00C8D71F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -125,6 +80,55 @@
 			proxyType = 1;
 			remoteGlobalIDString = ABF441750A2828620057225F;
 			remoteInfo = jfaud;
+		};
+		AB6724C80F0F0E9A000C7D92 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = AB735F490A29A2DC003261DC;
+			remoteInfo = engine;
+		};
+		AB6724CA0F0F0E9A000C7D92 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = AB735FCC0A29A916003261DC;
+			remoteInfo = editor;
+		};
+		AB6724CC0F0F0E9A000C7D92 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = AB3FE4550C04336F00D5DBDC;
+			remoteInfo = editorsupp;
+		};
+		AB6724CE0F0F0E9A000C7D92 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = ABAE9AD20F0B307500A528DC;
+			remoteInfo = arttool;
+		};
+		AB6724D00F0F0E9A000C7D92 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = ABAE9C2E0F0CC80200A528DC;
+			remoteInfo = kextract;
+		};
+		AB6724D20F0F0E9A000C7D92 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = ABAE9C390F0CC81900A528DC;
+			remoteInfo = kgroup;
+		};
+		AB6724DE0F0F0F46000C7D92 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = AB735F480A29A2DC003261DC;
+			remoteInfo = engine;
 		};
 		ABD769230A73CE1A006C27C1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -200,7 +204,7 @@
 		AB69BD210A73C36100F3DCB8 /* testcd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = testcd.c; sourceTree = "<group>"; };
 		AB69BD330A73C3EC00F3DCB8 /* game.osxmain.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = game.osxmain.nib; sourceTree = "<group>"; };
 		AB69BD340A73C3EC00F3DCB8 /* startwin.game.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = startwin.game.nib; sourceTree = "<group>"; };
-		AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = engine.xcodeproj; path = ../engine/osx/engine.xcodeproj; sourceTree = "<group>"; };
+		AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = engine.xcodeproj; path = ../engine/xcode/engine.xcodeproj; sourceTree = "<group>"; };
 		ABD768D80A73CB63006C27C1 /* _control.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _control.h; sourceTree = "<group>"; };
 		ABD768D90A73CB63006C27C1 /* _scrplib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _scrplib.h; sourceTree = "<group>"; };
 		ABD768DA0A73CB63006C27C1 /* animlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = animlib.c; sourceTree = "<group>"; };
@@ -246,7 +250,7 @@
 				ABD769270A73CE22006C27C1 /* jfaud.framework in Frameworks */,
 				ABD769040A73CBDE006C27C1 /* SDL.framework in Frameworks */,
 				ABD769310A73CE6D006C27C1 /* AppKit.framework in Frameworks */,
-				AB17504A0CEF5A19003AF128 /* libengine.a in Frameworks */,
+				AB6724E00F0F0F51000C7D92 /* libengine.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,21 +260,22 @@
 			files = (
 				ABD76A1F0A73D1A5006C27C1 /* AppKit.framework in Frameworks */,
 				ABD76A200A73D1A6006C27C1 /* SDL.framework in Frameworks */,
-				AB1750590CEF5A4D003AF128 /* libengine.a in Frameworks */,
-				AB17505A0CEF5A51003AF128 /* libeditor.a in Frameworks */,
-				AB17505B0CEF5A52003AF128 /* libeditorsupp.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		AB17503F0CEF5A0D003AF128 /* Products */ = {
+		AB6724C00F0F0E9A000C7D92 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AB1750450CEF5A0D003AF128 /* libengine.a */,
-				AB1750470CEF5A0D003AF128 /* libeditor.a */,
-				AB1750490CEF5A0D003AF128 /* libeditorsupp.a */,
+				AB6724C90F0F0E9A000C7D92 /* libengine.a */,
+				AB6724CB0F0F0E9A000C7D92 /* libeditor.a */,
+				AB6724CD0F0F0E9A000C7D92 /* libeditorsupp.a */,
+				AB6724CF0F0F0E9A000C7D92 /* arttool */,
+				AB6724D10F0F0E9A000C7D92 /* kextract */,
+				AB6724D30F0F0E9A000C7D92 /* kgroup */,
+				AB081C7A0F174BF500B59763 /* texcachegen */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -443,7 +448,7 @@
 			);
 			dependencies = (
 				AB2A91E40A776FBF00C8D71F /* PBXTargetDependency */,
-				AB1751130CEF5AA2003AF128 /* PBXTargetDependency */,
+				AB6724DF0F0F0F46000C7D92 /* PBXTargetDependency */,
 			);
 			name = JFDuke3D;
 			productName = JFDuke3D;
@@ -462,9 +467,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				AB1751150CEF5ABA003AF128 /* PBXTargetDependency */,
-				AB1751170CEF5ABA003AF128 /* PBXTargetDependency */,
-				AB1751190CEF5ABA003AF128 /* PBXTargetDependency */,
 			);
 			name = "Build Editor for JFDuke3D";
 			productName = "Build Editor";
@@ -477,14 +479,13 @@
 		AB69BCF50A73C1A800F3DCB8 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = AB69BCF60A73C1A800F3DCB8 /* Build configuration list for PBXProject "duke3d" */;
-			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 0;
 			mainGroup = AB69BCF30A73C1A800F3DCB8;
 			productRefGroup = AB69BD060A73C21E00F3DCB8 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = AB17503F0CEF5A0D003AF128 /* Products */;
+					ProductGroup = AB6724C00F0F0E9A000C7D92 /* Products */;
 					ProjectRef = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
 				},
 				{
@@ -502,25 +503,53 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		AB1750450CEF5A0D003AF128 /* libengine.a */ = {
+		AB081C7A0F174BF500B59763 /* texcachegen */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = texcachegen;
+			remoteRef = AB081C790F174BF500B59763 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		AB6724C90F0F0E9A000C7D92 /* libengine.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libengine.a;
-			remoteRef = AB1750440CEF5A0D003AF128 /* PBXContainerItemProxy */;
+			remoteRef = AB6724C80F0F0E9A000C7D92 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		AB1750470CEF5A0D003AF128 /* libeditor.a */ = {
+		AB6724CB0F0F0E9A000C7D92 /* libeditor.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libeditor.a;
-			remoteRef = AB1750460CEF5A0D003AF128 /* PBXContainerItemProxy */;
+			remoteRef = AB6724CA0F0F0E9A000C7D92 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		AB1750490CEF5A0D003AF128 /* libeditorsupp.a */ = {
+		AB6724CD0F0F0E9A000C7D92 /* libeditorsupp.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libeditorsupp.a;
-			remoteRef = AB1750480CEF5A0D003AF128 /* PBXContainerItemProxy */;
+			remoteRef = AB6724CC0F0F0E9A000C7D92 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		AB6724CF0F0F0E9A000C7D92 /* arttool */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = arttool;
+			remoteRef = AB6724CE0F0F0E9A000C7D92 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		AB6724D10F0F0E9A000C7D92 /* kextract */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = kextract;
+			remoteRef = AB6724D00F0F0E9A000C7D92 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		AB6724D30F0F0E9A000C7D92 /* kgroup */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = kgroup;
+			remoteRef = AB6724D20F0F0E9A000C7D92 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		ABD769240A73CE1A006C27C1 /* jfaud.framework */ = {
@@ -607,30 +636,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		AB1751130CEF5AA2003AF128 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = engine;
-			targetProxy = AB1751120CEF5AA2003AF128 /* PBXContainerItemProxy */;
-		};
-		AB1751150CEF5ABA003AF128 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = engine;
-			targetProxy = AB1751140CEF5ABA003AF128 /* PBXContainerItemProxy */;
-		};
-		AB1751170CEF5ABA003AF128 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = editor;
-			targetProxy = AB1751160CEF5ABA003AF128 /* PBXContainerItemProxy */;
-		};
-		AB1751190CEF5ABA003AF128 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = editorsupp;
-			targetProxy = AB1751180CEF5ABA003AF128 /* PBXContainerItemProxy */;
-		};
 		AB2A91E40A776FBF00C8D71F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = jfaud;
 			targetProxy = AB2A91E30A776FBF00C8D71F /* PBXContainerItemProxy */;
+		};
+		AB6724DF0F0F0F46000C7D92 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = engine;
+			targetProxy = AB6724DE0F0F0F46000C7D92 /* PBXContainerItemProxy */;
 		};
 		ABD769780A73D18A006C27C1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -671,15 +685,15 @@
 					RENDERTYPESDL,
 				);
 				GCC_VERSION_i386 = 4.0;
-				GCC_VERSION_ppc = 3.3;
+				GCC_VERSION_ppc = 4.0;
 				HEADER_SEARCH_PATHS = (
 					../source,
 					../engine/include,
 				);
 				MACOSX_DEPLOYMENT_TARGET_i386 = 10.4;
-				MACOSX_DEPLOYMENT_TARGET_ppc = 10.2;
+				MACOSX_DEPLOYMENT_TARGET_ppc = 10.3;
 				SDKROOT_i386 = /Developer/SDKs/MacOSX10.4u.sdk;
-				SDKROOT_ppc = /Developer/SDKs/MacOSX10.2.8.sdk;
+				SDKROOT_ppc = /Developer/SDKs/MacOSX10.3.9.sdk;
 			};
 			name = Debug;
 		};
@@ -708,15 +722,15 @@
 					RENDERTYPESDL,
 				);
 				GCC_VERSION_i386 = 4.0;
-				GCC_VERSION_ppc = 3.3;
+				GCC_VERSION_ppc = 4.0;
 				HEADER_SEARCH_PATHS = (
 					../source,
 					../engine/include,
 				);
 				MACOSX_DEPLOYMENT_TARGET_i386 = 10.4;
-				MACOSX_DEPLOYMENT_TARGET_ppc = 10.2;
+				MACOSX_DEPLOYMENT_TARGET_ppc = 10.3;
 				SDKROOT_i386 = /Developer/SDKs/MacOSX10.4u.sdk;
-				SDKROOT_ppc = /Developer/SDKs/MacOSX10.2.8.sdk;
+				SDKROOT_ppc = /Developer/SDKs/MacOSX10.3.9.sdk;
 			};
 			name = Release;
 		};
