@@ -40,7 +40,6 @@ OURCFLAGS=$(debug) -W -Wall -Wimplicit -Wno-char-subscripts -Wno-unused \
 	-I$(INC) -I$(EINC) -I$(SRC)/jmact -I$(SRC)/jaudiolib -I../jfaud/inc
 OURCXXFLAGS=-fno-exceptions -fno-rtti
 LIBS=-lm
-JFAUDLIBS=../jfaud/libjfaud.a #../jfaud/mpadec/libmpadec/libmpadec.a
 NASMFLAGS=-s #-g
 EXESUFFIX=
 
@@ -54,7 +53,6 @@ JMACTOBJ=$(OBJ)/util_lib.$o \
 
 AUDIOLIB_FX_STUB=$(OBJ)/audiolib_fxstub.$o
 AUDIOLIB_MUSIC_STUB=$(OBJ)/audiolib_musicstub.$o
-AUDIOLIB_JFAUD=$(OBJ)/jfaud_sounds.$o
 AUDIOLIB_FX=$(OBJ)/mv_mix.$o \
 	  $(OBJ)/mv_mix16.$o \
 	  $(OBJ)/mvreverb.$o \
@@ -100,8 +98,7 @@ endif
 
 ifeq ($(RENDERTYPE),SDL)
 	OURCFLAGS+= $(subst -Dmain=SDL_main,,$(shell sdl-config --cflags))
-	#AUDIOLIBOBJ=$(AUDIOLIB_MUSIC_STUB) $(AUDIOLIB_FX_STUB) $(OBJ)/sounds.$o
-	AUDIOLIBOBJ=$(AUDIOLIB_JFAUD)
+	AUDIOLIBOBJ=$(AUDIOLIB_MUSIC_STUB) $(AUDIOLIB_FX_STUB) $(OBJ)/sounds.$o
 
 	ifeq (1,$(HAVE_GTK2))
 		OURCFLAGS+= -DHAVE_GTK2 $(shell pkg-config --cflags gtk+-2.0)
@@ -113,8 +110,7 @@ ifeq ($(RENDERTYPE),SDL)
 	EDITOROBJS+= $(OBJ)/build_icon.$o
 endif
 ifeq ($(RENDERTYPE),WIN)
-	#AUDIOLIBOBJ=$(AUDIOLIB_MUSIC) $(AUDIOLIB_FX) $(OBJ)/sounds.$o
-	AUDIOLIBOBJ=$(AUDIOLIB_JFAUD)
+	AUDIOLIBOBJ=$(AUDIOLIB_MUSIC) $(AUDIOLIB_FX) $(OBJ)/sounds.$o
 endif
 
 GAMEOBJS+= $(AUDIOLIBOBJ)
@@ -139,10 +135,10 @@ endif
 all: duke3d$(EXESUFFIX) build$(EXESUFFIX)
 
 duke3d$(EXESUFFIX): $(GAMEOBJS) $(ELIB)/$(ENGINELIB)
-	$(CC) $(CFLAGS) $(OURCFLAGS) -o $@ $^ $(JFAUDLIBS) $(LIBS) $(STDCPPLIB) -Wl,-Map=$@.map
+	$(CXX) $(CXXFLAGS) $(OURCXXFLAGS) $(OURCFLAGS) -o $@ $^ $(LIBS) -Wl,-Map=$@.map
 	
 build$(EXESUFFIX): $(EDITOROBJS) $(ELIB)/$(EDITORLIB) $(ELIB)/$(ENGINELIB)
-	$(CC) $(CFLAGS) $(OURCFLAGS) -o $@ $^ $(LIBS) -Wl,-Map=$@.map
+	$(CXX) $(CXXFLAGS) $(OURCXXFLAGS) $(OURCFLAGS) -o $@ $^ $(LIBS) -Wl,-Map=$@.map
 
 include Makefile.deps
 
