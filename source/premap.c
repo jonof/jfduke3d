@@ -323,6 +323,9 @@ void cacheit(void)
 	int cycles = 0;
 	lastclock = totalclock;
         while (polymost_precache_run(&done, &total)) {
+		if (total == 0) {
+			break;
+		}
 		if (done == lastdone && total == lasttotal && (cycles++ & 1023) > 0) {
 			continue;
 		}
