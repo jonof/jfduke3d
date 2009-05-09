@@ -37,7 +37,7 @@ CC=gcc
 CXX=g++
 OURCFLAGS=$(debug) -W -Wall -Wimplicit -Wno-char-subscripts -Wno-unused \
 	-fno-pic -funsigned-char -fno-strict-aliasing -DNO_GCC_BUILTINS -DNOCOPYPROTECT \
-	-I$(INC) -I$(EINC) -I$(SRC)/jmact -I$(SRC)/jaudiolib -I../jfaud/inc
+	-I$(INC) -I$(EINC) -I$(SRC)/jmact -I$(SRC)/jaudiolib
 OURCXXFLAGS=-fno-exceptions -fno-rtti
 LIBS=-lm
 NASMFLAGS=-s #-g
@@ -199,4 +199,10 @@ ifeq ($(PLATFORM),DARWIN)
 else
 	-rm -f duke3d$(EXESUFFIX) build$(EXESUFFIX) core*
 	$(MAKE) -C $(EROOT) veryclean
+endif
+
+ifeq ($(PLATFORM),WINDOWS)
+.PHONY: datainst
+datainst:
+	cd datainst && $(MAKE) GAME=DUKE3D
 endif
