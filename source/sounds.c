@@ -52,7 +52,8 @@ void SoundStartup( void )
    int32 status;
 
    // if they chose None lets return
-   if (FXDevice < 0) return;
+   //if (FXDevice < 0) return;
+	FXDevice = ASS_AutoDetect;
 
    status = FX_Init( FXDevice, NumVoices, NumChannels, NumBits, MixRate );
    if ( status == FX_Ok ) {

@@ -1291,7 +1291,6 @@ void waitforeverybody()
 	while (1)
 	{
 		handleevents();
-		AudioUpdate();
 
 		if (quitevent || keystatus[1]) gameexit("");
 

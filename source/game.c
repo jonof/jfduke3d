@@ -445,7 +445,6 @@ void getpackets(void)
     input *osyn, *nsyn;
 
 	sampletimer();
-    AudioUpdate();	    
 
     // only dispatch commands here when not in a game
     if( !(ps[myconnectindex].gm&MODE_GAME) ) { OSD_DispatchQueued(); }
@@ -775,7 +774,6 @@ void faketimerhandler()
     }
 
 	sampletimer();
-	AudioUpdate();
     if ((totalclock < ototalclock+TICSPERFRAME) || (ready2send == 0)) return;
     ototalclock += TICSPERFRAME;
 
@@ -7992,8 +7990,6 @@ if (VOLUMEONE) {
 		    }
 	    }
 
-	    AudioUpdate();
-
 	    OSD_DispatchQueued();
 	    
         if( ud.recstat == 2 || ud.multimode > 1 || ( ud.show_help == 0 && (ps[myconnectindex].gm&MODE_MENU) != MODE_MENU ) )
@@ -9568,7 +9564,6 @@ void dobonus(char bonusonly)
 	    int yy, zz;
 
 	    handleevents();
-	    AudioUpdate();
 	    
         if(ps[myconnectindex].gm&MODE_EOL)
         {

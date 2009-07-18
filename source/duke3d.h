@@ -32,7 +32,6 @@ extern "C" {
 #endif
 
 // JBF
-#include "a.h"
 #include "build.h"
 #include "cache1d.h"
 #include "pragmas.h"
