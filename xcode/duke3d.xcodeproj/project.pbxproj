@@ -707,6 +707,7 @@
 					../source/jaudiolib/include,
 				);
 				INFOPLIST_FILE = "JFDuke3D-Info.plist";
+				OTHER_LDFLAGS = "-lstdc++";
 				PREBINDING = NO;
 				PRODUCT_NAME = JFDuke3D;
 				SKIP_INSTALL = YES;
@@ -723,6 +724,7 @@
 					../source/jaudiolib/include,
 				);
 				INFOPLIST_FILE = "JFDuke3D-Info.plist";
+				OTHER_LDFLAGS = "-lstdc++";
 				PREBINDING = NO;
 				PRODUCT_NAME = JFDuke3D;
 				SKIP_INSTALL = YES;

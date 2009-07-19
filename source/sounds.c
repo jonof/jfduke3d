@@ -54,6 +54,10 @@ void SoundStartup( void )
    // if they chose None lets return
    //if (FXDevice < 0) return;
 	FXDevice = ASS_AutoDetect;
+	NumVoices = 32;
+	NumChannels = 1;
+	NumBits = 8;
+	MixRate = 11025;
 
    status = FX_Init( FXDevice, NumVoices, NumChannels, NumBits, MixRate );
    if ( status == FX_Ok ) {
@@ -68,6 +72,8 @@ void SoundStartup( void )
 	  sprintf(tempbuf, "Sound startup error: %s", FX_ErrorString( FX_Error ));
 	  gameexit(tempbuf);
    }
+	
+	FXDevice = 0;
 }
 
 /*
