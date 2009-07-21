@@ -21,7 +21,7 @@ OBJ=obj
 EROOT=engine
 ESRC=$(EROOT)/src
 EINC=$(EROOT)/include
-ELIB=$(EROOT)/obj.gnu
+ELIB=$(EROOT)
 INC=$(SRC)
 o=o
 
@@ -33,11 +33,14 @@ else
   debug=-ggdb -O0
 endif
 
+JAUDIOLIBDIR=$(SRC)/jaudiolib
+JAUDIOLIB=libjfaudiolib.a
+
 CC=gcc
 CXX=g++
 OURCFLAGS=$(debug) -W -Wall -Wimplicit -Wno-char-subscripts -Wno-unused \
 	-fno-pic -funsigned-char -fno-strict-aliasing -DNO_GCC_BUILTINS -DNOCOPYPROTECT \
-	-I$(INC) -I$(EINC) -I$(SRC)/jmact -I$(SRC)/jaudiolib
+	-I$(INC) -I$(EINC) -I$(SRC)/jmact -I$(JAUDIOLIBDIR)/include
 OURCXXFLAGS=-fno-exceptions -fno-rtti
 LIBS=-lm
 NASMFLAGS=-s #-g
@@ -50,20 +53,6 @@ JMACTOBJ=$(OBJ)/util_lib.$o \
 	$(OBJ)/mouse.$o \
 	$(OBJ)/mathutil.$o \
 	$(OBJ)/scriplib.$o
-
-AUDIOLIB_FX_STUB=$(OBJ)/audiolib_fxstub.$o
-AUDIOLIB_MUSIC_STUB=$(OBJ)/audiolib_musicstub.$o
-AUDIOLIB_FX=$(OBJ)/mv_mix.$o \
-	  $(OBJ)/mv_mix16.$o \
-	  $(OBJ)/mvreverb.$o \
-	  $(OBJ)/pitch.$o \
-	  $(OBJ)/multivoc.$o \
-	  $(OBJ)/ll_man.$o \
-	  $(OBJ)/fx_man.$o \
-	  $(OBJ)/dsoundout.$o
-AUDIOLIB_MUSIC=$(OBJ)/midi.$o \
-	  $(OBJ)/mpu401.$o \
-	  $(OBJ)/music.$o
 
 GAMEOBJS=$(OBJ)/game.$o \
 	$(OBJ)/actors.$o \
@@ -80,6 +69,8 @@ GAMEOBJS=$(OBJ)/game.$o \
 	$(OBJ)/osdfuncs.$o \
 	$(OBJ)/osdcmds.$o \
 	$(OBJ)/grpscan.$o \
+	$(OBJ)/sounds.$o \
+	$(OBJ)/audiolib_musicstub.$o \
 	$(JMACTOBJ)
 
 EDITOROBJS=$(OBJ)/astub.$o
@@ -98,7 +89,6 @@ endif
 
 ifeq ($(RENDERTYPE),SDL)
 	OURCFLAGS+= $(subst -Dmain=SDL_main,,$(shell sdl-config --cflags))
-	AUDIOLIBOBJ=$(AUDIOLIB_MUSIC_STUB) $(AUDIOLIB_FX_STUB) $(OBJ)/sounds.$o
 
 	ifeq (1,$(HAVE_GTK2))
 		OURCFLAGS+= -DHAVE_GTK2 $(shell pkg-config --cflags gtk+-2.0)
@@ -109,14 +99,10 @@ ifeq ($(RENDERTYPE),SDL)
 	GAMEOBJS+= $(OBJ)/game_icon.$o
 	EDITOROBJS+= $(OBJ)/build_icon.$o
 endif
-ifeq ($(RENDERTYPE),WIN)
-	AUDIOLIBOBJ=$(AUDIOLIB_MUSIC) $(AUDIOLIB_FX) $(OBJ)/sounds.$o
-endif
 
-GAMEOBJS+= $(AUDIOLIBOBJ)
 OURCFLAGS+= $(BUILDCFLAGS)
 
-.PHONY: clean all engine $(ELIB)/$(ENGINELIB) $(ELIB)/$(EDITORLIB)
+.PHONY: clean all engine $(ELIB)/$(ENGINELIB) $(ELIB)/$(EDITORLIB) $(JAUDIOLIBDIR)/$(JAUDIOLIB)
 
 # TARGETS
 
@@ -134,7 +120,7 @@ endif
 
 all: duke3d$(EXESUFFIX) build$(EXESUFFIX)
 
-duke3d$(EXESUFFIX): $(GAMEOBJS) $(ELIB)/$(ENGINELIB)
+duke3d$(EXESUFFIX): $(GAMEOBJS) $(ELIB)/$(ENGINELIB) $(JAUDIOLIBDIR)/$(JAUDIOLIB)
 	$(CXX) $(CXXFLAGS) $(OURCXXFLAGS) $(OURCFLAGS) -o $@ $^ $(LIBS) -Wl,-Map=$@.map
 	
 build$(EXESUFFIX): $(EDITOROBJS) $(ELIB)/$(EDITORLIB) $(ELIB)/$(ENGINELIB)
@@ -151,11 +137,11 @@ enginelib editorlib:
 	
 $(ELIB)/$(ENGINELIB): enginelib
 $(ELIB)/$(EDITORLIB): editorlib
+$(JAUDIOLIBDIR)/$(JAUDIOLIB):
+	$(MAKE) -C $(JAUDIOLIBDIR)
 
 # RULES
 $(OBJ)/%.$o: $(SRC)/%.nasm
-	nasm $(NASMFLAGS) $< -o $@
-$(OBJ)/%.$o: $(SRC)/jaudiolib/%.nasm
 	nasm $(NASMFLAGS) $< -o $@
 
 $(OBJ)/%.$o: $(SRC)/%.c
@@ -163,8 +149,6 @@ $(OBJ)/%.$o: $(SRC)/%.c
 $(OBJ)/%.$o: $(SRC)/%.cpp
 	$(CXX) $(CXXFLAGS) $(OURCXXFLAGS) $(OURCFLAGS) -c $< -o $@ 2>&1
 $(OBJ)/%.$o: $(SRC)/jmact/%.c
-	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@ 2>&1
-$(OBJ)/%.$o: $(SRC)/jaudiolib/%.c
 	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@ 2>&1
 
 $(OBJ)/%.$o: $(SRC)/misc/%.rc
