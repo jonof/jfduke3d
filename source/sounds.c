@@ -55,16 +55,14 @@ void SoundStartup( void )
    //if (FXDevice < 0) return;
 	FXDevice = ASS_AutoDetect;
 	NumVoices = 32;
-	NumChannels = 1;
-	NumBits = 8;
+	NumChannels = 2;
+	NumBits = 16;
 	MixRate = 11025;
 
    status = FX_Init( FXDevice, NumVoices, NumChannels, NumBits, MixRate );
    if ( status == FX_Ok ) {
       FX_SetVolume( FXVolume );
-      if (ReverseStereo == 1) {
-         FX_SetReverseStereo(!FX_GetReverseStereo());
-      }
+      FX_SetReverseStereo(ReverseStereo);
 	  status = FX_SetCallBack( testcallback );
   }
 
@@ -400,6 +398,7 @@ int xyzsound(short num,short i,long x,long y,long z)
         SoundOwner[num][Sound[num].num].i = i;
         SoundOwner[num][Sound[num].num].voice = voice;
         Sound[num].num++;
+		  Sound[num].numall++;
     }
     else Sound[num].lock--;
     return (voice);
@@ -460,7 +459,10 @@ void sound(short num)
             voice = FX_PlayWAV3D( Sound[ num ].ptr, pitch,0,255-LOUDESTVOLUME,soundpr[num], num );
     }
 
-    if(voice > FX_Ok) return;
+    if(voice > FX_Ok) {
+		 Sound[num].numall++;
+		 return;
+	 }
     Sound[num].lock--;
 }
 
@@ -480,7 +482,7 @@ void stopsound(short num)
     if(Sound[num].num > 0)
     {
         FX_StopSound(SoundOwner[num][Sound[num].num-1].voice);
-        testcallback(num);
+        //testcallback(num);
     }
 }
 
@@ -615,6 +617,7 @@ void testcallback(unsigned long num)
             SoundOwner[num][tempk-1].i = -1;
         }
 
+		  Sound[num].numall--;
         Sound[num].lock--;
 }
 
@@ -633,12 +636,29 @@ void clearsoundlocks(void)
 
 int isspritemakingsound(short i, int num)
 {
-	if (num < 0) num=0;	// FIXME
-	return issoundplaying(num) > 0;
+	int j, k;
+	if (num < 0) {
+		// is sprite making any sound at all (expensive)
+		for (j = 0; j < NUM_SOUNDS; j++) {
+			for (k = 0; k < Sound[j].num; k++) {
+            if (SoundOwner[j][k].i == i) {
+					return 1;
+				}
+			}
+		}
+	} else {
+		for (k = 0; k < Sound[num].num; k++) {
+			if (SoundOwner[num][k].i == i) {
+				return 1;
+			}
+		}
+	}
+
+	return 0;
 }
 
 int issoundplaying(int num)
 {
-	return Sound[num].num;
+	return Sound[num].numall - Sound[num].num;
 }
 
