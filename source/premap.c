@@ -1006,7 +1006,7 @@ void newgame(char vn,char ln,char sk)
     short i;
 
     if(globalskillsound >= 0)
-        while(issoundplaying(globalskillsound)) { handleevents(); getpackets(); }
+        while(issoundplaying(globalskillsound, 0)) { handleevents(); getpackets(); }
     globalskillsound = -1;
 
     waitforeverybody();

@@ -57,7 +57,7 @@ void SoundStartup( void )
 	NumVoices = 32;
 	NumChannels = 2;
 	NumBits = 16;
-	MixRate = 11025;
+	MixRate = 22050;
 
    status = FX_Init( FXDevice, NumVoices, NumChannels, NumBits, MixRate );
    if ( status == FX_Ok ) {
@@ -305,13 +305,13 @@ int xyzsound(short num,short i,long x,long y,long z)
 
     pitchs = soundps[num];
     pitche = soundpe[num];
-    cx = klabs(pitche-pitchs);
+    j = klabs(pitche-pitchs);
 
-    if(cx)
+    if(j)
     {
         if( pitchs < pitche )
-             pitch = pitchs + ( rand()%cx );
-        else pitch = pitche + ( rand()%cx );
+             pitch = pitchs + ( rand()%j );
+        else pitch = pitche + ( rand()%j );
     }
     else pitch = pitchs;
 
@@ -657,8 +657,15 @@ int isspritemakingsound(short i, int num)
 	return 0;
 }
 
-int issoundplaying(int num)
+// xyz: 0 - sound(), 1 - xyzsound(), 2 - either
+int issoundplaying(int num, int xyz)
 {
-	return Sound[num].numall - Sound[num].num;
+    if (xyz == 0) {
+        return Sound[num].numall - Sound[num].num;
+    } else if (xyz == 1) {
+	return Sound[num].num;
+    } else {
+        return Sound[num].numall;
+    }
 }
 
