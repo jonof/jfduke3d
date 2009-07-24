@@ -85,6 +85,7 @@ ifeq ($(PLATFORM),WINDOWS)
 	NASMFLAGS+= -DUNDERSCORES -f win32
 	GAMEOBJS+= $(OBJ)/gameres.$o $(OBJ)/winbits.$o $(OBJ)/startwin.game.$o
 	EDITOROBJS+= $(OBJ)/buildres.$o
+	LIBS+= -ldsound
 endif
 
 ifeq ($(RENDERTYPE),SDL)

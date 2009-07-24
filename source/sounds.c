@@ -51,6 +51,7 @@ void SoundStartup( void )
 {
    int32 status;
     int fxdevicetype;
+    void * initdata = 0;
 
    // if they chose None lets return
     if (FXDevice < 0) {
@@ -60,8 +61,12 @@ void SoundStartup( void )
     } else {
         fxdevicetype = FXDevice - 1;
     }
+    
+    #ifdef WIN32
+    initdata = (void *) win_gethwnd();
+    #endif
 
-   status = FX_Init( fxdevicetype, NumVoices, NumChannels, NumBits, MixRate );
+   status = FX_Init( fxdevicetype, NumVoices, NumChannels, NumBits, MixRate, initdata );
    if ( status == FX_Ok ) {
       FX_SetVolume( FXVolume );
       FX_SetReverseStereo(ReverseStereo);

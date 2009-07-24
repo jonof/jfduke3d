@@ -24,8 +24,6 @@
 #define TAB_GAME 1
 #define TAB_MESSAGES 2
 
-static struct audioenumdrv *wavedevs = NULL;
-
 static struct {
 	int fullscreen;
 	int xdim, ydim, bpp;
@@ -80,29 +78,6 @@ static void PopulateForm(int pgs)
 	}
 
 	if (pgs & POPULATE_CONFIG) {
-		struct audioenumdev *d;
-		char *n;
-
-		hwnd = GetDlgItem(pages[TAB_CONFIG], IDCSOUNDDRV);
-		ComboBox_ResetContent(hwnd);
-		if (wavedevs) {
-			d = wavedevs->devs;
-			for (i=0; wavedevs->drvs[i]; i++) {
-				strcpy(buf, wavedevs->drvs[i]);
-				if (d->devs) {
-					strcat(buf, ":");
-					n = buf + strlen(buf);
-					for (j=0; d->devs[j]; j++) {
-						strcpy(n, d->devs[j]);
-						ComboBox_AddString(hwnd, buf);
-					}
-				} else {
-					ComboBox_AddString(hwnd, buf);
-				}
-				d = d->next;
-			}
-		}
-
 		Button_SetCheck(GetDlgItem(pages[TAB_CONFIG], IDCALWAYSSHOW), (settings.forcesetup ? BST_CHECKED : BST_UNCHECKED));
 
 		Button_SetCheck(GetDlgItem(pages[TAB_CONFIG], IDCINPUTMOUSE), (settings.usemouse ? BST_CHECKED : BST_UNCHECKED));
@@ -500,8 +475,6 @@ int startwin_run(void)
 
 	done = -1;
 
-	EnumAudioDevs(&wavedevs, NULL, NULL);
-
 	SetPage(TAB_CONFIG);
 	EnableConfig(1);
 
@@ -540,17 +513,6 @@ int startwin_run(void)
 		UseJoystick = settings.usejoy;
 		duke3dgrp = settings.selectedgrp;
 		gametype = settings.game;
-	}
-
-	if (wavedevs) {
-		struct audioenumdev *d, *e;
-		free(wavedevs->drvs);
-		for (e=wavedevs->devs; e; e=d) {
-			d = e->next;
-			if (e->devs) free(e->devs);
-			free(e);
-		}
-		free(wavedevs);
 	}
 
 	return done;
