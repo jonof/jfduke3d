@@ -22,6 +22,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		AB1DE7EF10199F6E00657779 /* GrpFile.game.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1DE7EE10199F6E00657779 /* GrpFile.game.m */; };
+		AB1DE7F610199FD200657779 /* GameListSource.game.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1DE7F510199FD200657779 /* GameListSource.game.m */; };
 		AB2EA0FB1012149000DD2F1F /* libjfaudiolib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB2EA0FA1012147800DD2F1F /* libjfaudiolib.a */; };
 		AB2EA109101215AE00DD2F1F /* sounds.c in Sources */ = {isa = PBXBuildFile; fileRef = AB2EA108101215AE00DD2F1F /* sounds.c */; };
 		AB2EA10C101217D600DD2F1F /* audiolib_musicstub.c in Sources */ = {isa = PBXBuildFile; fileRef = AB2EA10B101217D600DD2F1F /* audiolib_musicstub.c */; };
@@ -152,21 +154,21 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = AB735F480A29A2DC003261DC /* engine */;
+			remoteGlobalIDString = AB735F480A29A2DC003261DC;
 			remoteInfo = engine;
 		};
 		ABF3C28C101864BB00233700 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = AB735FCB0A29A916003261DC /* editor */;
+			remoteGlobalIDString = AB735FCB0A29A916003261DC;
 			remoteInfo = editor;
 		};
 		ABF3C28E101864BB00233700 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = AB3FE44A0C04336F00D5DBDC /* editorsupp */;
+			remoteGlobalIDString = AB3FE44A0C04336F00D5DBDC;
 			remoteInfo = editorsupp;
 		};
 /* End PBXContainerItemProxy section */
@@ -195,6 +197,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AB1DE7ED10199F6E00657779 /* GrpFile.game.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GrpFile.game.h; sourceTree = "<group>"; };
+		AB1DE7EE10199F6E00657779 /* GrpFile.game.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GrpFile.game.m; sourceTree = "<group>"; };
+		AB1DE7F410199FD200657779 /* GameListSource.game.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameListSource.game.h; sourceTree = "<group>"; };
+		AB1DE7F510199FD200657779 /* GameListSource.game.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameListSource.game.m; sourceTree = "<group>"; };
 		AB2EA0F21012147800DD2F1F /* jfaudiolib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jfaudiolib.xcodeproj; path = ../source/jaudiolib/jfaudiolib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		AB2EA108101215AE00DD2F1F /* sounds.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sounds.c; sourceTree = "<group>"; };
 		AB2EA10B101217D600DD2F1F /* audiolib_musicstub.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = audiolib_musicstub.c; sourceTree = "<group>"; };
@@ -348,6 +354,8 @@
 				ABF3C31510188C8C00233700 /* gamedefs.h */,
 				AB2EA10B101217D600DD2F1F /* audiolib_musicstub.c */,
 				ABD769170A73CDF6006C27C1 /* StartupWinController.game.m */,
+				AB1DE7F410199FD200657779 /* GameListSource.game.h */,
+				AB1DE7F510199FD200657779 /* GameListSource.game.m */,
 				ABD768D70A73CB4D006C27C1 /* jmact */,
 				AB69BD120A73C36100F3DCB8 /* actors.c */,
 				AB69BD130A73C36100F3DCB8 /* config.c */,
@@ -364,6 +372,8 @@
 				AB69BD1F0A73C36100F3DCB8 /* sector.c */,
 				AB2EA108101215AE00DD2F1F /* sounds.c */,
 				AB69BD210A73C36100F3DCB8 /* testcd.c */,
+				AB1DE7ED10199F6E00657779 /* GrpFile.game.h */,
+				AB1DE7EE10199F6E00657779 /* GrpFile.game.m */,
 			);
 			name = source;
 			path = ../source;
@@ -647,6 +657,8 @@
 				ABD769180A73CDF6006C27C1 /* StartupWinController.game.m in Sources */,
 				AB2EA109101215AE00DD2F1F /* sounds.c in Sources */,
 				AB2EA10C101217D600DD2F1F /* audiolib_musicstub.c in Sources */,
+				AB1DE7EF10199F6E00657779 /* GrpFile.game.m in Sources */,
+				AB1DE7F610199FD200657779 /* GameListSource.game.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

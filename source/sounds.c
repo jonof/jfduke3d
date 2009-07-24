@@ -50,16 +50,18 @@ long backflag,numenvsnds;
 void SoundStartup( void )
 {
    int32 status;
+    int fxdevicetype;
 
    // if they chose None lets return
-   //if (FXDevice < 0) return;
-	FXDevice = ASS_AutoDetect;
-	NumVoices = 32;
-	NumChannels = 2;
-	NumBits = 16;
-	MixRate = 22050;
+    if (FXDevice < 0) {
+        return;
+    } else if (FXDevice == 0) {
+        fxdevicetype = ASS_AutoDetect;
+    } else {
+        fxdevicetype = FXDevice - 1;
+    }
 
-   status = FX_Init( FXDevice, NumVoices, NumChannels, NumBits, MixRate );
+   status = FX_Init( fxdevicetype, NumVoices, NumChannels, NumBits, MixRate );
    if ( status == FX_Ok ) {
       FX_SetVolume( FXVolume );
       FX_SetReverseStereo(ReverseStereo);

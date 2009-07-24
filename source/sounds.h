@@ -38,30 +38,15 @@ extern int32 FXDevice;
 extern int32 MusicDevice;
 extern int32 FXVolume;
 extern int32 MusicVolume;
-//extern fx_blaster_config BlasterConfig;
 extern int32 NumVoices;
 extern int32 NumChannels;
 extern int32 NumBits;
 extern int32 MixRate;
-//extern int32 MidiPort;
 extern int32 ReverseStereo;
 
 void SoundStartup( void );
 void SoundShutdown( void );
 void MusicStartup( void );
 void MusicShutdown( void );
-void AudioUpdate(void);
-
-struct audioenumdev {
-	char *def;
-	char **devs;
-	struct audioenumdev *next;
-};
-struct audioenumdrv {
-	char *def;
-	char **drvs;
-	struct audioenumdev *devs;
-};
-int EnumAudioDevs(struct audioenumdrv **wave, struct audioenumdev **midi, struct audioenumdev **cda);
 
 #endif
