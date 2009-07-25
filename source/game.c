@@ -664,10 +664,7 @@ void getpackets(void)
                 if (SoundToggle == 0 || ud.lockout == 1 || FXDevice < 0 )
                     break;
                 rtsptr = (char *)RTS_GetSound(packbuf[1]-1);
-                if (*rtsptr == 'C')
-                    FX_PlayVOC3D(rtsptr,0,0,0,255,-packbuf[1]);
-                else
-                    FX_PlayWAV3D(rtsptr,0,0,0,255,-packbuf[1]);
+                FX_PlayAuto3D(rtsptr,RTS_SoundLength(packbuf[1]-1),0,0,0,255,-packbuf[1]);
                 rtsplaying = 7;
                 break;
             case 8:
@@ -6520,9 +6517,7 @@ if (VOLUMEALL) {
                 if(SoundToggle && ALT_IS_PRESSED && ( RTS_NumSounds() > 0 ) && rtsplaying == 0 && VoiceToggle )
             {
                 rtsptr = (char *)RTS_GetSound (i-1);
-                if(*rtsptr == 'C')
-                    FX_PlayVOC3D( rtsptr,0,0,0,255,-i);
-                else FX_PlayWAV3D( rtsptr,0,0,0,255,-i);
+                FX_PlayAuto3D( rtsptr,RTS_SoundLength(i-1),0,0,0,255,-i);
 
                 rtsplaying = 7;
 

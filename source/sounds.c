@@ -381,12 +381,12 @@ int xyzsound(short num,short i,long x,long y,long z)
     {
         if(Sound[num].num > 0) return -1;
 
-        voice = FX_PlayLoopedAuto( Sound[num].ptr, 0, -1,
+        voice = FX_PlayLoopedAuto( Sound[num].ptr, soundsiz[num], 0, -1,
                     pitch,sndist>>6,sndist>>6,0,soundpr[num],num);
     }
     else
     {
-        voice = FX_PlayAuto3D( Sound[ num ].ptr,pitch,sndang>>6,sndist>>6, soundpr[num], num );
+        voice = FX_PlayAuto3D( Sound[ num ].ptr, soundsiz[num], pitch,sndang>>6,sndist>>6, soundpr[num], num );
     }
 
     if ( voice > FX_Ok )
@@ -434,12 +434,12 @@ void sound(short num)
 
     if( soundm[num]&1 )
     {
-         voice = FX_PlayLoopedAuto( Sound[num].ptr, 0, -1,
+         voice = FX_PlayLoopedAuto( Sound[num].ptr, soundsiz[num], 0, -1,
                  pitch,LOUDESTVOLUME,LOUDESTVOLUME,LOUDESTVOLUME,soundpr[num],num);
     }
     else
     {
-        voice = FX_PlayAuto3D( Sound[ num ].ptr, pitch,0,255-LOUDESTVOLUME,soundpr[num], num );
+        voice = FX_PlayAuto3D( Sound[ num ].ptr, soundsiz[num], pitch,0,255-LOUDESTVOLUME,soundpr[num], num );
     }
 
     if(voice > FX_Ok) {
