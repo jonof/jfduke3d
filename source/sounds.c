@@ -379,17 +379,13 @@ int xyzsound(short num,short i,long x,long y,long z)
 
     if( soundm[num]&1 )
     {
-        unsigned short start;
-
         if(Sound[num].num > 0) return -1;
 
-        start = *(unsigned short *)(Sound[num].ptr + 0x14);
-
         if(*Sound[num].ptr == 'C')
-            voice = FX_PlayLoopedVOC( Sound[num].ptr, start, start + soundsiz[num],
+            voice = FX_PlayLoopedVOC( Sound[num].ptr, 0, -1,
                     pitch,sndist>>6,sndist>>6,0,soundpr[num],num);
         else
-            voice = FX_PlayLoopedWAV( Sound[num].ptr, start, start + soundsiz[num],
+            voice = FX_PlayLoopedWAV( Sound[num].ptr, 0, -1,
                     pitch,sndist>>6,sndist>>6,0,soundpr[num],num);
     }
     else
