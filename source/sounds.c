@@ -381,19 +381,12 @@ int xyzsound(short num,short i,long x,long y,long z)
     {
         if(Sound[num].num > 0) return -1;
 
-        if(*Sound[num].ptr == 'C')
-            voice = FX_PlayLoopedVOC( Sound[num].ptr, 0, -1,
-                    pitch,sndist>>6,sndist>>6,0,soundpr[num],num);
-        else
-            voice = FX_PlayLoopedWAV( Sound[num].ptr, 0, -1,
+        voice = FX_PlayLoopedAuto( Sound[num].ptr, 0, -1,
                     pitch,sndist>>6,sndist>>6,0,soundpr[num],num);
     }
     else
     {
-        if( *Sound[num].ptr == 'C')
-            voice = FX_PlayVOC3D( Sound[ num ].ptr,pitch,sndang>>6,sndist>>6, soundpr[num], num );
-        else
-	    voice = FX_PlayWAV3D( Sound[ num ].ptr,pitch,sndang>>6,sndist>>6, soundpr[num], num );
+        voice = FX_PlayAuto3D( Sound[ num ].ptr,pitch,sndang>>6,sndist>>6, soundpr[num], num );
     }
 
     if ( voice > FX_Ok )
@@ -441,25 +434,12 @@ void sound(short num)
 
     if( soundm[num]&1 )
     {
-        if(*Sound[num].ptr == 'C')
-        {
-            start = (long)*(unsigned short *)(Sound[num].ptr + 0x14);
-            voice = FX_PlayLoopedVOC( Sound[num].ptr, start, start + soundsiz[num],
-                    pitch,LOUDESTVOLUME,LOUDESTVOLUME,LOUDESTVOLUME,soundpr[num],num);
-        }
-        else
-        {
-            start = (long)*(unsigned short *)(Sound[num].ptr + 0x14);
-            voice = FX_PlayLoopedWAV( Sound[num].ptr, start, start + soundsiz[num],
-                    pitch,LOUDESTVOLUME,LOUDESTVOLUME,LOUDESTVOLUME,soundpr[num],num);
-        }
+         voice = FX_PlayLoopedAuto( Sound[num].ptr, 0, -1,
+                 pitch,LOUDESTVOLUME,LOUDESTVOLUME,LOUDESTVOLUME,soundpr[num],num);
     }
     else
     {
-        if(*Sound[num].ptr == 'C')
-            voice = FX_PlayVOC3D( Sound[ num ].ptr, pitch,0,255-LOUDESTVOLUME,soundpr[num], num );
-        else
-            voice = FX_PlayWAV3D( Sound[ num ].ptr, pitch,0,255-LOUDESTVOLUME,soundpr[num], num );
+        voice = FX_PlayAuto3D( Sound[ num ].ptr, pitch,0,255-LOUDESTVOLUME,soundpr[num], num );
     }
 
     if(voice > FX_Ok) {
