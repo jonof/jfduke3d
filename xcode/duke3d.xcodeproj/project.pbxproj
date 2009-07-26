@@ -212,7 +212,7 @@
 		AB2EA10B101217D600DD2F1F /* audiolib_musicstub.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = audiolib_musicstub.c; sourceTree = "<group>"; };
 		AB2EA11F1012195E00DD2F1F /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = /System/Library/Frameworks/AudioUnit.framework; sourceTree = "<absolute>"; };
 		AB69BD050A73C21E00F3DCB8 /* JFDuke3D.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JFDuke3D.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AB69BD080A73C21E00F3DCB8 /* JFDuke3D-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "JFDuke3D-Info.plist"; sourceTree = "<group>"; };
+		AB69BD080A73C21E00F3DCB8 /* JFDuke3D-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JFDuke3D-Info.plist"; sourceTree = "<group>"; };
 		AB69BD120A73C36100F3DCB8 /* actors.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = actors.c; sourceTree = "<group>"; };
 		AB69BD130A73C36100F3DCB8 /* config.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = config.c; sourceTree = "<group>"; };
 		AB69BD140A73C36100F3DCB8 /* game.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = game.c; sourceTree = "<group>"; };
@@ -258,7 +258,7 @@
 		ABD769290A73CE40006C27C1 /* game.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; name = game.bmp; path = ../rsrc/game.bmp; sourceTree = SOURCE_ROOT; };
 		ABD769300A73CE6D006C27C1 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		ABD7695E0A73D116006C27C1 /* Build Editor for JFDuke3D.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Build Editor for JFDuke3D.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		ABD769600A73D116006C27C1 /* Build Editor-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Build Editor-Info.plist"; sourceTree = "<group>"; };
+		ABD769600A73D116006C27C1 /* Build Editor-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Build Editor-Info.plist"; sourceTree = "<group>"; };
 		ABD7696F0A73D164006C27C1 /* build.osxmain.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = build.osxmain.nib; sourceTree = "<group>"; };
 		ABD769700A73D164006C27C1 /* startwin.editor.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = startwin.editor.nib; sourceTree = "<group>"; };
 		ABD769740A73D17A006C27C1 /* astub.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = astub.c; sourceTree = "<group>"; };
@@ -347,43 +347,43 @@
 		AB69BCFE0A73C1B200F3DCB8 /* source */ = {
 			isa = PBXGroup;
 			children = (
-				ABF3C31610188CA300233700 /* grpscan.h */,
-				ABF3C31710188CA300233700 /* names.h */,
-				ABF3C31810188CA300233700 /* osdcmds.h */,
-				ABF3C31910188CA300233700 /* osdfuncs.h */,
-				ABF3C31A10188CA300233700 /* rts.h */,
-				ABF3C31B10188CA300233700 /* soundefs.h */,
-				ABF3C31C10188CA300233700 /* sounds.h */,
+				ABD768D70A73CB4D006C27C1 /* jmact */,
 				ABF3C30E10188C8C00233700 /* _functio.h */,
 				ABF3C30F10188C8C00233700 /* _rts.h */,
+				AB69BD120A73C36100F3DCB8 /* actors.c */,
+				AB2EA10B101217D600DD2F1F /* audiolib_musicstub.c */,
+				AB69BD130A73C36100F3DCB8 /* config.c */,
 				ABF3C31010188C8C00233700 /* config.h */,
 				ABF3C31110188C8C00233700 /* develop.h */,
 				ABF3C31210188C8C00233700 /* duke3d.h */,
 				ABF3C31310188C8C00233700 /* funct.h */,
 				ABF3C31410188C8C00233700 /* function.h */,
-				ABF3C31510188C8C00233700 /* gamedefs.h */,
-				AB2EA10B101217D600DD2F1F /* audiolib_musicstub.c */,
-				ABD769170A73CDF6006C27C1 /* StartupWinController.game.m */,
-				AB1DE7F410199FD200657779 /* GameListSource.game.h */,
-				AB1DE7F510199FD200657779 /* GameListSource.game.m */,
-				ABD768D70A73CB4D006C27C1 /* jmact */,
-				AB69BD120A73C36100F3DCB8 /* actors.c */,
-				AB69BD130A73C36100F3DCB8 /* config.c */,
 				AB69BD140A73C36100F3DCB8 /* game.c */,
 				AB69BD150A73C36100F3DCB8 /* gamedef.c */,
+				ABF3C31510188C8C00233700 /* gamedefs.h */,
 				AB69BD160A73C36100F3DCB8 /* global.c */,
 				AB69BD170A73C36100F3DCB8 /* grpscan.c */,
+				ABF3C31610188CA300233700 /* grpscan.h */,
 				AB69BD190A73C36100F3DCB8 /* menues.c */,
+				ABF3C31710188CA300233700 /* names.h */,
 				AB69BD1A0A73C36100F3DCB8 /* osdcmds.c */,
+				ABF3C31810188CA300233700 /* osdcmds.h */,
 				AB69BD1B0A73C36100F3DCB8 /* osdfuncs.c */,
+				ABF3C31910188CA300233700 /* osdfuncs.h */,
 				AB69BD1C0A73C36100F3DCB8 /* player.c */,
 				AB69BD1D0A73C36100F3DCB8 /* premap.c */,
 				AB69BD1E0A73C36100F3DCB8 /* rts.c */,
+				ABF3C31A10188CA300233700 /* rts.h */,
 				AB69BD1F0A73C36100F3DCB8 /* sector.c */,
+				ABF3C31B10188CA300233700 /* soundefs.h */,
 				AB2EA108101215AE00DD2F1F /* sounds.c */,
+				ABF3C31C10188CA300233700 /* sounds.h */,
 				AB69BD210A73C36100F3DCB8 /* testcd.c */,
+				AB1DE7F410199FD200657779 /* GameListSource.game.h */,
+				AB1DE7F510199FD200657779 /* GameListSource.game.m */,
 				AB1DE7ED10199F6E00657779 /* GrpFile.game.h */,
 				AB1DE7EE10199F6E00657779 /* GrpFile.game.m */,
+				ABD769170A73CDF6006C27C1 /* StartupWinController.game.m */,
 			);
 			name = source;
 			path = ../source;
@@ -538,6 +538,7 @@
 		AB69BCF50A73C1A800F3DCB8 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = AB69BCF60A73C1A800F3DCB8 /* Build configuration list for PBXProject "duke3d" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 0;
 			mainGroup = AB69BCF30A73C1A800F3DCB8;
 			productRefGroup = AB69BD060A73C21E00F3DCB8 /* Products */;
@@ -750,6 +751,7 @@
 				GCC_VERSION_i386 = 4.0;
 				GCC_VERSION_ppc = 4.0;
 				HEADER_SEARCH_PATHS = (
+					"../source/jaudiolib/third-party",
 					../source,
 					../engine/include,
 				);
@@ -787,6 +789,7 @@
 				GCC_VERSION_i386 = 4.0;
 				GCC_VERSION_ppc = 4.0;
 				HEADER_SEARCH_PATHS = (
+					"../source/jaudiolib/third-party",
 					../source,
 					../engine/include,
 				);
@@ -800,11 +803,7 @@
 		AB69BD0D0A73C30600F3DCB8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../source/jaudiolib/third-party\"";
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					../source,
 					../engine/include,
@@ -822,11 +821,7 @@
 		AB69BD0E0A73C30600F3DCB8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../source/jaudiolib/third-party\"";
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					../source,
 					../engine/include,
