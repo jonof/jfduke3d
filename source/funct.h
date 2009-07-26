@@ -46,7 +46,7 @@ extern int spritesound(unsigned short num,short i);
 extern void stopsound(short num);
 extern void stopenvsound(short num,short i);
 extern void pan3dsound(void );
-extern void testcallback(unsigned long num);
+extern void testcallback(unsigned int num);
 extern void clearsoundlocks(void);
 extern short callsound(short sn,short whatsprite);
 extern short check_activator_motion(short lotag);

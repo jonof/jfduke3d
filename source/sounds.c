@@ -39,6 +39,13 @@ Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
 
 long backflag,numenvsnds;
 
+static int MusicIsWaveform = 0;
+static char * MusicPtr = 0;
+static int MusicLen = 0;
+static int MusicVoice = 0;
+static int MusicPaused = 0;
+
+
 /*
 ===================
 =
@@ -96,6 +103,10 @@ void SoundShutdown( void )
    // if they chose None lets return
    if (FXDevice < 0)
       return;
+   
+   if (MusicVoice >= 0) {
+      MusicShutdown();
+   }
 
    status = FX_Shutdown();
    if ( status != FX_Ok ) {
@@ -157,13 +168,47 @@ void MusicShutdown( void )
    // if they chose None lets return
    if (MusicDevice < 0)
       return;
-
+   
+   if (MusicVoice >= 0) {
+      FX_StopSound(MusicVoice);
+      MusicVoice = -1;
+   }
+   
+   if (MusicPtr) {
+      free(MusicPtr);
+      MusicPtr = 0;
+      MusicLen = 0;
+   }
+   
    status = MUSIC_Shutdown();
    if ( status != MUSIC_Ok )
       {
       Error( MUSIC_ErrorString( MUSIC_ErrorCode ));
       }
    }
+
+void MusicPause( int onf )
+{
+   if (MusicPaused == onf || (MusicIsWaveform && MusicVoice < 0)) {
+      return;
+   }
+   
+   if (onf) {
+      if (MusicIsWaveform) {
+         //FX_PauseVoice()
+      } else {
+         MUSIC_Pause();
+      }
+   } else {
+      if (MusicIsWaveform) {
+         ///FX_ContinueVoice();
+      } else {
+         MUSIC_Continue();
+      }
+   }
+   
+   MusicPaused = onf;
+}
 
 void MusicUpdate(void)
 {
@@ -218,26 +263,37 @@ void intomenusounds(void)
 
 void playmusic(char *fn)
 {
-    short      fp;
-    long        l;
+    int fp;
 
     if(MusicToggle == 0) return;
     if(MusicDevice < 0) return;
 
-    fp = kopen4load(fn,0);
-
-    if(fp == -1) return;
-
-    l = kfilelength( fp );
-    if(l >= (long)sizeof(MusicPtr))
-    {
-        kclose(fp);
-        return;
+    if (MusicVoice >= 0) {
+       FX_StopSound(MusicVoice);
+       MusicVoice = -1;
     }
+    
+    if (MusicPtr) {
+       free(MusicPtr);
+       MusicPtr = 0;
+       MusicLen = 0;
+    }
+    
+    fp = kopen4load(fn,0);
+    if (fp < 0) return;
 
-    kread( fp, MusicPtr, l);
+    MusicLen = kfilelength( fp );
+    MusicPtr = (char *) malloc(MusicLen);
+    kread( fp, MusicPtr, MusicLen);
     kclose( fp );
-    MUSIC_PlaySong( MusicPtr, MUSIC_LoopSong );
+    
+    if (!memcmp(MusicPtr, "MThd", 4)) {
+       MUSIC_PlaySong( MusicPtr, MUSIC_LoopSong );
+       MusicIsWaveform = 0;
+    } else {
+       MusicVoice = FX_PlayLoopedAuto(MusicPtr, MusicLen, 0, 0, 0,
+                                      MusicVolume, MusicVolume, MusicVolume, 255, -128);
+    }
 }
 
 char loadsound(unsigned short num)
@@ -565,11 +621,15 @@ void pan3dsound(void)
     }
 }
 
-void testcallback(unsigned long num)
+void testcallback(unsigned int num)
 {
     short tempi,tempj,tempk;
 
-        if((long)num < 0)
+   if ((int) num == -128) {
+      return;
+   }
+   
+        if((int)num < 0)
         {
             if(lumplockbyte[-num] >= 200)
                 lumplockbyte[-num]--;

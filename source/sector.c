@@ -2481,13 +2481,13 @@ void cheatkeys(short snum)
             if( ud.pause_on == 1 && sb_snum&(1<<5) ) ud.pause_on = 2;
             if(ud.pause_on)
             {
-                MUSIC_Pause();
+                if (MusicToggle) MusicPause(TRUE);
                 FX_StopAllSounds();
                 clearsoundlocks();
             }
             else
             {
-                if(MusicToggle) MUSIC_Continue();
+                if (MusicToggle) MusicPause(FALSE);
                 pub = NUMPAGES;
                 pus = NUMPAGES;
             }

@@ -48,5 +48,6 @@ void SoundStartup( void );
 void SoundShutdown( void );
 void MusicStartup( void );
 void MusicShutdown( void );
+void MusicPause( int onf );
 
 #endif
