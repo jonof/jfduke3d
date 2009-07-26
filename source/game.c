@@ -7260,7 +7260,7 @@ void Logo(void)
     flushperms();
     nextpage();
 
-    MUSIC_StopSong();
+    stopmusic();
     FX_StopAllSounds();	// JBF 20031228
     clearsoundlocks();	// JBF 20031228
 
@@ -9232,12 +9232,12 @@ void dobonus(char bonusonly)
 	    IFISSOFTMODE fadepal(0,0,0, 63,0,-1); else nextpage();
 		while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
 	    fadepal(0,0,0, 0,64,1);
-            MUSIC_StopSong();
+            stopmusic();
             FX_StopAllSounds();
             clearsoundlocks();
             break;
         case 1:
-            MUSIC_StopSong();
+            stopmusic();
             clearview(0L);
             nextpage();
 
@@ -9267,7 +9267,7 @@ void dobonus(char bonusonly)
 
             setview(0,0,xdim-1,ydim-1);
 
-            MUSIC_StopSong();
+            stopmusic();
             clearview(0L);
             nextpage();
 
@@ -9326,7 +9326,7 @@ void dobonus(char bonusonly)
 
         case 2:
 
-            MUSIC_StopSong();
+            stopmusic();
             clearview(0L);
             nextpage();
             if(ud.lockout == 0)
@@ -9406,7 +9406,7 @@ void dobonus(char bonusonly)
     totalclock = 0; tinc = 0;
     bonuscnt = 0;
 
-    MUSIC_StopSong();
+    stopmusic();
     FX_StopAllSounds();
     clearsoundlocks();
 

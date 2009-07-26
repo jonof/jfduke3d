@@ -180,6 +180,7 @@ ifeq ($(PLATFORM),DARWIN)
 else
 	-rm -f $(OBJ)/*
 	$(MAKE) -C $(EROOT) clean
+	$(MAKE) -C $(JAUDIOLIBDIR) clean
 endif
 	
 veryclean: clean

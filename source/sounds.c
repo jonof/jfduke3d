@@ -37,6 +37,8 @@ Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
 
 #define LOUDESTVOLUME 150
 
+#define MUSIC_ID  -65536
+
 long backflag,numenvsnds;
 
 static int MusicIsWaveform = 0;
@@ -210,6 +212,15 @@ void MusicPause( int onf )
    MusicPaused = onf;
 }
 
+void MusicSetVolume(int volume)
+{
+   if (MusicIsWaveform && MusicVoice >= 0) {
+      //FX_SetVoiceVolume(MusicVoice, volume);
+   } else if (!MusicIsWaveform) {
+      MUSIC_SetVolume(volume);
+   }
+}
+
 void MusicUpdate(void)
 {
 	MUSIC_Update();
@@ -269,17 +280,8 @@ void playmusic(char *fn)
     if(MusicToggle == 0) return;
     if(MusicDevice < 0) return;
 
-    if (MusicVoice >= 0) {
-       FX_StopSound(MusicVoice);
-       MusicVoice = -1;
-    }
+    stopmusic();
     
-    if (MusicPtr) {
-       free(MusicPtr);
-       MusicPtr = 0;
-       MusicLen = 0;
-    }
-
     testfn = (char *) malloc( strlen(fn) + 5 );
     strcpy(testfn, fn);
     extension = strrchr(testfn, '.');
@@ -315,8 +317,24 @@ void playmusic(char *fn)
     } else {
        MusicVoice = FX_PlayLoopedAuto(MusicPtr, MusicLen, 0, 0, 0,
                                       MusicVolume, MusicVolume, MusicVolume,
-				      255, FX_MUSIC_PRIORITY);
+				      FX_MUSIC_PRIORITY, MUSIC_ID);
        MusicIsWaveform = 1;
+    }
+}
+
+void stopmusic(void)
+{
+    if (MusicIsWaveform && MusicVoice >= 0) {
+       FX_StopSound(MusicVoice);
+       MusicVoice = -1;
+    } else if (!MusicIsWaveform) {
+       MUSIC_StopSong();
+    }
+
+    if (MusicPtr) {
+       free(MusicPtr);
+       MusicPtr = 0;
+       MusicLen = 0;
     }
 }
 
@@ -649,7 +667,7 @@ void testcallback(unsigned int num)
 {
     short tempi,tempj,tempk;
 
-   if ((int) num == -128) {
+   if ((int) num == MUSIC_ID) {
       return;
    }
    

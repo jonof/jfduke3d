@@ -1494,7 +1494,7 @@ if (!VOLUMEONE) {
     cachedebug = 0;
     automapping = 0;
 
-    if(ud.recstat != 2) MUSIC_StopSong();
+    if(ud.recstat != 2) stopmusic();
 
     cacheit();
 
