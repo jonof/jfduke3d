@@ -1,7 +1,7 @@
 # Duke3D Makefile for GNU Make
 
 # SDK locations - adjust to match your setup
-DXROOT=c:/sdks/directx/dx61
+DXROOT=/z/sdks/directx/dx7
 
 # Engine options
 SUPERBUILD = 1
@@ -85,7 +85,10 @@ ifeq ($(PLATFORM),WINDOWS)
 	NASMFLAGS+= -DUNDERSCORES -f win32
 	GAMEOBJS+= $(OBJ)/gameres.$o $(OBJ)/winbits.$o $(OBJ)/startwin.game.$o
 	EDITOROBJS+= $(OBJ)/buildres.$o
-	LIBS+= -ldsound
+	LIBS+= -ldsound \
+	       $(JAUDIOLIBDIR)/third-party/mingw32/lib/libvorbisfile.a \
+	       $(JAUDIOLIBDIR)/third-party/mingw32/lib/libvorbis.a \
+	       $(JAUDIOLIBDIR)/third-party/mingw32/lib/libogg.a
 endif
 
 ifeq ($(RENDERTYPE),SDL)

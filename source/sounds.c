@@ -42,7 +42,7 @@ long backflag,numenvsnds;
 static int MusicIsWaveform = 0;
 static char * MusicPtr = 0;
 static int MusicLen = 0;
-static int MusicVoice = 0;
+static int MusicVoice = -1;
 static int MusicPaused = 0;
 
 
@@ -264,6 +264,7 @@ void intomenusounds(void)
 void playmusic(char *fn)
 {
     int fp;
+    char * testfn, * extension;
 
     if(MusicToggle == 0) return;
     if(MusicDevice < 0) return;
@@ -278,8 +279,29 @@ void playmusic(char *fn)
        MusicPtr = 0;
        MusicLen = 0;
     }
-    
-    fp = kopen4load(fn,0);
+
+    testfn = (char *) malloc( strlen(fn) + 5 );
+    strcpy(testfn, fn);
+    extension = strrchr(testfn, '.');
+
+    do {
+       if (extension && !strcasecmp(extension, ".mid")) {
+	  // we've been asked to load a .mid file, but first
+	  // let's see if there's an ogg with the same base name
+	  // lying around
+	  strcpy(extension, ".ogg");
+	  fp = kopen4load(testfn, 0);
+	  if (fp >= 0) {
+             free(testfn);
+	     break;
+	  }
+       }
+       free(testfn);
+
+       // just use what we've been given
+       fp = kopen4load(fn, 0);
+    } while (0);
+
     if (fp < 0) return;
 
     MusicLen = kfilelength( fp );
@@ -292,7 +314,9 @@ void playmusic(char *fn)
        MusicIsWaveform = 0;
     } else {
        MusicVoice = FX_PlayLoopedAuto(MusicPtr, MusicLen, 0, 0, 0,
-                                      MusicVolume, MusicVolume, MusicVolume, 255, -128);
+                                      MusicVolume, MusicVolume, MusicVolume,
+				      255, FX_MUSIC_PRIORITY);
+       MusicIsWaveform = 1;
     }
 }
 
