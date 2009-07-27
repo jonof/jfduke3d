@@ -197,13 +197,13 @@ void MusicPause( int onf )
    
    if (onf) {
       if (MusicIsWaveform) {
-         //FX_PauseVoice()
+         FX_PauseSound(MusicVoice, TRUE);
       } else {
          MUSIC_Pause();
       }
    } else {
       if (MusicIsWaveform) {
-         ///FX_ContinueVoice();
+         FX_PauseSound(MusicVoice, FALSE);
       } else {
          MUSIC_Continue();
       }

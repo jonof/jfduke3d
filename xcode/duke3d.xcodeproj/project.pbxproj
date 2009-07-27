@@ -212,7 +212,7 @@
 		AB2EA10B101217D600DD2F1F /* audiolib_musicstub.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = audiolib_musicstub.c; sourceTree = "<group>"; };
 		AB2EA11F1012195E00DD2F1F /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = /System/Library/Frameworks/AudioUnit.framework; sourceTree = "<absolute>"; };
 		AB69BD050A73C21E00F3DCB8 /* JFDuke3D.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JFDuke3D.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AB69BD080A73C21E00F3DCB8 /* JFDuke3D-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JFDuke3D-Info.plist"; sourceTree = "<group>"; };
+		AB69BD080A73C21E00F3DCB8 /* JFDuke3D-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "JFDuke3D-Info.plist"; sourceTree = "<group>"; };
 		AB69BD120A73C36100F3DCB8 /* actors.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = actors.c; sourceTree = "<group>"; };
 		AB69BD130A73C36100F3DCB8 /* config.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = config.c; sourceTree = "<group>"; };
 		AB69BD140A73C36100F3DCB8 /* game.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = game.c; sourceTree = "<group>"; };
@@ -258,7 +258,7 @@
 		ABD769290A73CE40006C27C1 /* game.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; name = game.bmp; path = ../rsrc/game.bmp; sourceTree = SOURCE_ROOT; };
 		ABD769300A73CE6D006C27C1 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		ABD7695E0A73D116006C27C1 /* Build Editor for JFDuke3D.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Build Editor for JFDuke3D.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		ABD769600A73D116006C27C1 /* Build Editor-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Build Editor-Info.plist"; sourceTree = "<group>"; };
+		ABD769600A73D116006C27C1 /* Build Editor-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Build Editor-Info.plist"; sourceTree = "<group>"; };
 		ABD7696F0A73D164006C27C1 /* build.osxmain.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = build.osxmain.nib; sourceTree = "<group>"; };
 		ABD769700A73D164006C27C1 /* startwin.editor.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = startwin.editor.nib; sourceTree = "<group>"; };
 		ABD769740A73D17A006C27C1 /* astub.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = astub.c; sourceTree = "<group>"; };
@@ -538,7 +538,6 @@
 		AB69BCF50A73C1A800F3DCB8 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = AB69BCF60A73C1A800F3DCB8 /* Build configuration list for PBXProject "duke3d" */;
-			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 0;
 			mainGroup = AB69BCF30A73C1A800F3DCB8;
 			productRefGroup = AB69BD060A73C21E00F3DCB8 /* Products */;
