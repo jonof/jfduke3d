@@ -75,7 +75,7 @@ void SoundStartup( void )
     initdata = (void *) win_gethwnd();
     #endif
 
-   status = FX_Init( fxdevicetype, NumVoices, NumChannels, NumBits, MixRate, initdata );
+   status = FX_Init( fxdevicetype, NumVoices, &NumChannels, &NumBits, &MixRate, initdata );
    if ( status == FX_Ok ) {
       FX_SetVolume( FXVolume );
       FX_SetReverseStereo(ReverseStereo);
