@@ -2897,7 +2897,6 @@ void cheatkeys(short snum)
                     if(p->scream_voice > FX_Ok)
                     {
                         FX_StopSound(p->scream_voice);
-                        testcallback(DUKE_SCREAM);
                         p->scream_voice = FX_Ok;
                     }
 
