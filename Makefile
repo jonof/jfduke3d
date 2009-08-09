@@ -79,7 +79,7 @@ include $(EROOT)/Makefile.shared
 
 ifeq ($(PLATFORM),LINUX)
 	NASMFLAGS+= -f elf
-	GAMELIBS+= -lvorbisfile -lvorbis -logg
+	GAMELIBS+= -lvorbisfile -lvorbis -logg -lfluidsynth
 endif
 ifeq ($(PLATFORM),WINDOWS)
 	OURCFLAGS+= -DUNDERSCORES -I$(DXROOT)/include

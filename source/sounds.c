@@ -321,6 +321,8 @@ void playmusic(char *fn)
 				      FX_MUSIC_PRIORITY, MUSIC_ID);
        MusicIsWaveform = 1;
     }
+
+    MusicPaused = 0;
 }
 
 void stopmusic(void)
@@ -331,6 +333,8 @@ void stopmusic(void)
     } else if (!MusicIsWaveform) {
        MUSIC_StopSong();
     }
+
+    MusicPaused = 0;
 
     if (MusicPtr) {
        free(MusicPtr);
