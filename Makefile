@@ -71,7 +71,6 @@ GAMEOBJS=$(OBJ)/game.$o \
 	$(OBJ)/osdcmds.$o \
 	$(OBJ)/grpscan.$o \
 	$(OBJ)/sounds.$o \
-	$(OBJ)/audiolib_musicstub.$o \
 	$(JMACTOBJ)
 
 EDITOROBJS=$(OBJ)/astub.$o

@@ -128,12 +128,18 @@ void SoundShutdown( void )
 void MusicStartup( void )
    {
    int32 status;
+   int musicdevicetype;
 
    // if they chose None lets return
-   if (MusicDevice < 0)
+   if (MusicDevice < 0) {
       return;
-
-   status = MUSIC_Init( MusicDevice, 0 );
+   } else if (MusicDevice == 0) {
+      musicdevicetype = ASS_AutoDetect;
+   } else {
+      musicdevicetype = MusicDevice - 1;
+   }
+   
+   status = MUSIC_Init( musicdevicetype, 0 );
 
    if ( status == MUSIC_Ok )
       {
@@ -219,11 +225,6 @@ void MusicSetVolume(int volume)
    } else if (!MusicIsWaveform) {
       MUSIC_SetVolume(volume);
    }
-}
-
-void MusicUpdate(void)
-{
-	MUSIC_Update();
 }
 
 int USRHOOKS_GetMem(char **ptr, unsigned long size )
@@ -312,7 +313,7 @@ void playmusic(char *fn)
     kclose( fp );
     
     if (!memcmp(MusicPtr, "MThd", 4)) {
-       MUSIC_PlaySong( MusicPtr, MUSIC_LoopSong );
+       MUSIC_PlaySong( MusicPtr, MusicLen, MUSIC_LoopSong );
        MusicIsWaveform = 0;
     } else {
        MusicVoice = FX_PlayLoopedAuto(MusicPtr, MusicLen, 0, 0, 0,
