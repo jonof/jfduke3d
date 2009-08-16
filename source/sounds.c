@@ -177,16 +177,7 @@ void MusicShutdown( void )
    if (MusicDevice < 0)
       return;
    
-   if (MusicVoice >= 0) {
-      FX_StopSound(MusicVoice);
-      MusicVoice = -1;
-   }
-   
-   if (MusicPtr) {
-      free(MusicPtr);
-      MusicPtr = 0;
-      MusicLen = 0;
-   }
+   stopmusic();
    
    status = MUSIC_Shutdown();
    if ( status != MUSIC_Ok )
