@@ -34,7 +34,7 @@ else
 endif
 
 JAUDIOLIBDIR=$(SRC)/jaudiolib
-JAUDIOLIB=libjfaudiolib.a
+include $(JAUDIOLIBDIR)/Makefile.shared
 
 CC=gcc
 CXX=g++
@@ -79,7 +79,7 @@ include $(EROOT)/Makefile.shared
 
 ifeq ($(PLATFORM),LINUX)
 	NASMFLAGS+= -f elf
-	GAMELIBS+= -lvorbisfile -lvorbis -logg -lfluidsynth
+	GAMELIBS+= $(JFAUDIOLIB_LDFLAGS)
 endif
 ifeq ($(PLATFORM),WINDOWS)
 	OURCFLAGS+= -DUNDERSCORES -I$(DXROOT)/include
@@ -107,7 +107,7 @@ endif
 
 OURCFLAGS+= $(BUILDCFLAGS)
 
-.PHONY: clean all engine $(ELIB)/$(ENGINELIB) $(ELIB)/$(EDITORLIB) $(JAUDIOLIBDIR)/$(JAUDIOLIB)
+.PHONY: clean all engine $(ELIB)/$(ENGINELIB) $(ELIB)/$(EDITORLIB) $(JAUDIOLIBDIR)/$(JFAUDIOLIB)
 
 # TARGETS
 
@@ -125,7 +125,7 @@ endif
 
 all: duke3d$(EXESUFFIX) build$(EXESUFFIX)
 
-duke3d$(EXESUFFIX): $(GAMEOBJS) $(ELIB)/$(ENGINELIB) $(JAUDIOLIBDIR)/$(JAUDIOLIB)
+duke3d$(EXESUFFIX): $(GAMEOBJS) $(ELIB)/$(ENGINELIB) $(JAUDIOLIBDIR)/$(JFAUDIOLIB)
 	$(CXX) $(CXXFLAGS) $(OURCXXFLAGS) $(OURCFLAGS) -o $@ $^ $(LIBS) $(GAMELIBS) -Wl,-Map=$@.map
 	
 build$(EXESUFFIX): $(EDITOROBJS) $(ELIB)/$(EDITORLIB) $(ELIB)/$(ENGINELIB)
@@ -142,7 +142,7 @@ enginelib editorlib:
 	
 $(ELIB)/$(ENGINELIB): enginelib
 $(ELIB)/$(EDITORLIB): editorlib
-$(JAUDIOLIBDIR)/$(JAUDIOLIB):
+$(JAUDIOLIBDIR)/$(JFAUDIOLIB):
 	$(MAKE) -C $(JAUDIOLIBDIR)
 
 # RULES
