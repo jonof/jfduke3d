@@ -37,7 +37,16 @@ Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
 
 #define LOUDESTVOLUME 150
 
+#define MUSIC_ID  -65536
+
 long backflag,numenvsnds;
+
+static int MusicIsWaveform = 0;
+static char * MusicPtr = 0;
+static int MusicLen = 0;
+static int MusicVoice = -1;
+static int MusicPaused = 0;
+
 
 /*
 ===================
@@ -50,16 +59,26 @@ long backflag,numenvsnds;
 void SoundStartup( void )
 {
    int32 status;
+    int fxdevicetype;
+    void * initdata = 0;
 
    // if they chose None lets return
-   if (FXDevice < 0) return;
+    if (FXDevice < 0) {
+        return;
+    } else if (FXDevice == 0) {
+        fxdevicetype = ASS_AutoDetect;
+    } else {
+        fxdevicetype = FXDevice - 1;
+    }
+    
+    #ifdef WIN32
+    initdata = (void *) win_gethwnd();
+    #endif
 
-   status = FX_Init( FXDevice, NumVoices, NumChannels, NumBits, MixRate );
+   status = FX_Init( fxdevicetype, NumVoices, &NumChannels, &NumBits, &MixRate, initdata );
    if ( status == FX_Ok ) {
       FX_SetVolume( FXVolume );
-      if (ReverseStereo == 1) {
-         FX_SetReverseStereo(!FX_GetReverseStereo());
-      }
+      FX_SetReverseStereo(ReverseStereo);
 	  status = FX_SetCallBack( testcallback );
   }
 
@@ -67,6 +86,8 @@ void SoundStartup( void )
 	  sprintf(tempbuf, "Sound startup error: %s", FX_ErrorString( FX_Error ));
 	  gameexit(tempbuf);
    }
+	
+	FXDevice = 0;
 }
 
 /*
@@ -84,6 +105,10 @@ void SoundShutdown( void )
    // if they chose None lets return
    if (FXDevice < 0)
       return;
+   
+   if (MusicVoice >= 0) {
+      MusicShutdown();
+   }
 
    status = FX_Shutdown();
    if ( status != FX_Ok ) {
@@ -103,12 +128,18 @@ void SoundShutdown( void )
 void MusicStartup( void )
    {
    int32 status;
+   int musicdevicetype;
 
    // if they chose None lets return
-   if (MusicDevice < 0)
+   if (MusicDevice < 0) {
       return;
-
-   status = MUSIC_Init( MusicDevice, 0 );
+   } else if (MusicDevice == 0) {
+      musicdevicetype = ASS_AutoDetect;
+   } else {
+      musicdevicetype = MusicDevice - 1;
+   }
+   
+   status = MUSIC_Init( musicdevicetype, 0 );
 
    if ( status == MUSIC_Ok )
       {
@@ -145,7 +176,9 @@ void MusicShutdown( void )
    // if they chose None lets return
    if (MusicDevice < 0)
       return;
-
+   
+   stopmusic();
+   
    status = MUSIC_Shutdown();
    if ( status != MUSIC_Ok )
       {
@@ -153,9 +186,36 @@ void MusicShutdown( void )
       }
    }
 
-void MusicUpdate(void)
+void MusicPause( int onf )
 {
-	MUSIC_Update();
+   if (MusicPaused == onf || (MusicIsWaveform && MusicVoice < 0)) {
+      return;
+   }
+   
+   if (onf) {
+      if (MusicIsWaveform) {
+         FX_PauseSound(MusicVoice, TRUE);
+      } else {
+         MUSIC_Pause();
+      }
+   } else {
+      if (MusicIsWaveform) {
+         FX_PauseSound(MusicVoice, FALSE);
+      } else {
+         MUSIC_Continue();
+      }
+   }
+   
+   MusicPaused = onf;
+}
+
+void MusicSetVolume(int volume)
+{
+   if (MusicIsWaveform && MusicVoice >= 0) {
+      //FX_SetVoiceVolume(MusicVoice, volume);
+   } else if (!MusicIsWaveform) {
+      MUSIC_SetVolume(volume);
+   }
 }
 
 int USRHOOKS_GetMem(char **ptr, unsigned long size )
@@ -206,26 +266,72 @@ void intomenusounds(void)
 
 void playmusic(char *fn)
 {
-    short      fp;
-    long        l;
+    int fp;
+    char * testfn, * extension;
 
     if(MusicToggle == 0) return;
     if(MusicDevice < 0) return;
 
-    fp = kopen4load(fn,0);
+    stopmusic();
+    
+    testfn = (char *) malloc( strlen(fn) + 5 );
+    strcpy(testfn, fn);
+    extension = strrchr(testfn, '.');
 
-    if(fp == -1) return;
+    do {
+       if (extension && !strcasecmp(extension, ".mid")) {
+	  // we've been asked to load a .mid file, but first
+	  // let's see if there's an ogg with the same base name
+	  // lying around
+	  strcpy(extension, ".ogg");
+	  fp = kopen4load(testfn, 0);
+	  if (fp >= 0) {
+             free(testfn);
+	     break;
+	  }
+       }
+       free(testfn);
 
-    l = kfilelength( fp );
-    if(l >= (long)sizeof(MusicPtr))
-    {
-        kclose(fp);
-        return;
+       // just use what we've been given
+       fp = kopen4load(fn, 0);
+    } while (0);
+
+    if (fp < 0) return;
+
+    MusicLen = kfilelength( fp );
+    MusicPtr = (char *) malloc(MusicLen);
+    kread( fp, MusicPtr, MusicLen);
+    kclose( fp );
+    
+    if (!memcmp(MusicPtr, "MThd", 4)) {
+       MUSIC_PlaySong( MusicPtr, MusicLen, MUSIC_LoopSong );
+       MusicIsWaveform = 0;
+    } else {
+       MusicVoice = FX_PlayLoopedAuto(MusicPtr, MusicLen, 0, 0, 0,
+                                      MusicVolume, MusicVolume, MusicVolume,
+				      FX_MUSIC_PRIORITY, MUSIC_ID);
+       MusicIsWaveform = 1;
     }
 
-    kread( fp, MusicPtr, l);
-    kclose( fp );
-    MUSIC_PlaySong( MusicPtr, MUSIC_LoopSong );
+    MusicPaused = 0;
+}
+
+void stopmusic(void)
+{
+    if (MusicIsWaveform && MusicVoice >= 0) {
+       FX_StopSound(MusicVoice);
+       MusicVoice = -1;
+    } else if (!MusicIsWaveform) {
+       MUSIC_StopSong();
+    }
+
+    MusicPaused = 0;
+
+    if (MusicPtr) {
+       free(MusicPtr);
+       MusicPtr = 0;
+       MusicLen = 0;
+    }
 }
 
 char loadsound(unsigned short num)
@@ -300,13 +406,13 @@ int xyzsound(short num,short i,long x,long y,long z)
 
     pitchs = soundps[num];
     pitche = soundpe[num];
-    cx = klabs(pitche-pitchs);
+    j = klabs(pitche-pitchs);
 
-    if(cx)
+    if(j)
     {
         if( pitchs < pitche )
-             pitch = pitchs + ( rand()%cx );
-        else pitch = pitche + ( rand()%cx );
+             pitch = pitchs + ( rand()%j );
+        else pitch = pitche + ( rand()%j );
     }
     else pitch = pitchs;
 
@@ -367,25 +473,14 @@ int xyzsound(short num,short i,long x,long y,long z)
 
     if( soundm[num]&1 )
     {
-        unsigned short start;
-
         if(Sound[num].num > 0) return -1;
 
-        start = *(unsigned short *)(Sound[num].ptr + 0x14);
-
-        if(*Sound[num].ptr == 'C')
-            voice = FX_PlayLoopedVOC( Sound[num].ptr, start, start + soundsiz[num],
-                    pitch,sndist>>6,sndist>>6,0,soundpr[num],num);
-        else
-            voice = FX_PlayLoopedWAV( Sound[num].ptr, start, start + soundsiz[num],
+        voice = FX_PlayLoopedAuto( Sound[num].ptr, soundsiz[num], 0, -1,
                     pitch,sndist>>6,sndist>>6,0,soundpr[num],num);
     }
     else
     {
-        if( *Sound[num].ptr == 'C')
-            voice = FX_PlayVOC3D( Sound[ num ].ptr,pitch,sndang>>6,sndist>>6, soundpr[num], num );
-        else
-	    voice = FX_PlayWAV3D( Sound[ num ].ptr,pitch,sndang>>6,sndist>>6, soundpr[num], num );
+        voice = FX_PlayAuto3D( Sound[ num ].ptr, soundsiz[num], pitch,sndang>>6,sndist>>6, soundpr[num], num );
     }
 
     if ( voice > FX_Ok )
@@ -393,6 +488,7 @@ int xyzsound(short num,short i,long x,long y,long z)
         SoundOwner[num][Sound[num].num].i = i;
         SoundOwner[num][Sound[num].num].voice = voice;
         Sound[num].num++;
+		  Sound[num].numall++;
     }
     else Sound[num].lock--;
     return (voice);
@@ -432,28 +528,18 @@ void sound(short num)
 
     if( soundm[num]&1 )
     {
-        if(*Sound[num].ptr == 'C')
-        {
-            start = (long)*(unsigned short *)(Sound[num].ptr + 0x14);
-            voice = FX_PlayLoopedVOC( Sound[num].ptr, start, start + soundsiz[num],
-                    pitch,LOUDESTVOLUME,LOUDESTVOLUME,LOUDESTVOLUME,soundpr[num],num);
-        }
-        else
-        {
-            start = (long)*(unsigned short *)(Sound[num].ptr + 0x14);
-            voice = FX_PlayLoopedWAV( Sound[num].ptr, start, start + soundsiz[num],
-                    pitch,LOUDESTVOLUME,LOUDESTVOLUME,LOUDESTVOLUME,soundpr[num],num);
-        }
+         voice = FX_PlayLoopedAuto( Sound[num].ptr, soundsiz[num], 0, -1,
+                 pitch,LOUDESTVOLUME,LOUDESTVOLUME,LOUDESTVOLUME,soundpr[num],num);
     }
     else
     {
-        if(*Sound[num].ptr == 'C')
-            voice = FX_PlayVOC3D( Sound[ num ].ptr, pitch,0,255-LOUDESTVOLUME,soundpr[num], num );
-        else
-            voice = FX_PlayWAV3D( Sound[ num ].ptr, pitch,0,255-LOUDESTVOLUME,soundpr[num], num );
+        voice = FX_PlayAuto3D( Sound[ num ].ptr, soundsiz[num], pitch,0,255-LOUDESTVOLUME,soundpr[num], num );
     }
 
-    if(voice > FX_Ok) return;
+    if(voice > FX_Ok) {
+		 Sound[num].numall++;
+		 return;
+	 }
     Sound[num].lock--;
 }
 
@@ -473,7 +559,7 @@ void stopsound(short num)
     if(Sound[num].num > 0)
     {
         FX_StopSound(SoundOwner[num][Sound[num].num-1].voice);
-        testcallback(num);
+        //testcallback(num);
     }
 }
 
@@ -573,11 +659,15 @@ void pan3dsound(void)
     }
 }
 
-void testcallback(unsigned long num)
+void testcallback(unsigned int num)
 {
     short tempi,tempj,tempk;
 
-        if((long)num < 0)
+   if ((int) num == MUSIC_ID) {
+      return;
+   }
+   
+        if((int)num < 0)
         {
             if(lumplockbyte[-num] >= 200)
                 lumplockbyte[-num]--;
@@ -608,6 +698,7 @@ void testcallback(unsigned long num)
             SoundOwner[num][tempk-1].i = -1;
         }
 
+		  Sound[num].numall--;
         Sound[num].lock--;
 }
 
@@ -626,12 +717,36 @@ void clearsoundlocks(void)
 
 int isspritemakingsound(short i, int num)
 {
-	if (num < 0) num=0;	// FIXME
-	return issoundplaying(num) > 0;
+	int j, k;
+	if (num < 0) {
+		// is sprite making any sound at all (expensive)
+		for (j = 0; j < NUM_SOUNDS; j++) {
+			for (k = 0; k < Sound[j].num; k++) {
+            if (SoundOwner[j][k].i == i) {
+					return 1;
+				}
+			}
+		}
+	} else {
+		for (k = 0; k < Sound[num].num; k++) {
+			if (SoundOwner[num][k].i == i) {
+				return 1;
+			}
+		}
+	}
+
+	return 0;
 }
 
-int issoundplaying(int num)
+// xyz: 0 - sound(), 1 - xyzsound(), 2 - either
+int issoundplaying(int num, int xyz)
 {
+    if (xyz == 0) {
+        return Sound[num].numall - Sound[num].num;
+    } else if (xyz == 1) {
 	return Sound[num].num;
+    } else {
+        return Sound[num].numall;
+    }
 }
 

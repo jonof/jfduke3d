@@ -445,7 +445,6 @@ void getpackets(void)
     input *osyn, *nsyn;
 
 	sampletimer();
-    AudioUpdate();	    
 
     // only dispatch commands here when not in a game
     if( !(ps[myconnectindex].gm&MODE_GAME) ) { OSD_DispatchQueued(); }
@@ -665,10 +664,7 @@ void getpackets(void)
                 if (SoundToggle == 0 || ud.lockout == 1 || FXDevice < 0 )
                     break;
                 rtsptr = (char *)RTS_GetSound(packbuf[1]-1);
-                if (*rtsptr == 'C')
-                    FX_PlayVOC3D(rtsptr,0,0,0,255,-packbuf[1]);
-                else
-                    FX_PlayWAV3D(rtsptr,0,0,0,255,-packbuf[1]);
+                FX_PlayAuto3D(rtsptr,RTS_SoundLength(packbuf[1]-1),0,0,0,255,-packbuf[1]);
                 rtsplaying = 7;
                 break;
             case 8:
@@ -775,7 +771,6 @@ void faketimerhandler()
     }
 
 	sampletimer();
-	AudioUpdate();
     if ((totalclock < ototalclock+TICSPERFRAME) || (ready2send == 0)) return;
     ototalclock += TICSPERFRAME;
 
@@ -6522,9 +6517,7 @@ if (VOLUMEALL) {
                 if(SoundToggle && ALT_IS_PRESSED && ( RTS_NumSounds() > 0 ) && rtsplaying == 0 && VoiceToggle )
             {
                 rtsptr = (char *)RTS_GetSound (i-1);
-                if(*rtsptr == 'C')
-                    FX_PlayVOC3D( rtsptr,0,0,0,255,-i);
-                else FX_PlayWAV3D( rtsptr,0,0,0,255,-i);
+                FX_PlayAuto3D( rtsptr,RTS_SoundLength(i-1),0,0,0,255,-i);
 
                 rtsplaying = 7;
 
@@ -7267,7 +7260,7 @@ void Logo(void)
     flushperms();
     nextpage();
 
-    MUSIC_StopSong();
+    stopmusic();
     FX_StopAllSounds();	// JBF 20031228
     clearsoundlocks();	// JBF 20031228
 
@@ -7991,8 +7984,6 @@ if (VOLUMEONE) {
 			    quitevent = 0;
 		    }
 	    }
-
-	    AudioUpdate();
 
 	    OSD_DispatchQueued();
 	    
@@ -9241,12 +9232,12 @@ void dobonus(char bonusonly)
 	    IFISSOFTMODE fadepal(0,0,0, 63,0,-1); else nextpage();
 		while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
 	    fadepal(0,0,0, 0,64,1);
-            MUSIC_StopSong();
+            stopmusic();
             FX_StopAllSounds();
             clearsoundlocks();
             break;
         case 1:
-            MUSIC_StopSong();
+            stopmusic();
             clearview(0L);
             nextpage();
 
@@ -9276,7 +9267,7 @@ void dobonus(char bonusonly)
 
             setview(0,0,xdim-1,ydim-1);
 
-            MUSIC_StopSong();
+            stopmusic();
             clearview(0L);
             nextpage();
 
@@ -9335,7 +9326,7 @@ void dobonus(char bonusonly)
 
         case 2:
 
-            MUSIC_StopSong();
+            stopmusic();
             clearview(0L);
             nextpage();
             if(ud.lockout == 0)
@@ -9357,19 +9348,19 @@ void dobonus(char bonusonly)
             if( ud.lockout == 0 && !KB_KeyWaiting() )
             {
                 sound(ENDSEQVOL3SND5);
-                while(issoundplaying(ENDSEQVOL3SND5)) { handleevents(); getpackets(); }
+                while(issoundplaying(ENDSEQVOL3SND5, 0)) { handleevents(); getpackets(); }
                 if(KB_KeyWaiting()) goto ENDANM;
                 sound(ENDSEQVOL3SND6);
-                while(issoundplaying(ENDSEQVOL3SND6)) { handleevents(); getpackets(); }
+                while(issoundplaying(ENDSEQVOL3SND6, 0)) { handleevents(); getpackets(); }
                 if(KB_KeyWaiting()) goto ENDANM;
                 sound(ENDSEQVOL3SND7);
-                while(issoundplaying(ENDSEQVOL3SND7)) { handleevents(); getpackets(); }
+                while(issoundplaying(ENDSEQVOL3SND7, 0)) { handleevents(); getpackets(); }
                 if(KB_KeyWaiting()) goto ENDANM;
                 sound(ENDSEQVOL3SND8);
-                while(issoundplaying(ENDSEQVOL3SND8)) { handleevents(); getpackets(); }
+                while(issoundplaying(ENDSEQVOL3SND8, 0)) { handleevents(); getpackets(); }
                 if(KB_KeyWaiting()) goto ENDANM;
                 sound(ENDSEQVOL3SND9);
-                while(issoundplaying(ENDSEQVOL3SND9)) { handleevents(); getpackets(); }
+                while(issoundplaying(ENDSEQVOL3SND9, 0)) { handleevents(); getpackets(); }
             }
 
             KB_FlushKeyBoardQueue();
@@ -9415,7 +9406,7 @@ void dobonus(char bonusonly)
     totalclock = 0; tinc = 0;
     bonuscnt = 0;
 
-    MUSIC_StopSong();
+    stopmusic();
     FX_StopAllSounds();
     clearsoundlocks();
 
@@ -9568,7 +9559,6 @@ void dobonus(char bonusonly)
 	    int yy, zz;
 
 	    handleevents();
-	    AudioUpdate();
 	    
         if(ps[myconnectindex].gm&MODE_EOL)
         {

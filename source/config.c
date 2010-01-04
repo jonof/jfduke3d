@@ -48,12 +48,10 @@ int32 SoundToggle;
 int32 MusicToggle;
 int32 VoiceToggle;
 int32 AmbienceToggle;
-//fx_blaster_config BlasterConfig;
 int32 NumVoices;
 int32 NumChannels;
 int32 NumBits;
 int32 MixRate;
-//int32 MidiPort;
 int32 ReverseStereo;
 
 int32 UseJoystick = 0, UseMouse = 1;
@@ -197,10 +195,10 @@ void CONFIG_SetDefaults( void )
 
 	FXDevice = 0;
 	MusicDevice = 0;
-	NumVoices = 8;		// DOS default = 4
+	NumVoices = 16;
 	NumChannels = 2;
-	NumBits = 8;
-	MixRate = 22050;		// DOS default = 11025
+	NumBits = 16;
+	MixRate = 44100;
 	SoundToggle = 1;
 	MusicToggle = 1;
 	VoiceToggle = 1;
@@ -664,12 +662,18 @@ void CONFIG_WriteSetup( void )
 	SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenSize",ud.screen_size,false,false);
 	SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenGamma",ud.brightness,false,false);
 
+    SCRIPT_PutNumber( scripthandle, "Sound Setup", "FXDevice", FXDevice, false, false);
+    SCRIPT_PutNumber( scripthandle, "Sound Setup", "MusicDevice", MusicDevice, false, false);
 	SCRIPT_PutNumber( scripthandle, "Sound Setup", "FXVolume",FXVolume,false,false);
 	SCRIPT_PutNumber( scripthandle, "Sound Setup", "MusicVolume",MusicVolume,false,false);
 	SCRIPT_PutNumber( scripthandle, "Sound Setup", "SoundToggle",SoundToggle,false,false);
 	SCRIPT_PutNumber( scripthandle, "Sound Setup", "VoiceToggle",VoiceToggle,false,false);
 	SCRIPT_PutNumber( scripthandle, "Sound Setup", "AmbienceToggle",AmbienceToggle,false,false);
 	SCRIPT_PutNumber( scripthandle, "Sound Setup", "MusicToggle",MusicToggle,false,false);
+    SCRIPT_PutNumber( scripthandle, "Sound Setup", "NumVoices", NumVoices, false, false);
+    SCRIPT_PutNumber( scripthandle, "Sound Setup", "NumChannels", NumChannels, false, false);
+    SCRIPT_PutNumber( scripthandle, "Sound Setup", "NumBits", NumBits, false, false);
+    SCRIPT_PutNumber( scripthandle, "Sound Setup", "MixRate", MixRate, false, false);
 	SCRIPT_PutNumber( scripthandle, "Sound Setup", "ReverseStereo",ReverseStereo,false,false);
 
 	SCRIPT_PutNumber( scripthandle, "Setup", "ForceSetup",ForceSetup,false,false);

@@ -227,7 +227,7 @@ int loadplayer(signed char spot)
 
          FX_StopAllSounds();
      clearsoundlocks();
-         MUSIC_StopSong();
+         stopmusic();
 
      if(numplayers > 1) {
          if (kdfread(&buf,19,1,fil) != 1) goto corrupt;
@@ -3755,14 +3755,14 @@ if (PLUTOPAK) {
                         if(MusicDevice >= 0)
                     {
                         MusicToggle = 1-MusicToggle;
-                        if( MusicToggle == 0 ) MUSIC_Pause();
+                        if( MusicToggle == 0 ) MusicPause(1);
                         else
                         {
                             if(ud.recstat != 2 && ps[myconnectindex].gm&MODE_GAME)
                                 playmusic(&music_fn[0][music_select][0]);
                             else playmusic(&env_music_fn[0][0]);
 
-                            MUSIC_Continue();
+                            MusicPause(0);
                         }
                     }
                     onbar = 0;
@@ -3818,7 +3818,7 @@ if (PLUTOPAK) {
                     MusicToggle==0||(MusicDevice<0));
                 MusicVolume <<= 2;
                 if(l != MusicVolume)
-                    MUSIC_SetVolume( (short) MusicVolume );
+                    MusicSetVolume( (short) MusicVolume );
 
             }
             menutext(c,50+16+16+16+16,SHX(-6),(FXDevice<0)||SoundToggle==0,"DUKE TALK");

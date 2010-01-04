@@ -35,10 +35,12 @@ extern void SoundStartup(void );
 extern void SoundShutdown(void );
 extern void MusicStartup(void );
 extern void MusicShutdown(void );
+extern void MusicSetVolume(int);
 extern int USRHOOKS_GetMem(char **ptr,unsigned long size);
 extern int USRHOOKS_FreeMem(char *ptr);
 extern void intomenusounds(void );
 extern void playmusic(char *fn);
+extern void stopmusic(void);
 extern char loadsound(unsigned short num);
 extern int xyzsound(short num,short i,long x,long y,long z);
 extern void sound(short num);
@@ -46,7 +48,7 @@ extern int spritesound(unsigned short num,short i);
 extern void stopsound(short num);
 extern void stopenvsound(short num,short i);
 extern void pan3dsound(void );
-extern void testcallback(unsigned long num);
+extern void testcallback(unsigned int num);
 extern void clearsoundlocks(void);
 extern short callsound(short sn,short whatsprite);
 extern short check_activator_motion(short lotag);
@@ -318,7 +320,7 @@ extern void setgamepalette(struct player_struct *player, char *pal, int set);
 extern void fadepal(int r, int g, int b, int start, int end, int step);
 
 extern int isspritemakingsound(short i, int num);
-extern int issoundplaying(int num);
+extern int issoundplaying(int num, int xyz);
 extern void stopspritesound(short num, short i);
 
 #endif // __funct_h__

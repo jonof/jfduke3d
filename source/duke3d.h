@@ -32,7 +32,6 @@ extern "C" {
 #endif
 
 // JBF
-#include "a.h"
 #include "build.h"
 #include "cache1d.h"
 #include "pragmas.h"
@@ -275,6 +274,7 @@ typedef struct
     char *ptr;
     volatile char lock;
     int  length, num;
+	 int numall;	// total number of this sound played in any way
 } SAMPLE;
 
 struct animwalltype
@@ -286,7 +286,6 @@ extern struct animwalltype animwall[MAXANIMWALLS];
 extern short numanimwalls,probey,lastprobey;
 
 extern char typebuflen,typebuf[41];
-extern char MusicPtr[72000*2];
 extern long msx[2048],msy[2048];
 extern short cyclers[MAXCYCLERS][6],numcyclers;
 extern char myname[32];

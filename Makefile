@@ -1,7 +1,7 @@
 # Duke3D Makefile for GNU Make
 
 # SDK locations - adjust to match your setup
-DXROOT=c:/sdks/directx/dx61
+DXROOT=/z/sdks/directx/dx7
 
 # Engine options
 SUPERBUILD = 1
@@ -21,7 +21,7 @@ OBJ=obj
 EROOT=engine
 ESRC=$(EROOT)/src
 EINC=$(EROOT)/include
-ELIB=$(EROOT)/obj.gnu
+ELIB=$(EROOT)
 INC=$(SRC)
 o=o
 
@@ -33,13 +33,17 @@ else
   debug=-ggdb -O0
 endif
 
+JAUDIOLIBDIR=$(SRC)/jaudiolib
+include $(JAUDIOLIBDIR)/Makefile.shared
+
 CC=gcc
 CXX=g++
 OURCFLAGS=$(debug) -W -Wall -Wimplicit -Wno-char-subscripts -Wno-unused \
 	-fno-pic -funsigned-char -fno-strict-aliasing -DNO_GCC_BUILTINS -DNOCOPYPROTECT \
-	-I$(INC) -I$(EINC) -I$(SRC)/jmact -I$(SRC)/jaudiolib
+	-I$(INC) -I$(EINC) -I$(SRC)/jmact -I$(JAUDIOLIBDIR)/include
 OURCXXFLAGS=-fno-exceptions -fno-rtti
 LIBS=-lm
+GAMELIBS=
 NASMFLAGS=-s #-g
 EXESUFFIX=
 
@@ -50,20 +54,6 @@ JMACTOBJ=$(OBJ)/util_lib.$o \
 	$(OBJ)/mouse.$o \
 	$(OBJ)/mathutil.$o \
 	$(OBJ)/scriplib.$o
-
-AUDIOLIB_FX_STUB=$(OBJ)/audiolib_fxstub.$o
-AUDIOLIB_MUSIC_STUB=$(OBJ)/audiolib_musicstub.$o
-AUDIOLIB_FX=$(OBJ)/mv_mix.$o \
-	  $(OBJ)/mv_mix16.$o \
-	  $(OBJ)/mvreverb.$o \
-	  $(OBJ)/pitch.$o \
-	  $(OBJ)/multivoc.$o \
-	  $(OBJ)/ll_man.$o \
-	  $(OBJ)/fx_man.$o \
-	  $(OBJ)/dsoundout.$o
-AUDIOLIB_MUSIC=$(OBJ)/midi.$o \
-	  $(OBJ)/mpu401.$o \
-	  $(OBJ)/music.$o
 
 GAMEOBJS=$(OBJ)/game.$o \
 	$(OBJ)/actors.$o \
@@ -80,6 +70,7 @@ GAMEOBJS=$(OBJ)/game.$o \
 	$(OBJ)/osdfuncs.$o \
 	$(OBJ)/osdcmds.$o \
 	$(OBJ)/grpscan.$o \
+	$(OBJ)/sounds.$o \
 	$(JMACTOBJ)
 
 EDITOROBJS=$(OBJ)/astub.$o
@@ -88,17 +79,21 @@ include $(EROOT)/Makefile.shared
 
 ifeq ($(PLATFORM),LINUX)
 	NASMFLAGS+= -f elf
+	GAMELIBS+= $(JFAUDIOLIB_LDFLAGS)
 endif
 ifeq ($(PLATFORM),WINDOWS)
 	OURCFLAGS+= -DUNDERSCORES -I$(DXROOT)/include
 	NASMFLAGS+= -DUNDERSCORES -f win32
 	GAMEOBJS+= $(OBJ)/gameres.$o $(OBJ)/winbits.$o $(OBJ)/startwin.game.$o
 	EDITOROBJS+= $(OBJ)/buildres.$o
+	GAMELIBS+= -ldsound \
+	       $(JAUDIOLIBDIR)/third-party/mingw32/lib/libvorbisfile.a \
+	       $(JAUDIOLIBDIR)/third-party/mingw32/lib/libvorbis.a \
+	       $(JAUDIOLIBDIR)/third-party/mingw32/lib/libogg.a
 endif
 
 ifeq ($(RENDERTYPE),SDL)
 	OURCFLAGS+= $(subst -Dmain=SDL_main,,$(shell sdl-config --cflags))
-	AUDIOLIBOBJ=$(AUDIOLIB_MUSIC_STUB) $(AUDIOLIB_FX_STUB) $(OBJ)/sounds.$o
 
 	ifeq (1,$(HAVE_GTK2))
 		OURCFLAGS+= -DHAVE_GTK2 $(shell pkg-config --cflags gtk+-2.0)
@@ -109,14 +104,10 @@ ifeq ($(RENDERTYPE),SDL)
 	GAMEOBJS+= $(OBJ)/game_icon.$o
 	EDITOROBJS+= $(OBJ)/build_icon.$o
 endif
-ifeq ($(RENDERTYPE),WIN)
-	AUDIOLIBOBJ=$(AUDIOLIB_MUSIC) $(AUDIOLIB_FX) $(OBJ)/sounds.$o
-endif
 
-GAMEOBJS+= $(AUDIOLIBOBJ)
 OURCFLAGS+= $(BUILDCFLAGS)
 
-.PHONY: clean all engine $(ELIB)/$(ENGINELIB) $(ELIB)/$(EDITORLIB)
+.PHONY: clean all engine $(ELIB)/$(ENGINELIB) $(ELIB)/$(EDITORLIB) $(JAUDIOLIBDIR)/$(JFAUDIOLIB)
 
 # TARGETS
 
@@ -134,8 +125,8 @@ endif
 
 all: duke3d$(EXESUFFIX) build$(EXESUFFIX)
 
-duke3d$(EXESUFFIX): $(GAMEOBJS) $(ELIB)/$(ENGINELIB)
-	$(CXX) $(CXXFLAGS) $(OURCXXFLAGS) $(OURCFLAGS) -o $@ $^ $(LIBS) -Wl,-Map=$@.map
+duke3d$(EXESUFFIX): $(GAMEOBJS) $(ELIB)/$(ENGINELIB) $(JAUDIOLIBDIR)/$(JFAUDIOLIB)
+	$(CXX) $(CXXFLAGS) $(OURCXXFLAGS) $(OURCFLAGS) -o $@ $^ $(LIBS) $(GAMELIBS) -Wl,-Map=$@.map
 	
 build$(EXESUFFIX): $(EDITOROBJS) $(ELIB)/$(EDITORLIB) $(ELIB)/$(ENGINELIB)
 	$(CXX) $(CXXFLAGS) $(OURCXXFLAGS) $(OURCFLAGS) -o $@ $^ $(LIBS) -Wl,-Map=$@.map
@@ -151,11 +142,11 @@ enginelib editorlib:
 	
 $(ELIB)/$(ENGINELIB): enginelib
 $(ELIB)/$(EDITORLIB): editorlib
+$(JAUDIOLIBDIR)/$(JFAUDIOLIB):
+	$(MAKE) -C $(JAUDIOLIBDIR)
 
 # RULES
 $(OBJ)/%.$o: $(SRC)/%.nasm
-	nasm $(NASMFLAGS) $< -o $@
-$(OBJ)/%.$o: $(SRC)/jaudiolib/%.nasm
 	nasm $(NASMFLAGS) $< -o $@
 
 $(OBJ)/%.$o: $(SRC)/%.c
@@ -163,8 +154,6 @@ $(OBJ)/%.$o: $(SRC)/%.c
 $(OBJ)/%.$o: $(SRC)/%.cpp
 	$(CXX) $(CXXFLAGS) $(OURCXXFLAGS) $(OURCFLAGS) -c $< -o $@ 2>&1
 $(OBJ)/%.$o: $(SRC)/jmact/%.c
-	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@ 2>&1
-$(OBJ)/%.$o: $(SRC)/jaudiolib/%.c
 	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@ 2>&1
 
 $(OBJ)/%.$o: $(SRC)/misc/%.rc
@@ -192,6 +181,7 @@ ifeq ($(PLATFORM),DARWIN)
 else
 	-rm -f $(OBJ)/*
 	$(MAKE) -C $(EROOT) clean
+	$(MAKE) -C $(JAUDIOLIBDIR) clean
 endif
 	
 veryclean: clean

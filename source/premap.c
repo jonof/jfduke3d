@@ -1006,7 +1006,7 @@ void newgame(char vn,char ln,char sk)
     short i;
 
     if(globalskillsound >= 0)
-        while(issoundplaying(globalskillsound)) { handleevents(); getpackets(); }
+        while(issoundplaying(globalskillsound, 0)) { handleevents(); getpackets(); }
     globalskillsound = -1;
 
     waitforeverybody();
@@ -1291,7 +1291,6 @@ void waitforeverybody()
 	while (1)
 	{
 		handleevents();
-		AudioUpdate();
 
 		if (quitevent || keystatus[1]) gameexit("");
 
@@ -1495,7 +1494,7 @@ if (!VOLUMEONE) {
     cachedebug = 0;
     automapping = 0;
 
-    if(ud.recstat != 2) MUSIC_StopSong();
+    if(ud.recstat != 2) stopmusic();
 
     cacheit();
 

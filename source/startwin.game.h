@@ -13,14 +13,14 @@
 #define RSRC_BMP		200
 
 // config page
-#define IDCFULLSCREEN	100
-#define IDCVMODE	101
-#define IDCSOUNDDRV	102
-#define IDCMIDIDEV	103
-#define IDCCDADEV	104
-#define IDCINPUTMOUSE	105
-#define IDCINPUTJOY	106
-#define IDCALWAYSSHOW	107
+#define IDCFULLSCREEN   100
+#define IDCVMODE        101
+#define IDCSOUNDQUAL    102
+//#define IDCMIDIDEV	103
+//#define IDCCDADEV	104
+#define IDCINPUTMOUSE   105
+#define IDCINPUTJOY     106
+#define IDCALWAYSSHOW   107
 
 // game page
 #define IDGDATA		100
