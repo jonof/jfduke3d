@@ -143,7 +143,7 @@ enginelib editorlib:
 $(ELIB)/$(ENGINELIB): enginelib
 $(ELIB)/$(EDITORLIB): editorlib
 $(JAUDIOLIBDIR)/$(JFAUDIOLIB):
-	$(MAKE) -C $(JAUDIOLIBDIR)
+	$(MAKE) -C $(JAUDIOLIBDIR) RELEASE=$(RELEASE)
 
 # RULES
 $(OBJ)/%.$o: $(SRC)/%.nasm
