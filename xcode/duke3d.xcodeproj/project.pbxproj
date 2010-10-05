@@ -24,9 +24,9 @@
 /* Begin PBXBuildFile section */
 		AB1DE7EF10199F6E00657779 /* GrpFile.game.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1DE7EE10199F6E00657779 /* GrpFile.game.m */; };
 		AB1DE7F610199FD200657779 /* GameListSource.game.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1DE7F510199FD200657779 /* GameListSource.game.m */; };
-		AB2EA0FB1012149000DD2F1F /* libjfaudiolib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB2EA0FA1012147800DD2F1F /* libjfaudiolib.a */; };
 		AB2EA109101215AE00DD2F1F /* sounds.c in Sources */ = {isa = PBXBuildFile; fileRef = AB2EA108101215AE00DD2F1F /* sounds.c */; };
 		AB2EA1201012195E00DD2F1F /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB2EA11F1012195E00DD2F1F /* AudioUnit.framework */; };
+		AB590019125B435000AE66D1 /* libjfaudiolib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB59FFD2125B31B100AE66D1 /* libjfaudiolib.a */; };
 		AB6724E00F0F0F51000C7D92 /* libengine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB6724C90F0F0E9A000C7D92 /* libengine.a */; };
 		AB69BD220A73C36100F3DCB8 /* actors.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD120A73C36100F3DCB8 /* actors.c */; };
 		AB69BD230A73C36100F3DCB8 /* config.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD130A73C36100F3DCB8 /* config.c */; };
@@ -76,25 +76,25 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		AB2852041078204D001D4302 /* PBXContainerItemProxy */ = {
+		AB59FFD1125B31B100AE66D1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AB2EA0F21012147800DD2F1F /* jfaudiolib.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = AB32FA7F1077102D00A9BAFF;
-			remoteInfo = test;
-		};
-		AB2EA0F91012147800DD2F1F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AB2EA0F21012147800DD2F1F /* jfaudiolib.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = AB2E9E421011E61700DD2F1F;
+			remoteGlobalIDString = AB2E9E421011E61700DD2F1F /* libjfaudiolib.a */;
 			remoteInfo = jfaudiolib;
 		};
-		AB2EA0FC1012149E00DD2F1F /* PBXContainerItemProxy */ = {
+		AB59FFD3125B31B100AE66D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB2EA0F21012147800DD2F1F /* jfaudiolib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = AB32FA7F1077102D00A9BAFF /* test */;
+			remoteInfo = test;
+		};
+		AB59FFFC125B41C200AE66D1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AB2EA0F21012147800DD2F1F /* jfaudiolib.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = AB2E9E411011E61600DD2F1F;
+			remoteGlobalIDString = AB2E9E411011E61600DD2F1F /* jfaudiolib */;
 			remoteInfo = jfaudiolib;
 		};
 		AB6724C80F0F0E9A000C7D92 /* PBXContainerItemProxy */ = {
@@ -213,7 +213,7 @@
 		AB1DE7EE10199F6E00657779 /* GrpFile.game.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GrpFile.game.m; sourceTree = "<group>"; };
 		AB1DE7F410199FD200657779 /* GameListSource.game.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameListSource.game.h; sourceTree = "<group>"; };
 		AB1DE7F510199FD200657779 /* GameListSource.game.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameListSource.game.m; sourceTree = "<group>"; };
-		AB2EA0F21012147800DD2F1F /* jfaudiolib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jfaudiolib.xcodeproj; path = ../source/jaudiolib/jfaudiolib.xcodeproj; sourceTree = SOURCE_ROOT; };
+		AB2EA0F21012147800DD2F1F /* jfaudiolib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jfaudiolib.xcodeproj; path = ../../jfaudiolib.git/jfaudiolib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		AB2EA108101215AE00DD2F1F /* sounds.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sounds.c; sourceTree = "<group>"; };
 		AB2EA11F1012195E00DD2F1F /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = /System/Library/Frameworks/AudioUnit.framework; sourceTree = "<absolute>"; };
 		AB69BD050A73C21E00F3DCB8 /* JFDuke3D.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JFDuke3D.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -235,8 +235,8 @@
 		AB69BD330A73C3EC00F3DCB8 /* game.osxmain.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = game.osxmain.nib; sourceTree = "<group>"; };
 		AB69BD340A73C3EC00F3DCB8 /* startwin.game.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = startwin.game.nib; sourceTree = "<group>"; };
 		AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = engine.xcodeproj; path = ../engine/xcode/engine.xcodeproj; sourceTree = "<group>"; };
-		AB8C5940101B826E00B42306 /* ogg.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ogg.framework; path = "../source/jaudiolib/third-party/ogg.framework"; sourceTree = SOURCE_ROOT; };
-		AB8C5941101B826E00B42306 /* vorbis.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vorbis.framework; path = "../source/jaudiolib/third-party/vorbis.framework"; sourceTree = SOURCE_ROOT; };
+		AB8C5940101B826E00B42306 /* ogg.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ogg.framework; path = "../../jfaudiolib.git/third-party/ogg.framework"; sourceTree = SOURCE_ROOT; };
+		AB8C5941101B826E00B42306 /* vorbis.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vorbis.framework; path = "../../jfaudiolib.git/third-party/vorbis.framework"; sourceTree = SOURCE_ROOT; };
 		ABD768D80A73CB63006C27C1 /* _control.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _control.h; sourceTree = "<group>"; };
 		ABD768D90A73CB63006C27C1 /* _scrplib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _scrplib.h; sourceTree = "<group>"; };
 		ABD768DA0A73CB63006C27C1 /* animlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = animlib.c; sourceTree = "<group>"; };
@@ -294,7 +294,7 @@
 				ABD769040A73CBDE006C27C1 /* SDL.framework in Frameworks */,
 				ABD769310A73CE6D006C27C1 /* AppKit.framework in Frameworks */,
 				AB6724E00F0F0F51000C7D92 /* libengine.a in Frameworks */,
-				AB2EA0FB1012149000DD2F1F /* libjfaudiolib.a in Frameworks */,
+				AB590019125B435000AE66D1 /* libjfaudiolib.a in Frameworks */,
 				AB2EA1201012195E00DD2F1F /* AudioUnit.framework in Frameworks */,
 				AB8C5942101B826E00B42306 /* ogg.framework in Frameworks */,
 				AB8C5943101B826E00B42306 /* vorbis.framework in Frameworks */,
@@ -316,11 +316,11 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		AB2EA0F31012147800DD2F1F /* Products */ = {
+		AB59FFCD125B31B100AE66D1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AB2EA0FA1012147800DD2F1F /* libjfaudiolib.a */,
-				AB2852051078204D001D4302 /* test */,
+				AB59FFD2125B31B100AE66D1 /* libjfaudiolib.a */,
+				AB59FFD4125B31B100AE66D1 /* test */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -353,7 +353,6 @@
 		AB69BCFE0A73C1B200F3DCB8 /* source */ = {
 			isa = PBXGroup;
 			children = (
-				ABD768D70A73CB4D006C27C1 /* jmact */,
 				ABF3C30E10188C8C00233700 /* _functio.h */,
 				ABF3C30F10188C8C00233700 /* _rts.h */,
 				AB69BD120A73C36100F3DCB8 /* actors.c */,
@@ -397,6 +396,7 @@
 		AB69BCFF0A73C1F100F3DCB8 /* Game */ = {
 			isa = PBXGroup;
 			children = (
+				ABD768D70A73CB4D006C27C1 /* jmact */,
 				AB69BCFE0A73C1B200F3DCB8 /* source */,
 				AB69BD450A73C41B00F3DCB8 /* osx */,
 				ABD769280A73CE40006C27C1 /* game_icon.icns */,
@@ -459,7 +459,8 @@
 				ABD768EA0A73CB63006C27C1 /* util_lib.c */,
 				ABD768EB0A73CB63006C27C1 /* util_lib.h */,
 			);
-			path = jmact;
+			name = jmact;
+			path = ../jmact;
 			sourceTree = "<group>";
 		};
 		ABD769020A73CBC0006C27C1 /* Linked Frameworks */ = {
@@ -509,7 +510,7 @@
 			);
 			dependencies = (
 				AB6724DF0F0F0F46000C7D92 /* PBXTargetDependency */,
-				AB2EA0FD1012149E00DD2F1F /* PBXTargetDependency */,
+				AB59FFFD125B41C200AE66D1 /* PBXTargetDependency */,
 			);
 			name = JFDuke3D;
 			productName = JFDuke3D;
@@ -544,7 +545,14 @@
 			isa = PBXProject;
 			buildConfigurationList = AB69BCF60A73C1A800F3DCB8 /* Build configuration list for PBXProject "duke3d" */;
 			compatibilityVersion = "Xcode 3.0";
+			developmentRegion = English;
 			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = AB69BCF30A73C1A800F3DCB8;
 			productRefGroup = AB69BD060A73C21E00F3DCB8 /* Products */;
 			projectDirPath = "";
@@ -554,7 +562,7 @@
 					ProjectRef = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
 				},
 				{
-					ProductGroup = AB2EA0F31012147800DD2F1F /* Products */;
+					ProductGroup = AB59FFCD125B31B100AE66D1 /* Products */;
 					ProjectRef = AB2EA0F21012147800DD2F1F /* jfaudiolib.xcodeproj */;
 				},
 			);
@@ -568,18 +576,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		AB2852051078204D001D4302 /* test */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = test;
-			remoteRef = AB2852041078204D001D4302 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		AB2EA0FA1012147800DD2F1F /* libjfaudiolib.a */ = {
+		AB59FFD2125B31B100AE66D1 /* libjfaudiolib.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libjfaudiolib.a;
-			remoteRef = AB2EA0F91012147800DD2F1F /* PBXContainerItemProxy */;
+			remoteRef = AB59FFD1125B31B100AE66D1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		AB59FFD4125B31B100AE66D1 /* test */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = test;
+			remoteRef = AB59FFD3125B31B100AE66D1 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		AB6724C90F0F0E9A000C7D92 /* libengine.a */ = {
@@ -696,10 +704,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		AB2EA0FD1012149E00DD2F1F /* PBXTargetDependency */ = {
+		AB59FFFD125B41C200AE66D1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = jfaudiolib;
-			targetProxy = AB2EA0FC1012149E00DD2F1F /* PBXContainerItemProxy */;
+			targetProxy = AB59FFFC125B41C200AE66D1 /* PBXContainerItemProxy */;
 		};
 		AB6724DF0F0F0F46000C7D92 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -745,6 +753,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"~/Library/Frameworks",
 					/Library/Frameworks,
+					"../jfaudiolib/third-party",
 				);
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
@@ -761,12 +770,10 @@
 				);
 				GCC_VERSION = 4.0;
 				HEADER_SEARCH_PATHS = (
-					"../source/jaudiolib/third-party",
+					../jfaudiolib/include,
 					../source,
 					../engine/include,
 				);
-				MACOSX_DEPLOYMENT_TARGET_i386 = 10.4;
-				MACOSX_DEPLOYMENT_TARGET_ppc = 10.3;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.4u.sdk";
 			};
 			name = Debug;
@@ -782,6 +789,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"~/Library/Frameworks",
 					/Library/Frameworks,
+					"../jfaudiolib/third-party",
 				);
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
@@ -797,12 +805,10 @@
 				);
 				GCC_VERSION = 4.0;
 				HEADER_SEARCH_PATHS = (
-					"../source/jaudiolib/third-party",
+					../jfaudiolib/include,
 					../source,
 					../engine/include,
 				);
-				MACOSX_DEPLOYMENT_TARGET_i386 = 10.4;
-				MACOSX_DEPLOYMENT_TARGET_ppc = 10.3;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.4u.sdk";
 			};
 			name = Release;
@@ -810,12 +816,6 @@
 		AB69BD0D0A73C30600F3DCB8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				HEADER_SEARCH_PATHS = (
-					../source,
-					../engine/include,
-					../source/jaudiolib/include,
-				);
 				INFOPLIST_FILE = "JFDuke3D-Info.plist";
 				OTHER_LDFLAGS = "-lstdc++";
 				PREBINDING = NO;
@@ -828,12 +828,6 @@
 		AB69BD0E0A73C30600F3DCB8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				HEADER_SEARCH_PATHS = (
-					../source,
-					../engine/include,
-					../source/jaudiolib/include,
-				);
 				INFOPLIST_FILE = "JFDuke3D-Info.plist";
 				OTHER_LDFLAGS = "-lstdc++";
 				PREBINDING = NO;

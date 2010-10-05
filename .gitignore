@@ -1,0 +1,6 @@
+engine
+jfaudiolib
+jmact
+*.mode1v3
+*.pbxuser
+xcode/build
