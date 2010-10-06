@@ -4,3 +4,4 @@ jmact
 *.mode1v3
 *.pbxuser
 xcode/build
+Makefile.user

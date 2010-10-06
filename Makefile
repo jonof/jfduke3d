@@ -1,25 +1,49 @@
 # Duke3D Makefile for GNU Make
 
-# SDK locations - adjust to match your setup
-DXROOT=/z/sdks/directx/dx7
+# Create Makefile.user yourself to provide your own overrides
+# for configurable values
+-include Makefile.user
 
-# Engine options
-SUPERBUILD = 1
-POLYMOST = 1
-USE_OPENGL = 1
-DYNAMIC_OPENGL = 1
-NOASM = 0
-LINKED_GTK = 0
+##
+##
+## CONFIGURABLE OPTIONS
+##
+##
 
 # Debugging options
-RELEASE?=1
+RELEASE ?= 1
+
+# DirectX SDK location
+DXROOT ?= $(HOME)/sdks/directx/dx7
+
+# Engine source code path
+EROOT ?= engine
+
+# JMACT library source path
+MACTROOT ?= jmact
+
+# JFAudioLib source path
+AUDIOLIBROOT ?= jfaudiolib
+
+# Engine options
+SUPERBUILD ?= 1
+POLYMOST ?= 1
+USE_OPENGL ?= 1
+DYNAMIC_OPENGL ?= 1
+NOASM ?= 0
+LINKED_GTK ?= 0
+
+
+##
+##
+## HERE BE DRAGONS
+##
+##
 
 # build locations
 SRC=source
 RSRC=rsrc
 OBJ=obj
-EROOT=engine
-ESRC=$(EROOT)/src
 EINC=$(EROOT)/include
 ELIB=$(EROOT)
 INC=$(SRC)
@@ -33,14 +57,13 @@ else
   debug=-ggdb -O0
 endif
 
-JAUDIOLIBDIR=$(SRC)/jaudiolib
-include $(JAUDIOLIBDIR)/Makefile.shared
+include $(AUDIOLIBROOT)/Makefile.shared
 
 CC=gcc
 CXX=g++
 OURCFLAGS=$(debug) -W -Wall -Wimplicit -Wno-char-subscripts -Wno-unused \
 	-fno-pic -funsigned-char -fno-strict-aliasing -DNO_GCC_BUILTINS -DNOCOPYPROTECT \
-	-I$(INC) -I$(EINC) -I$(SRC)/jmact -I$(JAUDIOLIBDIR)/include
+	-I$(INC) -I$(EINC) -I$(MACTROOT) -I$(AUDIOLIBROOT)/include
 OURCXXFLAGS=-fno-exceptions -fno-rtti
 LIBS=-lm
 GAMELIBS=
@@ -87,9 +110,9 @@ ifeq ($(PLATFORM),WINDOWS)
 	GAMEOBJS+= $(OBJ)/gameres.$o $(OBJ)/winbits.$o $(OBJ)/startwin.game.$o
 	EDITOROBJS+= $(OBJ)/buildres.$o
 	GAMELIBS+= -ldsound \
-	       $(JAUDIOLIBDIR)/third-party/mingw32/lib/libvorbisfile.a \
-	       $(JAUDIOLIBDIR)/third-party/mingw32/lib/libvorbis.a \
-	       $(JAUDIOLIBDIR)/third-party/mingw32/lib/libogg.a
+	       $(AUDIOLIBROOT)/third-party/mingw32/lib/libvorbisfile.a \
+	       $(AUDIOLIBROOT)/third-party/mingw32/lib/libvorbis.a \
+	       $(AUDIOLIBROOT)/third-party/mingw32/lib/libogg.a
 endif
 
 ifeq ($(RENDERTYPE),SDL)
@@ -107,7 +130,7 @@ endif
 
 OURCFLAGS+= $(BUILDCFLAGS)
 
-.PHONY: clean all engine $(ELIB)/$(ENGINELIB) $(ELIB)/$(EDITORLIB) $(JAUDIOLIBDIR)/$(JFAUDIOLIB)
+.PHONY: clean all engine $(ELIB)/$(ENGINELIB) $(ELIB)/$(EDITORLIB) $(AUDIOLIBROOT)/$(JFAUDIOLIB)
 
 # TARGETS
 
@@ -125,7 +148,7 @@ endif
 
 all: duke3d$(EXESUFFIX) build$(EXESUFFIX)
 
-duke3d$(EXESUFFIX): $(GAMEOBJS) $(ELIB)/$(ENGINELIB) $(JAUDIOLIBDIR)/$(JFAUDIOLIB)
+duke3d$(EXESUFFIX): $(GAMEOBJS) $(ELIB)/$(ENGINELIB) $(AUDIOLIBROOT)/$(JFAUDIOLIB)
 	$(CXX) $(CXXFLAGS) $(OURCXXFLAGS) $(OURCFLAGS) -o $@ $^ $(LIBS) $(GAMELIBS) -Wl,-Map=$@.map
 	
 build$(EXESUFFIX): $(EDITOROBJS) $(ELIB)/$(EDITORLIB) $(ELIB)/$(ENGINELIB)
@@ -142,8 +165,8 @@ enginelib editorlib:
 	
 $(ELIB)/$(ENGINELIB): enginelib
 $(ELIB)/$(EDITORLIB): editorlib
-$(JAUDIOLIBDIR)/$(JFAUDIOLIB):
-	$(MAKE) -C $(JAUDIOLIBDIR) RELEASE=$(RELEASE)
+$(AUDIOLIBROOT)/$(JFAUDIOLIB):
+	$(MAKE) -C $(AUDIOLIBROOT) RELEASE=$(RELEASE)
 
 # RULES
 $(OBJ)/%.$o: $(SRC)/%.nasm
@@ -181,7 +204,7 @@ ifeq ($(PLATFORM),DARWIN)
 else
 	-rm -f $(OBJ)/*
 	$(MAKE) -C $(EROOT) clean
-	$(MAKE) -C $(JAUDIOLIBDIR) clean
+	$(MAKE) -C $(AUDIOLIBROOT) clean
 endif
 	
 veryclean: clean
