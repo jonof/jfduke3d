@@ -17,13 +17,13 @@ RELEASE ?= 1
 DXROOT ?= $(HOME)/sdks/directx/dx7
 
 # Engine source code path
-EROOT ?= engine
+EROOT ?= ../jfbuild.git
 
 # JMACT library source path
-MACTROOT ?= jmact
+MACTROOT ?= ../jfmact.git
 
 # JFAudioLib source path
-AUDIOLIBROOT ?= jfaudiolib
+AUDIOLIBROOT ?= ../jfaudiolib.git
 
 # Engine options
 SUPERBUILD ?= 1

@@ -1,7 +1,4 @@
-engine
-jfaudiolib
-jmact
-*.mode1v3
-*.pbxuser
-xcode/build
-Makefile.user
+/xcode/*.xcodeproj/*.mode1v3
+/xcode/*.xcodeproj/*.pbxuser
+/xcode/build
+/Makefile.user
