@@ -12,7 +12,7 @@ WARNING! WARNING! WARNING! WARNING!
 1. Since this is work-in-progress I cannot and will not attest to the safety
    of using this executable. You use it at your own risk!
 2. 3D Realms and Apogee do not support this port. Contact me at
-   jonof@edgenetwk.com if you find problems.
+   jf@jonof.id.au if you find problems.
 WARNING! WARNING! WARNING! WARNING!
 
 *** READ  releasenotes.html  FOR MORE DETAILED INFORMATION ABOUT THE NEW
@@ -24,5 +24,5 @@ WARNING! WARNING! WARNING! WARNING!
 Enjoy!
 
 		- Jonathon Fowler
-		  jonof@edgenetwork.org
-		  http://jonof.edgenetwork.org/index.php?p=jfduke3d
+		  jf@jonof.id.au
+		  http://www.jonof.id.au/jfduke3d

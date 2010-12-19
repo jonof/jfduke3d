@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 Original Source: 1996 - Todd Replogle
 Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
-Modifications for JonoF's port by Jonathon Fowler (jonof@edgenetwk.com)
+Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
 */
 //-------------------------------------------------------------------------
 
@@ -2101,7 +2101,7 @@ cheat_for_port_credits:
 
 				   for (i=0;i<2;i++) {
 					   switch (i) {
-						   case 0: p = "Visit http://jonof.edgenetwork.org/jfduke3d/ for"; break;
+						   case 0: p = "Visit http://www.jonof.id.au/jfduke3d for"; break;
 						   case 1: p = "the source code, latest news, and updates of this port."; break;
 					   }
 				       minitext(160-(Bstrlen(p)<<1), 135+10+(i*7)-l, p, 8, 10+16+128);
