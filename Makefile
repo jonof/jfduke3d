@@ -43,7 +43,6 @@ LINKED_GTK ?= 0
 # build locations
 SRC=source
 RSRC=rsrc
-OBJ=obj
 EINC=$(EROOT)/include
 ELIB=$(EROOT)
 INC=$(SRC)
@@ -70,33 +69,33 @@ GAMELIBS=
 NASMFLAGS=-s #-g
 EXESUFFIX=
 
-JMACTOBJ=$(OBJ)/util_lib.$o \
-	$(OBJ)/file_lib.$o \
-	$(OBJ)/control.$o \
-	$(OBJ)/keyboard.$o \
-	$(OBJ)/mouse.$o \
-	$(OBJ)/mathutil.$o \
-	$(OBJ)/scriplib.$o
+JMACTOBJ=$(SRC)/util_lib.$o \
+	$(SRC)/file_lib.$o \
+	$(SRC)/control.$o \
+	$(SRC)/keyboard.$o \
+	$(SRC)/mouse.$o \
+	$(SRC)/mathutil.$o \
+	$(SRC)/scriplib.$o
 
-GAMEOBJS=$(OBJ)/game.$o \
-	$(OBJ)/actors.$o \
-	$(OBJ)/gamedef.$o \
-	$(OBJ)/global.$o \
-	$(OBJ)/menues.$o \
-	$(OBJ)/player.$o \
-	$(OBJ)/premap.$o \
-	$(OBJ)/sector.$o \
-	$(OBJ)/rts.$o \
-	$(OBJ)/config.$o \
-	$(OBJ)/animlib.$o \
-	$(OBJ)/testcd.$o \
-	$(OBJ)/osdfuncs.$o \
-	$(OBJ)/osdcmds.$o \
-	$(OBJ)/grpscan.$o \
-	$(OBJ)/sounds.$o \
+GAMEOBJS=$(SRC)/game.$o \
+	$(SRC)/actors.$o \
+	$(SRC)/gamedef.$o \
+	$(SRC)/global.$o \
+	$(SRC)/menues.$o \
+	$(SRC)/player.$o \
+	$(SRC)/premap.$o \
+	$(SRC)/sector.$o \
+	$(SRC)/rts.$o \
+	$(SRC)/config.$o \
+	$(SRC)/animlib.$o \
+	$(SRC)/testcd.$o \
+	$(SRC)/osdfuncs.$o \
+	$(SRC)/osdcmds.$o \
+	$(SRC)/grpscan.$o \
+	$(SRC)/sounds.$o \
 	$(JMACTOBJ)
 
-EDITOROBJS=$(OBJ)/astub.$o
+EDITOROBJS=$(SRC)/astub.$o
 
 include $(EROOT)/Makefile.shared
 
@@ -107,8 +106,8 @@ endif
 ifeq ($(PLATFORM),WINDOWS)
 	OURCFLAGS+= -DUNDERSCORES -I$(DXROOT)/include
 	NASMFLAGS+= -DUNDERSCORES -f win32
-	GAMEOBJS+= $(OBJ)/gameres.$o $(OBJ)/winbits.$o $(OBJ)/startwin.game.$o
-	EDITOROBJS+= $(OBJ)/buildres.$o
+	GAMEOBJS+= $(SRC)/gameres.$o $(SRC)/winbits.$o $(SRC)/startwin.game.$o
+	EDITOROBJS+= $(SRC)/buildres.$o
 	GAMELIBS+= -ldsound \
 	       $(AUDIOLIBROOT)/third-party/mingw32/lib/libvorbisfile.a \
 	       $(AUDIOLIBROOT)/third-party/mingw32/lib/libvorbis.a \
@@ -120,12 +119,12 @@ ifeq ($(RENDERTYPE),SDL)
 
 	ifeq (1,$(HAVE_GTK2))
 		OURCFLAGS+= -DHAVE_GTK2 $(shell pkg-config --cflags gtk+-2.0)
-		GAMEOBJS+= $(OBJ)/game_banner.$o $(OBJ)/startgtk.game.$o
-		EDITOROBJS+= $(OBJ)/editor_banner.$o
+		GAMEOBJS+= $(SRC)/game_banner.$o $(SRC)/startgtk.game.$o
+		EDITOROBJS+= $(SRC)/editor_banner.$o
 	endif
 
-	GAMEOBJS+= $(OBJ)/game_icon.$o
-	EDITOROBJS+= $(OBJ)/build_icon.$o
+	GAMEOBJS+= $(SRC)/game_icon.$o
+	EDITOROBJS+= $(SRC)/build_icon.$o
 endif
 
 OURCFLAGS+= $(BUILDCFLAGS)
@@ -169,27 +168,27 @@ $(AUDIOLIBROOT)/$(JFAUDIOLIB):
 	$(MAKE) -C $(AUDIOLIBROOT) RELEASE=$(RELEASE)
 
 # RULES
-$(OBJ)/%.$o: $(SRC)/%.nasm
+$(SRC)/%.$o: $(SRC)/%.nasm
 	nasm $(NASMFLAGS) $< -o $@
 
-$(OBJ)/%.$o: $(SRC)/%.c
+$(SRC)/%.$o: $(SRC)/%.c
 	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@ 2>&1
-$(OBJ)/%.$o: $(SRC)/%.cpp
+$(SRC)/%.$o: $(SRC)/%.cpp
 	$(CXX) $(CXXFLAGS) $(OURCXXFLAGS) $(OURCFLAGS) -c $< -o $@ 2>&1
-$(OBJ)/%.$o: $(MACTROOT)/%.c
+$(SRC)/%.$o: $(MACTROOT)/%.c
 	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@ 2>&1
 
-$(OBJ)/%.$o: $(SRC)/misc/%.rc
+$(SRC)/%.$o: $(SRC)/misc/%.rc
 	windres -i $< -o $@ --include-dir=$(EINC) --include-dir=$(SRC)
 
-$(OBJ)/%.$o: $(SRC)/util/%.c
+$(SRC)/%.$o: $(SRC)/util/%.c
 	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@ 2>&1
 
-$(OBJ)/%.$o: $(RSRC)/%.c
+$(SRC)/%.$o: $(RSRC)/%.c
 	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@ 2>&1
 
-$(OBJ)/game_banner.$o: $(RSRC)/game_banner.c
-$(OBJ)/editor_banner.$o: $(RSRC)/editor_banner.c
+$(SRC)/game_banner.$o: $(RSRC)/game_banner.c
+$(SRC)/editor_banner.$o: $(RSRC)/editor_banner.c
 $(RSRC)/game_banner.c: $(RSRC)/game.bmp
 	echo "#include <gdk-pixbuf/gdk-pixdata.h>" > $@
 	gdk-pixbuf-csource --extern --struct --raw --name=startbanner_pixdata $^ | sed 's/load_inc//' >> $@
@@ -202,7 +201,7 @@ clean:
 ifeq ($(PLATFORM),DARWIN)
 	cd osx && xcodebuild -target All clean
 else
-	-rm -f $(OBJ)/*
+	-rm -f $(GAMEOBJS) $(EDITOROBJS)
 	$(MAKE) -C $(EROOT) clean
 	$(MAKE) -C $(AUDIOLIBROOT) clean
 endif
