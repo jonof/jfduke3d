@@ -69,13 +69,14 @@ GAMELIBS=
 NASMFLAGS=-s #-g
 EXESUFFIX=
 
-JMACTOBJ=$(SRC)/util_lib.$o \
-	$(SRC)/file_lib.$o \
-	$(SRC)/control.$o \
-	$(SRC)/keyboard.$o \
-	$(SRC)/mouse.$o \
-	$(SRC)/mathutil.$o \
-	$(SRC)/scriplib.$o
+JMACTOBJ=$(MACTROOT)/util_lib.$o \
+	$(MACTROOT)/file_lib.$o \
+	$(MACTROOT)/control.$o \
+	$(MACTROOT)/keyboard.$o \
+	$(MACTROOT)/mouse.$o \
+	$(MACTROOT)/mathutil.$o \
+	$(MACTROOT)/scriplib.$o \
+	$(MACTROOT)/animlib.$o
 
 GAMEOBJS=$(SRC)/game.$o \
 	$(SRC)/actors.$o \
@@ -87,7 +88,6 @@ GAMEOBJS=$(SRC)/game.$o \
 	$(SRC)/sector.$o \
 	$(SRC)/rts.$o \
 	$(SRC)/config.$o \
-	$(SRC)/animlib.$o \
 	$(SRC)/testcd.$o \
 	$(SRC)/osdfuncs.$o \
 	$(SRC)/osdcmds.$o \
@@ -175,7 +175,7 @@ $(SRC)/%.$o: $(SRC)/%.c
 	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@ 2>&1
 $(SRC)/%.$o: $(SRC)/%.cpp
 	$(CXX) $(CXXFLAGS) $(OURCXXFLAGS) $(OURCFLAGS) -c $< -o $@ 2>&1
-$(SRC)/%.$o: $(MACTROOT)/%.c
+$(MACTROOT)/%.$o: $(MACTROOT)/%.c
 	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@ 2>&1
 
 $(SRC)/%.$o: $(SRC)/misc/%.rc

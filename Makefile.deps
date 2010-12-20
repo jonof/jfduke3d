@@ -28,14 +28,14 @@ $(SRC)/startwin.game.$o: $(SRC)/startwin.game.c $(duke3d_h) $(EINC)/build.h $(EI
 $(SRC)/startgtk.game.$o: $(SRC)/startgtk.game.c $(duke3d_h) $(EINC)/dynamicgtk.h $(EINC)/build.h $(EINC)/baselayer.h $(EINC)/compat.h
 
 # jMACT objects
-$(SRC)/animlib.$o: $(MACTROOT)/animlib.c $(MACTROOT)/types.h $(INC)/develop.h $(MACTROOT)/util_lib.h $(MACTROOT)/animlib.h $(EINC)/compat.h
-$(SRC)/util_lib.$o: $(MACTROOT)/util_lib.c $(MACTROOT)/util_lib.h $(MACTROOT)/types.h $(EINC)/compat.h
-$(SRC)/file_lib.$o: $(MACTROOT)/file_lib.c $(MACTROOT)/file_lib.h $(MACTROOT)/types.h
-$(SRC)/control.$o: $(MACTROOT)/control.c $(MACTROOT)/types.h $(MACTROOT)/control.h $(MACTROOT)/keyboard.h $(MACTROOT)/mouse.h $(EINC)/baselayer.h
-$(SRC)/keyboard.$o: $(MACTROOT)/keyboard.c $(MACTROOT)/types.h $(MACTROOT)/keyboard.h $(EINC)/compat.h $(EINC)/baselayer.h
-$(SRC)/mouse.$o: $(MACTROOT)/mouse.c $(MACTROOT)/types.h $(MACTROOT)/mouse.h $(EINC)/baselayer.h
-$(SRC)/mathutil.$o: $(MACTROOT)/mathutil.c $(MACTROOT)/types.h
-$(SRC)/scriplib.$o: $(MACTROOT)/scriplib.c $(MACTROOT)/scriplib.h $(MACTROOT)/util_lib.h $(MACTROOT)/_scrplib.h $(MACTROOT)/types.h $(EINC)/compat.h
+$(MACTROOT)/animlib.$o: $(MACTROOT)/animlib.c $(MACTROOT)/types.h $(MACTROOT)/develop.h $(MACTROOT)/util_lib.h $(MACTROOT)/animlib.h $(EINC)/compat.h
+$(MACTROOT)/util_lib.$o: $(MACTROOT)/util_lib.c $(MACTROOT)/util_lib.h $(MACTROOT)/types.h $(EINC)/compat.h
+$(MACTROOT)/file_lib.$o: $(MACTROOT)/file_lib.c $(MACTROOT)/file_lib.h $(MACTROOT)/types.h
+$(MACTROOT)/control.$o: $(MACTROOT)/control.c $(MACTROOT)/types.h $(MACTROOT)/control.h $(MACTROOT)/keyboard.h $(MACTROOT)/mouse.h $(EINC)/baselayer.h
+$(MACTROOT)/keyboard.$o: $(MACTROOT)/keyboard.c $(MACTROOT)/types.h $(MACTROOT)/keyboard.h $(EINC)/compat.h $(EINC)/baselayer.h
+$(MACTROOT)/mouse.$o: $(MACTROOT)/mouse.c $(MACTROOT)/types.h $(MACTROOT)/mouse.h $(EINC)/baselayer.h
+$(MACTROOT)/mathutil.$o: $(MACTROOT)/mathutil.c $(MACTROOT)/types.h
+$(MACTROOT)/scriplib.$o: $(MACTROOT)/scriplib.c $(MACTROOT)/scriplib.h $(MACTROOT)/util_lib.h $(MACTROOT)/_scrplib.h $(MACTROOT)/types.h $(EINC)/compat.h
 
 # jAudioLib objects
 $(SRC)/audiolib_musicstub.$o: $(SRC)/audiolib_musicstub.c $(AUDIOLIBROOT)/include/music.h
