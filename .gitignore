@@ -1,10 +1,13 @@
 *.o
 *.a
+/*.exe
+/*.map
+/*.log
+/*.grp
 /xcode/*.xcodeproj/*.mode1v3
 /xcode/*.xcodeproj/*.pbxuser
 /xcode/build
 /Makefile.user
 /build
-/build.map
 /duke3d
-/duke3d.map
+/grpfiles.cache
