@@ -1,5 +1,7 @@
 *.o
+*.obj
 *.a
+*.res
 *.exe
 *.map
 *.log
@@ -8,6 +10,7 @@
 /xcode/*.xcodeproj/*.pbxuser
 /xcode/build
 /Makefile.user
+/engineoverrides.mak
 /build
 /duke3d
 /grpfiles.cache

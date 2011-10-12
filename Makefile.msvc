@@ -1,10 +1,14 @@
-# Duke3D Makefile for Watcom Make
+# Duke3D Makefile for Microsoft Make
+
+RELEASE=1
+DXROOT=$(USERPROFILE)\sdks\directx\dx7
+EROOT=..\jfbuild.git
+MACTROOT=..\jfmact.git
+AUDIOLIBROOT=..\jfaudiolib.git
 
 SRC=source
-OBJ=obj
-EROOT=engine
 EINC=$(EROOT)\include
-ELIB=$(EROOT)\obj.msc
+ELIB=$(EROOT)\src
 INC=$(SRC)
 o=obj
 
@@ -22,110 +26,86 @@ flags_link=/RELEASE
 !endif
 
 
-DXROOT=c:\sdks\directx\dx7
-
 ENGINEOPTS=/DSUPERBUILD /DPOLYMOST /DUSE_OPENGL /DDYNAMIC_OPENGL
+
+!include $(AUDIOLIBROOT)/Makefile.msvcshared
+
 
 CC=cl
 AS=ml
 LINK=link /opt:nowin98 /nologo /opt:ref
 CFLAGS= /MD /J /nologo $(flags_cl)  \
-	/I$(INC) /I$(EINC) /I$(SRC)\jmact /I$(SRC)\jaudiolib /I..\jfaud\inc \
+	/I$(INC) /I$(EINC) /I$(MACTROOT) /I$(AUDIOLIBROOT)\include \
 	/DNOCOPYPROTECT $(ENGINEOPTS) \
-	/I$(DXROOT)\include /DRENDERTYPEWIN=1
+	"/I$(DXROOT)\include" /DRENDERTYPEWIN=1
 LIBS=user32.lib gdi32.lib shell32.lib dxguid.lib winmm.lib wsock32.lib comctl32.lib \
-     ..\jfaud\jfaud.lib /NODEFAULTLIB:libFLAC.lib \
      #opengl32.lib
 ASFLAGS=/nologo /coff
 EXESUFFIX=.exe
 
-JMACTOBJ=$(OBJ)\util_lib.$o \
-	$(OBJ)\file_lib.$o \
-	$(OBJ)\control.$o \
-	$(OBJ)\keyboard.$o \
-	$(OBJ)\mouse.$o \
-	$(OBJ)\mathutil.$o \
-	$(OBJ)\scriplib.$o
+JMACTOBJ=$(MACTROOT)\util_lib.$o \
+	$(MACTROOT)\file_lib.$o \
+	$(MACTROOT)\control.$o \
+	$(MACTROOT)\keyboard.$o \
+	$(MACTROOT)\mouse.$o \
+	$(MACTROOT)\mathutil.$o \
+	$(MACTROOT)\scriplib.$o \
+	$(MACTROOT)\animlib.$o
 
-#AUDIOLIB_FX=$(OBJ)\jaudiolib_fxstub.$o
-#AUDIOLIB_MUSIC=$(OBJ)\jaudiolib_musicstub.$o
-#AUDIOLIB_FX=$(OBJ)\jaudiolib_fx_fmod.$o
-AUDIOLIB_JFAUD=$(OBJ)\jfaud_sounds.$o
-AUDIOLIB_FX=$(OBJ)\mv_mix.$o \
-	  $(OBJ)\mv_mix16.$o \
-	  $(OBJ)\mvreverb.$o \
-	  $(OBJ)\pitch.$o \
-	  $(OBJ)\multivoc.$o \
-	  $(OBJ)\ll_man.$o \
-	  $(OBJ)\fx_man.$o \
-	  $(OBJ)\dsoundout.$o
-AUDIOLIB_MUSIC=$(OBJ)\midi.$o \
-	  $(OBJ)\mpu401.$o \
-	  $(OBJ)\music.$o
-#AUDIOLIBOBJ=$(AUDIOLIB_MUSIC) $(AUDIOLIB_FX) $(OBJ)\sounds.$o
-AUDIOLIBOBJ=$(AUDIOLIB_JFAUD)
+GAMEOBJS=$(SRC)\game.$o \
+	$(SRC)\actors.$o \
+	$(SRC)\gamedef.$o \
+	$(SRC)\global.$o \
+	$(SRC)\menues.$o \
+	$(SRC)\player.$o \
+	$(SRC)\premap.$o \
+	$(SRC)\sector.$o \
+	$(SRC)\sounds.$o \
+	$(SRC)\rts.$o \
+	$(SRC)\config.$o \
+	$(SRC)\testcd.$o \
+	$(SRC)\osdfuncs.$o \
+	$(SRC)\osdcmds.$o \
+	$(SRC)\grpscan.$o \
+	$(SRC)\winbits.$o \
+	$(SRC)\gameres.res \
+	$(SRC)\startwin.game.$o \
+	$(JMACTOBJ)
 
-GAMEOBJS=$(OBJ)\game.$o \
-	$(OBJ)\actors.$o \
-	$(OBJ)\gamedef.$o \
-	$(OBJ)\global.$o \
-	$(OBJ)\menues.$o \
-	$(OBJ)\player.$o \
-	$(OBJ)\premap.$o \
-	$(OBJ)\sector.$o \
-	$(OBJ)\rts.$o \
-	$(OBJ)\config.$o \
-	$(OBJ)\animlib.$o\
-	$(OBJ)\testcd.$o \
-	$(OBJ)\osdfuncs.$o \
-	$(OBJ)\osdcmds.$o \
-	$(OBJ)\grpscan.$o \
-	$(OBJ)\winbits.$o \
-	$(OBJ)\gameres.res \
-	$(OBJ)\startwin.game.$o \
-	$(JMACTOBJ) \
-	$(AUDIOLIBOBJ)
-
-EDITOROBJS=$(OBJ)\astub.$o \
-	$(OBJ)\buildres.res
+EDITOROBJS=$(SRC)\astub.$o \
+	$(SRC)\buildres.res
 
 		
 # RULES
 .SUFFIXES: .masm
 
-{$(SRC)}.masm{$(OBJ)}.$o:
+{$(SRC)}.masm{$(SRC)}.$o:
 	$(AS) /c $(ASFLAGS) /Fo$@ $<
 
-{$(SRC)\jaudiolib}.masm{$(OBJ)}.$o:
-	$(AS) /c $(ASFLAGS) /Fo$@ $<
-
-{$(SRC)\jmact}.c{$(OBJ)}.$o:
+{$(MACTROOT)}.c{$(MACTROOT)}.$o:
 	$(CC) /c $(CFLAGS) /Fo$@ $<
 
-{$(SRC)\jaudiolib}.c{$(OBJ)}.$o:
+{$(SRC)\util}.c{$(SRC)}.$o:
 	$(CC) /c $(CFLAGS) /Fo$@ $<
 
-{$(SRC)\util}.c{$(OBJ)}.$o:
+{$(SRC)}.c{$(SRC)}.$o:
 	$(CC) /c $(CFLAGS) /Fo$@ $<
 
-{$(SRC)}.c{$(OBJ)}.$o:
+{$(SRC)}.cpp{$(SRC)}.$o:
 	$(CC) /c $(CFLAGS) /Fo$@ $<
 
-{$(SRC)}.cpp{$(OBJ)}.$o:
-	$(CC) /c $(CFLAGS) /Fo$@ $<
-
-{$(SRC)\misc}.rc{$(OBJ)}.res:
+{$(SRC)\misc}.rc{$(SRC)}.res:
 	$(RC) /i$(EINC) /i$(SRC) /fo$@ /r $<
 
 
 # TARGETS
 all: duke3d$(EXESUFFIX) build$(EXESUFFIX) ;
 
-duke3d$(EXESUFFIX): $(GAMEOBJS) $(ELIB)\$(ENGINELIB)
-	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS /LIBPATH:$(DXROOT)\lib $(flags_link) /MAP $** $(LIBS) msvcrt.lib
+duke3d$(EXESUFFIX): $(GAMEOBJS) $(ELIB)\$(ENGINELIB) $(AUDIOLIBROOT)\$(JFAUDIOLIB)
+	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS "/LIBPATH:$(DXROOT)\lib" $(flags_link) /MAP $** $(LIBS) msvcrt.lib
 	
 build$(EXESUFFIX): $(EDITOROBJS) $(ELIB)\$(ENGINELIB) $(ELIB)\$(EDITORLIB)
-	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS /LIBPATH:$(DXROOT)\lib $(flags_link) /MAP $** $(LIBS) msvcrt.lib
+	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS "/LIBPATH:$(DXROOT)\lib" $(flags_link) /MAP $** $(LIBS) msvcrt.lib
 
 !include Makefile.deps
 
@@ -135,13 +115,20 @@ enginelib editorlib: AlwaysBuild
 	nmake /f Makefile.msvc "OVERRIDES=$(MAKEDIR)\engineoverrides.mak" $@
 	cd $(MAKEDIR)
 
+jfaudiolib: AlwaysBuild
+    cd $(AUDIOLIBROOT)
+	nmake /f Makefile.msvc RELEASE=$(RELEASE)
+	cd $(MAKEDIR)
+
+
 AlwaysBuild: ;
 $(ELIB)\$(EDITORLIB): editorlib ;
 $(ELIB)\$(ENGINELIB): enginelib ;
+$(AUDIOLIBROOT)\$(JFAUDIOLIB): jfaudiolib ;
 
 # PHONIES	
 clean:
-	-del /q $(OBJ)\*
+	-del /q $(GAMEOBJS) $(EDITOROBJS)
 	cd $(EROOT)
 	nmake /f Makefile.msvc $@
 	cd $(MAKEDIR)

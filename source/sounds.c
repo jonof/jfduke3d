@@ -279,7 +279,7 @@ void playmusic(char *fn)
     extension = strrchr(testfn, '.');
 
     do {
-       if (extension && !strcasecmp(extension, ".mid")) {
+       if (extension && !Bstrcasecmp(extension, ".mid")) {
 	  // we've been asked to load a .mid file, but first
 	  // let's see if there's an ogg with the same base name
 	  // lying around
