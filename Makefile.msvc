@@ -39,7 +39,7 @@ CFLAGS= /MD /J /nologo $(flags_cl)  \
 	/DNOCOPYPROTECT $(ENGINEOPTS) \
 	"/I$(DXROOT)\include" /DRENDERTYPEWIN=1
 LIBS=user32.lib gdi32.lib shell32.lib dxguid.lib winmm.lib wsock32.lib comctl32.lib \
-     #opengl32.lib
+     dsound.lib #opengl32.lib
 ASFLAGS=/nologo /coff
 EXESUFFIX=.exe
 
