@@ -7,6 +7,7 @@ MACTROOT=..\jfmact.git
 AUDIOLIBROOT=..\jfaudiolib.git
 
 SRC=source
+OBJ=obj
 EINC=$(EROOT)\include
 ELIB=$(EROOT)\src
 INC=$(SRC)
@@ -111,14 +112,14 @@ build$(EXESUFFIX): $(EDITOROBJS) $(ELIB)\$(ENGINELIB) $(ELIB)\$(EDITORLIB)
 
 enginelib editorlib: AlwaysBuild
 	echo CFLAGS=$(ENGINEOPTS) > engineoverrides.mak
-	cd $(EROOT)
+	cd "$(EROOT)"
 	nmake /f Makefile.msvc "OVERRIDES=$(MAKEDIR)\engineoverrides.mak" $@
-	cd $(MAKEDIR)
+	cd "$(MAKEDIR)"
 
 jfaudiolib: AlwaysBuild
-    cd $(AUDIOLIBROOT)
+	cd "$(AUDIOLIBROOT)"
 	nmake /f Makefile.msvc RELEASE=$(RELEASE)
-	cd $(MAKEDIR)
+	cd "$(MAKEDIR)"
 
 
 AlwaysBuild: ;
@@ -129,12 +130,12 @@ $(AUDIOLIBROOT)\$(JFAUDIOLIB): jfaudiolib ;
 # PHONIES	
 clean:
 	-del /q $(GAMEOBJS) $(EDITOROBJS)
-	cd $(EROOT)
+	cd "$(EROOT)"
 	nmake /f Makefile.msvc $@
-	cd $(MAKEDIR)
+	cd "$(MAKEDIR)"
 	
 veryclean: clean
 	-del /q duke3d$(EXESUFFIX) build$(EXESUFFIX)
-	cd $(EROOT)
+	cd "$(EROOT)"
 	nmake /f Makefile.msvc $@
-	cd $(MAKEDIR)
+	cd "$(MAKEDIR)"
