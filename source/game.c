@@ -7714,10 +7714,9 @@ void app_main(int argc,char **argv)
 		}
 	}
 
-#ifdef _WIN32
-	if (!access("user_profiles_enabled", F_OK))
-#endif
-	{
+	// default behaviour is to write to the user profile directory, but
+	// creating a 'user_profiles_disabled' file makes the installation "portable"
+	if (access("user_profiles_disabled", F_OK) != 0) {
 		char cwd[BMAX_PATH];
 		char *homedir;
 		int asperr;

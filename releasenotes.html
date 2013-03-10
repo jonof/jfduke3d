@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="Author" content="Jonathon Fowler" />
 	<title>Release Notes for JFDuke3D</title>
 	<style type="text/css">
@@ -53,42 +53,32 @@
 
 <body>
 	<h1>Release Notes for JFDuke3D</h1>
-	<p>Release date: 9 October 2005</p>
+	<p>Release date: 10 March 2013</p>
 
 	<h2>New Features and Improvements</h2>
 	<ul>
+		<li>The minimum supported Windows version is now XP. See below in <a href="#profiles">Individual
+		User Profiles</a> for what this means to your configuration and savegames.</li>
 		<li>Mac OS X version.</li>
-		<li>JFAud sound code, providing Vorbis (and optionally, MP3) support.</li>
-		<li>NAM support. <a href="#nam">More about that here</a></li>
 	</ul>
 		
 	<h2>Known Issues</h2>
 	<ul>
-		<li>JFAud is likely to have bugs. Let me know if you have any problems with it.</li>
 		<li>Networking is still crap.</li>
 	</ul>
 
 	<h3><a name="profiles">Individual User Profiles</a></h3>
 
-	<p>With Windows 2000 and XP, having multiple user accounts for different people on the one computer has
-	been very easy, with XP especially so. Linux, BSD, and other *nix-like OS users have had this ability
-	forever and now JFDuke3D properly supports installations where each user can have his/her own set of
-	configuration and savegame files without interfering with other players on the same PC. On Windows the
-	default mode of behaviour is the same as in previous versions: everything is shared, but it is now possible
-	to enable "user profile mode". Linux/BSD users will run in "user profile mode" permanently; your personal
-	files will be located in <code>~/.jfduke3d</code> so if you used previous versions of the port, you will
-	have to move your config and savegames there. Windows users can turn on "user profile mode" by creating an
-	empty file in the JFDuke3D directory named 'user_profiles_enabled'. Here is how:</p>
-	<ol>
-		<li>In Windows Explorer, navigate to the JFDuke3D directory.</li>
-		<li>Open the File menu, move to the "New" option, and select "Text Document".</li>
-		<li>Type <code>user_profiles_enabled</code> and press Enter.</li>
-		<li>If a dialog box appears asking to confirm changing the filename extension to one that may
-		make the file unusable, choose "Yes".</li>
-	</ol>
-	<p>When you next run JFDuke3D, a JFDuke3D directory will be created in <code>C:\Documents and
-	Settings\<em>your username</em>\Application Data</code> along with a new configuration file. You will
-	then have to move your existing DUKE3D.CFG file to this location if you have used the game previously.</p>
+	<p>Previous versions of this port supported old versions of Windows where storing game configuration and
+	save data in the game directory along side the EXE and GRP files was accepted practice. Since Windows 9x, ME,
+	and even XP are well beyond their supported life, I have switched the behaviour of this port to storing user-specific
+	data in the user's profile directory. This directory can be found at:</p>
+	<ul>
+		<li>On Windows XP: <code>C:\Documents and Settings\<em>your username</em>\Application Data\JFDuke3D</code></li>
+		<li>On Windows Vista/7/8: <code>C:\Users\<em>your username</em>\AppData\JFDuke3D</code></li>
+	</ul>
+	<p>If you are upgrading from an older version of this port, you may want to move your
+	<code>duke3d.cfg</code> and <code>game<em>n</em>.sav</code> files to the appropriate new location.</p>
 	
 	<h3><a name="multiplayer">Multiplayer games</a></h3>
 

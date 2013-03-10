@@ -6,6 +6,7 @@
 *.map
 *.log
 *.grp
+*~
 /xcode/*.xcodeproj/*.mode1v3
 /xcode/*.xcodeproj/*.pbxuser
 /xcode/build

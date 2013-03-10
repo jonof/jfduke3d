@@ -15,7 +15,7 @@ EDITORLIB=build.lib
 ! loaddll wcc386 wccd386
 !endif
 
-DXROOT=c:\sdks\directx\dx7
+DXROOT=c:\sdks\directx\dx81
 
 ENGINEOPTS=-dSUPERBUILD -dPOLYMOST -dUSE_OPENGL -dDYNAMIC_OPENGL
 

@@ -14,7 +14,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <windowsx.h>
-#define _WIN32_IE 0x0300
+#define _WIN32_IE 0x0600
 #include <commctrl.h>
 #include <stdio.h>
 

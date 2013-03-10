@@ -1,7 +1,7 @@
 # Duke3D Makefile for Microsoft Make
 
 RELEASE=1
-DXROOT=$(USERPROFILE)\sdks\directx\dx7
+DXROOT=$(USERPROFILE)\sdks\directx\dx81
 EROOT=..\jfbuild.git
 MACTROOT=..\jfmact.git
 AUDIOLIBROOT=..\jfaudiolib.git
