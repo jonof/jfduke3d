@@ -2,11 +2,11 @@
 
 RELEASE=1
 DXROOT=$(USERPROFILE)\sdks\directx\dx81
-EROOT=..\jfbuild.git
-MACTROOT=..\jfmact.git
-AUDIOLIBROOT=..\jfaudiolib.git
+EROOT=jfbuild
+MACTROOT=jfmact
+AUDIOLIBROOT=jfaudiolib
 
-SRC=source
+SRC=src
 OBJ=obj
 EINC=$(EROOT)\include
 ELIB=$(EROOT)\src

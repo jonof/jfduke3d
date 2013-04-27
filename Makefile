@@ -41,7 +41,7 @@ LINKED_GTK ?= 0
 ##
 
 # build locations
-SRC=source
+SRC=src
 RSRC=rsrc
 EINC=$(EROOT)/include
 ELIB=$(EROOT)

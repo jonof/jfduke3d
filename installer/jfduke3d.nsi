@@ -1,7 +1,7 @@
 !define PRODUCT_NAME "JFDuke3D"
 !define PRODUCT_VERSION "20051009"
 !define PRODUCT_PUBLISHER "JonoF"
-!define PRODUCT_WEB_SITE "http://www.jonof.id.au/index.php?p=jfduke3d"
+!define PRODUCT_WEB_SITE "http://www.jonof.id.au/jfduke3d"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"

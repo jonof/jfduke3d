@@ -1,35 +1,32 @@
 # GNU Makefile to prepare source and binary distributions.
 #    make -f MakeDistributions [source|binary]
 
-SOURCEFILES=build.cfg ChangeLog GNU.TXT \
-	   Makefile Makefile.deps Makefile.msvc Makefile.watcom MakeDistributions \
-	   makemsc.bat makew.bat readme.txt releasenotes.html duke3d.def.sample
+GITHEAD=HEAD
 
 BINARYFILES=build.cfg build.exe duke3d.exe GNU.TXT readme.txt \
-           releasenotes.html setup.exe duke3d.def.sample
+           releasenotes.html setup.exe
 
-.PHONY: source binary
+BINARYCHECKS=checksetupexe
+
+.PHONY: source binary $(BINARYCHECKS)
 
 datenow=$(shell date +%Y%m%d)
+gitsha1=$(shell git rev-parse --short $(GITHEAD))
 
-sourcedir=jfduke3d_src_$(datenow)
+sourcedir=jfduke3d_src_$(datenow)-$(gitsha1)
 binarydir=jfduke3d_$(datenow)
 
 all: source binary
 
 source:
-	mkdir $(sourcedir) $(sourcedir)/eobj $(sourcedir)/obj
-	touch $(sourcedir)/eobj/keep.me $(sourcedir)/obj/keep.me
-	cp $(SOURCEFILES) $(sourcedir)
-	cp -R source rsrc installer $(sourcedir)
-	rm -Rf $(sourcedir)/source/tmp
-	kzip -r $(sourcedir).zip $(sourcedir)
+	git archive --format=zip --prefix=$(sourcedir)/ --output=$(sourcedir).zip $(GITHEAD)
 
-binary:
-	nmake /f Makefile.msvc
+binary: $(BINARYCHECKS)
+	#nmake /f Makefile.msvc
+	make RELEASE=1
 	upx --best build.exe duke3d.exe
-	mkdir $(binarydir) $(binarydir)/models
+	mkdir $(binarydir)
 	cp $(BINARYFILES) $(binarydir)
-	cp models/* $(binarydir)/models
 	kzip -r $(binarydir).zip $(binarydir)
 
+checksetupexe: setup.exe
