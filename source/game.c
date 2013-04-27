@@ -5632,7 +5632,7 @@ void animatesprites(long x,long y,short a,long smoothratio)
         {
             if(t4)
             {
-                l = *(long *)(t4+8);
+                l = *(decodescriptptr(t4)+2);
 
 				if (bpp > 8 && usemodels && md_tilehasmodel(s->picnum) >= 0) {
 					k = 0;
@@ -5682,7 +5682,7 @@ void animatesprites(long x,long y,short a,long smoothratio)
                         break;
                 }
 
-                t->picnum += k + ( *(long *)t4 ) + l * t3;
+                t->picnum += k + ( *decodescriptptr(t4) ) + l * t3;
 
                 if(l > 0) while(tilesizx[t->picnum] == 0 && t->picnum > 0 )
                     t->picnum -= l;       //Hack, for actors

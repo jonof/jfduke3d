@@ -489,6 +489,29 @@ long transnum(long type)
 }
 
 
+/**
+ * Encode a scriptptr into a form suitable for portably
+ * inserting into bytecode. We store the pointer as INT_MIN
+ * plus the offset from the start of the script buffer, just
+ * to make it perhaps a little more obvious what is happening.
+ */
+long encodescriptptr(long *scptr)
+{
+    long offs = (long)(scptr - script);
+    assert(offs >= 0);
+    assert(offs < MAXSCRIPTSIZE);
+    return INT_MIN+offs;
+}
+
+/**
+ * Decode an encoded representation of a scriptptr
+ */
+long *decodescriptptr(long scptr)
+{
+    assert(scptr <= 0);
+    return script + (scptr - INT_MIN);
+}
+
 char parsecommand(void)
 {
     long i, j, k, *tempscrptr, tw;
@@ -531,7 +554,7 @@ char parsecommand(void)
             {
                 getlabel();
                 scriptptr--;
-                labelcode[labelcnt] = (long) scriptptr;
+                labelcode[labelcnt] = encodescriptptr(scriptptr);
                 labeltype[labelcnt] = LABEL_STATE;
                 labelcnt++;
 
@@ -691,7 +714,7 @@ char parsecommand(void)
                         break;
                     }
                 if(i == labelcnt) {
-                    labelcode[labelcnt] = (long) scriptptr;
+                    labelcode[labelcnt] = encodescriptptr(scriptptr);
                     labeltype[labelcnt] = LABEL_MOVE;
                     labelcnt++;
                 }
@@ -861,7 +884,7 @@ char parsecommand(void)
                     }
 
                 if(i == labelcnt) {
-                    labelcode[labelcnt] = (long) scriptptr;
+                    labelcode[labelcnt] = encodescriptptr(scriptptr);
                     labeltype[labelcnt] = LABEL_AI;
                     labelcnt++;
                 }
@@ -920,7 +943,7 @@ char parsecommand(void)
                     }
 
                 if(i == labelcnt) {
-                    labelcode[labelcnt] = (long) scriptptr;
+                    labelcode[labelcnt] = encodescriptptr(scriptptr);
                     labeltype[labelcnt] = LABEL_ACTION;
                     labelcnt++;
                 }
@@ -1106,7 +1129,7 @@ char parsecommand(void)
                 tempscrptr = scriptptr;
                 scriptptr++; //Leave a spot for the fail location
                 parsecommand();
-                *tempscrptr = (long) scriptptr;
+                *tempscrptr = encodescriptptr(scriptptr);
             }
             else
             {
@@ -1191,7 +1214,7 @@ char parsecommand(void)
 
             parsecommand();
 
-            *tempscrptr = (long) scriptptr;
+            *tempscrptr = encodescriptptr(scriptptr);
 
             checking_ifelse++;
             return 0;
@@ -1670,7 +1693,7 @@ void loadefs(char *filenam)
 
     strcpy(compilefile, filenam);	// JBF 20031130: Store currently compiling file name
     passone(); //Tokenize
-    *script = (long) scriptptr;
+    *script = encodescriptptr(scriptptr);
 
     Bfree(mptr);
 
@@ -1827,7 +1850,7 @@ void alterang(short a)
     short aang, angdif, goalang,j;
     long ticselapsed, *moveptr;
 
-    moveptr = (long *)g_t[1];
+    moveptr = decodescriptptr(g_t[1]);
 
     ticselapsed = (g_t[0])&31;
 
@@ -1959,7 +1982,7 @@ void move()
         return;
     }
 
-    moveptr = (long *)g_t[1];
+    moveptr = decodescriptptr(g_t[1]);
 
     if(a&geth) g_sp->xvel += (*moveptr-g_sp->xvel)>>1;
     if(a&getv) g_sp->zvel += ((*(moveptr+1)<<4)-g_sp->zvel)>>1;
@@ -2098,7 +2121,7 @@ void parseifelse(long condition)
     }
     else
     {
-        insptr = (long *) *(insptr+1);
+        insptr = decodescriptptr(*(insptr+1));
         if(*insptr == 10)   //else
         {
             insptr+=2;
@@ -2248,10 +2271,10 @@ char parse(void)
             break;
         case 24:    //ai
             insptr++;
-            g_t[5] = *insptr;
-            g_t[4] = *(long *)(g_t[5]);       // Action
-            g_t[1] = *(long *)(g_t[5]+4);       // move
-            g_sp->hitag = *(long *)(g_t[5]+8);    // Ai
+            g_t[5] = *insptr;                          // Ai
+            g_t[4] = *(decodescriptptr(g_t[5]));       // Action
+            g_t[1] = *(decodescriptptr(g_t[5])+1);     // move
+            g_sp->hitag = *(decodescriptptr(g_t[5])+2);
             g_t[0] = g_t[2] = g_t[3] = 0;
             if(g_sp->hitag&random_angle)
                 g_sp->ang = TRAND&2047;
@@ -2278,7 +2301,7 @@ char parse(void)
                 hittype[g_i].timetosleep = SLEEPTIME;
             break;
         case 10:    //else
-            insptr = (long *) *(insptr+1);
+            insptr = decodescriptptr(*(insptr+1));
             break;
         case 100:   //addstrength
             insptr++;
@@ -2639,7 +2662,7 @@ char parse(void)
 
                 tempscrptr = insptr+2;
 
-                insptr = (long *) *(insptr+1);
+                insptr = decodescriptptr(*(insptr+1));
                 while(1) if(parse()) break;
                 insptr = tempscrptr;
             }
@@ -3207,13 +3230,13 @@ void execute(short i,short p,long x)
     if(g_t[4])
     {
         g_sp->lotag += TICSPERFRAME;
-        if(g_sp->lotag > *(long *)(g_t[4]+16) )
+        if(g_sp->lotag > *(decodescriptptr(g_t[4])+4) )
         {
             g_t[2]++;
             g_sp->lotag = 0;
-            g_t[3] +=  *(long *)( g_t[4]+12 );
+            g_t[3] +=  *(decodescriptptr(g_t[4])+3);
         }
-        if( klabs(g_t[3]) >= klabs( *(long *)(g_t[4]+4) * *(long *)(g_t[4]+12) ) )
+        if( klabs(g_t[3]) >= klabs( *(decodescriptptr(g_t[4])+1) * *(decodescriptptr(g_t[4])+3) ) )
             g_t[3] = 0;
     }
 

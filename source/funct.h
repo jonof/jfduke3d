@@ -229,6 +229,8 @@ extern void printstr(short x,short y,char string[],char attribute);
 extern void Logo(void );
 extern void loadtmb(void );
 extern void compilecons(void );
+extern long encodescriptptr(long *scptr);
+extern long *decodescriptptr(long scptr);
 extern void Startup(void );
 extern void getnames(void );
 extern int main(int argc,char **argv);
