@@ -7435,44 +7435,23 @@ void Shutdown( void )
 
 void compilecons(void)
 {
-   label     = (char *)&sprite[0];	// V8: 16384*44/64 = 11264	V7: 4096*44/64 = 2816
-   labelcode = (long *)&sector[0];	// V8: 4096*40/4 = 40960	V7: 1024*40/4 = 10240
-   labeltype = (long *)&wall[0];	// V8: 16384*32/4 = 131072	V7: 8192*32/4 = 65536
-   // if we compile for a V7 engine wall[] should be used for label names since it's bigger
+    label = calloc(MAXLABELS, MAXLABELLEN);
+    labelcode = calloc(MAXLABELS, sizeof(int));
+    labeltype = calloc(MAXLABELS, sizeof(char));
 
-//   printf("%ld %ld %ld\n",sizeof(hittype),sizeof(sector),sizeof(sprite));
-//   exit(0);
+    loadefs(confilename);
+    if( loadfromgrouponly )
+    {
+        initprintf("  * Using default CONs.\n");
+        loadefs(confilename);
+    }
 
-   loadefs(confilename);
-   if( loadfromgrouponly )
-   {
-       initprintf("  * Using default CONs.\n");
-       loadefs(confilename);
-   }
-
-   if ((unsigned long)labelcnt > sizeof(sprite)/64 )	// see the arithmetic above for why
-	   gameexit("Error: too many labels defined!");
-   else {
-	   char *newlabel;
-	   long *newlabelcode;
-
-	   newlabel     = (char *)malloc(labelcnt<<6);
-	   newlabelcode = (long *)malloc(labelcnt*sizeof(long));
-
-	   if (!newlabel || !newlabelcode) {
-		   gameexit("Error: out of memory retaining labels\n");
-	   }
-
-	   copybuf(label,     newlabel,     (labelcnt*64)/4);
-	   copybuf(labelcode, newlabelcode, (labelcnt*sizeof(long))/4);
-
-	   label = newlabel;
-	   labelcode = newlabelcode;
-   }
-   
-   clearbufbyte(&sprite[0], sizeof(sprite), 0);
-   clearbufbyte(&sector[0], sizeof(sector), 0);
-   clearbufbyte(&wall[0], sizeof(wall), 0);
+    // Shrink the labels and their values to the minimum amount needed
+    // for the number of labels used. Dispose of the labeltype values.
+    label = realloc(label, labelcnt * MAXLABELLEN);
+    labelcode = realloc(labelcode, labelcnt * sizeof(int));
+    free(labeltype);
+    labeltype = NULL;
 }
 
 extern int startwin_run(void);

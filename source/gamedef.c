@@ -26,6 +26,7 @@ Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
 //-------------------------------------------------------------------------
 
 #include "duke3d.h"
+#include <assert.h>
 
 int conversion = 13;	// by default we think we're 1.3d until compilation informs us otherwise
 
@@ -81,7 +82,7 @@ static char *keyw[/*NUMKEYWORDS*/] =
 {
     "definelevelname",  // 0
     "actor",            // 1    [#]
-    "addammo",   // 2    [#]
+    "addammo",          // 2    [#]
     "ifrnd",            // 3    [C]
     "enda",             // 4    [:]
     "ifcansee",         // 5    [C]
@@ -162,35 +163,35 @@ static char *keyw[/*NUMKEYWORDS*/] =
     "quote",            // 80
     "ifinouterspace",   // 81
     "ifnotmoving",      // 82
-    "respawnhitag",        // 83
-    "tip",             // 84
+    "respawnhitag",     // 83
+    "tip",              // 84
     "ifspritepal",      // 85
-    "money",         // 86
-    "soundonce",         // 87
+    "money",            // 86
+    "soundonce",        // 87
     "addkills",         // 88
     "stopsound",        // 89
-    "ifawayfromwall",       // 90
+    "ifawayfromwall",   // 90
     "ifcanseetarget",   // 91
-    "globalsound",  // 92
-    "lotsofglass", // 93
-    "ifgotweaponce", // 94
-    "getlastpal", // 95
-    "pkick",  // 96
-    "mikesnd", // 97
-    "useractor",  // 98
-    "sizeat",  // 99
-    "addstrength", // 100   [#]
-    "cstator", // 101
-    "mail", // 102
-    "paper", // 103
-    "tossweapon", // 104
-    "sleeptime", // 105
-    "nullop", // 106
+    "globalsound",      // 92
+    "lotsofglass",      // 93
+    "ifgotweaponce",    // 94
+    "getlastpal",       // 95
+    "pkick",            // 96
+    "mikesnd",          // 97
+    "useractor",        // 98
+    "sizeat",           // 99
+    "addstrength",      // 100   [#]
+    "cstator",          // 101
+    "mail",             // 102
+    "paper",            // 103
+    "tossweapon",       // 104
+    "sleeptime",        // 105
+    "nullop",           // 106
     "definevolumename", // 107
-    "defineskillname", // 108
-    "ifnosounds", // 109
-    "clipdist", // 110
-    "ifangdiffl", // 111
+    "defineskillname",  // 108
+    "ifnosounds",       // 109
+    "clipdist",         // 110
+    "ifangdiffl",       // 111
 };
 
 
@@ -331,10 +332,14 @@ void getlabel(void)
     }
 
     i = 0;
-    while( ispecial(*textptr) == 0 )
-        label[(labelcnt<<6)+i++] = *(textptr++);
-
-    label[(labelcnt<<6)+i] = 0;
+    while( ispecial(*textptr) == 0 ) {
+        if (i < MAXLABELLEN - 1) {
+            label[labelcnt * MAXLABELLEN + i] = *textptr;
+            i++;
+        }
+        textptr++;
+    }
+    label[labelcnt * MAXLABELLEN + i] = 0;
 }
 
 long keyword(void)
@@ -437,33 +442,33 @@ long transnum(long type)
     tempbuf[l] = 0;
 
     for(i=0;i<NUMKEYWORDS;i++)
-        if( strcmp( label+(labelcnt<<6),keyw[i]) == 0 )
-    {
-        error++;
-        initprintf("  * ERROR!(L%ld %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt<<6));
-        textptr+=l;
-    }
+        if( strcmp( tempbuf,keyw[i]) == 0 )
+        {
+            error++;
+            initprintf("  * ERROR!(L%ld %s) Symbol '%s' is a key word.\n",line_number,compilefile,tempbuf);
+            textptr+=l;
+        }
 
 
     for(i=0;i<labelcnt;i++)
     {
-        if( !Bstrcmp(tempbuf,label+(i<<6)) )
+        if( !Bstrcmp(tempbuf,label+(i * MAXLABELLEN)) )
         {
-	    char *el,*gl;
+            char *el,*gl;
 
-	    if (labeltype[i] & type) {
+            if (labeltype[i] & type) {
                 *(scriptptr++) = labelcode[i];
                 textptr += l;
                 return labeltype[i];
-	    }
-	    *(scriptptr++) = 0;
-	    textptr += l;
-	    el = translatelabeltype(type);
-	    gl = translatelabeltype(labeltype[i]);
-	    initprintf("  * WARNING!(L%ld %s) Expected a '%s' label but found a '%s' label instead.\n",line_number,compilefile,el,gl);
-	    free(el);
-	    free(gl);
-	    return -1;	// valid label name, but wrong type
+            }
+            *(scriptptr++) = 0;
+            textptr += l;
+            el = translatelabeltype(type);
+            gl = translatelabeltype(labeltype[i]);
+            initprintf("  * WARNING!(L%ld %s) Expected a '%s' label but found a '%s' label instead.\n",line_number,compilefile,el,gl);
+            free(el);
+            free(gl);
+            return -1;	// valid label name, but wrong type
         }
     }
 
@@ -504,7 +509,7 @@ char parsecommand(void)
         default:
         case -1:
             return 0; //End
-        case 39:      //Rem endrem
+        case 39:    //multi-line comment
             scriptptr--;
             j = line_number;
             do
@@ -513,7 +518,7 @@ char parsecommand(void)
                 if(*textptr == 0x0a) line_number++;
                 if( *textptr == 0 )
                 {
-                    initprintf("  * ERROR!(L%ld %s) Found '/*' with no '*/'.\n",j,compilefile,label+(labelcnt<<6));
+                    initprintf("  * ERROR!(L%ld %s) Found '/*' with no '*/'.\n",j,compilefile);
                     error++;
                     return 0;
                 }
@@ -521,13 +526,13 @@ char parsecommand(void)
             while( *textptr != '*' || *(textptr+1) != '/' );
             textptr+=2;
             return 0;
-        case 17:
+        case 17:    //state
             if( parsing_actor == 0 && parsing_state == 0 )
             {
                 getlabel();
                 scriptptr--;
                 labelcode[labelcnt] = (long) scriptptr;
-		labeltype[labelcnt] = LABEL_STATE;
+                labeltype[labelcnt] = LABEL_STATE;
                 labelcnt++;
 
                 parsing_state = 1;
@@ -538,50 +543,50 @@ char parsecommand(void)
             getlabel();
 
             for(i=0;i<NUMKEYWORDS;i++)
-                if( strcmp( label+(labelcnt<<6),keyw[i]) == 0 )
+                if( strcmp( label+(labelcnt * MAXLABELLEN),keyw[i]) == 0 )
                 {
                     error++;
-                    initprintf("  * ERROR!(L%ld %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt<<6));
+                    initprintf("  * ERROR!(L%ld %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                     return 0;
                 }
 
             for(j=0;j<labelcnt;j++)
             {
-                if( !Bstrcmp(label+(j<<6),label+(labelcnt<<6)) )
+                if( !Bstrcmp(label+(j * MAXLABELLEN),label+(labelcnt * MAXLABELLEN)) )
                 {
-		    if (labeltype[j] & LABEL_STATE) {
+                    if (labeltype[j] & LABEL_STATE) {
                         *scriptptr = labelcode[j];
                         break;
-		    } else {
-			char *gl;
+                    } else {
+                        char *gl;
 
-			gl = translatelabeltype(labeltype[j]);
-			initprintf("  * WARNING!(L%ld %s) Expected a state label, found a %s instead. Neutering.\n",
-				line_number,compilefile,gl);
-			free(gl);
-			*(scriptptr-1) = 106;	// nullop
-			return 0;
-		    }
+                        gl = translatelabeltype(labeltype[j]);
+                        initprintf("  * WARNING!(L%ld %s) Expected a state label, found a %s instead. Neutering.\n",
+                            line_number,compilefile,gl);
+                        free(gl);
+                        *(scriptptr-1) = 106;	// nullop
+                        return 0;
+                    }
                 }
             }
 
             if(j==labelcnt)
             {
-                initprintf("  * ERROR!(L%ld %s) State '%s' not found.\n",line_number,compilefile,label+(labelcnt<<6));
+                initprintf("  * ERROR!(L%ld %s) State '%s' not found.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                 error++;
             }
             scriptptr++;
             return 0;
 
-        case 15:
-        case 92:
-        case 87:
-        case 89:
-        case 93:
+        case 15:    //sound
+        case 92:    //globalsound
+        case 87:    //soundonce
+        case 89:    //stopsound
+        case 93:    //lotsofglass
             transnum(LABEL_DEFINE);
             return 0;
 
-        case 18:
+        case 18:    //ends
             if( parsing_state == 0 )
             {
                 initprintf("  * ERROR!(L%ld %s) Found 'ends' with no 'state'.\n",line_number,compilefile);
@@ -602,24 +607,24 @@ char parsecommand(void)
                 parsing_state = 0;
             }
             return 0;
-        case 19:
+        case 19:    //define
             getlabel();
             // Check to see it's already defined
 
             for(i=0;i<NUMKEYWORDS;i++)
-                if( strcmp( label+(labelcnt<<6),keyw[i]) == 0 )
+                if( strcmp( label+(labelcnt * MAXLABELLEN),keyw[i]) == 0 )
                 {
                     error++;
-                    initprintf("  * ERROR!(L%ld %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt<<6));
+                    initprintf("  * ERROR!(L%ld %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                     return 0;
                 }
 
             for(i=0;i<labelcnt;i++)
             {
-                if( strcmp(label+(labelcnt<<6),label+(i<<6)) == 0 )
+                if( strcmp(label+(labelcnt * MAXLABELLEN),label+(i * MAXLABELLEN)) == 0 )
                 {
                     warning++;
-                    initprintf("  * WARNING.(L%ld %s) Duplicate definition '%s' ignored.\n",line_number,compilefile,label+(labelcnt<<6));
+                    initprintf("  * WARNING.(L%ld %s) Duplicate definition '%s' ignored.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                     break;
                 }
             }
@@ -627,12 +632,12 @@ char parsecommand(void)
             transnum(LABEL_DEFINE);
             if(i == labelcnt) {
                 labelcode[labelcnt] = *(scriptptr-1);
-		labeltype[labelcnt] = LABEL_DEFINE;
-		labelcnt++;
-	    }
+                labeltype[labelcnt] = LABEL_DEFINE;
+                labelcnt++;
+            }
             scriptptr -= 2;
             return 0;
-        case 14:
+        case 14:    //palfrom
 
             for(j = 0;j < 4;j++)
             {
@@ -649,7 +654,7 @@ char parsecommand(void)
             }
             return 0;
 
-        case 32:
+        case 32:    //move
             if( parsing_actor || parsing_state )
             {
                 transnum(LABEL_MOVE);
@@ -671,25 +676,25 @@ char parsecommand(void)
                 // Check to see it's already defined
 
                 for(i=0;i<NUMKEYWORDS;i++)
-                    if( strcmp( label+(labelcnt<<6),keyw[i]) == 0 )
-                {
-                    error++;
-                    initprintf("  * ERROR!(L%ld %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt<<6));
-                    return 0;
-                }
+                    if( strcmp( label+(labelcnt * MAXLABELLEN),keyw[i]) == 0 )
+                    {
+                        error++;
+                        initprintf("  * ERROR!(L%ld %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
+                        return 0;
+                    }
 
                 for(i=0;i<labelcnt;i++)
-                    if( strcmp(label+(labelcnt<<6),label+(i<<6)) == 0 )
+                    if( strcmp(label+(labelcnt * MAXLABELLEN),label+(i * MAXLABELLEN)) == 0 )
                     {
                         warning++;
-                        initprintf("  * WARNING.(L%ld %s) Duplicate move '%s' ignored.\n",line_number,compilefile,label+(labelcnt<<6));
+                        initprintf("  * WARNING.(L%ld %s) Duplicate move '%s' ignored.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                         break;
                     }
                 if(i == labelcnt) {
-		    labeltype[labelcnt] = LABEL_MOVE;
                     labelcode[labelcnt] = (long) scriptptr;
-		    labelcnt++;
-		}
+                    labeltype[labelcnt] = LABEL_MOVE;
+                    labelcnt++;
+                }
                 for(j=0;j<2;j++)
                 {
                     if(keyword() >= 0) break;
@@ -703,7 +708,7 @@ char parsecommand(void)
             }
             return 0;
 
-        case 54:
+        case 54:    //music
             {
                 scriptptr--;
                 transnum(LABEL_DEFINE); // Volume Number (0/4)
@@ -760,7 +765,7 @@ char parsecommand(void)
                 }
             }
             return 0;
-        case 55:
+        case 55:    //include
             scriptptr--;
             while( isaltok(*textptr) == 0 )
             {
@@ -776,62 +781,62 @@ char parsecommand(void)
             }
             tempbuf[j] = '\0';
 
-	    {
-		short temp_line_number;
-		char  temp_ifelse_check;
-		char *origtptr, *mptr;
-		char parentcompilefile[255];
-		int fp;
+            {
+                short temp_line_number;
+                char  temp_ifelse_check;
+                char *origtptr, *mptr;
+                char parentcompilefile[255];
+                int fp;
 
-		fp = kopen4load(tempbuf,loadfromgrouponly);
-		if(fp < 0)
-		{
-			error++;
-			initprintf("  * ERROR!(L%ld %s) Could not find '%s'.\n",line_number,compilefile,tempbuf);
-			return 0;
-		}
+                fp = kopen4load(tempbuf,loadfromgrouponly);
+                if(fp < 0)
+                {
+                    error++;
+                    initprintf("  * ERROR!(L%ld %s) Could not find '%s'.\n",line_number,compilefile,tempbuf);
+                    return 0;
+                }
 
-		j = kfilelength(fp);
+                j = kfilelength(fp);
 
-		mptr = (char *)Bmalloc(j+1);
-		if (!mptr) {
-			kclose(fp);
-			error++;
-			initprintf("  * ERROR!(L%ld %s) Could not allocate %ld bytes to include '%s'.\n",
-				line_number,compilefile,j,tempbuf);
-			return 0;
-		}
+                mptr = (char *)Bmalloc(j+1);
+                if (!mptr) {
+                    kclose(fp);
+                    error++;
+                    initprintf("  * ERROR!(L%ld %s) Could not allocate %ld bytes to include '%s'.\n",
+                        line_number,compilefile,j,tempbuf);
+                    return 0;
+                }
 
-		initprintf("Including: %s (%ld bytes)\n",tempbuf, j);
-		kread(fp, mptr, j);
-		kclose(fp);
-		mptr[j] = 0;
+                initprintf("Including: %s (%ld bytes)\n",tempbuf, j);
+                kread(fp, mptr, j);
+                kclose(fp);
+                mptr[j] = 0;
 
-		origtptr = textptr;
+                origtptr = textptr;
 
-		strcpy(parentcompilefile, compilefile);
-		strcpy(compilefile, tempbuf);
-	        temp_line_number = line_number;
-        	line_number = 1;
-		temp_ifelse_check = checking_ifelse;
-		checking_ifelse = 0;
+                strcpy(parentcompilefile, compilefile);
+                strcpy(compilefile, tempbuf);
+                temp_line_number = line_number;
+                line_number = 1;
+                temp_ifelse_check = checking_ifelse;
+                checking_ifelse = 0;
 
-		textptr = mptr;
+                textptr = mptr;
 
-		do done = parsecommand(); while (!done);
+                do done = parsecommand(); while (!done);
 
-		strcpy(compilefile, parentcompilefile);
-		total_lines += line_number;
-		line_number = temp_line_number;
-		checking_ifelse = temp_ifelse_check;
-		
-		textptr = origtptr;
-		
-		Bfree(mptr);
-	    }
+                strcpy(compilefile, parentcompilefile);
+                total_lines += line_number;
+                line_number = temp_line_number;
+                checking_ifelse = temp_ifelse_check;
+                
+                textptr = origtptr;
+                
+                Bfree(mptr);
+            }
 
             return 0;
-        case 24:
+        case 24:    //ai
             if( parsing_actor || parsing_state )
                 transnum(LABEL_AI);
             else
@@ -840,35 +845,35 @@ char parsecommand(void)
                 getlabel();
 
                 for(i=0;i<NUMKEYWORDS;i++)
-                    if( strcmp( label+(labelcnt<<6),keyw[i]) == 0 )
+                    if( strcmp( label+(labelcnt * MAXLABELLEN),keyw[i]) == 0 )
                     {
                         error++;
-                        initprintf("  * ERROR!(L%ld %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt<<6));
+                        initprintf("  * ERROR!(L%ld %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                         return 0;
                     }
 
                 for(i=0;i<labelcnt;i++)
-                    if( strcmp(label+(labelcnt<<6),label+(i<<6)) == 0 )
+                    if( strcmp(label+(labelcnt * MAXLABELLEN),label+(i * MAXLABELLEN)) == 0 )
                     {
                         warning++;
-                        initprintf("  * WARNING.(L%ld %s) Duplicate ai '%s' ignored.\n",line_number,compilefile,label+(labelcnt<<6));
+                        initprintf("  * WARNING.(L%ld %s) Duplicate ai '%s' ignored.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                         break;
                     }
 
                 if(i == labelcnt) {
-		    labeltype[labelcnt] = LABEL_AI;
                     labelcode[labelcnt] = (long) scriptptr;
-		    labelcnt++;
-		}
+                    labeltype[labelcnt] = LABEL_AI;
+                    labelcnt++;
+                }
 
                 for(j=0;j<3;j++)
                 {
                     if(keyword() >= 0) break;
-		    if(j == 1)
-			transnum(LABEL_ACTION);
-		    else if(j == 2)
+                    if(j == 1)
+                        transnum(LABEL_ACTION);
+                    else if(j == 2)
                     {
-			transnum(LABEL_MOVE);
+                        transnum(LABEL_MOVE);
                         k = 0;
                         while(keyword() == -1)
                         {
@@ -889,7 +894,7 @@ char parsecommand(void)
             }
             return 0;
 
-        case 7:
+        case 7:     //action
             if( parsing_actor || parsing_state )
                 transnum(LABEL_ACTION);
             else
@@ -899,26 +904,26 @@ char parsecommand(void)
                 // Check to see it's already defined
 
                 for(i=0;i<NUMKEYWORDS;i++)
-                    if( strcmp( label+(labelcnt<<6),keyw[i]) == 0 )
+                    if( strcmp( label+(labelcnt * MAXLABELLEN),keyw[i]) == 0 )
                     {
                         error++;
-                        initprintf("  * ERROR!(L%ld %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt<<6));
+                        initprintf("  * ERROR!(L%ld %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                         return 0;
                     }
 
                 for(i=0;i<labelcnt;i++)
-                    if( strcmp(label+(labelcnt<<6),label+(i<<6)) == 0 )
+                    if( strcmp(label+(labelcnt * MAXLABELLEN),label+(i * MAXLABELLEN)) == 0 )
                     {
                         warning++;
-                        initprintf("  * WARNING.(L%ld %s) Duplicate action '%s' ignored.\n",line_number,compilefile,label+(labelcnt<<6));
+                        initprintf("  * WARNING.(L%ld %s) Duplicate action '%s' ignored.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                         break;
                     }
 
                 if(i == labelcnt) {
-		    labeltype[labelcnt] = LABEL_ACTION;
                     labelcode[labelcnt] = (long) scriptptr;
-		    labelcnt++;
-		}
+                    labeltype[labelcnt] = LABEL_ACTION;
+                    labelcnt++;
+                }
 
                 for(j=0;j<5;j++)
                 {
@@ -933,7 +938,7 @@ char parsecommand(void)
             }
             return 0;
 
-        case 1:
+        case 1:     //actor
             if( parsing_state )
             {
                 initprintf("  * ERROR!(L%ld %s) Found 'actor' within 'state'.\n",line_number,compilefile);
@@ -974,16 +979,15 @@ char parsecommand(void)
                 {
                     if(keyword() >= 0)
                     {
-                        //scriptptr += (4-j);
-			for (i=4-j; i>0; i--) *(scriptptr++) = 0;
+                        for (i=4-j; i>0; i--) *(scriptptr++) = 0;
                         break;
                     }
-		    switch (j)
-		    {
-			case 0: transnum(LABEL_DEFINE); break;
-			case 1: transnum(LABEL_ACTION); break;
-			case 2: transnum(LABEL_MOVE|LABEL_DEFINE); break;
-		    }
+                    switch (j)
+                    {
+                        case 0: transnum(LABEL_DEFINE); break;
+                        case 1: transnum(LABEL_ACTION); break;
+                        case 2: transnum(LABEL_MOVE|LABEL_DEFINE); break;
+                    }
                     *(parsing_actor+j) = *(scriptptr-1);
                 }
             }
@@ -992,7 +996,7 @@ char parsecommand(void)
 
             return 0;
 
-        case 98:
+        case 98:    //useractor
 
             if( parsing_state )
             {
@@ -1039,16 +1043,15 @@ char parsecommand(void)
                 {
                     if(keyword() >= 0)
                     {
-                        //scriptptr += (4-j);
-			for (i=4-j; i>0; i--) *(scriptptr++) = 0;
+                        for (i=4-j; i>0; i--) *(scriptptr++) = 0;
                         break;
                     }
-		    switch (j)
-		    {
-			case 0: transnum(LABEL_DEFINE); break;
-			case 1: transnum(LABEL_ACTION); break;
-			case 2: transnum(LABEL_MOVE|LABEL_DEFINE); break;
-		    }
+                    switch (j)
+                    {
+                        case 0: transnum(LABEL_DEFINE); break;
+                        case 1: transnum(LABEL_ACTION); break;
+                        case 2: transnum(LABEL_MOVE|LABEL_DEFINE); break;
+                    }
                     *(parsing_actor+j) = *(scriptptr-1);
                 }
             }
@@ -1057,48 +1060,46 @@ char parsecommand(void)
 
             return 0;
 
-
-
-        case 11:
-        case 13:
-        case 25:
-        case 31:
-        case 40:
-        case 52:
-        case 69:
-        case 74:
-        case 77:
-        case 80:
-        case 86:
-        case 88:
-        case 68:
-        case 100:
-        case 101:
-        case 102:
-        case 103:
-        case 105:
-        case 110:
+        case 11:    //strength
+        case 13:    //shoot
+        case 25:    //addphealth
+        case 31:    //spawn
+        case 40:    //cstat
+        case 52:    //count
+        case 69:    //endofgame
+        case 74:    //spritepal
+        case 77:    //cactor
+        case 80:    //quote
+        case 86:    //money
+        case 88:    //addkills
+        case 68:    //debug
+        case 100:   //addstrength
+        case 101:   //cstator
+        case 102:   //mail
+        case 103:   //paper
+        case 105:   //sleeptime
+        case 110:   //clipdist
             transnum(LABEL_DEFINE);
             return 0;
 
-        case 2:
-        case 23:
-        case 28:
-        case 99:
-        case 37:
-        case 48:
-        case 58:
+        case 2:     //addammo
+        case 23:    //addweapon
+        case 28:    //sizeto
+        case 99:    //sizeat
+        case 37:    //debris
+        case 48:    //addinventory
+        case 58:    //guts
             transnum(LABEL_DEFINE);
             transnum(LABEL_DEFINE);
             break;
-        case 50:
+        case 50:    //hitradius
             transnum(LABEL_DEFINE);
             transnum(LABEL_DEFINE);
             transnum(LABEL_DEFINE);
             transnum(LABEL_DEFINE);
             transnum(LABEL_DEFINE);
             break;
-        case 10:
+        case 10:    //else
             if( checking_ifelse )
             {
                 checking_ifelse--;
@@ -1116,54 +1117,53 @@ char parsecommand(void)
 
             return 0;
 
-        case 75:
+        case 75:    //ifpinventory
             transnum(LABEL_DEFINE);
-        case 3:
-        case 8:
-        case 9:
-        case 21:	// ifai
-        case 33:
-        case 34:	// ifaction
-        case 35:
-        case 41:	// ifmove
-        case 46:
-        case 53:
-        case 56:
-        case 59:
-        case 62:
-        case 72:
-        case 73:
-//        case 74:
-        case 78:
-        case 85:
-        case 94:
-        case 111:
-	    switch (tw) {
-		case 21: transnum(LABEL_AI); break;
-		case 34: transnum(LABEL_ACTION); break;
-		case 41: transnum(LABEL_MOVE); break;
-		default: transnum(LABEL_DEFINE); break;
-	    }
-        case 43:
-        case 44:
-        case 49:
-        case 5:
-        case 6:
-        case 27:
-        case 26:
-        case 45:
-        case 51:
-        case 63:
-        case 64:
-        case 65:
-        case 67:
-        case 70:
-        case 71:
-        case 81:
-        case 82:
-        case 90:
-        case 91:
-        case 109:
+        case 3:     //ifrnd
+        case 8:     //ifpdistl
+        case 9:     //ifpdistg
+        case 21:	//ifai
+        case 33:    //ifwasweapon
+        case 34:	//ifaction
+        case 35:    //ifactioncount
+        case 41:	//ifmove
+        case 46:    //ifcount
+        case 53:    //ifactor
+        case 56:    //ifstrength
+        case 59:    //ifspawnedby
+        case 62:    //ifgapzl
+        case 72:    //iffloordistl
+        case 73:    //ifceilingdistl
+        case 78:    //ifphealthl
+        case 85:    //ifspritepal
+        case 94:    //ifgotweaponce
+        case 111:   //ifangdiffl
+            switch (tw) {
+                case 21: transnum(LABEL_AI); break;
+                case 34: transnum(LABEL_ACTION); break;
+                case 41: transnum(LABEL_MOVE); break;
+                default: transnum(LABEL_DEFINE); break;
+            }
+        case 43:    //ifonwater
+        case 44:    //ifinwater
+        case 49:    //ifactornotstayput
+        case 5:     //ifcansee
+        case 6:     //ifhitweapon
+        case 27:    //ifsquished
+        case 26:    //ifdead
+        case 45:    //ifcanshoottarget
+        case 51:    //ifp
+        case 63:    //ifhitspace
+        case 64:    //ifoutside
+        case 65:    //ifmultiplayer
+        case 67:    //ifinspace
+        case 70:    //ifbulletnear
+        case 71:    //ifrespawn
+        case 81:    //ifinouterspace
+        case 82:    //ifnotmoving
+        case 90:    //ifawayfromwall
+        case 91:    //ifcanseetarget
+        case 109:   //ifnosounds
 
             if(tw == 51)
             {
@@ -1195,13 +1195,13 @@ char parsecommand(void)
 
             checking_ifelse++;
             return 0;
-        case 29:
+        case 29:    //{
             num_squigilly_brackets++;
             do
                 done = parsecommand();
             while( done == 0 );
             return 0;
-        case 30:
+        case 30:    //}
             num_squigilly_brackets--;
             if( num_squigilly_brackets < 0 )
             {
@@ -1209,7 +1209,7 @@ char parsecommand(void)
                 error++;
             }
             return 1;
-        case 76:
+        case 76:    //betaname
             scriptptr--;
             j = 0;
             while( *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )		// JBF 20040127: end of file checked
@@ -1219,7 +1219,7 @@ char parsecommand(void)
             }
             betaname[j] = 0;
             return 0;
-        case 20:
+        case 20:    //single-line comment
             scriptptr--; //Negate the rem
             while( *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )		// JBF 20040127: end of file checked
                 textptr++;
@@ -1227,20 +1227,20 @@ char parsecommand(void)
             // line_number++;
             return 0;
 
-        case 107:
+        case 107:   //definevolumename
             scriptptr--;
             transnum(LABEL_DEFINE);
             scriptptr--;
             j = *scriptptr;
             while( *textptr == ' ' ) textptr++;
 
-	    if (j < 0 || j >= 4)
-	    {
-                    initprintf("  * ERROR!(L%ld %s) Volume number exceeds maximum volume count.\n",line_number,compilefile);
-                    error++;
-                    while( *textptr != 0x0a && *textptr != 0 ) textptr++;
-                    break;
-	    }
+            if (j < 0 || j >= 4)
+            {
+                initprintf("  * ERROR!(L%ld %s) Volume number exceeds maximum volume count.\n",line_number,compilefile);
+                error++;
+                while( *textptr != 0x0a && *textptr != 0 ) textptr++;
+                break;
+            }
 	    
             i = 0;
 
@@ -1258,20 +1258,20 @@ char parsecommand(void)
             }
             volume_names[j][i] = '\0';
             return 0;
-        case 108:
+        case 108:   //defineskillname
             scriptptr--;
             transnum(LABEL_DEFINE);
             scriptptr--;
             j = *scriptptr;
             while( *textptr == ' ' ) textptr++;
 
-	    if (j < 0 || j >= 5)
-	    {
-                    initprintf("  * ERROR!(L%ld %s) Skill number exceeds maximum skill count.\n",line_number,compilefile);
-                    error++;
-                    while( *textptr != 0x0a && *textptr != 0 ) textptr++;
-                    break;
-	    }
+            if (j < 0 || j >= 5)
+            {
+                initprintf("  * ERROR!(L%ld %s) Skill number exceeds maximum skill count.\n",line_number,compilefile);
+                error++;
+                while( *textptr != 0x0a && *textptr != 0 ) textptr++;
+                break;
+            }
 	    
             i = 0;
 
@@ -1290,7 +1290,7 @@ char parsecommand(void)
             skill_names[j][i] = '\0';
             return 0;
 
-        case 0:
+        case 0:     //definelevelname
             scriptptr--;
             transnum(LABEL_DEFINE);
             scriptptr--;
@@ -1300,21 +1300,21 @@ char parsecommand(void)
             k = *scriptptr;
             while( *textptr == ' ' ) textptr++;
 
-	    if (j < 0 || j >= 4)
-	    {
-                    initprintf("  * WARNING!(L%ld %s) Volume number exceeds maximum volume count.\n",line_number,compilefile);
-                    warning++;
-                    while( *textptr != 0x0a && *textptr != 0 ) textptr++;
-                    break;
-	    }
-	    if (k < 0 || k >= 11)
-	    {
-                    initprintf("  * WARNING!(L%ld %s) Level number exceeds maximum levels-per-episode count.\n",
-				    line_number,compilefile);
-                    warning++;
-                    while( *textptr != 0x0a && *textptr != 0 ) textptr++;
-                    break;
-	    }
+            if (j < 0 || j >= 4)
+            {
+                initprintf("  * WARNING!(L%ld %s) Volume number exceeds maximum volume count.\n",line_number,compilefile);
+                warning++;
+                while( *textptr != 0x0a && *textptr != 0 ) textptr++;
+                break;
+            }
+            if (k < 0 || k >= 11)
+            {
+                initprintf("  * WARNING!(L%ld %s) Level number exceeds maximum levels-per-episode count.\n",
+                line_number,compilefile);
+                warning++;
+                while( *textptr != 0x0a && *textptr != 0 ) textptr++;
+                break;
+            }
 	    
             i = 0;
             while( *textptr != ' ' && *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )	// JBF 20040127: end of file checked
@@ -1364,7 +1364,7 @@ char parsecommand(void)
             level_names[j*11+k][i] = '\0';
             return 0;
 
-        case 79:
+        case 79:    //definequote
             scriptptr--;
             transnum(LABEL_DEFINE);
             k = *(scriptptr-1);
@@ -1392,7 +1392,7 @@ char parsecommand(void)
             }
             fta_quotes[k][i] = '\0';
             return 0;
-        case 57:
+        case 57:    //definesound
             scriptptr--;
             transnum(LABEL_DEFINE);
             k = *(scriptptr-1);
@@ -1438,7 +1438,7 @@ char parsecommand(void)
             scriptptr--;
             return 0;
 
-        case 4:
+        case 4:     //enda
             if( parsing_actor == 0 )
             {
                 initprintf("  * ERROR!(L%ld %s) Found 'enda' without defining 'actor'.\n",line_number,compilefile);
@@ -1455,116 +1455,114 @@ char parsecommand(void)
             }
 
             return 0;
-        case 12:
-        case 16:
-        case 84:
-//        case 21:
-        case 22:    //KILLIT
-        case 36:
-        case 38:
-        case 42:
-        case 47:
-        case 61:
-        case 66:
-        case 83:
-        case 95:
-        case 96:
-        case 97:
-        case 104:
-        case 106:
+        case 12:    //break
+        case 16:    //fall
+        case 84:    //tip
+        case 22:    //killit
+        case 36:    //resetactioncount
+        case 38:    //pstomp
+        case 42:    //resetplayer
+        case 47:    //resetcount
+        case 61:    //wackplayer
+        case 66:    //operate
+        case 83:    //respawnhitag
+        case 95:    //getlastpal
+        case 96:    //pkick
+        case 97:    //mikesnd
+        case 104:   //tossweapon
+        case 106:   //nullop
             return 0;
-        case 60:
-	    {
-		long params[30];
+        case 60:    //gamestartup
+            {
+                long params[30];
 
-		scriptptr--;
-		for(j = 0; j < 30; j++)
-        	{
-			transnum(LABEL_DEFINE);
-			scriptptr--;
-			params[j] = *scriptptr;
+                scriptptr--;
+                for(j = 0; j < 30; j++)
+                    {
+                    transnum(LABEL_DEFINE);
+                    scriptptr--;
+                    params[j] = *scriptptr;
 
-			if (j != 25) continue;
+                    if (j != 25) continue;
 
-			if (keyword() != -1) {
-				initprintf("Looks like Standard CON files.\n");
-				break;
-			} else {
-				conversion = 14;
-				initprintf("Looks like Atomic Edition CON files.\n");
-			}
-		}
+                    if (keyword() != -1) {
+                        initprintf("Looks like Standard CON files.\n");
+                        break;
+                    } else {
+                        conversion = 14;
+                        initprintf("Looks like Atomic Edition CON files.\n");
+                    }
+                }
+                
+                /*
+                v1.3d               v1.5
+                DEFAULTVISIBILITY	DEFAULTVISIBILITY
+                GENERICIMPACTDAMAGE	GENERICIMPACTDAMAGE
+                MAXPLAYERHEALTH		MAXPLAYERHEALTH
+                STARTARMORHEALTH	STARTARMORHEALTH
+                RESPAWNACTORTIME	RESPAWNACTORTIME
+                RESPAWNITEMTIME		RESPAWNITEMTIME
+                RUNNINGSPEED		RUNNINGSPEED
+                RPGBLASTRADIUS		GRAVITATIONALCONSTANT
+                PIPEBOMBRADIUS		RPGBLASTRADIUS
+                SHRINKERBLASTRADIUS	PIPEBOMBRADIUS
+                TRIPBOMBBLASTRADIUS	SHRINKERBLASTRADIUS
+                MORTERBLASTRADIUS	TRIPBOMBBLASTRADIUS
+                BOUNCEMINEBLASTRADIUS	MORTERBLASTRADIUS
+                SEENINEBLASTRADIUS	BOUNCEMINEBLASTRADIUS
+                MAXPISTOLAMMO		SEENINEBLASTRADIUS
+                MAXSHOTGUNAMMO		MAXPISTOLAMMO
+                MAXCHAINGUNAMMO		MAXSHOTGUNAMMO
+                MAXRPGAMMO          MAXCHAINGUNAMMO
+                MAXHANDBOMBAMMO		MAXRPGAMMO
+                MAXSHRINKERAMMO		MAXHANDBOMBAMMO
+                MAXDEVISTATORAMMO	MAXSHRINKERAMMO
+                MAXTRIPBOMBAMMO		MAXDEVISTATORAMMO
+                MAXFREEZEAMMO		MAXTRIPBOMBAMMO
+                CAMERASDESTRUCTABLE	MAXFREEZEAMMO
+                NUMFREEZEBOUNCES	MAXGROWAMMO
+                FREEZERHURTOWNER	CAMERASDESTRUCTABLE
+                                    NUMFREEZEBOUNCES
+                                    FREEZERHURTOWNER
+                                    QSIZE
+                                    TRIPBOMBLASERMODE
+                */
 
-/*
-v1.3d			v1.5
-DEFAULTVISIBILITY	DEFAULTVISIBILITY
-GENERICIMPACTDAMAGE	GENERICIMPACTDAMAGE
-MAXPLAYERHEALTH		MAXPLAYERHEALTH
-STARTARMORHEALTH	STARTARMORHEALTH
-RESPAWNACTORTIME	RESPAWNACTORTIME
-RESPAWNITEMTIME		RESPAWNITEMTIME
-RUNNINGSPEED		RUNNINGSPEED
-RPGBLASTRADIUS		GRAVITATIONALCONSTANT
-PIPEBOMBRADIUS		RPGBLASTRADIUS
-SHRINKERBLASTRADIUS	PIPEBOMBRADIUS
-TRIPBOMBBLASTRADIUS	SHRINKERBLASTRADIUS
-MORTERBLASTRADIUS	TRIPBOMBBLASTRADIUS
-BOUNCEMINEBLASTRADIUS	MORTERBLASTRADIUS
-SEENINEBLASTRADIUS	BOUNCEMINEBLASTRADIUS
-MAXPISTOLAMMO		SEENINEBLASTRADIUS
-MAXSHOTGUNAMMO		MAXPISTOLAMMO
-MAXCHAINGUNAMMO		MAXSHOTGUNAMMO
-MAXRPGAMMO		MAXCHAINGUNAMMO
-MAXHANDBOMBAMMO		MAXRPGAMMO
-MAXSHRINKERAMMO		MAXHANDBOMBAMMO
-MAXDEVISTATORAMMO	MAXSHRINKERAMMO
-MAXTRIPBOMBAMMO		MAXDEVISTATORAMMO
-MAXFREEZEAMMO		MAXTRIPBOMBAMMO
-CAMERASDESTRUCTABLE	MAXFREEZEAMMO
-NUMFREEZEBOUNCES	MAXGROWAMMO
-FREEZERHURTOWNER	CAMERASDESTRUCTABLE
-			NUMFREEZEBOUNCES
-			FREEZERHURTOWNER
-			QSIZE
-			TRIPBOMBLASERMODE
-*/
-		
-		j = 0;
-		ud.const_visibility = params[j++];
-		impact_damage = params[j++];
-		max_player_health = params[j++];
-		max_armour_amount = params[j++];
-		respawnactortime = params[j++];
-		respawnitemtime = params[j++];
-		dukefriction = params[j++];
-		if (conversion == 14) gc = params[j++];
-		rpgblastradius = params[j++];
-		pipebombblastradius = params[j++];
-		shrinkerblastradius = params[j++];
-		tripbombblastradius = params[j++];
-		morterblastradius = params[j++];
-		bouncemineblastradius = params[j++];
-		seenineblastradius = params[j++];
-		max_ammo_amount[PISTOL_WEAPON] = params[j++];
-		max_ammo_amount[SHOTGUN_WEAPON] = params[j++];
-		max_ammo_amount[CHAINGUN_WEAPON] = params[j++];
-		max_ammo_amount[RPG_WEAPON] = params[j++];
-		max_ammo_amount[HANDBOMB_WEAPON] = params[j++];
-		max_ammo_amount[SHRINKER_WEAPON] = params[j++];
-		max_ammo_amount[DEVISTATOR_WEAPON] = params[j++];
-		max_ammo_amount[TRIPBOMB_WEAPON] = params[j++];
-		max_ammo_amount[FREEZE_WEAPON] = params[j++];
-		if (conversion == 14) max_ammo_amount[GROW_WEAPON] = params[j++];
-		camerashitable = params[j++];
-		numfreezebounces = params[j++];
-		freezerhurtowner = params[j++];
-		if (conversion == 14) {
-			spriteqamount = params[j++];
-			if(spriteqamount > 1024) spriteqamount = 1024;
-			else if(spriteqamount < 0) spriteqamount = 0;
-			
-			lasermode = params[j++];
-		}
+                j = 0;
+                ud.const_visibility = params[j++];
+                impact_damage = params[j++];
+                max_player_health = params[j++];
+                max_armour_amount = params[j++];
+                respawnactortime = params[j++];
+                respawnitemtime = params[j++];
+                dukefriction = params[j++];
+                if (conversion == 14) gc = params[j++];
+                rpgblastradius = params[j++];
+                pipebombblastradius = params[j++];
+                shrinkerblastradius = params[j++];
+                tripbombblastradius = params[j++];
+                morterblastradius = params[j++];
+                bouncemineblastradius = params[j++];
+                seenineblastradius = params[j++];
+                max_ammo_amount[PISTOL_WEAPON] = params[j++];
+                max_ammo_amount[SHOTGUN_WEAPON] = params[j++];
+                max_ammo_amount[CHAINGUN_WEAPON] = params[j++];
+                max_ammo_amount[RPG_WEAPON] = params[j++];
+                max_ammo_amount[HANDBOMB_WEAPON] = params[j++];
+                max_ammo_amount[SHRINKER_WEAPON] = params[j++];
+                max_ammo_amount[DEVISTATOR_WEAPON] = params[j++];
+                max_ammo_amount[TRIPBOMB_WEAPON] = params[j++];
+                max_ammo_amount[FREEZE_WEAPON] = params[j++];
+                if (conversion == 14) max_ammo_amount[GROW_WEAPON] = params[j++];
+                camerashitable = params[j++];
+                numfreezebounces = params[j++];
+                freezerhurtowner = params[j++];
+                if (conversion == 14) {
+                    spriteqamount = params[j++];
+                    if(spriteqamount > 1024) spriteqamount = 1024;
+                    else if(spriteqamount < 0) spriteqamount = 0;
+                    lasermode = params[j++];
+                }
             }
             return 0;
     }
@@ -1597,14 +1595,13 @@ void copydefaultcons(void)
     for(i=0;i<3;i++)
     {
         fpi = kopen4load( defaultcons[i] , 1 );
-	if (fpi < 0) continue;
+        if (fpi < 0) continue;
 	
         fpo = fopen( defaultcons[i],"wb");
-
-	if (fpo == NULL) {
-		kclose(fpi);
-		continue;
-	}
+        if (fpo == NULL) {
+            kclose(fpi);
+            continue;
+        }
 
         fs = kfilelength(fpi);
 
@@ -1708,8 +1705,8 @@ void loadefs(char *filenam)
             if( groupfile != -1 && loadfromgrouponly == 0 )
             {
                 //initprintf("Errors found when compiling CON files.  Use default CONs instead? (Y/N)\n");
-		i=wm_ynbox("CON File Compilation Error", "Errors found when compiling CON files. Use default CONs instead?");
-		if (i) i = 'y';
+                i=wm_ynbox("CON File Compilation Error", "Errors found when compiling CON files. Use default CONs instead?");
+                if (i) i = 'y';
                 if( i == 'y' || i == 'Y' )
                 {
                     initprintf(" Yes\n");
@@ -2102,7 +2099,7 @@ void parseifelse(long condition)
     else
     {
         insptr = (long *) *(insptr+1);
-        if(*insptr == 10)
+        if(*insptr == 10)   //else
         {
             insptr+=2;
             parse();
@@ -2122,11 +2119,11 @@ char parse(void)
 
     switch(*insptr)
     {
-        case 3:
+        case 3:     //ifrnd
             insptr++;
             parseifelse( rnd(*insptr));
             break;
-        case 45:
+        case 45:    //ifcanshoottarget
 
             if(g_x > 1024)
             {
@@ -2181,16 +2178,16 @@ char parse(void)
 
             parseifelse(j);
             break;
-        case 91:
+        case 91:    //ifcanseetarget
             j = cansee(g_sp->x,g_sp->y,g_sp->z-((TRAND&41)<<8),g_sp->sectnum,ps[g_p].posx,ps[g_p].posy,ps[g_p].posz/*-((TRAND&41)<<8)*/,sprite[ps[g_p].i].sectnum);
             parseifelse(j);
             if( j ) hittype[g_i].timetosleep = SLEEPTIME;
             break;
 
-        case 49:
+        case 49:    //ifactornotstayput
             parseifelse(hittype[g_i].actorstayput == -1);
             break;
-        case 5:
+        case 5:     //ifcansee
         {
             spritetype *s;
             short sect;
@@ -2235,13 +2232,13 @@ char parse(void)
             break;
         }
 
-        case 6:
+        case 6:     //ifhitweapon
             parseifelse(ifhitbyweapon(g_i) >= 0);
             break;
-        case 27:
+        case 27:    //ifsquished
             parseifelse( ifsquished(g_i, g_p) == 1);
             break;
-        case 26:
+        case 26:    //ifdead
             {
                 j = g_sp->extra;
                 if(g_sp->picnum == APLAYER)
@@ -2249,7 +2246,7 @@ char parse(void)
                 parseifelse(j < 0);
             }
             break;
-        case 24:
+        case 24:    //ai
             insptr++;
             g_t[5] = *insptr;
             g_t[4] = *(long *)(g_t[5]);       // Action
@@ -2260,7 +2257,7 @@ char parse(void)
                 g_sp->ang = TRAND&2047;
             insptr++;
             break;
-        case 7:
+        case 7:     //action
             insptr++;
             g_t[2] = 0;
             g_t[3] = 0;
@@ -2268,32 +2265,32 @@ char parse(void)
             insptr++;
             break;
 
-        case 8:
+        case 8:     //ifpdistl
             insptr++;
             parseifelse(g_x < *insptr);
             if(g_x > MAXSLEEPDIST && hittype[g_i].timetosleep == 0)
                 hittype[g_i].timetosleep = SLEEPTIME;
             break;
-        case 9:
+        case 9:     //ifpdistg
             insptr++;
             parseifelse(g_x > *insptr);
             if(g_x > MAXSLEEPDIST && hittype[g_i].timetosleep == 0)
                 hittype[g_i].timetosleep = SLEEPTIME;
             break;
-        case 10:
+        case 10:    //else
             insptr = (long *) *(insptr+1);
             break;
-        case 100:
+        case 100:   //addstrength
             insptr++;
             g_sp->extra += *insptr;
             insptr++;
             break;
-        case 11:
+        case 11:    //strength
             insptr++;
             g_sp->extra = *insptr;
             insptr++;
             break;
-        case 94:
+        case 94:    //ifgotweaponce
             insptr++;
 
             if(ud.coop >= 1 && ud.multimode > 1)
@@ -2314,26 +2311,26 @@ char parse(void)
             }
             else parseifelse(0);
             break;
-        case 95:
+        case 95:    //getlastpal
             insptr++;
             if(g_sp->picnum == APLAYER)
                 g_sp->pal = ps[g_sp->yvel].palookup;
             else g_sp->pal = hittype[g_i].tempang;
             hittype[g_i].tempang = 0;
             break;
-        case 104:
+        case 104:   //tossweapon
             insptr++;
             checkweapons(&ps[g_sp->yvel]);
             break;
-        case 106:
+        case 106:   //nullop
             insptr++;
             break;
-        case 97:
+        case 97:    //mikesnd
             insptr++;
             if(!isspritemakingsound(g_i,g_sp->yvel))
                 spritesound(g_sp->yvel,g_i);
             break;
-        case 96:
+        case 96:    //pkick
             insptr++;
 
             if( ud.multimode > 1 && g_sp->picnum == APLAYER )
@@ -2344,13 +2341,13 @@ char parse(void)
             else if(g_sp->picnum != APLAYER && ps[g_p].quick_kick == 0)
                 ps[g_p].quick_kick = 14;
             break;
-        case 28:
+        case 28:    //sizeto
             insptr++;
 
-	    // JBF 20030805: As I understand it, if xrepeat becomes 0 it basically kills the
-	    // sprite, which is why the "sizeto 0 41" calls in 1.3d became "sizeto 4 41" in
-	    // 1.4, so instead of patching the CONs I'll surruptitiously patch the code here
-	    if (!PLUTOPAK && *insptr == 0) *insptr = 4;
+            // JBF 20030805: As I understand it, if xrepeat becomes 0 it basically kills the
+            // sprite, which is why the "sizeto 0 41" calls in 1.3d became "sizeto 4 41" in
+            // 1.4, so instead of patching the CONs I'll surruptitiously patch the code here
+            if (!PLUTOPAK && *insptr == 0) *insptr = 4;
 	    
             j = ((*insptr)-g_sp->xrepeat)<<1;
             g_sp->xrepeat += ksgn(j);
@@ -2366,46 +2363,46 @@ char parse(void)
             insptr++;
 
             break;
-        case 99:
+        case 99:    //sizeat
             insptr++;
             g_sp->xrepeat = (char) *insptr;
             insptr++;
             g_sp->yrepeat = (char) *insptr;
             insptr++;
             break;
-        case 13:
+        case 13:    //shoot
             insptr++;
             shoot(g_i,(short)*insptr);
             insptr++;
             break;
-        case 87:
+        case 87:    //soundonce
             insptr++;
             if(!isspritemakingsound(g_i,*insptr))
                 spritesound((short) *insptr,g_i);
             insptr++;
             break;
-        case 89:
+        case 89:    //stopsound
             insptr++;
             if(isspritemakingsound(g_i,*insptr))
                 stopspritesound((short)*insptr,g_i);
             insptr++;
             break;
-        case 92:
+        case 92:    //globalsound
             insptr++;
             if(g_p == screenpeek || ud.coop==1)
                 spritesound((short) *insptr,ps[screenpeek].i);
             insptr++;
             break;
-        case 15:
+        case 15:    //sound
             insptr++;
             spritesound((short) *insptr,g_i);
             insptr++;
             break;
-        case 84:
+        case 84:    //top
             insptr++;
             ps[g_p].tipincs = 26;
             break;
-        case 16:
+        case 16:    //fall
             insptr++;
             g_sp->xoffset = 0;
             g_sp->yoffset = 0;
@@ -2487,14 +2484,14 @@ char parse(void)
             }
 
             break;
-        case 4:
-        case 12:
-        case 18:
+        case 4:     //enda
+        case 12:    //break
+        case 18:    //ends
             return 1;
-        case 30:
+        case 30:    //}
             insptr++;
             return 1;
-        case 2:
+        case 2:     //addammo
             insptr++;
             if( ps[g_p].ammo_amount[*insptr] >= max_ammo_amount[*insptr] )
             {
@@ -2507,42 +2504,42 @@ char parse(void)
                     addweapon( &ps[g_p], *insptr );
             insptr += 2;
             break;
-        case 86:
+        case 86:    //money
             insptr++;
             lotsofmoney(g_sp,*insptr);
             insptr++;
             break;
-        case 102:
+        case 102:   //mail
             insptr++;
             lotsofmail(g_sp,*insptr);
             insptr++;
             break;
-        case 105:
+        case 105:   //sleeptime
             insptr++;
             hittype[g_i].timetosleep = (short)*insptr;
             insptr++;
             break;
-        case 103:
+        case 103:   //paper
             insptr++;
             lotsofpaper(g_sp,*insptr);
             insptr++;
             break;
-        case 88:
+        case 88:    //addkills
             insptr++;
             ps[g_p].actors_killed += *insptr;
             hittype[g_i].actorstayput = -1;
             insptr++;
             break;
-        case 93:
+        case 93:    //lotsofglass
             insptr++;
             spriteglass(g_i,*insptr);
             insptr++;
             break;
-        case 22:
+        case 22:    //killit
             insptr++;
             killit_flag = 1;
             break;
-        case 23:
+        case 23:    //addweapon
             insptr++;
             if( ps[g_p].gotweapon[*insptr] == 0 ) {
 				if (!(ps[g_p].weaponswitch & 1)) addweaponnoswitch(&ps[g_p], *insptr);
@@ -2559,19 +2556,19 @@ char parse(void)
                     addweapon( &ps[g_p], *insptr );
             insptr+=2;
             break;
-        case 68:
+        case 68:    //debug
             insptr++;
             printf("%ld\n",*insptr);
             insptr++;
             break;
-        case 69:
+        case 69:    //endofgame
             insptr++;
             ps[g_p].timebeforeexit = *insptr;
             ps[g_p].customexitsound = -1;
             ud.eog = 1;
             insptr++;
             break;
-        case 25:
+        case 25:    //addphealth
             insptr++;
 
             if(ps[g_p].newowner >= 0)
@@ -2636,7 +2633,7 @@ char parse(void)
 
             insptr++;
             break;
-        case 17:
+        case 17:    //state
             {
                 long *tempscrptr;
 
@@ -2647,11 +2644,11 @@ char parse(void)
                 insptr = tempscrptr;
             }
             break;
-        case 29:
+        case 29:    //{
             insptr++;
             while(1) if(parse()) break;
             break;
-        case 32:
+        case 32:    //move
             g_t[0]=0;
             insptr++;
             g_t[1] = *insptr;
@@ -2661,33 +2658,33 @@ char parse(void)
             if(g_sp->hitag&random_angle)
                 g_sp->ang = TRAND&2047;
             break;
-        case 31:
+        case 31:    //spawn
             insptr++;
             if(g_sp->sectnum >= 0 && g_sp->sectnum < MAXSECTORS)
                 spawn(g_i,*insptr);
             insptr++;
             break;
-        case 33:
+        case 33:    //ifwasweapon
             insptr++;
             parseifelse( hittype[g_i].picnum == *insptr);
             break;
-        case 21:
+        case 21:    //ifai
             insptr++;
             parseifelse(g_t[5] == *insptr);
             break;
-        case 34:
+        case 34:    //ifaction
             insptr++;
             parseifelse(g_t[4] == *insptr);
             break;
-        case 35:
+        case 35:    //ifactioncount
             insptr++;
             parseifelse(g_t[2] >= *insptr);
             break;
-        case 36:
+        case 36:    //resetactioncount
             insptr++;
             g_t[2] = 0;
             break;
-        case 37:
+        case 37:    //debris
             {
                 short dnum;
 
@@ -2715,31 +2712,31 @@ char parse(void)
                 insptr++;
             }
             break;
-        case 52:
+        case 52:    //count
             insptr++;
             g_t[0] = (short) *insptr;
             insptr++;
             break;
-        case 101:
+        case 101:   //cstator
             insptr++;
             g_sp->cstat |= (short)*insptr;
             insptr++;
             break;
-        case 110:
+        case 110:   //clipdist
             insptr++;
             g_sp->clipdist = (short) *insptr;
             insptr++;
             break;
-        case 40:
+        case 40:    //cstat
             insptr++;
             g_sp->cstat = (short) *insptr;
             insptr++;
             break;
-        case 41:
+        case 41:    //ifmove
             insptr++;
             parseifelse(g_t[1] == *insptr);
             break;
-        case 42:
+        case 42:    //resetplayer
             insptr++;
 
             if(ud.multimode < 2)
@@ -2811,25 +2808,25 @@ char parse(void)
             setpal(&ps[g_p]);
 
             break;
-        case 43:
+        case 43:    //ifonwater
             parseifelse( klabs(g_sp->z-sector[g_sp->sectnum].floorz) < (32<<8) && sector[g_sp->sectnum].lotag == 1);
             break;
-        case 44:
+        case 44:    //ifinwater
             parseifelse( sector[g_sp->sectnum].lotag == 2);
             break;
-        case 46:
+        case 46:    //ifcount
             insptr++;
             parseifelse(g_t[0] >= *insptr);
             break;
-        case 53:
+        case 53:    //ifactor
             insptr++;
             parseifelse(g_sp->picnum == *insptr);
             break;
-        case 47:
+        case 47:    //resetcount
             insptr++;
             g_t[0] = 0;
             break;
-        case 48:
+        case 48:    //addinventory
             insptr+=2;
             switch(*(insptr-1))
             {
@@ -2877,11 +2874,11 @@ char parse(void)
             }
             insptr++;
             break;
-        case 50:
+        case 50:    //hitradius
             hitradius(g_i,*(insptr+1),*(insptr+2),*(insptr+3),*(insptr+4),*(insptr+5));
             insptr+=6;
             break;
-        case 51:
+        case 51:    //ifp
             {
                 insptr++;
 
@@ -2940,40 +2937,40 @@ char parse(void)
 
             }
             break;
-        case 56:
+        case 56:    //ifstrength
             insptr++;
             parseifelse(g_sp->extra <= *insptr);
             break;
-        case 58:
+        case 58:    //guts
             insptr += 2;
             guts(g_sp,*(insptr-1),*insptr,g_p);
             insptr++;
             break;
-        case 59:
+        case 59:    //ifspawnedby
             insptr++;
 //            if(g_sp->owner >= 0 && sprite[g_sp->owner].picnum == *insptr)
   //              parseifelse(1);
 //            else
             parseifelse( hittype[g_i].picnum == *insptr);
             break;
-        case 61:
+        case 61:    //wackplayer
             insptr++;
             forceplayerangle(&ps[g_p]);
             return 0;
-        case 62:
+        case 62:    //ifgapzl
             insptr++;
             parseifelse( (( hittype[g_i].floorz - hittype[g_i].ceilingz ) >> 8 ) < *insptr);
             break;
-        case 63:
+        case 63:    //ifhitspace
             parseifelse( sync[g_p].bits&(1<<29));
             break;
-        case 64:
+        case 64:    //ifoutside
             parseifelse(sector[g_sp->sectnum].ceilingstat&1);
             break;
-        case 65:
+        case 65:    //ifmultiplayer
             parseifelse(ud.multimode > 1);
             break;
-        case 66:
+        case 66:    //operate
             insptr++;
             if( sector[g_sp->sectnum].lotag == 0 )
             {
@@ -2995,11 +2992,11 @@ char parse(void)
                         }
             }
             break;
-        case 67:
+        case 67:    //ifinspace
             parseifelse(ceilingspace(g_sp->sectnum));
             break;
 
-        case 74:
+        case 74:    //spritepal
             insptr++;
             if(g_sp->picnum != APLAYER)
                 hittype[g_i].tempang = g_sp->pal;
@@ -3007,16 +3004,16 @@ char parse(void)
             insptr++;
             break;
 
-        case 77:
+        case 77:    //cactor
             insptr++;
             g_sp->picnum = *insptr;
             insptr++;
             break;
 
-        case 70:
+        case 70:    //ifbulletnear
             parseifelse( dodge(g_sp) == 1);
             break;
-        case 71:
+        case 71:    //ifrespawn
             if( badguy(g_sp) )
                 parseifelse( ud.respawn_monsters );
             else if( inventory(g_sp) )
@@ -3024,17 +3021,17 @@ char parse(void)
             else
                 parseifelse( ud.respawn_items );
             break;
-        case 72:
+        case 72:    //iffloordistl
             insptr++;
 //            getglobalz(g_i);
             parseifelse( (hittype[g_i].floorz - g_sp->z) <= ((*insptr)<<8));
             break;
-        case 73:
+        case 73:    //ifceilingdistl
             insptr++;
 //            getglobalz(g_i);
             parseifelse( ( g_sp->z - hittype[g_i].ceilingz ) <= ((*insptr)<<8));
             break;
-        case 14:
+        case 14:    //palfrom
 
             insptr++;
             ps[g_p].pals_time = *insptr;
@@ -3046,18 +3043,12 @@ char parse(void)
             }
             break;
 
-/*        case 74:
-            insptr++;
-            getglobalz(g_i);
-            parseifelse( (( hittype[g_i].floorz - hittype[g_i].ceilingz ) >> 8 ) >= *insptr);
-            break;
-*/
-        case 78:
+        case 78:    //ifphealthl
             insptr++;
             parseifelse( sprite[ps[g_p].i].extra < *insptr);
             break;
 
-        case 75:
+        case 75:    //ifpinventory
             {
                 insptr++;
                 j = 0;
@@ -3090,7 +3081,7 @@ char parse(void)
                 parseifelse(j);
                 break;
             }
-        case 38:
+        case 38:    //pstomp
             insptr++;
             if( ps[g_p].knee_incs == 0 && sprite[ps[g_p].i].xrepeat >= 40 )
                 if( cansee(g_sp->x,g_sp->y,g_sp->z-(4<<8),g_sp->sectnum,ps[g_p].posx,ps[g_p].posy,ps[g_p].posz+(16<<8),sprite[ps[g_p].i].sectnum) )
@@ -3101,7 +3092,7 @@ char parse(void)
                 ps[g_p].actorsqu = g_i;
             }
             break;
-        case 90:
+        case 90:    //ifawayfromwall
             {
                 short s1;
 
@@ -3128,18 +3119,18 @@ char parse(void)
             }
 
             break;
-        case 80:
+        case 80:    //quote
             insptr++;
             FTA(*insptr,&ps[g_p]);
             insptr++;
             break;
-        case 81:
+        case 81:    //ifinouterspace
             parseifelse( floorspace(g_sp->sectnum));
             break;
-        case 82:
+        case 82:    //ifnotmoving
             parseifelse( (hittype[g_i].movflag&49152) > 16384 );
             break;
-        case 83:
+        case 83:    //respawnhitag
             insptr++;
             switch(g_sp->picnum)
             {
@@ -3163,18 +3154,18 @@ char parse(void)
                     break;
             }
             break;
-        case 85:
+        case 85:    //ifspritepal
             insptr++;
             parseifelse( g_sp->pal == *insptr);
             break;
 
-        case 111:
+        case 111:   //ifangdiffl
             insptr++;
             j = klabs(getincangle(ps[g_p].ang,g_sp->ang));
             parseifelse( j <= *insptr);
             break;
 
-        case 109:
+        case 109:   //ifnosounds
 
             for(j=1;j<NUM_SOUNDS;j++)
                 if( SoundOwner[j][0].i == g_i )
