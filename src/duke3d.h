@@ -25,13 +25,10 @@ Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
 */
 //-------------------------------------------------------------------------
 
-#include "compat.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// JBF
 #include "build.h"
 #include "cache1d.h"
 #include "pragmas.h"
@@ -262,19 +259,19 @@ typedef struct
 {
     signed char avel, horz;
     short fvel, svel;
-    unsigned long bits;
+    unsigned int bits;
 } input;
 
 #define sync dsync	// JBF 20040604: sync is a function on some platforms
 extern input inputfifo[MOVEFIFOSIZ][MAXPLAYERS], sync[MAXPLAYERS];
 extern input recsync[RECSYNCBUFSIZ];
 
-extern long movefifosendplc;
+extern int movefifosendplc;
 
 typedef struct
 {
     char *ptr;
-    volatile char lock;
+    unsigned char lock;
     int  length, num;
 	 int numall;	// total number of this sound played in any way
 } SAMPLE;
@@ -282,13 +279,14 @@ typedef struct
 struct animwalltype
 {
         short wallnum;
-        long tag;
+        int tag;
 };
 extern struct animwalltype animwall[MAXANIMWALLS];
 extern short numanimwalls,probey,lastprobey;
 
-extern char typebuflen,typebuf[41];
-extern long msx[2048],msy[2048];
+extern int typebuflen;
+extern char typebuf[41];
+extern int msx[2048],msy[2048];
 extern short cyclers[MAXCYCLERS][6],numcyclers;
 extern char myname[32];
 
@@ -306,9 +304,9 @@ struct user_defs
     short camerasprite,last_camsprite;
     short last_level,secretlevel;
 
-    long const_visibility,uw_framerate;
-    long camera_time,folfvel,folavel,folx,foly,fola;
-    long reccnt;
+    int const_visibility,uw_framerate;
+    int camera_time,folfvel,folavel,folx,foly,fola;
+    int reccnt;
 
     int32 runkey_mode,statusbarscale,mouseaiming,weaponswitch;
 
@@ -325,28 +323,27 @@ struct user_defs
 
 struct player_orig
 {
-    long ox,oy,oz;
+    int ox,oy,oz;
     short oa,os;
 };
 
 
-extern char numplayersprites;
-extern char picsiz[MAXTILES];
+extern int numplayersprites;
 
 void add_ammo( short, short, short, short );
 
 
-extern long fricxv,fricyv;
+extern int fricxv,fricyv;
 
 struct player_struct
 {
-    long zoom,exitx,exity,loogiex[64],loogiey[64],numloogs,loogcnt;
-    long posx, posy, posz, horiz, ohoriz, ohorizoff, invdisptime;
-    long bobposx,bobposy,oposx,oposy,oposz,pyoff,opyoff;
-    long posxv,posyv,poszv,last_pissed_time,truefz,truecz;
-    long player_par,visibility;
-    long bobcounter,weapon_sway;
-    long pals_time,randomflamex,crack_time;
+    int zoom,exitx,exity,loogiex[64],loogiey[64],numloogs,loogcnt;
+    int posx, posy, posz, horiz, ohoriz, ohorizoff, invdisptime;
+    int bobposx,bobposy,oposx,oposy,oposz,pyoff,opyoff;
+    int posxv,posyv,poszv,last_pissed_time,truefz,truecz;
+    int player_par,visibility;
+    int bobcounter,weapon_sway;
+    int pals_time,randomflamex,crack_time;
 
     int32 aim_mode,auto_aim,weaponswitch;
 
@@ -365,7 +362,7 @@ struct player_struct
     short heat_amount,actorsqu,timebeforeexit,customexitsound;
 
     short weaprecs[16],weapreccnt;
-    unsigned long interface_toggle_flag;
+    unsigned int interface_toggle_flag;
 
     short orotscrnang,rotscrnang,dead_flag,show_empty_weapon;	// JBF 20031220: added orotscrnang
     short scuba_amount,jetpack_amount,steroids_amount,shield_amount;
@@ -374,29 +371,33 @@ struct player_struct
 
     int scream_voice;
 
-    char gm,on_warping_sector,footprintcount;
+    unsigned char gm;
+    char on_warping_sector,footprintcount;
     char hbomb_on,jumping_toggle,rapid_fire_hold,on_ground;
     char name[32],inven_icon,buttonpalette;
 
     char jetpack_on,spritebridge,lastrandomspot;
     char scuba_on,footprintpal,heat_on;
 
-    char  holster_weapon,falling_counter;
-    char  gotweapon[MAX_WEAPONS],refresh_inventory,*palette;
+    char  holster_weapon;
+    unsigned char falling_counter;
+    char  gotweapon[MAX_WEAPONS],refresh_inventory;
+    unsigned char *palette;
 
     char toggle_key_flag,knuckle_incs; // ,select_dir;
     char walking_snd_toggle, palookup, hard_landing;
     char /*fire_flag,*/pals[3];
     char return_to_center;
 
-    long max_secret_rooms,secret_rooms,max_actors_killed,actors_killed;
+    int max_secret_rooms,secret_rooms,max_actors_killed,actors_killed;
 };
 
-extern unsigned char tempbuf[2048], packbuf[576];
+extern char tempbuf[2048];
+extern unsigned char packbuf[576];
 
-extern long gc,max_player_health,max_armour_amount,max_ammo_amount[MAX_WEAPONS];
+extern int gc,max_player_health,max_armour_amount,max_ammo_amount[MAX_WEAPONS];
 
-extern long impact_damage,respawnactortime,respawnitemtime;
+extern int impact_damage,respawnactortime,respawnitemtime;
 
 #define MOVFIFOSIZ 256
 
@@ -405,7 +406,7 @@ extern struct player_struct ps[MAXPLAYERS];
 extern struct player_orig po[MAXPLAYERS];
 extern struct user_defs ud;
 extern short int global_random;
-extern long scaredfallz;
+extern int scaredfallz;
 extern char buf[1024]; //My own generic input buffer
 
 extern char fta_quotes[NUMOFFIRSTTIMEACTIVE][64];
@@ -422,17 +423,18 @@ extern char sounds[NUM_SOUNDS][14];
 
 	// JBF 20040531: adding 16 extra to the script so we have some leeway
 	// to (hopefully) safely abort when hitting the limit
-extern long script[MAXSCRIPTSIZE+16],*scriptptr,*insptr;
-extern long *labelcode,labelcnt;
+extern int script[MAXSCRIPTSIZE+16],*scriptptr,*insptr;
+extern int *labelcode,labelcnt;
 extern char *label,*labeltype;
 extern char *textptr,error,warning,killit_flag;
-extern long *actorscrptr[MAXTILES],*parsing_actor;
+extern int *actorscrptr[MAXTILES],*parsing_actor;
 extern char actortype[MAXTILES];
 extern char *music_pointer;
 
 extern char ipath[80],opath[80];
 
-extern char music_fn[4][11][13],music_select;
+extern char music_fn[4][11][13];
+extern unsigned char music_select;
 extern char env_music_fn[4][13];
 extern short camsprite;
 
@@ -446,51 +448,48 @@ struct weaponhit
     short picnum,ang,extra,owner,movflag;
     short tempang,actorstayput,dispicnum;
     short timetosleep;
-    long floorz,ceilingz,lastvx,lastvy,bposx,bposy,bposz;
-    long temp_data[6];
+    int floorz,ceilingz,lastvx,lastvy,bposx,bposy,bposz;
+    int temp_data[6];
 };
 
 extern struct weaponhit hittype[MAXSPRITES];
 
 extern input loc;
 extern input recsync[RECSYNCBUFSIZ];
-extern long avgfvel, avgsvel, avgavel, avghorz, avgbits;
+extern int avgfvel, avgsvel, avgavel, avghorz, avgbits;
 
-extern long numplayers, myconnectindex;	// JBF 20040716: was short until now
-extern long connecthead, connectpoint2[MAXPLAYERS];   //Player linked list variables (indeces, not connection numbers)
+extern int numplayers, myconnectindex;	// JBF 20040716: was short until now
+extern int connecthead, connectpoint2[MAXPLAYERS];   //Player linked list variables (indeces, not connection numbers)
 extern short screenpeek;
 
 extern int current_menu;
-extern long tempwallptr,animatecnt;
-extern long lockclock,frameplace;
+extern int tempwallptr,animatecnt;
+extern int lockclock;
 extern char display_mirror,loadfromgrouponly,rtsplaying;
 
-extern long movefifoend[MAXPLAYERS], groupfile;
-extern long ototalclock;
+extern int movefifoend[MAXPLAYERS], groupfile;
+extern int ototalclock;
 
-extern long *animateptr[MAXANIMATES], animategoal[MAXANIMATES];
-extern long animatevel[MAXANIMATES];
-// extern long oanimateval[MAXANIMATES];
+extern int *animateptr[MAXANIMATES], animategoal[MAXANIMATES];
+extern int animatevel[MAXANIMATES];
+// extern int oanimateval[MAXANIMATES];
 extern short neartagsector, neartagwall, neartagsprite;
-extern long neartaghitdist;
+extern int neartaghitdist;
 extern short animatesect[MAXANIMATES];
-extern long movefifoplc, vel,svel,angvel,horiz;
+extern int movefifoplc, vel,svel,angvel,horiz;
 
 extern short mirrorwall[64], mirrorsector[64], mirrorcnt;
 
 #define NUMKEYS 19
-
-extern long frameplace, chainplace, chainnumpages;
-extern volatile long checksume;
 
 #include "funct.h"
 
 extern char screencapt;
 extern short soundps[NUM_SOUNDS],soundpe[NUM_SOUNDS],soundvo[NUM_SOUNDS];
 extern char soundpr[NUM_SOUNDS],soundm[NUM_SOUNDS];
-extern long soundsiz[NUM_SOUNDS];
+extern int soundsiz[NUM_SOUNDS];
 extern char level_names[44][33];
-extern long partime[44],designertime[44];
+extern int partime[44],designertime[44];
 extern char volume_names[4][33];
 extern char skill_names[5][33];
 extern char level_file_names[44][128];
@@ -500,23 +499,24 @@ extern short last_threehundred,lastsavedpos;
 extern char restorepalette;
 
 extern short buttonstat;
-extern long cachecount;
-extern char boardfilename[BMAX_PATH],waterpal[768],slimepal[768],titlepal[768],drealms[768],endingpal[768];
+extern int cachecount;
+extern char boardfilename[BMAX_PATH];
+extern unsigned char waterpal[768],slimepal[768],titlepal[768],drealms[768],endingpal[768];
 extern char betaname[80];
 extern char cachedebug,earthquaketime;
 extern char networkmode;
-extern char lumplockbyte[11];
+extern unsigned char lumplockbyte[11];
 
 extern char defaultduke3dgrp[BMAX_PATH];
 
     //DUKE3D.H - replace the end "my's" with this
-extern long myx, omyx, myxvel, myy, omyy, myyvel, myz, omyz, myzvel;
+extern int myx, omyx, myxvel, myy, omyy, myyvel, myz, omyz, myzvel;
 extern short myhoriz, omyhoriz, myhorizoff, omyhorizoff, globalskillsound;
 extern short myang, omyang, mycursectnum, myjumpingcounter;
 extern char myjumpingtoggle, myonground, myhardlanding,myreturntocenter;
-extern long fakemovefifoplc;
-extern long myxbak[MOVEFIFOSIZ], myybak[MOVEFIFOSIZ], myzbak[MOVEFIFOSIZ];
-extern long myhorizbak[MOVEFIFOSIZ];
+extern int fakemovefifoplc;
+extern int myxbak[MOVEFIFOSIZ], myybak[MOVEFIFOSIZ], myzbak[MOVEFIFOSIZ];
+extern int myhorizbak[MOVEFIFOSIZ];
 extern short myangbak[MOVEFIFOSIZ];
 
 extern short weaponsandammosprites[15];
@@ -536,29 +536,29 @@ typedef struct
 
 extern STATUSBARTYPE sbar;
 extern short frags[MAXPLAYERS][MAXPLAYERS];
-extern long cameradist, cameraclock, dukefriction,show_shareware;
+extern int cameradist, cameraclock, dukefriction,show_shareware;
 extern char networkmode, movesperpacket;
 extern char gamequit;
 
 extern char pus,pub,camerashitable,freezerhurtowner,lasermode;
 extern char syncstat, syncval[MAXPLAYERS][MOVEFIFOSIZ];
 extern signed char multiwho, multipos, multiwhat, multiflag;
-extern long syncvalhead[MAXPLAYERS], syncvaltail, syncvaltottail;
-extern long numfreezebounces,rpgblastradius,pipebombblastradius,tripbombblastradius,shrinkerblastradius,morterblastradius,bouncemineblastradius,seenineblastradius;
+extern int syncvalhead[MAXPLAYERS], syncvaltail, syncvaltottail;
+extern int numfreezebounces,rpgblastradius,pipebombblastradius,tripbombblastradius,shrinkerblastradius,morterblastradius,bouncemineblastradius,seenineblastradius;
 extern char stereo,playerswhenstarted,everyothertime;
-extern long myminlag[MAXPLAYERS], mymaxlag, otherminlag, bufferjitter;
+extern int myminlag[MAXPLAYERS], mymaxlag, otherminlag, bufferjitter;
 
-extern long numinterpolations, startofdynamicinterpolations;
-extern long oldipos[MAXINTERPOLATIONS];
-extern long bakipos[MAXINTERPOLATIONS];
-extern long *curipos[MAXINTERPOLATIONS];
+extern int numinterpolations, startofdynamicinterpolations;
+extern int oldipos[MAXINTERPOLATIONS];
+extern int bakipos[MAXINTERPOLATIONS];
+extern int *curipos[MAXINTERPOLATIONS];
 
 extern short numclouds,clouds[128],cloudx[128],cloudy[128];
-extern long cloudtotalclock,totalmemory;
+extern int cloudtotalclock,totalmemory;
 
-extern long stereomode, stereowidth, stereopixelwidth;
+extern int stereomode, stereowidth, stereopixelwidth;
 
-extern long myaimmode, myaimstat, omyaimstat;
+extern int myaimmode, myaimstat, omyaimstat;
 
 #define IFISGLMODE if (getrendermode() >= 3)
 #define IFISSOFTMODE if (getrendermode() < 3)

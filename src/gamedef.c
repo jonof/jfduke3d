@@ -28,7 +28,7 @@ Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
 #include "duke3d.h"
 #include <assert.h>
 
-int conversion = 13;	// by default we think we're 1.3d until compilation informs us otherwise
+int conversion = 13;    // by default we think we're 1.3d until compilation informs us otherwise
 
 extern short otherp;
 
@@ -37,48 +37,46 @@ static char checking_ifelse,parsing_state;
 static short num_squigilly_brackets;
 
 static short g_i,g_p;
-static long g_x;
-static long *g_t;
+static int g_x;
+static int *g_t;
 static spritetype *g_sp;
 
-static char compilefile[255] = "(none)";	// file we're currently compiling
+static char compilefile[255] = "(none)";    // file we're currently compiling
 
 enum labeltypes {
-	LABEL_ANY    = -1,
-	LABEL_DEFINE = 1,
-	LABEL_STATE  = 2,
-	LABEL_ACTOR  = 4,
-	LABEL_ACTION = 8,
-	LABEL_AI     = 16,
-	LABEL_MOVE   = 32,
+    LABEL_ANY    = -1,
+    LABEL_DEFINE = 1,
+    LABEL_STATE  = 2,
+    LABEL_ACTOR  = 4,
+    LABEL_ACTION = 8,
+    LABEL_AI     = 16,
+    LABEL_MOVE   = 32,
 };
 
-static char *labeltypenames[] = {
-	"define",
-	"state",
-	"actor",
-	"action",
-	"ai",
-	"move"
+static const char *labeltypenames[] = {
+    "define",
+    "state",
+    "actor",
+    "action",
+    "ai",
+    "move"
 };
 
-static char *translatelabeltype(long type)
+static void translatelabeltype(int type, char *buf)
 {
-	int i;
-	char x[64];
-	
-	x[0] = 0;
-	for (i=0;i<6;i++) {
-		if (!(type & (1<<i))) continue;
-		if (x[0]) Bstrcat(x, " or ");
-		Bstrcat(x, labeltypenames[i]);
-	}
-	return strdup(x);
+    int i;
+    
+    buf[0] = 0;
+    for (i=0;i<6;i++) {
+        if (!(type & (1<<i))) continue;
+        if (buf[0]) Bstrcat(buf, " or ");
+        Bstrcat(buf, labeltypenames[i]);
+    }
 }
 
 #define NUMKEYWORDS     (int)(sizeof(keyw)/sizeof(keyw[0]))
 
-static char *keyw[/*NUMKEYWORDS*/] =
+static const char *keyw[/*NUMKEYWORDS*/] =
 {
     "definelevelname",  // 0
     "actor",            // 1    [#]
@@ -234,7 +232,7 @@ char isaltok(char c)
 
 void getglobalz(short i)
 {
-    long hz,lz,zr;
+    int hz,lz,zr;
 
     spritetype *s = &sprite[i];
 
@@ -283,7 +281,7 @@ void getglobalz(short i)
 void makeitfall(short i)
 {
     spritetype *s = &sprite[i];
-    long hz,lz,c;
+    int hz,lz,c;
 
     if( floorspace(s->sectnum) )
         c = 0;
@@ -321,7 +319,7 @@ void makeitfall(short i)
 
 void getlabel(void)
 {
-    long i;
+    int i;
 
     while( isalnum(*textptr) == 0 )
     {
@@ -342,9 +340,9 @@ void getlabel(void)
     label[labelcnt * MAXLABELLEN + i] = 0;
 }
 
-long keyword(void)
+int keyword(void)
 {
-    long i;
+    int i;
     char *temptextptr;
 
     temptextptr = textptr;
@@ -371,9 +369,9 @@ long keyword(void)
     return -1;
 }
 
-long transword(void) //Returns its code #
+int transword(void) //Returns its code #
 {
-    long i, l;
+    int i, l;
 
     while( isaltok(*textptr) == 0 )
     {
@@ -405,31 +403,31 @@ long transword(void) //Returns its code #
     textptr += l;
 
     if( tempbuf[0] == '{' && tempbuf[1] != 0)
-        initprintf("  * ERROR!(L%ld %s) Expecting a SPACE or CR between '{' and '%s'.\n",line_number,compilefile,tempbuf+1);
+        initprintf("  * ERROR!(L%d %s) Expecting a SPACE or CR between '{' and '%s'.\n",line_number,compilefile,tempbuf+1);
     else if( tempbuf[0] == '}' && tempbuf[1] != 0)
-        initprintf("  * ERROR!(L%ld %s) Expecting a SPACE or CR between '}' and '%s'.\n",line_number,compilefile,tempbuf+1);
+        initprintf("  * ERROR!(L%d %s) Expecting a SPACE or CR between '}' and '%s'.\n",line_number,compilefile,tempbuf+1);
     else if( tempbuf[0] == '/' && tempbuf[1] == '/' && tempbuf[2] != 0 )
-        initprintf("  * ERROR!(L%ld %s) Expecting a SPACE between '//' and '%s'.\n",line_number,compilefile,tempbuf+2);
+        initprintf("  * ERROR!(L%d %s) Expecting a SPACE between '//' and '%s'.\n",line_number,compilefile,tempbuf+2);
     else if( tempbuf[0] == '/' && tempbuf[1] == '*' && tempbuf[2] != 0 )
-        initprintf("  * ERROR!(L%ld %s) Expecting a SPACE between '/*' and '%s'.\n",line_number,compilefile,tempbuf+2);
+        initprintf("  * ERROR!(L%d %s) Expecting a SPACE between '/*' and '%s'.\n",line_number,compilefile,tempbuf+2);
     else if( tempbuf[0] == '*' && tempbuf[1] == '/' && tempbuf[2] != 0 )
-        initprintf("  * ERROR!(L%ld %s) Expecting a SPACE between '*/' and '%s'.\n",line_number,compilefile,tempbuf+2);
-    else initprintf("  * ERROR!(L%ld %s) Expecting key word, but found '%s'.\n",line_number,compilefile,tempbuf);
+        initprintf("  * ERROR!(L%d %s) Expecting a SPACE between '*/' and '%s'.\n",line_number,compilefile,tempbuf+2);
+    else initprintf("  * ERROR!(L%d %s) Expecting key word, but found '%s'.\n",line_number,compilefile,tempbuf);
 
     error++;
     return -1;
 }
 
-long transnum(long type)
+int transnum(int type)
 {
-    long i, l;
+    int i, l;
 
     while( isaltok(*textptr) == 0 )
     {
         if(*textptr == 0x0a) line_number++;
         textptr++;
         if( *textptr == 0 )
-            return -1;	// eof
+            return -1;  // eof
     }
 
 
@@ -445,7 +443,7 @@ long transnum(long type)
         if( strcmp( tempbuf,keyw[i]) == 0 )
         {
             error++;
-            initprintf("  * ERROR!(L%ld %s) Symbol '%s' is a key word.\n",line_number,compilefile,tempbuf);
+            initprintf("  * ERROR!(L%d %s) Symbol '%s' is a key word.\n",line_number,compilefile,tempbuf);
             textptr+=l;
         }
 
@@ -454,7 +452,7 @@ long transnum(long type)
     {
         if( !Bstrcmp(tempbuf,label+(i * MAXLABELLEN)) )
         {
-            char *el,*gl;
+            char el[64], gl[64];
 
             if (labeltype[i] & type) {
                 *(scriptptr++) = labelcode[i];
@@ -463,21 +461,19 @@ long transnum(long type)
             }
             *(scriptptr++) = 0;
             textptr += l;
-            el = translatelabeltype(type);
-            gl = translatelabeltype(labeltype[i]);
-            initprintf("  * WARNING!(L%ld %s) Expected a '%s' label but found a '%s' label instead.\n",line_number,compilefile,el,gl);
-            free(el);
-            free(gl);
-            return -1;	// valid label name, but wrong type
+            translatelabeltype(type, el);
+            translatelabeltype(labeltype[i], gl);
+            initprintf("  * WARNING!(L%d %s) Expected a '%s' label but found a '%s' label instead.\n",line_number,compilefile,el,gl);
+            return -1;  // valid label name, but wrong type
         }
     }
 
     if( isdigit(*textptr) == 0 && *textptr != '-')
     {
-        initprintf("  * ERROR!(L%ld %s) Parameter '%s' is undefined.\n",line_number,compilefile,tempbuf);
+        initprintf("  * ERROR!(L%d %s) Parameter '%s' is undefined.\n",line_number,compilefile,tempbuf);
         error++;
         textptr+=l;
-        return -1;	// error!
+        return -1;  // error!
     }
 
     *scriptptr = atol(textptr);
@@ -485,7 +481,7 @@ long transnum(long type)
 
     textptr += l;
 
-    return 0;	// literal value
+    return 0;   // literal value
 }
 
 
@@ -495,9 +491,9 @@ long transnum(long type)
  * plus the offset from the start of the script buffer, just
  * to make it perhaps a little more obvious what is happening.
  */
-long encodescriptptr(long *scptr)
+int encodescriptptr(int *scptr)
 {
-    long offs = (long)(scptr - script);
+    int offs = (int)(scptr - script);
     assert(offs >= 0);
     assert(offs < MAXSCRIPTSIZE);
     return INT_MIN+offs;
@@ -506,7 +502,7 @@ long encodescriptptr(long *scptr)
 /**
  * Decode an encoded representation of a scriptptr
  */
-long *decodescriptptr(long scptr)
+int *decodescriptptr(int scptr)
 {
     assert(scptr <= 0);
     return script + (scptr - INT_MIN);
@@ -514,13 +510,13 @@ long *decodescriptptr(long scptr)
 
 char parsecommand(void)
 {
-    long i, j, k, *tempscrptr, tw;
+    int i, j, k, *tempscrptr, tw;
     char done;
 
     if ((unsigned)(scriptptr-script) > MAXSCRIPTSIZE) {
-	Bsprintf(tempbuf,"FATAL ERROR: Compiled size of CON code exceeds maximum size!\n"
-			"Please notify JonoF so the maximum may be increased in a future release.");
-	gameexit(tempbuf);
+        Bsprintf(tempbuf,"FATAL ERROR: Compiled size of CON code exceeds maximum size!\n"
+            "Please notify JonoF so the maximum may be increased in a future release.");
+        gameexit(tempbuf);
     }
 
     if( error > 12 || ( *textptr == '\0' ) || ( *(textptr+1) == '\0' ) ) return 1;
@@ -541,7 +537,7 @@ char parsecommand(void)
                 if(*textptr == 0x0a) line_number++;
                 if( *textptr == 0 )
                 {
-                    initprintf("  * ERROR!(L%ld %s) Found '/*' with no '*/'.\n",j,compilefile);
+                    initprintf("  * ERROR!(L%d %s) Found '/*' with no '*/'.\n",j,compilefile);
                     error++;
                     return 0;
                 }
@@ -569,7 +565,7 @@ char parsecommand(void)
                 if( strcmp( label+(labelcnt * MAXLABELLEN),keyw[i]) == 0 )
                 {
                     error++;
-                    initprintf("  * ERROR!(L%ld %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
+                    initprintf("  * ERROR!(L%d %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                     return 0;
                 }
 
@@ -581,13 +577,12 @@ char parsecommand(void)
                         *scriptptr = labelcode[j];
                         break;
                     } else {
-                        char *gl;
+                        char gl[64];
 
-                        gl = translatelabeltype(labeltype[j]);
-                        initprintf("  * WARNING!(L%ld %s) Expected a state label, found a %s instead. Neutering.\n",
+                        translatelabeltype(labeltype[j], gl);
+                        initprintf("  * WARNING!(L%d %s) Expected a state label, found a %s instead. Neutering.\n",
                             line_number,compilefile,gl);
-                        free(gl);
-                        *(scriptptr-1) = 106;	// nullop
+                        *(scriptptr-1) = 106;   // nullop
                         return 0;
                     }
                 }
@@ -595,7 +590,7 @@ char parsecommand(void)
 
             if(j==labelcnt)
             {
-                initprintf("  * ERROR!(L%ld %s) State '%s' not found.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
+                initprintf("  * ERROR!(L%d %s) State '%s' not found.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                 error++;
             }
             scriptptr++;
@@ -612,19 +607,19 @@ char parsecommand(void)
         case 18:    //ends
             if( parsing_state == 0 )
             {
-                initprintf("  * ERROR!(L%ld %s) Found 'ends' with no 'state'.\n",line_number,compilefile);
+                initprintf("  * ERROR!(L%d %s) Found 'ends' with no 'state'.\n",line_number,compilefile);
                 error++;
             }
 //            else
             {
                 if( num_squigilly_brackets > 0 )
                 {
-                    initprintf("  * ERROR!(L%ld %s) Found more '{' than '}' before 'ends'.\n",line_number,compilefile);
+                    initprintf("  * ERROR!(L%d %s) Found more '{' than '}' before 'ends'.\n",line_number,compilefile);
                     error++;
                 }
                 if( num_squigilly_brackets < 0 )
                 {
-                    initprintf("  * ERROR!(L%ld %s) Found more '}' than '{' before 'ends'.\n",line_number,compilefile);
+                    initprintf("  * ERROR!(L%d %s) Found more '}' than '{' before 'ends'.\n",line_number,compilefile);
                     error++;
                 }
                 parsing_state = 0;
@@ -638,7 +633,7 @@ char parsecommand(void)
                 if( strcmp( label+(labelcnt * MAXLABELLEN),keyw[i]) == 0 )
                 {
                     error++;
-                    initprintf("  * ERROR!(L%ld %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
+                    initprintf("  * ERROR!(L%d %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                     return 0;
                 }
 
@@ -647,7 +642,7 @@ char parsecommand(void)
                 if( strcmp(label+(labelcnt * MAXLABELLEN),label+(i * MAXLABELLEN)) == 0 )
                 {
                     warning++;
-                    initprintf("  * WARNING.(L%ld %s) Duplicate definition '%s' ignored.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
+                    initprintf("  * WARNING.(L%d %s) Duplicate definition '%s' ignored.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                     break;
                 }
             }
@@ -702,7 +697,7 @@ char parsecommand(void)
                     if( strcmp( label+(labelcnt * MAXLABELLEN),keyw[i]) == 0 )
                     {
                         error++;
-                        initprintf("  * ERROR!(L%ld %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
+                        initprintf("  * ERROR!(L%d %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                         return 0;
                     }
 
@@ -710,7 +705,7 @@ char parsecommand(void)
                     if( strcmp(label+(labelcnt * MAXLABELLEN),label+(i * MAXLABELLEN)) == 0 )
                     {
                         warning++;
-                        initprintf("  * WARNING.(L%ld %s) Duplicate move '%s' ignored.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
+                        initprintf("  * WARNING.(L%d %s) Duplicate move '%s' ignored.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                         break;
                     }
                 if(i == labelcnt) {
@@ -815,22 +810,22 @@ char parsecommand(void)
                 if(fp < 0)
                 {
                     error++;
-                    initprintf("  * ERROR!(L%ld %s) Could not find '%s'.\n",line_number,compilefile,tempbuf);
+                    initprintf("  * ERROR!(L%d %s) Could not find '%s'.\n",line_number,compilefile,tempbuf);
                     return 0;
                 }
 
                 j = kfilelength(fp);
 
-                mptr = (char *)Bmalloc(j+1);
+                mptr = Bmalloc(j+1);
                 if (!mptr) {
                     kclose(fp);
                     error++;
-                    initprintf("  * ERROR!(L%ld %s) Could not allocate %ld bytes to include '%s'.\n",
+                    initprintf("  * ERROR!(L%d %s) Could not allocate %d bytes to include '%s'.\n",
                         line_number,compilefile,j,tempbuf);
                     return 0;
                 }
 
-                initprintf("Including: %s (%ld bytes)\n",tempbuf, j);
+                initprintf("Including: %s (%d bytes)\n",tempbuf, j);
                 kread(fp, mptr, j);
                 kclose(fp);
                 mptr[j] = 0;
@@ -871,7 +866,7 @@ char parsecommand(void)
                     if( strcmp( label+(labelcnt * MAXLABELLEN),keyw[i]) == 0 )
                     {
                         error++;
-                        initprintf("  * ERROR!(L%ld %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
+                        initprintf("  * ERROR!(L%d %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                         return 0;
                     }
 
@@ -879,7 +874,7 @@ char parsecommand(void)
                     if( strcmp(label+(labelcnt * MAXLABELLEN),label+(i * MAXLABELLEN)) == 0 )
                     {
                         warning++;
-                        initprintf("  * WARNING.(L%ld %s) Duplicate ai '%s' ignored.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
+                        initprintf("  * WARNING.(L%d %s) Duplicate ai '%s' ignored.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                         break;
                     }
 
@@ -930,7 +925,7 @@ char parsecommand(void)
                     if( strcmp( label+(labelcnt * MAXLABELLEN),keyw[i]) == 0 )
                     {
                         error++;
-                        initprintf("  * ERROR!(L%ld %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
+                        initprintf("  * ERROR!(L%d %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                         return 0;
                     }
 
@@ -938,7 +933,7 @@ char parsecommand(void)
                     if( strcmp(label+(labelcnt * MAXLABELLEN),label+(i * MAXLABELLEN)) == 0 )
                     {
                         warning++;
-                        initprintf("  * WARNING.(L%ld %s) Duplicate action '%s' ignored.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
+                        initprintf("  * WARNING.(L%d %s) Duplicate action '%s' ignored.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                         break;
                     }
 
@@ -964,13 +959,13 @@ char parsecommand(void)
         case 1:     //actor
             if( parsing_state )
             {
-                initprintf("  * ERROR!(L%ld %s) Found 'actor' within 'state'.\n",line_number,compilefile);
+                initprintf("  * ERROR!(L%d %s) Found 'actor' within 'state'.\n",line_number,compilefile);
                 error++;
             }
 
             if( parsing_actor )
             {
-                initprintf("  * ERROR!(L%ld %s) Found 'actor' within 'actor'.\n",line_number,compilefile);
+                initprintf("  * ERROR!(L%d %s) Found 'actor' within 'actor'.\n",line_number,compilefile);
                 error++;
             }
 
@@ -1023,13 +1018,13 @@ char parsecommand(void)
 
             if( parsing_state )
             {
-                initprintf("  * ERROR!(L%ld %s) Found 'useritem' within 'state'.\n",line_number,compilefile);
+                initprintf("  * ERROR!(L%d %s) Found 'useritem' within 'state'.\n",line_number,compilefile);
                 error++;
             }
 
             if( parsing_actor )
             {
-                initprintf("  * ERROR!(L%ld %s) Found 'useritem' within 'actor'.\n",line_number,compilefile);
+                initprintf("  * ERROR!(L%d %s) Found 'useritem' within 'actor'.\n",line_number,compilefile);
                 error++;
             }
 
@@ -1135,7 +1130,7 @@ char parsecommand(void)
             {
                 scriptptr--;
                 error++;
-                initprintf("  * ERROR!(L%ld %s) Found 'else' with no 'if'.\n",line_number,compilefile);
+                initprintf("  * ERROR!(L%d %s) Found 'else' with no 'if'.\n",line_number,compilefile);
             }
 
             return 0;
@@ -1145,11 +1140,11 @@ char parsecommand(void)
         case 3:     //ifrnd
         case 8:     //ifpdistl
         case 9:     //ifpdistg
-        case 21:	//ifai
+        case 21:    //ifai
         case 33:    //ifwasweapon
-        case 34:	//ifaction
+        case 34:    //ifaction
         case 35:    //ifactioncount
-        case 41:	//ifmove
+        case 41:    //ifmove
         case 46:    //ifcount
         case 53:    //ifactor
         case 56:    //ifstrength
@@ -1228,14 +1223,14 @@ char parsecommand(void)
             num_squigilly_brackets--;
             if( num_squigilly_brackets < 0 )
             {
-                initprintf("  * ERROR!(L%ld %s) Found more '}' than '{'.\n",line_number,compilefile);
+                initprintf("  * ERROR!(L%d %s) Found more '}' than '{'.\n",line_number,compilefile);
                 error++;
             }
             return 1;
         case 76:    //betaname
             scriptptr--;
             j = 0;
-            while( *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )		// JBF 20040127: end of file checked
+            while( *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )      // JBF 20040127: end of file checked
             {
                 betaname[j] = *textptr;
                 j++; textptr++;
@@ -1244,7 +1239,7 @@ char parsecommand(void)
             return 0;
         case 20:    //single-line comment
             scriptptr--; //Negate the rem
-            while( *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )		// JBF 20040127: end of file checked
+            while( *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )      // JBF 20040127: end of file checked
                 textptr++;
 
             // line_number++;
@@ -1259,23 +1254,23 @@ char parsecommand(void)
 
             if (j < 0 || j >= 4)
             {
-                initprintf("  * ERROR!(L%ld %s) Volume number exceeds maximum volume count.\n",line_number,compilefile);
+                initprintf("  * ERROR!(L%d %s) Volume number exceeds maximum volume count.\n",line_number,compilefile);
                 error++;
                 while( *textptr != 0x0a && *textptr != 0 ) textptr++;
                 break;
             }
-	    
+        
             i = 0;
 
-            while( *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )		// JBF 20040127: end of file checked
+            while( *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )      // JBF 20040127: end of file checked
             {
                 volume_names[j][i] = toupper(*textptr);
                 textptr++,i++;
                 if(i >= 32)
                 {
-                    initprintf("  * ERROR!(L%ld %s) Volume name exceeds character size limit of 32.\n",line_number,compilefile);
+                    initprintf("  * ERROR!(L%d %s) Volume name exceeds character size limit of 32.\n",line_number,compilefile);
                     error++;
-                    while( *textptr != 0x0a && *textptr != 0 ) textptr++;		// JBF 20040127: end of file checked
+                    while( *textptr != 0x0a && *textptr != 0 ) textptr++;       // JBF 20040127: end of file checked
                     break;
                 }
             }
@@ -1290,23 +1285,23 @@ char parsecommand(void)
 
             if (j < 0 || j >= 5)
             {
-                initprintf("  * ERROR!(L%ld %s) Skill number exceeds maximum skill count.\n",line_number,compilefile);
+                initprintf("  * ERROR!(L%d %s) Skill number exceeds maximum skill count.\n",line_number,compilefile);
                 error++;
                 while( *textptr != 0x0a && *textptr != 0 ) textptr++;
                 break;
             }
-	    
+        
             i = 0;
 
-            while( *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )		// JBF 20040127: end of file checked
+            while( *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )      // JBF 20040127: end of file checked
             {
                 skill_names[j][i] = toupper(*textptr);
                 textptr++,i++;
                 if(i >= 32)
                 {
-                    initprintf("  * ERROR!(L%ld %s) Skill name exceeds character size limit of 32.\n",line_number,compilefile);
+                    initprintf("  * ERROR!(L%d %s) Skill name exceeds character size limit of 32.\n",line_number,compilefile);
                     error++;
-                    while( *textptr != 0x0a && *textptr != 0 ) textptr++;		// JBF 20040127: end of file checked
+                    while( *textptr != 0x0a && *textptr != 0 ) textptr++;       // JBF 20040127: end of file checked
                     break;
                 }
             }
@@ -1325,30 +1320,30 @@ char parsecommand(void)
 
             if (j < 0 || j >= 4)
             {
-                initprintf("  * WARNING!(L%ld %s) Volume number exceeds maximum volume count.\n",line_number,compilefile);
+                initprintf("  * WARNING!(L%d %s) Volume number exceeds maximum volume count.\n",line_number,compilefile);
                 warning++;
                 while( *textptr != 0x0a && *textptr != 0 ) textptr++;
                 break;
             }
             if (k < 0 || k >= 11)
             {
-                initprintf("  * WARNING!(L%ld %s) Level number exceeds maximum levels-per-episode count.\n",
+                initprintf("  * WARNING!(L%d %s) Level number exceeds maximum levels-per-episode count.\n",
                 line_number,compilefile);
                 warning++;
                 while( *textptr != 0x0a && *textptr != 0 ) textptr++;
                 break;
             }
-	    
+        
             i = 0;
-            while( *textptr != ' ' && *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )	// JBF 20040127: end of file checked
+            while( *textptr != ' ' && *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )   // JBF 20040127: end of file checked
             {
                 level_file_names[j*11+k][i] = *textptr;
                 textptr++,i++;
                 if(i > 127)
                 {
-                    initprintf("  * ERROR!(L%ld %s) Level file name exceeds character size limit of 128.\n",line_number,compilefile);
+                    initprintf("  * ERROR!(L%d %s) Level file name exceeds character size limit of 128.\n",line_number,compilefile);
                     error++;
-                    while( *textptr != ' ' && *textptr != 0) textptr++;		// JBF 20040127: end of file checked
+                    while( *textptr != ' ' && *textptr != 0) textptr++;     // JBF 20040127: end of file checked
                     break;
                 }
             }
@@ -1372,15 +1367,15 @@ char parsecommand(void)
 
             i = 0;
 
-            while( *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )		// JBF 20040127: end of file checked
+            while( *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )      // JBF 20040127: end of file checked
             {
                 level_names[j*11+k][i] = toupper(*textptr);
                 textptr++,i++;
                 if(i >= 32)
                 {
-                    initprintf("  * ERROR!(L%ld %s) Level name exceeds character size limit of 32.\n",line_number,compilefile);
+                    initprintf("  * ERROR!(L%d %s) Level name exceeds character size limit of 32.\n",line_number,compilefile);
                     error++;
-                    while( *textptr != 0x0a && *textptr != 0 ) textptr++;		// JBF 20040127: end of file checked
+                    while( *textptr != 0x0a && *textptr != 0 ) textptr++;       // JBF 20040127: end of file checked
                     break;
                 }
             }
@@ -1393,7 +1388,7 @@ char parsecommand(void)
             k = *(scriptptr-1);
             if(k >= NUMOFFIRSTTIMEACTIVE)
             {
-                initprintf("  * ERROR!(L%ld %s) Quote amount exceeds limit of %ld characters.\n",line_number,compilefile,NUMOFFIRSTTIMEACTIVE);
+                initprintf("  * ERROR!(L%d %s) Quote amount exceeds limit of %d characters.\n",line_number,compilefile,NUMOFFIRSTTIMEACTIVE);
                 error++;
             }
             scriptptr--;
@@ -1401,15 +1396,15 @@ char parsecommand(void)
             while( *textptr == ' ' )
                 textptr++;
 
-            while( *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )		// JBF 20040127: end of file checked
+            while( *textptr != 0x0a && *textptr != 0x0d && *textptr != 0 )      // JBF 20040127: end of file checked
             {
                 fta_quotes[k][i] = *textptr;
                 textptr++,i++;
                 if(i >= 64)
                 {
-                    initprintf("  * ERROR!(L%ld %s) Quote exceeds character size limit of 64.\n",line_number,compilefile);
+                    initprintf("  * ERROR!(L%d %s) Quote exceeds character size limit of 64.\n",line_number,compilefile);
                     error++;
-                    while( *textptr != 0x0a && *textptr != 0 ) textptr++;		// JBF 20040127: end of file checked
+                    while( *textptr != 0x0a && *textptr != 0 ) textptr++;       // JBF 20040127: end of file checked
                     break;
                 }
             }
@@ -1421,7 +1416,7 @@ char parsecommand(void)
             k = *(scriptptr-1);
             if(k >= NUM_SOUNDS)
             {
-                initprintf("  * ERROR!(L%ld %s) Exceeded sound limit of %ld.\n",line_number,compilefile,NUM_SOUNDS);
+                initprintf("  * ERROR!(L%d %s) Exceeded sound limit of %d.\n",line_number,compilefile,NUM_SOUNDS);
                 error++;
             }
             scriptptr--;
@@ -1429,16 +1424,16 @@ char parsecommand(void)
             while( *textptr == ' ')
                 textptr++;
 
-            while( *textptr != ' ' && *textptr != 0 )		// JBF 20040127: end of file checked
+            while( *textptr != ' ' && *textptr != 0 )       // JBF 20040127: end of file checked
             {
                 sounds[k][i] = *textptr;
                 textptr++,i++;
                 if(i >= 13)
                 {
                     initprintf("%s\n",sounds[k]);
-                    initprintf("  * ERROR!(L%ld %s) Sound filename exceeded limit of 13 characters.\n",line_number,compilefile);
+                    initprintf("  * ERROR!(L%d %s) Sound filename exceeded limit of 13 characters.\n",line_number,compilefile);
                     error++;
-                    while( *textptr != ' ' && *textptr != 0 ) textptr++;		// JBF 20040127: end of file checked
+                    while( *textptr != ' ' && *textptr != 0 ) textptr++;        // JBF 20040127: end of file checked
                     break;
                 }
             }
@@ -1464,14 +1459,14 @@ char parsecommand(void)
         case 4:     //enda
             if( parsing_actor == 0 )
             {
-                initprintf("  * ERROR!(L%ld %s) Found 'enda' without defining 'actor'.\n",line_number,compilefile);
+                initprintf("  * ERROR!(L%d %s) Found 'enda' without defining 'actor'.\n",line_number,compilefile);
                 error++;
             }
 //            else
             {
                 if( num_squigilly_brackets > 0 )
                 {
-                    initprintf("  * ERROR!(L%ld %s) Found more '{' than '}' before 'enda'.\n",line_number,compilefile);
+                    initprintf("  * ERROR!(L%d %s) Found more '{' than '}' before 'enda'.\n",line_number,compilefile);
                     error++;
                 }
                 parsing_actor = 0;
@@ -1497,7 +1492,7 @@ char parsecommand(void)
             return 0;
         case 60:    //gamestartup
             {
-                long params[30];
+                int params[30];
 
                 scriptptr--;
                 for(j = 0; j < 30; j++)
@@ -1519,32 +1514,32 @@ char parsecommand(void)
                 
                 /*
                 v1.3d               v1.5
-                DEFAULTVISIBILITY	DEFAULTVISIBILITY
-                GENERICIMPACTDAMAGE	GENERICIMPACTDAMAGE
-                MAXPLAYERHEALTH		MAXPLAYERHEALTH
-                STARTARMORHEALTH	STARTARMORHEALTH
-                RESPAWNACTORTIME	RESPAWNACTORTIME
-                RESPAWNITEMTIME		RESPAWNITEMTIME
-                RUNNINGSPEED		RUNNINGSPEED
-                RPGBLASTRADIUS		GRAVITATIONALCONSTANT
-                PIPEBOMBRADIUS		RPGBLASTRADIUS
-                SHRINKERBLASTRADIUS	PIPEBOMBRADIUS
-                TRIPBOMBBLASTRADIUS	SHRINKERBLASTRADIUS
-                MORTERBLASTRADIUS	TRIPBOMBBLASTRADIUS
-                BOUNCEMINEBLASTRADIUS	MORTERBLASTRADIUS
-                SEENINEBLASTRADIUS	BOUNCEMINEBLASTRADIUS
-                MAXPISTOLAMMO		SEENINEBLASTRADIUS
-                MAXSHOTGUNAMMO		MAXPISTOLAMMO
-                MAXCHAINGUNAMMO		MAXSHOTGUNAMMO
+                DEFAULTVISIBILITY   DEFAULTVISIBILITY
+                GENERICIMPACTDAMAGE GENERICIMPACTDAMAGE
+                MAXPLAYERHEALTH     MAXPLAYERHEALTH
+                STARTARMORHEALTH    STARTARMORHEALTH
+                RESPAWNACTORTIME    RESPAWNACTORTIME
+                RESPAWNITEMTIME     RESPAWNITEMTIME
+                RUNNINGSPEED        RUNNINGSPEED
+                RPGBLASTRADIUS      GRAVITATIONALCONSTANT
+                PIPEBOMBRADIUS      RPGBLASTRADIUS
+                SHRINKERBLASTRADIUS PIPEBOMBRADIUS
+                TRIPBOMBBLASTRADIUS SHRINKERBLASTRADIUS
+                MORTERBLASTRADIUS   TRIPBOMBBLASTRADIUS
+                BOUNCEMINEBLASTRADIUS   MORTERBLASTRADIUS
+                SEENINEBLASTRADIUS  BOUNCEMINEBLASTRADIUS
+                MAXPISTOLAMMO       SEENINEBLASTRADIUS
+                MAXSHOTGUNAMMO      MAXPISTOLAMMO
+                MAXCHAINGUNAMMO     MAXSHOTGUNAMMO
                 MAXRPGAMMO          MAXCHAINGUNAMMO
-                MAXHANDBOMBAMMO		MAXRPGAMMO
-                MAXSHRINKERAMMO		MAXHANDBOMBAMMO
-                MAXDEVISTATORAMMO	MAXSHRINKERAMMO
-                MAXTRIPBOMBAMMO		MAXDEVISTATORAMMO
-                MAXFREEZEAMMO		MAXTRIPBOMBAMMO
-                CAMERASDESTRUCTABLE	MAXFREEZEAMMO
-                NUMFREEZEBOUNCES	MAXGROWAMMO
-                FREEZERHURTOWNER	CAMERASDESTRUCTABLE
+                MAXHANDBOMBAMMO     MAXRPGAMMO
+                MAXSHRINKERAMMO     MAXHANDBOMBAMMO
+                MAXDEVISTATORAMMO   MAXSHRINKERAMMO
+                MAXTRIPBOMBAMMO     MAXDEVISTATORAMMO
+                MAXFREEZEAMMO       MAXTRIPBOMBAMMO
+                CAMERASDESTRUCTABLE MAXFREEZEAMMO
+                NUMFREEZEBOUNCES    MAXGROWAMMO
+                FREEZERHURTOWNER    CAMERASDESTRUCTABLE
                                     NUMFREEZEBOUNCES
                                     FREEZERHURTOWNER
                                     QSIZE
@@ -1603,7 +1598,7 @@ void passone(void)
 
 }
 
-char *defaultcons[3] =
+static const char *defaultcons[3] =
 {
      "GAME.CON",
      "USER.CON",
@@ -1612,14 +1607,14 @@ char *defaultcons[3] =
 
 void copydefaultcons(void)
 {
-    long i, fs, fpi;
+    int i, fs, fpi;
     FILE *fpo;
 
     for(i=0;i<3;i++)
     {
         fpi = kopen4load( defaultcons[i] , 1 );
         if (fpi < 0) continue;
-	
+    
         fpo = fopen( defaultcons[i],"wb");
         if (fpo == NULL) {
             kclose(fpi);
@@ -1636,53 +1631,53 @@ void copydefaultcons(void)
     }
 }
 
-void loadefs(char *filenam)
+void loadefs(const char *filenam)
 {
     char *mptr;
     int i;
-    long fs,fp;
+    int fs,fp;
 
     fp = kopen4load(filenam,loadfromgrouponly);
     if( fp == -1 )
     {
         if( loadfromgrouponly == 1 )
             gameexit("\nMissing con file(s).");
-		else {
-			sprintf(tempbuf,
-				"CON file \"%s\" was not found.\n"
-				"\n"
-				"Check that the \"%s\" file is in the JFDuke3D directory "
-				"and try running the game again.",
-				filenam, defaultduke3dgrp);
-			gameexit(tempbuf);
-			return;
-		}
-		
+        else {
+            sprintf(tempbuf,
+                "CON file \"%s\" was not found.\n"
+                "\n"
+                "Check that the \"%s\" file is in the JFDuke3D directory "
+                "and try running the game again.",
+                filenam, defaultduke3dgrp);
+            gameexit(tempbuf);
+            return;
+        }
+        
         //loadfromgrouponly = 1;
         return; //Not there
     }
-	
+    
     fs = kfilelength(fp);
 
-    initprintf("Compiling: %s (%ld bytes)\n",filenam,fs);
+    initprintf("Compiling: %s (%d bytes)\n",filenam,fs);
 
-    mptr = (char *)Bmalloc(fs+1);
+    mptr = Bmalloc(fs+1);
     if (!mptr) {
-	    Bsprintf(tempbuf,"Failed allocating %ld byte CON text buffer.", fs+1);
-	    gameexit(tempbuf);
+        Bsprintf(tempbuf,"Failed allocating %d byte CON text buffer.", fs+1);
+        gameexit(tempbuf);
     }
     mptr[fs] = 0;
-	    
-    textptr = (char *) mptr;
-	
-    kread(fp,(char *)textptr,fs);
+        
+    textptr = mptr;
+    
+    kread(fp,textptr,fs);
     kclose(fp);
 
     //textptr[fs - 2] = 0;
 
-    clearbuf(actorscrptr,MAXTILES,0L);	// JBF 20040531: MAXSPRITES? I think Todd meant MAXTILES...
+    clearbuf(actorscrptr,MAXTILES,0L);  // JBF 20040531: MAXSPRITES? I think Todd meant MAXTILES...
     clearbufbyte(actortype,MAXTILES,0L);
-    clearbufbyte(script,sizeof(script),0l);	// JBF 20040531: yes? no?
+    clearbufbyte(script,sizeof(script),0l); // JBF 20040531: yes? no?
 
     labelcnt = 0;
     scriptptr = script+1;
@@ -1691,23 +1686,23 @@ void loadefs(char *filenam)
     line_number = 1;
     total_lines = 0;
 
-    strcpy(compilefile, filenam);	// JBF 20031130: Store currently compiling file name
+    strcpy(compilefile, filenam);   // JBF 20031130: Store currently compiling file name
     passone(); //Tokenize
     *script = encodescriptptr(scriptptr);
 
     Bfree(mptr);
 
     if(warning|error)
-        initprintf("Found %ld warning(s), %ld error(s).\n",warning,error);
+        initprintf("Found %d warning(s), %d error(s).\n",warning,error);
 
     if( error == 0 && warning != 0)
     {
         if( groupfile != -1 && loadfromgrouponly == 0 )
         {
             //initprintf("Warnings found when compiling CON files. Use default CONs instead? (Y/N)\n");
-	    i=wm_ynbox("CON File Compilation Warning", "Warnings found when compiling CON files. Use default CONs instead?");
-	    if (i) i = 'y';
-	    if(i == 'y' || i == 'Y' )
+        i=wm_ynbox("CON File Compilation Warning", "Warnings found when compiling CON files. Use default CONs instead?");
+        if (i) i = 'y';
+        if(i == 'y' || i == 'Y' )
             {
                 loadfromgrouponly = 1;
                 initprintf(" Yes\n");
@@ -1743,14 +1738,14 @@ void loadefs(char *filenam)
     else
     {
         total_lines += line_number;
-        initprintf("Code Size: %ld bytes (%ld labels).\n",(long)((scriptptr-script)<<2)-4,labelcnt);
+        initprintf("Code Size: %d bytes (%d labels).\n",(int)((scriptptr-script)<<2)-4,labelcnt);
     }
 }
 
 char dodge(spritetype *s)
 {
     short i;
-    long bx,by,mx,my,bxvect,byvect,mxvect,myvect,d;
+    int bx,by,mx,my,bxvect,byvect,mxvect,myvect,d;
 
     mx = s->x;
     my = s->y;
@@ -1782,7 +1777,7 @@ char dodge(spritetype *s)
 short furthestangle(short i,short angs)
 {
     short j, hitsect,hitwall,hitspr,furthest_angle=0, angincs;
-    long hx, hy, hz, d, greatestd;
+    int hx, hy, hz, d, greatestd;
     spritetype *s = &sprite[i];
 
     greatestd = -(1<<30);
@@ -1809,10 +1804,10 @@ short furthestangle(short i,short angs)
     return (furthest_angle&2047);
 }
 
-short furthestcanseepoint(short i,spritetype *ts,long *dax,long *day)
+short furthestcanseepoint(short i,spritetype *ts,int *dax,int *day)
 {
     short j, hitsect,hitwall,hitspr, angincs, tempang;
-    long hx, hy, hz, d, da;//, d, cd, ca,tempx,tempy,cx,cy;
+    int hx, hy, hz, d, da;//, d, cd, ca,tempx,tempy,cx,cy;
     spritetype *s = &sprite[i];
 
     if( (g_t[0]&63) ) return -1;
@@ -1848,7 +1843,7 @@ short furthestcanseepoint(short i,spritetype *ts,long *dax,long *day)
 void alterang(short a)
 {
     short aang, angdif, goalang,j;
-    long ticselapsed, *moveptr;
+    int ticselapsed, *moveptr;
 
     moveptr = decodescriptptr(g_t[1]);
 
@@ -1915,9 +1910,9 @@ void alterang(short a)
 
 void move()
 {
-    long l, *moveptr;
+    int l, *moveptr;
     short j, a, goalang, angdif;
-    long daxvel;
+    int daxvel;
 
     a = g_sp->hitag;
 
@@ -1961,7 +1956,7 @@ void move()
 
     if(a&face_player_smart)
     {
-        long newx,newy;
+        int newx,newy;
 
         newx = ps[g_p].posx+(ps[g_p].posxv/768);
         newy = ps[g_p].posy+(ps[g_p].posyv/768);
@@ -2112,7 +2107,7 @@ void move()
 
 char parse(void);
 
-void parseifelse(long condition)
+void parseifelse(int condition)
 {
     if( condition )
     {
@@ -2130,15 +2125,11 @@ void parseifelse(long condition)
     }
 }
 
-// long *it = 0x00589a04;
-
 char parse(void)
 {
-    long j, l, s;
+    int j, l, s;
 
     if(killit_flag) return 1;
-
-//    if(*it == 1668249134L) gameexit("\nERR");
 
     switch(*insptr)
     {
@@ -2371,7 +2362,7 @@ char parse(void)
             // sprite, which is why the "sizeto 0 41" calls in 1.3d became "sizeto 4 41" in
             // 1.4, so instead of patching the CONs I'll surruptitiously patch the code here
             if (!PLUTOPAK && *insptr == 0) *insptr = 4;
-	    
+        
             j = ((*insptr)-g_sp->xrepeat)<<1;
             g_sp->xrepeat += ksgn(j);
 
@@ -2388,9 +2379,9 @@ char parse(void)
             break;
         case 99:    //sizeat
             insptr++;
-            g_sp->xrepeat = (char) *insptr;
+            g_sp->xrepeat = (unsigned char) *insptr;
             insptr++;
-            g_sp->yrepeat = (char) *insptr;
+            g_sp->yrepeat = (unsigned char) *insptr;
             insptr++;
             break;
         case 13:    //shoot
@@ -2431,7 +2422,7 @@ char parse(void)
             g_sp->yoffset = 0;
 //            if(!gotz)
             {
-                long c;
+                int c;
 
                 if( floorspace(g_sp->sectnum) )
                     c = 0;
@@ -2565,9 +2556,9 @@ char parse(void)
         case 23:    //addweapon
             insptr++;
             if( ps[g_p].gotweapon[*insptr] == 0 ) {
-				if (!(ps[g_p].weaponswitch & 1)) addweaponnoswitch(&ps[g_p], *insptr);
-				else addweapon( &ps[g_p], *insptr );
-			}
+                if (!(ps[g_p].weaponswitch & 1)) addweaponnoswitch(&ps[g_p], *insptr);
+                else addweapon( &ps[g_p], *insptr );
+            }
             else if( ps[g_p].ammo_amount[*insptr] >= max_ammo_amount[*insptr] )
             {
                  killit_flag = 2;
@@ -2581,7 +2572,7 @@ char parse(void)
             break;
         case 68:    //debug
             insptr++;
-            printf("%ld\n",*insptr);
+            printf("%d\n",*insptr);
             insptr++;
             break;
         case 69:    //endofgame
@@ -2658,7 +2649,7 @@ char parse(void)
             break;
         case 17:    //state
             {
-                long *tempscrptr;
+                int *tempscrptr;
 
                 tempscrptr = insptr+2;
 
@@ -2808,7 +2799,7 @@ char parse(void)
                 ps[g_p].ftq = 0;
                 ps[g_p].posxv = ps[g_p].posyv = 0;
                 ps[g_p].rotscrnang = 0;
-		// JBF 20031220: I don't reset orotscrnang otherwise we don't get a smooth reset
+        // JBF 20031220: I don't reset orotscrnang otherwise we don't get a smooth reset
 
                 ps[g_p].falling_counter = 0;
 
@@ -2956,7 +2947,7 @@ char parse(void)
                         j = 0;
                 }
 
-                parseifelse((long) j);
+                parseifelse((int) j);
 
             }
             break;
@@ -3203,7 +3194,7 @@ char parse(void)
     return 0;
 }
 
-void execute(short i,short p,long x)
+void execute(short i,short p,int x)
 {
     char done;
 

@@ -61,7 +61,7 @@ void fadepal(int r, int g, int b, int start, int end, int step)
 
 void incur_damage( struct player_struct *p )
 {
-    long damage = 0L, shield_damage = 0L;
+    int damage = 0L, shield_damage = 0L;
     short i, damage_source;
 
     sprite[p->i].extra -= p->extra_extra8>>8;
@@ -115,9 +115,9 @@ void forceplayerangle(struct player_struct *p)
     p->rotscrnang = n>>1;
 }
 
-void tracers(long x1,long y1,long z1,long x2,long y2,long z2,long n)
+void tracers(int x1,int y1,int z1,int x2,int y2,int z2,int n)
 {
-     long i, xv, yv, zv;
+     int i, xv, yv, zv;
      short sect = -1;
 
 	 i = n+1;
@@ -144,11 +144,11 @@ void tracers(long x1,long y1,long z1,long x2,long y2,long z2,long n)
 	 }
 }
 
-long hits(short i)
+int hits(short i)
 {
-    long sx,sy,sz;
+    int sx,sy,sz;
     short sect,hw,hs;
-    long zoff;
+    int zoff;
 
     if(PN == APLAYER) zoff = (40<<8);
     else zoff = 0;
@@ -161,9 +161,9 @@ long hits(short i)
     return ( FindDistance2D( sx-SX,sy-SY ) );
 }
 
-long hitasprite(short i,short *hitsp)
+int hitasprite(short i,short *hitsp)
 {
-    long sx,sy,sz,zoff;
+    int sx,sy,sz,zoff;
     short sect,hw;
 
     if(badguy(&sprite[i]) )
@@ -183,9 +183,9 @@ long hitasprite(short i,short *hitsp)
 }
 
 /*
-long hitaspriteandwall(short i,short *hitsp,short *hitw,short *x, short *y)
+int hitaspriteandwall(short i,short *hitsp,short *hitw,short *x, short *y)
 {
-    long sz;
+    int sz;
     short sect;
 
     hitscan(SX,SY,SZ,SECT,
@@ -198,9 +198,9 @@ long hitaspriteandwall(short i,short *hitsp,short *hitw,short *x, short *y)
 */
 
 
-long hitawall(struct player_struct *p,short *hitw)
+int hitawall(struct player_struct *p,short *hitw)
 {
-    long sx,sy,sz;
+    int sx,sy,sz;
     short sect,hs;
 
     hitscan(p->posx,p->posy,p->posz,p->cursectnum,
@@ -216,8 +216,8 @@ short aim(spritetype *s,short aang)
     char gotshrinker,gotfreezer;
     short i, j, a, k, cans;
     short aimstats[] = {10,13,1,2};
-    long dx1, dy1, dx2, dy2, dx3, dy3, smax, sdist;
-    long xv, yv;
+    int dx1, dy1, dx2, dy2, dx3, dy3, smax, sdist;
+    int xv, yv;
 
     a = s->ang;
 
@@ -313,7 +313,7 @@ short aim(spritetype *s,short aang)
 void shoot(short i,short atwith)
 {
     short sect, hitsect, hitspr, hitwall, l, sa, p, j, k, scount;
-    long sx, sy, sz, vel, zvel, hitx, hity, hitz, x, oldzvel, dal;
+    int sx, sy, sz, vel, zvel, hitx, hity, hitz, x, oldzvel, dal;
     unsigned char sizx,sizy;
     spritetype *s;
 
@@ -1176,7 +1176,7 @@ void shoot(short i,short atwith)
 
 void displayloogie(short snum)
 {
-    long i, a, x, y, z;
+    int i, a, x, y, z;
 
     if(ps[snum].loogcnt == 0) return;
 
@@ -1196,7 +1196,7 @@ void displayloogie(short snum)
 char animatefist(short gs,short snum)
 {
     short looking_arc,fisti,fistpal;
-    long fistzoom, fistz;
+    int fistzoom, fistz;
 
     fisti = ps[snum].fist_incs;
     if(fisti > 32) fisti = 32;
@@ -1272,7 +1272,7 @@ char animateknuckles(short gs,short snum)
 
 
 
-long lastvisinc;
+int lastvisinc;
 
 void displaymasks(short snum)
 {
@@ -1353,8 +1353,8 @@ short fistsign;
 
 void displayweapon(short snum)
 {
-    long gun_pos, looking_arc, cw;
-    long weapon_xoffset, i, j, x1, y1, x2;
+    int gun_pos, looking_arc, cw;
+    int weapon_xoffset, i, j, x1, y1, x2;
     char o,pal;
     signed char gs;
     struct player_struct *p;
@@ -1855,7 +1855,7 @@ void displayweapon(short snum)
 #define MAXANGVEL    127
 #define MAXHORIZ     127
 
-long myaimmode = 0, myaimstat = 0, omyaimstat = 0;
+int myaimmode = 0, myaimstat = 0, omyaimstat = 0;
 int32 mouseyaxismode = -1;
 static ControlInfo lastinfo = { 0,0,0,0,0,0 };
 void getinput(short snum)
@@ -1881,7 +1881,7 @@ void getinput(short snum)
          loc.svel = svel = 0;
          loc.avel = angvel = 0;
          loc.horz = horiz = 0;
-         loc.bits = (((long)gamequit)<<26);
+         loc.bits = (((int)gamequit)<<26);
          return;
     }
 
@@ -1991,7 +1991,7 @@ if (!VOLUMEONE) {
     loc.bits |=   myaimmode<<23;
     loc.bits |=   BUTTON(gamefunc_Holo_Duke)<<24;
     loc.bits |=   BUTTON(gamefunc_Jetpack)<<25;
-    loc.bits |=   (((long)gamequit)<<26);
+    loc.bits |=   (((int)gamequit)<<26);
     loc.bits |=   BUTTON(gamefunc_Inventory_Right)<<27;
     loc.bits |=   BUTTON(gamefunc_TurnAround)<<28;
     loc.bits |=   BUTTON(gamefunc_Open)<<29;
@@ -2131,7 +2131,7 @@ if (!VOLUMEONE) {
 
 char doincrements(struct player_struct *p)
 {
-    long /*j,*/i,snum;
+    int /*j,*/i,snum;
 
     snum = sprite[p->i].yvel;
 //    j = sync[snum].avel;
@@ -2343,9 +2343,9 @@ void checkweapons(struct player_struct *p)
 
 void processinput(short snum)
 {
-    long j, i, k, doubvel, fz, cz, hz, lz, truefdist, x, y;
+    int j, i, k, doubvel, fz, cz, hz, lz, truefdist, x, y;
     char shrunk;
-    unsigned long sb_snum;
+    unsigned int sb_snum;
     short psect, psectlotag,*kb, tempsect, pi;
     struct player_struct *p;
     spritetype *s;
@@ -3125,7 +3125,7 @@ void processinput(short snum)
     }
     else if ( sync[snum].avel )          //p->ang += syncangvel * constant
     {                         //ENGINE calculates angvel for you
-        long tempang;
+        int tempang;
 
         tempang = sync[snum].avel<<1;
 
@@ -3615,7 +3615,7 @@ void processinput(short snum)
                 if (VOLUMEONE) break;
                 if ( p->ammo_amount[TRIPBOMB_WEAPON] > 0 )
                 {
-                    long sx,sy,sz;
+                    int sx,sy,sz;
                     short sect,hw,hitsp;
 
                     hitscan( p->posx, p->posy, p->posz,
@@ -3733,8 +3733,8 @@ void processinput(short snum)
                         p->ang,(k+(p->hbomb_hold_delay<<5)),i,pi,1);
 
 					if (NAM) {
-						long lGrenadeLifetime=NAM_GRENADE_LIFETIME;
-						long lGrenadeLifetimeVar=NAM_GRENADE_LIFETIME_VAR;
+						int lGrenadeLifetime=NAM_GRENADE_LIFETIME;
+						int lGrenadeLifetimeVar=NAM_GRENADE_LIFETIME_VAR;
 						// set timer.  blows up when at zero....
 						sprite[j].extra=lGrenadeLifetime	// FIXME: bug
 								+ mulscale(krand(),lGrenadeLifetimeVar, 14)
@@ -3943,7 +3943,7 @@ void processinput(short snum)
 						if ((*kb) == 3)
 						{
 							// fire now, but don't reload right away...
-							*kb ++;
+							(*kb)++;
 							if(p->ammo_amount[p->curr_weapon]<=1)
 								*kb=0;
 							if( screenpeek == snum ) pus = 1;
@@ -4122,7 +4122,7 @@ void processinput(short snum)
 
 
 //UPDATE THIS FILE OVER THE OLD GETSPRITESCORE/COMPUTERGETINPUT FUNCTIONS
-int getspritescore(long snum, long dapicnum)
+int getspritescore(int snum, int dapicnum)
 {
     switch(dapicnum)
     {
@@ -4161,7 +4161,7 @@ int getspritescore(long snum, long dapicnum)
     return(0);
 }
 
-static long fdmatrix[12][12] =
+static int fdmatrix[12][12] =
 {
  //KNEE PIST SHOT CHAIN RPG PIPE SHRI DEVI WALL FREE HAND EXPA
   {  128,  -1,  -1,  -1, 128,  -1,  -1,  -1, 128,  -1, 128,  -1 },   //KNEE
@@ -4178,16 +4178,16 @@ static long fdmatrix[12][12] =
   {  128, 128, 128, 128,2560, 128,2560,2560, 128, 128, 128, 128 }    //EXPA
 };
 
-static long goalx[MAXPLAYERS], goaly[MAXPLAYERS], goalz[MAXPLAYERS];
-static long goalsect[MAXPLAYERS], goalwall[MAXPLAYERS], goalsprite[MAXPLAYERS];
-static long goalplayer[MAXPLAYERS], clipmovecount[MAXPLAYERS];
+static int goalx[MAXPLAYERS], goaly[MAXPLAYERS], goalz[MAXPLAYERS];
+static int goalsect[MAXPLAYERS], goalwall[MAXPLAYERS], goalsprite[MAXPLAYERS];
+static int goalplayer[MAXPLAYERS], clipmovecount[MAXPLAYERS];
 short searchsect[MAXSECTORS], searchparent[MAXSECTORS];
-char dashow2dsector[(MAXSECTORS+7)>>3];
-void computergetinput(long snum, input *syn)
+unsigned char dashow2dsector[(MAXSECTORS+7)>>3];
+void computergetinput(int snum, input *syn)
 {
-    long i, j, k, l, x1, y1, z1, x2, y2, z2, x3, y3, z3, dx, dy;
-    long dist, daang, zang, fightdist, damyang, damysect;
-    long startsect, endsect, splc, send, startwall, endwall;
+    int i, j, k, l, x1, y1, z1, x2, y2, z2, x3, y3, z3, dx, dy;
+    int dist, daang, zang, fightdist, damyang, damysect;
+    int startsect, endsect, splc, send, startwall, endwall;
     short dasect, dawall, daspr;
     struct player_struct *p;
     walltype *wal;
@@ -4279,7 +4279,7 @@ void computergetinput(long snum, input *syn)
                     hitscan(sprite[j].x,sprite[j].y,sprite[j].z,sprite[j].sectnum,
                      mulscale14(sprite[j].xvel,sintable[(sprite[j].ang+512)&2047]),
                      mulscale14(sprite[j].xvel,sintable[sprite[j].ang&2047]),
-                     (long)sprite[j].zvel,
+                     (int)sprite[j].zvel,
                      &dasect,&dawall,&daspr,&x3,&y3,&z3,CLIPMASK1);
                 }
             }

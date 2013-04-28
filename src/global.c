@@ -33,24 +33,25 @@ char MusicPtr[72000*2];
 short global_random;
 short neartagsector, neartagwall, neartagsprite;
 
-long neartaghitdist,lockclock,max_player_health,max_armour_amount,max_ammo_amount[MAX_WEAPONS];
+int neartaghitdist,lockclock,max_player_health,max_armour_amount,max_ammo_amount[MAX_WEAPONS];
 // JBF: gc modified to default to Atomic ed. default when using 1.3d CONs
-long gc=176;
+int gc=176;
 
-// long temp_data[MAXSPRITES][6];
+// int temp_data[MAXSPRITES][6];
 struct weaponhit hittype[MAXSPRITES];
 short spriteq[1024],spriteqloc,spriteqamount=64;
 struct animwalltype animwall[MAXANIMWALLS];
 short numanimwalls;
-long *animateptr[MAXANIMATES], animategoal[MAXANIMATES], animatevel[MAXANIMATES], animatecnt;
-// long oanimateval[MAXANIMATES];
+int *animateptr[MAXANIMATES], animategoal[MAXANIMATES], animatevel[MAXANIMATES], animatecnt;
+// int oanimateval[MAXANIMATES];
 short animatesect[MAXANIMATES];
-long msx[2048],msy[2048];
+int msx[2048],msy[2048];
 short cyclers[MAXCYCLERS][6],numcyclers;
 
 char fta_quotes[NUMOFFIRSTTIMEACTIVE][64];
 
-unsigned char tempbuf[2048], packbuf[576];
+char tempbuf[2048];
+unsigned char packbuf[576];
 
 char buf[1024];
 
@@ -62,12 +63,11 @@ int current_menu;
 char betaname[80];
 
 char level_names[44][33],level_file_names[44][128];
-long partime[44],designertime[44];
+int partime[44],designertime[44];
 char volume_names[4][33] = { "L.A. MELTDOWN", "LUNAR APOCALYPSE", "SHRAPNEL CITY", "" };
 char skill_names[5][33] = { "PIECE OF CAKE", "LET'S ROCK", "COME GET SOME", "DAMN I'M GOOD", "" };
 
-volatile long checksume;
-long soundsiz[NUM_SOUNDS];
+int soundsiz[NUM_SOUNDS];
 
 short soundps[NUM_SOUNDS],soundpe[NUM_SOUNDS],soundvo[NUM_SOUNDS];
 char soundm[NUM_SOUNDS],soundpr[NUM_SOUNDS];
@@ -80,51 +80,54 @@ short title_zoom;
 SAMPLE Sound[ NUM_SOUNDS ];
 SOUNDOWNER SoundOwner[NUM_SOUNDS][4];
 
-char numplayersprites,loadfromgrouponly=0,earthquaketime;
+char loadfromgrouponly=0,earthquaketime;
+int numplayersprites;
 
-long fricxv,fricyv;
+int fricxv,fricyv;
 struct player_orig po[MAXPLAYERS];
 struct player_struct ps[MAXPLAYERS];
 struct user_defs ud;
 
 char pus, pub;
 char syncstat, syncval[MAXPLAYERS][MOVEFIFOSIZ];
-long syncvalhead[MAXPLAYERS], syncvaltail, syncvaltottail;
+int syncvalhead[MAXPLAYERS], syncvaltail, syncvaltottail;
 
 input sync[MAXPLAYERS], loc;
 input recsync[RECSYNCBUFSIZ];
-long avgfvel, avgsvel, avgavel, avghorz, avgbits;
+int avgfvel, avgsvel, avgavel, avghorz, avgbits;
 
 
 input inputfifo[MOVEFIFOSIZ][MAXPLAYERS];
 input recsync[RECSYNCBUFSIZ];
 
-long movefifosendplc;
+int movefifosendplc;
 
   //Multiplayer syncing variables
 short screenpeek;
-long movefifoend[MAXPLAYERS];
+int movefifoend[MAXPLAYERS];
 
 
     //Game recording variables
 
 char playerreadyflag[MAXPLAYERS],ready2send;
 char playerquitflag[MAXPLAYERS];
-long vel, svel, angvel, horiz, ototalclock, respawnactortime=768, respawnitemtime=768, groupfile;
+int vel, svel, angvel, horiz, ototalclock, respawnactortime=768, respawnitemtime=768, groupfile;
 
-long script[MAXSCRIPTSIZE+16];
-long *scriptptr,*insptr;
-long *labelcode,labelcnt;
+int script[MAXSCRIPTSIZE+16];
+int *scriptptr,*insptr;
+int *labelcode,labelcnt;
 char *label,*labeltype;
 char *textptr,error,warning,killit_flag;
-long *actorscrptr[MAXTILES],*parsing_actor;
+int *actorscrptr[MAXTILES],*parsing_actor;
 char *music_pointer;
 char actortype[MAXTILES];
 
 
-char display_mirror,typebuflen,typebuf[41];
+char display_mirror,typebuf[41];
+int typebuflen;
 
-char music_fn[4][11][13],music_select;
+char music_fn[4][11][13];
+unsigned char music_select;
 char env_music_fn[4][13];
 char rtsplaying;
 
@@ -147,33 +150,33 @@ short weaponsandammosprites[15] = {
         FREEZEAMMO
     };
 
-long impact_damage;
+int impact_damage;
 
         //GLOBAL.C - replace the end "my's" with this
-long myx, omyx, myxvel, myy, omyy, myyvel, myz, omyz, myzvel;
+int myx, omyx, myxvel, myy, omyy, myyvel, myz, omyz, myzvel;
 short myhoriz, omyhoriz, myhorizoff, omyhorizoff;
 short myang, omyang, mycursectnum, myjumpingcounter,frags[MAXPLAYERS][MAXPLAYERS];
 
 char myjumpingtoggle, myonground, myhardlanding, myreturntocenter;
 signed char multiwho, multipos, multiwhat, multiflag;
 
-long fakemovefifoplc,movefifoplc;
-long myxbak[MOVEFIFOSIZ], myybak[MOVEFIFOSIZ], myzbak[MOVEFIFOSIZ];
-long myhorizbak[MOVEFIFOSIZ],dukefriction = 0xcc00, show_shareware;
+int fakemovefifoplc,movefifoplc;
+int myxbak[MOVEFIFOSIZ], myybak[MOVEFIFOSIZ], myzbak[MOVEFIFOSIZ];
+int myhorizbak[MOVEFIFOSIZ],dukefriction = 0xcc00, show_shareware;
 
 short myangbak[MOVEFIFOSIZ];
 char myname[32],camerashitable,freezerhurtowner=0,lasermode=0;
-char networkmode = 255, movesperpacket = 1,gamequit = 0,everyothertime;
-long numfreezebounces=3,rpgblastradius,pipebombblastradius,tripbombblastradius,shrinkerblastradius,morterblastradius,bouncemineblastradius,seenineblastradius;
+char networkmode = -1, movesperpacket = 1,gamequit = 0,everyothertime;
+int numfreezebounces=3,rpgblastradius,pipebombblastradius,tripbombblastradius,shrinkerblastradius,morterblastradius,bouncemineblastradius,seenineblastradius;
 STATUSBARTYPE sbar;
 
-long myminlag[MAXPLAYERS], mymaxlag, otherminlag, bufferjitter = 1;
+int myminlag[MAXPLAYERS], mymaxlag, otherminlag, bufferjitter = 1;
 short numclouds,clouds[128],cloudx[128],cloudy[128];
-long cloudtotalclock = 0,totalmemory = 0;
-long numinterpolations = 0, startofdynamicinterpolations = 0;
-long oldipos[MAXINTERPOLATIONS];
-long bakipos[MAXINTERPOLATIONS];
-long *curipos[MAXINTERPOLATIONS];
+int cloudtotalclock = 0,totalmemory = 0;
+int numinterpolations = 0, startofdynamicinterpolations = 0;
+int oldipos[MAXINTERPOLATIONS];
+int bakipos[MAXINTERPOLATIONS];
+int *curipos[MAXINTERPOLATIONS];
 
 int nextvoxid = 0;
 

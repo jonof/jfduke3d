@@ -53,15 +53,15 @@ ifneq (0,$(RELEASE))
   debug=-fomit-frame-pointer -O1
 else
   # debugging enabled
-  debug=-ggdb -O0
+  debug=-ggdb -O0 -Werror
 endif
 
 include $(AUDIOLIBROOT)/Makefile.shared
 
 CC=gcc
 CXX=g++
-OURCFLAGS=$(debug) -W -Wall -Wimplicit -Wno-char-subscripts -Wno-unused \
-	-fno-pic -funsigned-char -fno-strict-aliasing -DNO_GCC_BUILTINS -DNOCOPYPROTECT \
+OURCFLAGS=$(debug) -W -Wall -Wimplicit -Wno-unused \
+	-fno-pic -fno-strict-aliasing -DNO_GCC_BUILTINS -DNOCOPYPROTECT \
 	-I$(INC) -I$(EINC) -I$(MACTROOT) -I$(AUDIOLIBROOT)/include
 OURCXXFLAGS=-fno-exceptions -fno-rtti
 LIBS=-lm
@@ -104,8 +104,8 @@ ifeq ($(PLATFORM),LINUX)
 	GAMELIBS+= $(JFAUDIOLIB_LDFLAGS)
 endif
 ifeq ($(PLATFORM),WINDOWS)
-	OURCFLAGS+= -DUNDERSCORES -I$(DXROOT)/include
-	NASMFLAGS+= -DUNDERSCORES -f win32
+	OURCFLAGS+= -I$(DXROOT)/include
+	NASMFLAGS+= -f win32 --prefix _
 	GAMEOBJS+= $(SRC)/gameres.$o $(SRC)/winbits.$o $(SRC)/startwin.game.$o
 	EDITOROBJS+= $(SRC)/buildres.$o
 	GAMELIBS+= -ldsound \
@@ -172,20 +172,20 @@ $(SRC)/%.$o: $(SRC)/%.nasm
 	nasm $(NASMFLAGS) $< -o $@
 
 $(SRC)/%.$o: $(SRC)/%.c
-	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@ 2>&1
+	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
 $(SRC)/%.$o: $(SRC)/%.cpp
-	$(CXX) $(CXXFLAGS) $(OURCXXFLAGS) $(OURCFLAGS) -c $< -o $@ 2>&1
+	$(CXX) $(CXXFLAGS) $(OURCXXFLAGS) $(OURCFLAGS) -c $< -o $@
 $(MACTROOT)/%.$o: $(MACTROOT)/%.c
-	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@ 2>&1
+	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
 
 $(SRC)/%.$o: $(SRC)/misc/%.rc
 	windres -i $< -o $@ --include-dir=$(EINC) --include-dir=$(SRC)
 
 $(SRC)/%.$o: $(SRC)/util/%.c
-	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@ 2>&1
+	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
 
 $(SRC)/%.$o: $(RSRC)/%.c
-	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@ 2>&1
+	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
 
 $(SRC)/game_banner.$o: $(RSRC)/game_banner.c
 $(SRC)/editor_banner.$o: $(RSRC)/editor_banner.c

@@ -4,11 +4,11 @@
 // List of internally-known GRP files
 #define numgrpfiles 7
 struct grpfile {
-	const char *name;
-	int crcval;
-	int size;
-	int game;
-	struct grpfile *next;
+    const char *name;
+    unsigned int crcval;
+    int size;
+    int game;
+    struct grpfile *next;
 } grpfiles[numgrpfiles], *foundgrps;
 
 int ScanGroups(void);

@@ -31,60 +31,60 @@ extern char numenvsnds,actor_tog;
 
 void updateinterpolations()  //Stick at beginning of domovethings
 {
-	long i;
+    int i;
 
-	for(i=numinterpolations-1;i>=0;i--) oldipos[i] = *curipos[i];
+    for(i=numinterpolations-1;i>=0;i--) oldipos[i] = *curipos[i];
 }
 
 
-void setinterpolation(long *posptr)
+void setinterpolation(int *posptr)
 {
-	long i;
+    int i;
 
-	if (numinterpolations >= MAXINTERPOLATIONS) return;
-	for(i=numinterpolations-1;i>=0;i--)
-		if (curipos[i] == posptr) return;
-	curipos[numinterpolations] = posptr;
-	oldipos[numinterpolations] = *posptr;
-	numinterpolations++;
+    if (numinterpolations >= MAXINTERPOLATIONS) return;
+    for(i=numinterpolations-1;i>=0;i--)
+        if (curipos[i] == posptr) return;
+    curipos[numinterpolations] = posptr;
+    oldipos[numinterpolations] = *posptr;
+    numinterpolations++;
 }
 
-void stopinterpolation(long *posptr)
+void stopinterpolation(int *posptr)
 {
-	long i;
+    int i;
 
-	for(i=numinterpolations-1;i>=startofdynamicinterpolations;i--)
-		if (curipos[i] == posptr)
-		{
-			numinterpolations--;
-			oldipos[i] = oldipos[numinterpolations];
-			bakipos[i] = bakipos[numinterpolations];
-			curipos[i] = curipos[numinterpolations];
-		}
+    for(i=numinterpolations-1;i>=startofdynamicinterpolations;i--)
+        if (curipos[i] == posptr)
+        {
+            numinterpolations--;
+            oldipos[i] = oldipos[numinterpolations];
+            bakipos[i] = bakipos[numinterpolations];
+            curipos[i] = curipos[numinterpolations];
+        }
 }
 
-void dointerpolations(long smoothratio)       //Stick at beginning of drawscreen
+void dointerpolations(int smoothratio)       //Stick at beginning of drawscreen
 {
-	long i, j, odelta, ndelta;
+    int i, j, odelta, ndelta;
 
-	ndelta = 0; j = 0;
-	for(i=numinterpolations-1;i>=0;i--)
-	{
-		bakipos[i] = *curipos[i];
-		odelta = ndelta; ndelta = (*curipos[i])-oldipos[i];
-		if (odelta != ndelta) j = mulscale16(ndelta,smoothratio);
-		*curipos[i] = oldipos[i]+j;
-	}
+    ndelta = 0; j = 0;
+    for(i=numinterpolations-1;i>=0;i--)
+    {
+        bakipos[i] = *curipos[i];
+        odelta = ndelta; ndelta = (*curipos[i])-oldipos[i];
+        if (odelta != ndelta) j = mulscale16(ndelta,smoothratio);
+        *curipos[i] = oldipos[i]+j;
+    }
 }
 
 void restoreinterpolations()  //Stick at end of drawscreen
 {
-	long i;
+    int i;
 
-	for(i=numinterpolations-1;i>=0;i--) *curipos[i] = bakipos[i];
+    for(i=numinterpolations-1;i>=0;i--) *curipos[i] = bakipos[i];
 }
 
-long ceilingspace(short sectnum)
+int ceilingspace(short sectnum)
 {
     if( (sector[sectnum].ceilingstat&1) && sector[sectnum].ceilingpal == 0 )
     {
@@ -98,7 +98,7 @@ long ceilingspace(short sectnum)
     return 0;
 }
 
-long floorspace(short sectnum)
+int floorspace(short sectnum)
 {
     if( (sector[sectnum].floorstat&1) && sector[sectnum].ceilingpal == 0 )
     {
@@ -122,7 +122,7 @@ void addammo( short weapon,struct player_struct *p,short amount)
 
 void addweaponnoswitch( struct player_struct *p, short weapon)
 {
-	if ( p->gotweapon[weapon] == 0 )
+    if ( p->gotweapon[weapon] == 0 )
     {
         p->gotweapon[weapon] = 1;
         if(weapon == SHRINKER_WEAPON)
@@ -137,13 +137,13 @@ void addweaponnoswitch( struct player_struct *p, short weapon)
         case HANDBOMB_WEAPON:     break;
         case SHOTGUN_WEAPON:      spritesound(SHOTGUN_COCK,p->i);break;
         case PISTOL_WEAPON:       spritesound(INSERT_CLIP,p->i);break;
-		default:      spritesound(SELECT_WEAPON,p->i);break;
+        default:      spritesound(SELECT_WEAPON,p->i);break;
     }
 }
 
 void addweapon( struct player_struct *p,short weapon)
 {
-	addweaponnoswitch(p,weapon);
+    addweaponnoswitch(p,weapon);
     p->random_club_frame = 0;
 
     if(p->holster_weapon == 0)
@@ -203,15 +203,15 @@ void checkavailweapon( struct player_struct *p )
     weap = p->curr_weapon;
     if( p->gotweapon[weap] && p->ammo_amount[weap] > 0 )
         return;
-	if( p->gotweapon[weap] && !(p->weaponswitch & 2))
-		return;
-	
+    if( p->gotweapon[weap] && !(p->weaponswitch & 2))
+        return;
+    
     snum = sprite[p->i].yvel;
 
     for(i=0;i<10;i++)
     {
         weap = ud.wchoice[snum][i];
-		if (VOLUMEONE && weap > 6) continue;
+        if (VOLUMEONE && weap > 6) continue;
 
         if(weap == 0) weap = 9;
         else weap--;
@@ -236,164 +236,11 @@ void checkavailweapon( struct player_struct *p )
     else p->weapon_pos   = -1;
 }
 
- /*
-void checkavailweapon( struct player_struct *p )
-{
-    short i,okay,check_shoot,check_bombs;
-
-    if(p->ammo_amount[p->curr_weapon] > 0) return;
-    okay = check_shoot = check_bombs = 0;
-
-    switch(p->curr_weapon)
-    {
-        case PISTOL_WEAPON:
-        case CHAINGUN_WEAPON:
-        case SHOTGUN_WEAPON:
-#ifndef VOLUMEONE
-        case FREEZE_WEAPON:
-        case DEVISTATOR_WEAPON:
-        case SHRINKER_WEAPON:
-        case GROW_WEAPON:
-#endif
-        case RPG_WEAPON:
-        case KNEE_WEAPON:
-            check_shoot = 1;
-            break;
-        case HANDBOMB_WEAPON:
-        case HANDREMOTE_WEAPON:
-#ifndef VOLUMEONE
-        case TRIPBOMB_WEAPON:
-#endif
-            check_bombs = 1;
-            break;
-    }
-
-    CHECK_SHOOT:
-    if(check_shoot)
-    {
-        for(i = p->curr_weapon+1; i < MAX_WEAPONS;i++)
-            switch(i)
-            {
-                case PISTOL_WEAPON:
-                case CHAINGUN_WEAPON:
-                case SHOTGUN_WEAPON:
-#ifndef VOLUMEONE
-                case FREEZE_WEAPON:
-                case SHRINKER_WEAPON:
-                case GROW_WEAPON:
-                case DEVISTATOR_WEAPON:
-#endif
-                    if ( p->gotweapon[i] && p->ammo_amount[i] > 0 )
-                    {
-                        okay = i;
-                        goto OKAY_HERE;
-                    }
-                    break;
-            }
-
-        for(i = p->curr_weapon-1; i > 0;i--)
-            switch(i)
-            {
-                case PISTOL_WEAPON:
-                case CHAINGUN_WEAPON:
-                case SHOTGUN_WEAPON:
-#ifndef VOLUMEONE
-                case FREEZE_WEAPON:
-                case DEVISTATOR_WEAPON:
-                case SHRINKER_WEAPON:
-                case GROW_WEAPON:
-#endif
-                    if ( p->gotweapon[i] && p->ammo_amount[i] > 0 )
-                    {
-                        okay = i;
-                        goto OKAY_HERE;
-                    }
-                    break;
-            }
-
-        if( p->gotweapon[RPG_WEAPON] && p->ammo_amount[RPG_WEAPON] > 0 )
-        {
-            okay = RPG_WEAPON;
-            goto OKAY_HERE;
-        }
-
-        if(check_bombs == 0)
-            check_bombs = 1;
-        else
-        {
-            addweapon(p,KNEE_WEAPON);
-            return;
-        }
-    }
-
-    if(check_bombs)
-    {
-        for(i = p->curr_weapon-1; i > 0;i--)
-            switch(i)
-            {
-                case HANDBOMB_WEAPON:
-#ifndef VOLUMEONE
-                case TRIPBOMB_WEAPON:
-#endif
-                    if ( p->gotweapon[i] && p->ammo_amount[i] > 0 )
-                    {
-                        okay = i;
-                        goto OKAY_HERE;
-                    }
-                    break;
-            }
-
-        for(i = p->curr_weapon+1; i < MAX_WEAPONS;i++)
-            switch(i)
-            {
-                case HANDBOMB_WEAPON:
-#ifdef VOLUMEONE
-                case TRIPBOMB_WEAPON:
-#endif
-                    if ( p->gotweapon[i] && p->ammo_amount[i] > 0 )
-                    {
-                        okay = i;
-                        goto OKAY_HERE;
-                    }
-                    break;
-            }
-
-        if(check_shoot == 0)
-        {
-            check_shoot = 1;
-            goto CHECK_SHOOT;
-        }
-        else
-        {
-            addweapon(p,KNEE_WEAPON);
-            return;
-        }
-    }
-
-    OKAY_HERE:
-
-    if(okay)
-    {
-        p->last_weapon  = p->curr_weapon;
-        p->random_club_frame = 0;
-        p->curr_weapon  = okay;
-        p->kickback_pic = 0;
-        if(p->holster_weapon == 1)
-        {
-            p->holster_weapon = 0;
-            p->weapon_pos = 10;
-        }
-        else p->weapon_pos   = -1;
-        return;
-    }
-}
-   */
-
-long ifsquished(short i, short p)
+int ifsquished(short i, short p)
 {
     sectortype *sc;
     char squishme;
-    long floorceildist;
+    int floorceildist;
 
     if(PN == APLAYER && ud.clipping)
         return 0;
@@ -428,14 +275,14 @@ long ifsquished(short i, short p)
     return 0;
 }
 
-void hitradius( short i, long  r, long  hp1, long  hp2, long  hp3, long  hp4 )
+void hitradius( short i, int  r, int  hp1, int  hp2, int  hp3, int  hp4 )
 {
     spritetype *s,*sj;
     walltype *wal;
-    long d, q, x1, y1;
-    long sectcnt, sectend, dasect, startwall, endwall, nextsect;
+    int d, q, x1, y1;
+    int sectcnt, sectend, dasect, startwall, endwall, nextsect;
     short j,k,p,x,nextj,sect;
-    char statlist[] = {0,1,6,10,12,2,5};
+    unsigned char statlist[] = {0,1,6,10,12,2,5};
     short *tempshort = (short *)tempbuf;
 
     s = &sprite[i];
@@ -609,9 +456,9 @@ void hitradius( short i, long  r, long  hp1, long  hp2, long  hp3, long  hp4 )
 }
 
 
-int movesprite(short spritenum, long xchange, long ychange, long zchange, unsigned long cliptype)
+int movesprite(short spritenum, int xchange, int ychange, int zchange, unsigned int cliptype)
 {
-    long daz,h, oldx, oldy;
+    int daz,h, oldx, oldy;
     short retval, dasectnum, a, cd;
     char bg;
 
@@ -629,7 +476,7 @@ int movesprite(short spritenum, long xchange, long ychange, long zchange, unsign
 
     dasectnum = sprite[spritenum].sectnum;
 
-	daz = sprite[spritenum].z;
+    daz = sprite[spritenum].z;
     h = ((tilesizy[sprite[spritenum].picnum]*sprite[spritenum].yrepeat)<<1);
     daz -= h;
 
@@ -679,7 +526,7 @@ int movesprite(short spritenum, long xchange, long ychange, long zchange, unsign
                 clipmove(&sprite[spritenum].x,&sprite[spritenum].y,&daz,&dasectnum,((xchange*TICSPERFRAME)<<11),((ychange*TICSPERFRAME)<<11),8L,(4<<8),(4<<8),cliptype);
         else
             retval =
-                clipmove(&sprite[spritenum].x,&sprite[spritenum].y,&daz,&dasectnum,((xchange*TICSPERFRAME)<<11),((ychange*TICSPERFRAME)<<11),(long)(sprite[spritenum].clipdist<<2),(4<<8),(4<<8),cliptype);
+                clipmove(&sprite[spritenum].x,&sprite[spritenum].y,&daz,&dasectnum,((xchange*TICSPERFRAME)<<11),((ychange*TICSPERFRAME)<<11),(int)(sprite[spritenum].clipdist<<2),(4<<8),(4<<8),cliptype);
     }
 
     if( dasectnum >= 0)
@@ -692,14 +539,14 @@ int movesprite(short spritenum, long xchange, long ychange, long zchange, unsign
         if (retval == 0)
             return(16384+dasectnum);
 
-	return(retval);
+    return(retval);
 }
 
 
-short ssp(short i,unsigned long cliptype) //The set sprite function
+short ssp(short i,unsigned int cliptype) //The set sprite function
 {
     spritetype *s;
-    long movetype;
+    int movetype;
 
     s = &sprite[i];
 
@@ -757,7 +604,7 @@ void lotsofpaper(spritetype *s, short n)
 
 void guts(spritetype *s,short gtype, short n, short p)
 {
-    long gutz,floorz;
+    int gutz,floorz;
     short i,a,j;
     char sx,sy;
     signed char pal;
@@ -795,7 +642,7 @@ void guts(spritetype *s,short gtype, short n, short p)
 
 void gutsdir(spritetype *s,short gtype, short n, short p)
 {
-    long gutz,floorz;
+    int gutz,floorz;
     short i,a,j;
     char sx,sy;
 
@@ -821,7 +668,7 @@ void gutsdir(spritetype *s,short gtype, short n, short p)
 
 void setsectinterpolate(short i)
 {
-    long j, k, startwall,endwall;
+    int j, k, startwall,endwall;
 
     startwall = sector[SECT].wallptr;
     endwall = startwall+sector[SECT].wallnum;
@@ -865,7 +712,7 @@ void ms(short i)
     //T1,T2 and T3 are used for all the sector moving stuff!!!
 
     short startwall,endwall,x;
-    long tx,ty,j,k;
+    int tx,ty,j,k;
     spritetype *s;
 
     s = &sprite[i];
@@ -893,7 +740,7 @@ void ms(short i)
 
 void movefta(void)
 {
-    long x, px, py, sx, sy;
+    int x, px, py, sx, sy;
     short i, j, p, psect, ssect, nexti;
     spritetype *s;
 
@@ -1083,7 +930,7 @@ void movecyclers(void)
 {
     short q, j, x, t, s, *c;
     walltype *wal;
-    char cshade;
+    unsigned char cshade;
 
     for(q=numcyclers-1;q>=0;q--)
     {
@@ -1165,7 +1012,7 @@ short otherp;
 void moveplayers(void) //Players
 {
     short i , nexti;
-    long otherx;
+    int otherx;
     spritetype *s;
     struct player_struct *p;
 
@@ -1279,9 +1126,9 @@ void moveplayers(void) //Players
                 s->xvel = 128;
                 s->ang = p->ang;
                 s->extra++;
-                //IFMOVING;		// JBF 20040825: is really "if (ssp(i,CLIPMASK0)) ;" which is probably
-		ssp(i,CLIPMASK0);	// not the safest of ideas because a zealous optimiser probably sees
-					// it as redundant, so I'll call the "ssp(i,CLIPMASK0)" explicitly.
+                //IFMOVING;     // JBF 20040825: is really "if (ssp(i,CLIPMASK0)) ;" which is probably
+        ssp(i,CLIPMASK0);   // not the safest of ideas because a zealous optimiser probably sees
+                    // it as redundant, so I'll call the "ssp(i,CLIPMASK0)" explicitly.
             }
             else
             {
@@ -1304,7 +1151,7 @@ void moveplayers(void) //Players
 void movefx(void)
 {
     short i, j, nexti, p;
-    long x, ht;
+    int x, ht;
     spritetype *s;
 
     i = headspritestat[11];
@@ -1407,7 +1254,7 @@ void movefallers(void)
 {
     short i, nexti, sect, j;
     spritetype *s;
-    long x;
+    int x;
 
     i = headspritestat[12];
     while(i >= 0)
@@ -1504,7 +1351,7 @@ void movefallers(void)
 void movestandables(void)
 {
     short i, j, k, m, nexti, nextj, nextk, p=0, q, sect;
-    long l=0, x, *t, x1, y1;
+    int l=0, x, *t, x1, y1;
     spritetype *s;
 
     i = headspritestat[6];
@@ -1557,8 +1404,8 @@ void movestandables(void)
                     s->picnum = CRANE+1;
                     s->xvel += 8;
                 }
-                //IFMOVING;	// JBF 20040825: see my rant above about this
-		ssp(i,CLIPMASK0);
+                //IFMOVING; // JBF 20040825: see my rant above about this
+        ssp(i,CLIPMASK0);
                 if(sect == t[1])
                     t[0]++;
             }
@@ -1653,8 +1500,8 @@ void movestandables(void)
                 if( s->xvel < 192 )
                     s->xvel += 8;
                 s->ang = getangle(msx[t[4]]-s->x,msy[t[4]]-s->y);
-                //IFMOVING;	// JBF 20040825: see my rant above about this
-		ssp(i,CLIPMASK0);
+                //IFMOVING; // JBF 20040825: see my rant above about this
+        ssp(i,CLIPMASK0);
                 if( ((s->x-msx[t[4]])*(s->x-msx[t[4]])+(s->y-msy[t[4]])*(s->y-msy[t[4]]) ) < (128*128) )
                     t[0]++;
             }
@@ -2131,8 +1978,8 @@ void movestandables(void)
                     camsprite = -1;
                     T1 = 0;
                     //loadtile(s->picnum);
-		    //invalidatetile(s->picnum,-1,255);
-		    walock[TILE_VIEWSCR] = 199;
+            //invalidatetile(s->picnum,-1,255);
+            walock[TILE_VIEWSCR] = 199;
                 }
 
                 goto BOLT;
@@ -2404,7 +2251,7 @@ void movestandables(void)
 
 void bounce(short i)
 {
-    long k, l, daang, dax, day, daz, xvect, yvect, zvect;
+    int k, l, daang, dax, day, daz, xvect, yvect, zvect;
     short hitsect;
     spritetype *s = &sprite[i];
 
@@ -2444,8 +2291,8 @@ void bounce(short i)
 void moveweapons(void)
 {
     short i, j, k, nexti, p, q, tempsect;
-    long dax,day,daz, x, l, ll, x1, y1;
-    unsigned long qq;
+    int dax,day,daz, x, l, ll, x1, y1;
+    unsigned int qq;
     spritetype *s;
 
     i = headspritestat[4];
@@ -2790,7 +2637,7 @@ void movetransports(void)
 {
     char warpspriteto;
     short i, j, k, l, p, sect, sectlotag, nexti, nextj, nextk;
-    long ll,onfloorz,q;
+    int ll,onfloorz,q;
 
     i = headspritestat[9]; //Transporters
 
@@ -3130,7 +2977,7 @@ void movetransports(void)
 
 void moveactors(void)
 {
-    long x, m, l, *t;
+    int x, m, l, *t;
     short a, i, j, nexti, nextj, sect, p;
     spritetype *s;
     unsigned short k;
@@ -3844,14 +3691,14 @@ void moveactors(void)
                             t[0] = -1;
                             x = ldist(s,&sprite[t[5]]);
                             if(x < 768) {
-				    sprite[t[5]].xrepeat = 0;
+                    sprite[t[5]].xrepeat = 0;
 
-				    // JBF 20041129: a slimer eating another enemy really ought
-				    // to decrease the maximum kill count by one.
-				    // JBF 20051024: additionally, the enemy has to be alive for
-				    // the max enemy count to be decremented.
-				    if (sprite[t[5]].extra > 0) ps[myconnectindex].max_actors_killed--;
-			    }
+                    // JBF 20041129: a slimer eating another enemy really ought
+                    // to decrease the maximum kill count by one.
+                    // JBF 20051024: additionally, the enemy has to be alive for
+                    // the max enemy count to be decremented.
+                    if (sprite[t[5]].extra > 0) ps[myconnectindex].max_actors_killed--;
+                }
                         }
                     }
 
@@ -4095,19 +3942,19 @@ void moveactors(void)
 
                 DETONATEB:
 
-		namBoom = 0;
-		if( ( l >= 0 && ps[l].hbomb_on == 0 ) || t[3] == 1)
-			namBoom=1;
-		if (NAM) {
-			if( s->picnum == HEAVYHBOMB)
-			{
-				s->extra--;	// FIXME: bug
-				if(s->extra <= 0)
-					namBoom=1;
-			}
-		}
+        namBoom = 0;
+        if( ( l >= 0 && ps[l].hbomb_on == 0 ) || t[3] == 1)
+            namBoom=1;
+        if (NAM) {
+            if( s->picnum == HEAVYHBOMB)
+            {
+                s->extra--; // FIXME: bug
+                if(s->extra <= 0)
+                    namBoom=1;
+            }
+        }
 
-		if (namBoom)
+        if (namBoom)
                 {
                     t[4]++;
 
@@ -4409,7 +4256,7 @@ void moveactors(void)
 void moveexplosions(void)  // STATNUM 5
 {
     short i, j, k, nexti, sect, p;
-    long l, x, *t;
+    int l, x, *t;
     spritetype *s;
 
     i = headspritestat[5];
@@ -4536,7 +4383,7 @@ void moveexplosions(void)  // STATNUM 5
                 goto BOLT;
 
             case FRAMEEFFECT1_13:
-		if (PLUTOPAK) goto BOLT;	// JBF: ideally this should never happen...
+        if (PLUTOPAK) goto BOLT;    // JBF: ideally this should never happen...
             case FRAMEEFFECT1:
 
                 if(s->owner >= 0)
@@ -4943,7 +4790,7 @@ void moveexplosions(void)  // STATNUM 5
 
 void moveeffectors(void)   //STATNUM 3
 {
-    long q=0, l, m, x, st, j, *t;
+    int q=0, l, m, x, st, j, *t;
     short i, k, nexti, nextk, p, sh, nextj;
     spritetype *s;
     sectortype *sc;
@@ -4967,7 +4814,7 @@ void moveeffectors(void)   //STATNUM 3
         {
             case 0:
             {
-                long zchange = 0;
+                int zchange = 0;
 
                 zchange = 0;
 
@@ -5187,7 +5034,7 @@ void moveeffectors(void)   //STATNUM 3
 
                 if(s->owner == -1)
                 {
-                    Bsprintf(tempbuf,"Could not find any locators for SE# 6 and 14 with a hitag of %ld.\n",t[3]);
+                    Bsprintf(tempbuf,"Could not find any locators for SE# 6 and 14 with a hitag of %d.\n",t[3]);
                     gameexit(tempbuf);
                 }
 
@@ -6502,7 +6349,7 @@ void moveeffectors(void)   //STATNUM 3
                 if( t[0] == 0 ) break;
 
                 if( s->ang == 1536 )
-                    l = (long) &sc->ceilingz;
+                    l = (long) &sc->ceilingz;   //XXXXXX
                 else
                     l = (long) &sc->floorz;
 
@@ -6751,7 +6598,7 @@ void moveeffectors(void)   //STATNUM 3
                     {
                         if(cansee(s->x,s->y,s->z,SECT,ps[p].posx,ps[p].posy,ps[p].posz,ps[p].cursectnum))
                         {
-                            if(x < (long)((unsigned)sh))
+                            if(x < (int)((unsigned)sh))
                             {
                                 ud.camerasprite = i;
                                 t[0] = 999;
@@ -6871,7 +6718,7 @@ void moveeffectors(void)   //STATNUM 3
                 break;
             case 29:
                 s->hitag += 64;
-                l = mulscale12((long)s->yvel,sintable[s->hitag&2047]);
+                l = mulscale12((int)s->yvel,sintable[s->hitag&2047]);
                 sc->floorz = s->z + l;
                 break;
             case 31: // True Drop Floor

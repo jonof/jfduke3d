@@ -36,7 +36,7 @@ static void  **lumpcache;
 static lumpinfo_t *lumpinfo;              // location of each lump on disk
 static boolean RTS_Started = false;
 
-char lumplockbyte[11];
+unsigned char lumplockbyte[11];
 
 /*
 ============================================================================
@@ -72,30 +72,33 @@ int32 RTS_AddFile (char *filename)
 //      FIXME: shared opens
 
    handle = kopen4load(filename, 0);
-   if (handle < 0) {
-	initprintf("RTS file %s was not found\n",filename);
-	return -1;
-   }
+   if (handle < 0)
+      {
+      initprintf("RTS file %s was not found\n",filename);
+      return -1;
+      }
 
    startlump = numlumps;
 
    // WAD file
    initprintf("    Adding %s.\n",filename);
    kread( handle, &header, sizeof( header ) );
-   if (strncmp(header.identification,"IWAD",4)) {
-	initprintf("RTS file %s doesn't have IWAD id\n",filename);
-	kclose(handle);
-	return -1;
-   }
+   if (strncmp(header.identification,"IWAD",4))
+      {
+      initprintf("RTS file %s doesn't have IWAD id\n",filename);
+      kclose(handle);
+      return -1;
+      }
    header.numlumps = IntelLong(header.numlumps);
    header.infotableofs = IntelLong(header.infotableofs);
    length = header.numlumps*sizeof(filelump_t);
    fileinfo = fileinfoo = (filelump_t*)malloc (length);
-   if (!fileinfo) {
-	initprintf("RTS file could not allocate header info\n");
-	kclose(handle);
-	return -1;
-   }
+   if (!fileinfo)
+      {
+      initprintf("RTS file could not allocate header info\n");
+      kclose(handle);
+      return -1;
+      }
    klseek (handle, header.infotableofs, SEEK_SET);
    kread(handle, fileinfo, length);
 
@@ -103,10 +106,11 @@ int32 RTS_AddFile (char *filename)
 // Fill in lumpinfo
 //
    lump_p = realloc(lumpinfo, (numlumps + header.numlumps)*sizeof(lumpinfo_t));
-   if (!lump_p) {
-	kclose(handle);
-	return -1;
-   }
+   if (!lump_p)
+      {
+      kclose(handle);
+      return -1;
+      }
    lumpinfo = lump_p;
 
    numlumps += header.numlumps;
@@ -243,18 +247,18 @@ void *RTS_GetSound (int32 lump)
       Error ("RTS_GetSound: %i >= %i\n",lump,numlumps);
 
    if (lumpcache[lump] == NULL)
-   {
+      {
       lumplockbyte[lump] = 200;
-      allocache((long *)&lumpcache[lump],(long)RTS_SoundLength(lump-1),&lumplockbyte[lump]);	// JBF 20030910: char * => long *
+      allocache((void **)&lumpcache[lump],(int)RTS_SoundLength(lump-1),&lumplockbyte[lump]);
       RTS_ReadLump(lump, lumpcache[lump]);
-   }
-   else
-   {
+      }
+      else
+      {
       if (lumplockbyte[lump] < 200)
          lumplockbyte[lump] = 200;
       else
          lumplockbyte[lump]++;
-   }
+      }
    return lumpcache[lump];
 }
 

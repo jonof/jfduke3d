@@ -39,7 +39,7 @@ Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
 
 #define MUSIC_ID  -65536
 
-long backflag,numenvsnds;
+int backflag,numenvsnds;
 
 static int MusicIsWaveform = 0;
 static char * MusicPtr = 0;
@@ -218,7 +218,7 @@ void MusicSetVolume(int volume)
    }
 }
 
-int USRHOOKS_GetMem(char **ptr, unsigned long size )
+int USRHOOKS_GetMem(char **ptr, unsigned int size )
 {
    *ptr = malloc(size);
 
@@ -235,7 +235,7 @@ int USRHOOKS_FreeMem(char *ptr)
    return( USRHOOKS_Ok);
 }
 
-char menunum=0;
+unsigned char menunum=0;
 
 void intomenusounds(void)
 {
@@ -336,7 +336,7 @@ void stopmusic(void)
 
 char loadsound(unsigned short num)
 {
-    long   fp, l;
+    int   fp, l;
 
     if(num >= NUM_SOUNDS || SoundToggle == 0) return 0;
     if (FXDevice < 0) return 0;
@@ -354,15 +354,15 @@ char loadsound(unsigned short num)
 
     Sound[num].lock = 200;
 
-    allocache((long *)&Sound[num].ptr,l,(char *)&Sound[num].lock);
+    allocache((void **)&Sound[num].ptr,l,&Sound[num].lock);
     kread( fp, Sound[num].ptr , l);
     kclose( fp );
     return 1;
 }
 
-int xyzsound(short num,short i,long x,long y,long z)
+int xyzsound(short num,short i,int x,int y,int z)
 {
-    long sndist, cx, cy, cz, j,k;
+    int sndist, cx, cy, cz, j,k;
     short pitche,pitchs,cs;
     int voice, sndang, ca, pitch;
 
@@ -498,7 +498,7 @@ void sound(short num)
 {
     short pitch,pitche,pitchs,cx;
     int voice;
-    long start;
+    int start;
 
     if (FXDevice < 0) return;
     if(SoundToggle==0) return;
@@ -549,7 +549,7 @@ int spritesound(unsigned short num, short i)
     return xyzsound(num,i,SX,SY,SZ);
 }
 
-void stopspritesound(short num, short i)
+void stopspritesound(short num, short UNUSED(i))
 {
 	stopsound(num);
 }
@@ -581,7 +581,7 @@ void stopenvsound(short num,short i)
 
 void pan3dsound(void)
 {
-    long sndist, sx, sy, sz, cx, cy, cz;
+    int sndist, sx, sy, sz, cx, cy, cz;
     short sndang,ca,j,k,i,cs;
 
     numenvsnds = 0;
@@ -704,7 +704,7 @@ void testcallback(unsigned int num)
 
 void clearsoundlocks(void)
 {
-    long i;
+    int i;
 
     for(i=0;i<NUM_SOUNDS;i++)
         if(Sound[i].lock >= 200)

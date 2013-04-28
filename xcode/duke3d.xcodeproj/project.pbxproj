@@ -396,7 +396,7 @@
 			children = (
 				ABD768D70A73CB4D006C27C1 /* jfmact */,
 				AB69BCFE0A73C1B200F3DCB8 /* src */,
-				AB69BD450A73C41B00F3DCB8 /* osx */,
+				AB69BD450A73C41B00F3DCB8 /* xcode */,
 				ABD769280A73CE40006C27C1 /* game_icon.icns */,
 				ABD769290A73CE40006C27C1 /* game.bmp */,
 			);
@@ -423,14 +423,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		AB69BD450A73C41B00F3DCB8 /* osx */ = {
+		AB69BD450A73C41B00F3DCB8 /* xcode */ = {
 			isa = PBXGroup;
 			children = (
 				AB69BD080A73C21E00F3DCB8 /* JFDuke3D-Info.plist */,
 				AB69BD330A73C3EC00F3DCB8 /* game.osxmain.nib */,
 				AB69BD340A73C3EC00F3DCB8 /* startwin.game.nib */,
 			);
-			name = osx;
+			name = xcode;
 			sourceTree = "<group>";
 		};
 		ABD768D70A73CB4D006C27C1 /* jfmact */ = {
@@ -744,16 +744,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = (
-					ppc,
+					x86_64,
 					i386,
+					ppc,
 				);
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
-					"~/Library/Frameworks",
-					/Library/Frameworks,
-					"../../jfaudiolib.git/third-party",
+					"../jfaudiolib/third-party",
+					"$(HOME)/Library/Frameworks",
 				);
-				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
+				GCC_CHAR_IS_UNSIGNED_CHAR = NO;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -766,14 +766,18 @@
 					NOASM,
 					RENDERTYPESDL,
 				);
-				GCC_VERSION = 4.0;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
-					../../jfmact.git,
-					../../jfaudiolib.git/include,
-					../source,
-					../../jfbuild.git/include,
+					../src,
+					../jfbuild/include,
+					../jfaudiolib/include,
 				);
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.4u.sdk";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				WARNING_CFLAGS = (
+					"-W",
+					"-Wall",
+					"-Wno-unused-variable",
+				);
 			};
 			name = Debug;
 		};
@@ -781,16 +785,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = (
-					ppc,
+					x86_64,
 					i386,
+					ppc,
 				);
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
-					"~/Library/Frameworks",
-					/Library/Frameworks,
-					"../../jfaudiolib.git/third-party",
+					"../jfaudiolib/third-party",
+					"$(HOME)/Library/Frameworks",
 				);
-				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
+				GCC_CHAR_IS_UNSIGNED_CHAR = NO;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -802,14 +806,18 @@
 					NOASM,
 					RENDERTYPESDL,
 				);
-				GCC_VERSION = 4.0;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
-					../../jfmact.git,
-					../../jfaudiolib.git/include,
-					../source,
-					../../jfbuild.git/include,
+					../src,
+					../jfbuild/include,
+					../jfaudiolib/include,
 				);
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.4u.sdk";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				WARNING_CFLAGS = (
+					"-W",
+					"-Wall",
+					"-Wno-unused-variable",
+				);
 			};
 			name = Release;
 		};
@@ -817,10 +825,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				INFOPLIST_FILE = "JFDuke3D-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				OTHER_LDFLAGS = "-lstdc++";
 				PREBINDING = NO;
 				PRODUCT_NAME = JFDuke3D;
-				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -829,10 +837,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				INFOPLIST_FILE = "JFDuke3D-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				OTHER_LDFLAGS = "-lstdc++";
 				PREBINDING = NO;
 				PRODUCT_NAME = JFDuke3D;
-				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

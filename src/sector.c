@@ -57,7 +57,7 @@ short callsound(short sn,short whatsprite)
                         spritesound(SLT,whatsprite);
                         if(SHT && SLT != SHT && SHT < NUM_SOUNDS)
                             stopspritesound(SHT,T6);
-			T6 = whatsprite;
+                        T6 = whatsprite;
                     }
 
                     if( (sector[SECT].lotag&0xff) != 22)
@@ -69,7 +69,7 @@ short callsound(short sn,short whatsprite)
                 if(SHT) spritesound(SHT,whatsprite);
                 if( (soundm[SLT]&1) || ( SHT && SHT != SLT ) )
                     stopspritesound(SLT,T6);
-		T6 = whatsprite;
+                T6 = whatsprite;
                 T1 = 0;
             }
             return SLT;
@@ -202,27 +202,27 @@ short checkcursectnums(short sect)
     return -1;
 }
 
-long ldist(spritetype *s1,spritetype *s2)
+int ldist(spritetype *s1,spritetype *s2)
 {
-    long vx,vy;
+    int vx,vy;
     vx = s1->x - s2->x;
     vy = s1->y - s2->y;
     return(FindDistance2D(vx,vy) + 1);
 }
 
-long dist(spritetype *s1,spritetype *s2)
+int dist(spritetype *s1,spritetype *s2)
 {
-    long vx,vy,vz;
+    int vx,vy,vz;
     vx = s1->x - s2->x;
     vy = s1->y - s2->y;
     vz = s1->z - s2->z;
     return(FindDistance3D(vx,vy,vz>>4));
 }
 
-short findplayer(spritetype *s,long *d)
+short findplayer(spritetype *s,int *d)
 {
     short j, closest_player;
-    long x, closest;
+    int x, closest;
 
     if(ud.multimode < 2)
     {
@@ -247,10 +247,10 @@ short findplayer(spritetype *s,long *d)
     return closest_player;
 }
 
-short findotherplayer(short p,long *d)
+short findotherplayer(short p,int *d)
 {
     short j, closest_player;
-    long x, closest;
+    int x, closest;
 
     closest = 0x7fffffff;
     closest_player = p;
@@ -275,13 +275,13 @@ short findotherplayer(short p,long *d)
 
 void doanimations(void)
 {
-	long i, j, a, p, v, dasect;
+    int i, j, a, p, v, dasect;
 
-	for(i=animatecnt-1;i>=0;i--)
-	{
-		a = *animateptr[i];
-		v = animatevel[i]*TICSPERFRAME;
-		dasect = animatesect[i];
+    for(i=animatecnt-1;i>=0;i--)
+    {
+        a = *animateptr[i];
+        v = animatevel[i]*TICSPERFRAME;
+        dasect = animatesect[i];
 
         if (a == animategoal[i])
         {
@@ -331,42 +331,42 @@ void doanimations(void)
                 }
         }
 
-		*animateptr[i] = a;
-	}
+        *animateptr[i] = a;
+    }
 }
 
-int getanimationgoal(long *animptr)
+int getanimationgoal(int *animptr)
 {
-	long i, j;
+    int i, j;
 
-	j = -1;
+    j = -1;
     for(i=animatecnt-1;i>=0;i--)
-        if (animptr == (long *)animateptr[i])
-		{
-			j = i;
-			break;
-		}
-	return(j);
+        if (animptr == animateptr[i])
+        {
+            j = i;
+            break;
+        }
+    return(j);
 }
 
-int setanimation(short animsect,long *animptr, long thegoal, long thevel)
+int setanimation(short animsect,int *animptr, int thegoal, int thevel)
 {
-	long i, j;
+    int i, j;
 
-	if (animatecnt >= MAXANIMATES-1)
-		return(-1);
+    if (animatecnt >= MAXANIMATES-1)
+        return(-1);
 
-	j = animatecnt;
+    j = animatecnt;
     for(i=0;i<animatecnt;i++)
-		if (animptr == animateptr[i])
-		{
-			j = i;
-			break;
-		}
+        if (animptr == animateptr[i])
+        {
+            j = i;
+            break;
+        }
 
     animatesect[j] = animsect;
-	animateptr[j] = animptr;
-	animategoal[j] = thegoal;
+    animateptr[j] = animptr;
+    animategoal[j] = thegoal;
     if (thegoal >= *animptr)
        animatevel[j] = thevel;
     else
@@ -398,19 +398,19 @@ void animatecamsprite(void)
             OW = ps[screenpeek].newowner;
 
         else if(OW >= 0 && dist(&sprite[ps[screenpeek].i],&sprite[i]) < 2048) {
-	    if (waloff[TILE_VIEWSCR] == 0)
-		allocatepermanenttile(TILE_VIEWSCR,tilesizx[PN],tilesizy[PN]);
-	    else
-		walock[TILE_VIEWSCR] = 255;
+            if (waloff[TILE_VIEWSCR] == 0)
+                allocatepermanenttile(TILE_VIEWSCR,tilesizx[PN],tilesizy[PN]);
+            else
+                walock[TILE_VIEWSCR] = 255;
             xyzmirror(OW,/*PN*/TILE_VIEWSCR);
-	}
+        }
     }
     else T1++;
 }
 
 void animatewalls(void)
 {
-    long i, j, p, t;
+    int i, j, p, t;
 
     for(p=0;p < numanimwalls ;p++)
 //    for(p=numanimwalls-1;p>=0;p--)
@@ -553,7 +553,7 @@ char activatewarpelevators(short s,short d) //Parm = sectoreffectornum
 
 void operatesectors(short sn,short ii)
 {
-    long j=0, l, q, startwall, endwall;
+    int j=0, l, q, startwall, endwall;
     short i;
     char sect_error;
     sectortype *sptr;
@@ -601,8 +601,8 @@ void operatesectors(short sn,short ii)
 
         case 9:
         {
-            long dax,day,dax2,day2,sp;
-            long wallfind[2];
+            int dax,day,dax2,day2,sp;
+            int wallfind[2];
 
             startwall = sptr->wallptr;
             endwall = startwall+sptr->wallnum-1;
@@ -886,7 +886,7 @@ void operatesectors(short sn,short ii)
                 }
                 i = nextspritestat[i];
             }
-	    if (i<0) { OSD_Printf("WARNING: SE23 i<0!\n"); return; }	// JBF
+            if (i<0) { OSD_Printf("WARNING: SE23 i<0!\n"); return; }    // JBF
 
             l = sector[SECT].lotag&0x8000;
 
@@ -1158,11 +1158,11 @@ void operateforcefields(short s, short low)
 }
 
 
-char checkhitswitch(short snum,long w,char switchtype)
+char checkhitswitch(short snum,int w,char switchtype)
 {
     char switchpal;
     short i, x, lotag,hitag,picnum,correctdips,numdips;
-    long sx,sy;
+    int sx,sy;
 
     if(w < 0) return 0;
     correctdips = 1;
@@ -1564,7 +1564,7 @@ void breakwall(short newpn,short spr,short dawallnum)
     lotsofglass(spr,dawallnum,10);
 }
 
-void checkhitwall(short spr,short dawallnum,long x,long y,long z,short atwith)
+void checkhitwall(short spr,short dawallnum,int x,int y,int z,short atwith)
 {
     short j, i, sn = -1, darkestwall;
     signed char nfloors,nceilings;
@@ -2417,7 +2417,7 @@ void cheatkeys(short snum)
 {
     short i, k;
     char dainv;
-    unsigned long sb_snum, j;
+    unsigned int sb_snum, j;
     struct player_struct *p;
 
     sb_snum = sync[snum].bits;
@@ -2495,9 +2495,9 @@ void cheatkeys(short snum)
 
         if(ud.pause_on) return;
 
-        if(sprite[p->i].extra <= 0) return;		// if dead...
+        if(sprite[p->i].extra <= 0) return;     // if dead...
 
-        if( sb_snum&(1<<30) && p->newowner == -1 )	// inventory button generates event for selected item
+        if( sb_snum&(1<<30) && p->newowner == -1 )  // inventory button generates event for selected item
         {
             switch(p->inven_icon)
             {
@@ -2527,7 +2527,7 @@ void cheatkeys(short snum)
                 p->inven_icon = 2;
                 FTA(12,p);
             }
-            return;		// is there significance to returning?
+            return;     // is there significance to returning?
         }
 
         if(p->newowner == -1)
@@ -2615,31 +2615,31 @@ void cheatkeys(short snum)
         if( j > 0 && p->kickback_pic > 0)
             p->wantweaponfire = j;
 
-	if(p->last_pissed_time <= (26*218) && p->show_empty_weapon == 0 && p->kickback_pic == 0 && p->quick_kick == 0 && sprite[p->i].xrepeat > 32 && p->access_incs == 0 && p->knee_incs == 0 )
+        if(p->last_pissed_time <= (26*218) && p->show_empty_weapon == 0 && p->kickback_pic == 0 && p->quick_kick == 0 && sprite[p->i].xrepeat > 32 && p->access_incs == 0 && p->knee_incs == 0 )
         {
             if(  ( p->weapon_pos == 0 || ( p->holster_weapon && p->weapon_pos == -9 ) ) )
             {
                 if(j == 10 || j == 11)
                 {
                     k = p->curr_weapon;
-                    j = ( j == 10 ? -1 : 1 );	// JBF: prev (-1) or next (1) weapon choice
+                    j = ( j == 10 ? -1 : 1 );   // JBF: prev (-1) or next (1) weapon choice
                     i = 0;
 
-                    while( ( k >= 0 && k < 10 ) || ( PLUTOPAK && k == GROW_WEAPON && (p->subweapon&(1<<GROW_WEAPON) ) ) )	// JBF 20040116: so we don't select grower with v1.3d
+                    while( ( k >= 0 && k < 10 ) || ( PLUTOPAK && k == GROW_WEAPON && (p->subweapon&(1<<GROW_WEAPON) ) ) )   // JBF 20040116: so we don't select grower with v1.3d
                     {
-			if(k == GROW_WEAPON)	// JBF: this is handling next/previous with the grower selected
+                        if(k == GROW_WEAPON)    // JBF: this is handling next/previous with the grower selected
                         {
-                            if(j == (unsigned long)-1)
+                            if(j == (unsigned int)-1)
                                 k = 5;
                             else k = 7;
 
                         }
                         else
                         {
-                           k += j;
-			   if (PLUTOPAK)	// JBF 20040116: so we don't select grower with v1.3d
-                           if( k == SHRINKER_WEAPON && (p->subweapon&(1<<GROW_WEAPON)) )	// JBF: activates grower
-                               k = GROW_WEAPON;							// if enabled
+                            k += j;
+                            if (PLUTOPAK)    // JBF 20040116: so we don't select grower with v1.3d
+                                if( k == SHRINKER_WEAPON && (p->subweapon&(1<<GROW_WEAPON)) )    // JBF: activates grower
+                                    k = GROW_WEAPON;                         // if enabled
                         }
 
                         if(k == -1) k = 9;
@@ -2647,28 +2647,28 @@ void cheatkeys(short snum)
 
                         if( p->gotweapon[k] && p->ammo_amount[k] > 0 )
                         {
-			    if (PLUTOPAK)	// JBF 20040116: so we don't select grower with v1.3d
-                            if( k == SHRINKER_WEAPON && (p->subweapon&(1<<GROW_WEAPON)) )
-                                k = GROW_WEAPON;
+                            if (PLUTOPAK)   // JBF 20040116: so we don't select grower with v1.3d
+                                if( k == SHRINKER_WEAPON && (p->subweapon&(1<<GROW_WEAPON)) )
+                                    k = GROW_WEAPON;
                             j = k;
                             break;
                         }
-                        else	// JBF: grower with no ammo, but shrinker with ammo, switch to shrink
-                            if(PLUTOPAK && k == GROW_WEAPON && p->ammo_amount[GROW_WEAPON] == 0 && p->gotweapon[SHRINKER_WEAPON] && p->ammo_amount[SHRINKER_WEAPON] > 0)	// JBF 20040116: added PLUTOPAK so we don't select grower with v1.3d
+                        else    // JBF: grower with no ammo, but shrinker with ammo, switch to shrink
+                            if(PLUTOPAK && k == GROW_WEAPON && p->ammo_amount[GROW_WEAPON] == 0 && p->gotweapon[SHRINKER_WEAPON] && p->ammo_amount[SHRINKER_WEAPON] > 0)    // JBF 20040116: added PLUTOPAK so we don't select grower with v1.3d
                         {
                             j = SHRINKER_WEAPON;
                             p->subweapon &= ~(1<<GROW_WEAPON);
                             break;
                         }
-                        else	// JBF: shrinker with no ammo, but grower with ammo, switch to grow
-                            if(PLUTOPAK && k == SHRINKER_WEAPON && p->ammo_amount[SHRINKER_WEAPON] == 0 && p->gotweapon[SHRINKER_WEAPON] && p->ammo_amount[GROW_WEAPON] > 0)	// JBF 20040116: added PLUTOPAK so we don't select grower with v1.3d
+                        else    // JBF: shrinker with no ammo, but grower with ammo, switch to grow
+                            if(PLUTOPAK && k == SHRINKER_WEAPON && p->ammo_amount[SHRINKER_WEAPON] == 0 && p->gotweapon[SHRINKER_WEAPON] && p->ammo_amount[GROW_WEAPON] > 0)    // JBF 20040116: added PLUTOPAK so we don't select grower with v1.3d
                         {
                             j = GROW_WEAPON;
                             p->subweapon |= (1<<GROW_WEAPON);
                             break;
                         }
 
-                        i++;	// absolutely no weapons, so use foot
+                        i++;    // absolutely no weapons, so use foot
                         if(i == 10)
                         {
                             addweapon( p, KNEE_WEAPON );
@@ -2695,7 +2695,7 @@ void cheatkeys(short snum)
                     }
                 }
 
-                if(j == SHRINKER_WEAPON && PLUTOPAK)	// JBF 20040116: so we don't select the grower with v1.3d
+                if(j == SHRINKER_WEAPON && PLUTOPAK)    // JBF 20040116: so we don't select the grower with v1.3d
                 {
                     if(screenpeek == snum) pus = NUMPAGES;
 
@@ -2723,12 +2723,12 @@ void cheatkeys(short snum)
                         p->subweapon &= ~(1<<GROW_WEAPON);
                 }
 
-		if(p->holster_weapon)
+                if(p->holster_weapon)
                 {
                     sb_snum |= 1<<19;
                     p->weapon_pos = -9;
                 }
-                else if( (long)j >= 0 && p->gotweapon[j] && (unsigned long)p->curr_weapon != j ) switch(j)
+                else if( (int)j >= 0 && p->gotweapon[j] && (unsigned int)p->curr_weapon != j ) switch(j)
                 {
                     case KNEE_WEAPON:
                         addweapon( p, KNEE_WEAPON );
@@ -2870,7 +2870,7 @@ void cheatkeys(short snum)
             {
                 j = max_player_health-sprite[p->i].extra;
 
-                if((unsigned long)p->firstaid_amount > j)
+                if((unsigned int)p->firstaid_amount > j)
                 {
                     p->firstaid_amount -= j;
                     sprite[p->i].extra = max_player_health;
@@ -2919,13 +2919,13 @@ void cheatkeys(short snum)
 
         if(sb_snum&(1<<28) && p->one_eighty_count == 0) {
             p->one_eighty_count = -1024;
-	}
+    }
     }
 }
 
 void checksectors(short snum)
 {
-    long i = -1,oldz;
+    int i = -1,oldz;
     struct player_struct *p;
     short j,hitscanwall;
 

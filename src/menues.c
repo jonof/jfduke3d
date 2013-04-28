@@ -34,12 +34,12 @@ Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
 
 
 struct savehead {
-	char name[19];
-	int32 numplr,volnum,levnum,plrskl;
-	char boardfn[BMAX_PATH];
+    char name[19];
+    int32 numplr,volnum,levnum,plrskl;
+    char boardfn[BMAX_PATH];
 };
 
-extern char inputloc;
+extern short inputloc;
 extern int recfilep;
 //extern char vgacompatible;
 short probey=0,lastprobey=0,last_menu,globalskillsound=-1;
@@ -56,7 +56,7 @@ static int function, whichkey;
 static int changesmade, newvidmode, curvidmode, newfullscreen;
 static int vidsets[16] = { -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 }, curvidset, newvidset = 0;
 
-static char *mousebuttonnames[] = { "Left", "Right", "Middle", "Thumb", "Wheel Down", "Wheel Up" };
+static const char *mousebuttonnames[] = { "Left", "Right", "Middle", "Thumb", "Wheel Down", "Wheel Up" };
 
 
 void cmenu(short cm)
@@ -76,19 +76,6 @@ void cmenu(short cm)
         probey = 1;
     else probey = 0;
     lastprobey = -1;
-}
-
-
-void savetemp(char *fn,long daptr,long dasiz)
-{
-    FILE *fp;
-
-	if ((fp = fopen(fn,"wb")) == (FILE *)NULL)
-		return;
-
-    fwrite((char *)daptr,dasiz,1,fp);
-
-    fclose(fp);
 }
 
 void getangplayers(short snum)
@@ -111,44 +98,44 @@ void getangplayers(short snum)
 
 int loadpheader(char spot,struct savehead *saveh)
 {
-	long i;
-	char fn[13];
-	long fil;
-	long bv;
+    int i;
+    char fn[13];
+    int fil;
+    int bv;
 
-	strcpy(fn, "game0.sav");
+    strcpy(fn, "game0.sav");
     fn[4] = spot+'0';
 
-	if ((fil = kopen4load(fn,0)) == -1) return(-1);
+    if ((fil = kopen4load(fn,0)) == -1) return(-1);
 
-	walock[TILE_LOADSHOT] = 255;
+    walock[TILE_LOADSHOT] = 255;
 
-	if (kdfread(&bv,4,1,fil) != 1) goto corrupt;
-	if(bv != BYTEVERSION) {
-		FTA(114,&ps[myconnectindex]);
-		kclose(fil);
-		return 1;
-	}
+    if (kdfread(&bv,4,1,fil) != 1) goto corrupt;
+    if(bv != BYTEVERSION) {
+        FTA(114,&ps[myconnectindex]);
+        kclose(fil);
+        return 1;
+    }
 
-	if (kdfread(&saveh->numplr,sizeof(int32),1,fil) != 1) goto corrupt;
+    if (kdfread(&saveh->numplr,sizeof(int32),1,fil) != 1) goto corrupt;
 
-	if (kdfread(saveh->name,19,1,fil) != 1) goto corrupt;
-	if (kdfread(&saveh->volnum,sizeof(int32),1,fil) != 1) goto corrupt;
-	if (kdfread(&saveh->levnum,sizeof(int32),1,fil) != 1) goto corrupt;
-	if (kdfread(&saveh->plrskl,sizeof(int32),1,fil) != 1) goto corrupt;
-	if (kdfread(saveh->boardfn,BMAX_PATH,1,fil) != 1) goto corrupt;
+    if (kdfread(saveh->name,19,1,fil) != 1) goto corrupt;
+    if (kdfread(&saveh->volnum,sizeof(int32),1,fil) != 1) goto corrupt;
+    if (kdfread(&saveh->levnum,sizeof(int32),1,fil) != 1) goto corrupt;
+    if (kdfread(&saveh->plrskl,sizeof(int32),1,fil) != 1) goto corrupt;
+    if (kdfread(saveh->boardfn,BMAX_PATH,1,fil) != 1) goto corrupt;
 
-	if (waloff[TILE_LOADSHOT] == 0) allocache(&waloff[TILE_LOADSHOT],320*200,&walock[TILE_LOADSHOT]);
-	tilesizx[TILE_LOADSHOT] = 200; tilesizy[TILE_LOADSHOT] = 320;
-	if (kdfread((char *)waloff[TILE_LOADSHOT],320,200,fil) != 200) goto corrupt;
-	invalidatetile(TILE_LOADSHOT,0,255);
+    if (waloff[TILE_LOADSHOT] == 0) allocache((void **)&waloff[TILE_LOADSHOT],320*200,&walock[TILE_LOADSHOT]);
+    tilesizx[TILE_LOADSHOT] = 200; tilesizy[TILE_LOADSHOT] = 320;
+    if (kdfread((char *)waloff[TILE_LOADSHOT],320,200,fil) != 200) goto corrupt;
+    invalidatetile(TILE_LOADSHOT,0,255);
 
-	kclose(fil);
+    kclose(fil);
 
-	return(0);
+    return(0);
 corrupt:
-	kclose(fil);
-	return 1;
+    kclose(fil);
+    return 1;
 }
 
 
@@ -158,9 +145,9 @@ int loadplayer(signed char spot)
     char fn[13];
     char mpfn[13];
     char *fnptr;
-    long fil, bv, i, j, x;
+    int fil, bv, i, j, x;
     int32 nump;
-    long ptrbuf[MAXTILES];
+    int ptrbuf[MAXTILES];
     
     assert(MAXTILES > MAXANIMATES);
     
@@ -252,7 +239,7 @@ int loadplayer(signed char spot)
 
     //Fake read because lseek won't work with compression
     walock[TILE_LOADSHOT] = 1;
-    if (waloff[TILE_LOADSHOT] == 0) allocache(&waloff[TILE_LOADSHOT],320*200,&walock[TILE_LOADSHOT]);
+    if (waloff[TILE_LOADSHOT] == 0) allocache((void **)&waloff[TILE_LOADSHOT],320*200,&walock[TILE_LOADSHOT]);
     tilesizx[TILE_LOADSHOT] = 200; tilesizy[TILE_LOADSHOT] = 320;
     if (kdfread((char *)waloff[TILE_LOADSHOT],320,200,fil) != 200) goto corrupt;
     invalidatetile(TILE_LOADSHOT,0,255);
@@ -275,8 +262,8 @@ int loadplayer(signed char spot)
     if (kdfread(po,sizeof(po),1,fil) != 1) goto corrupt;
     if (kdfread(&numanimwalls,sizeof(numanimwalls),1,fil) != 1) goto corrupt;
     if (kdfread(&animwall,sizeof(animwall),1,fil) != 1) goto corrupt;
-    if (kdfread(&msx[0],sizeof(long),sizeof(msx)/sizeof(long),fil) != sizeof(msx)/sizeof(long)) goto corrupt;
-    if (kdfread(&msy[0],sizeof(long),sizeof(msy)/sizeof(long),fil) != sizeof(msy)/sizeof(long)) goto corrupt;
+    if (kdfread(&msx[0],sizeof(int),sizeof(msx)/sizeof(int),fil) != sizeof(msx)/sizeof(int)) goto corrupt;
+    if (kdfread(&msy[0],sizeof(int),sizeof(msy)/sizeof(int),fil) != sizeof(msy)/sizeof(int)) goto corrupt;
     if (kdfread((short *)&spriteqloc,sizeof(short),1,fil) != 1) goto corrupt;
     if (kdfread((short *)&spriteqamount,sizeof(short),1,fil) != 1) goto corrupt;
     if (kdfread((short *)&spriteq[0],sizeof(short),spriteqamount,fil) != spriteqamount) goto corrupt;
@@ -297,7 +284,7 @@ int loadplayer(signed char spot)
     for(i=0;i<MAXTILES;i++)
         if(ptrbuf[i])
         {
-            actorscrptr[i] = (long *)(ptrbuf[i] + (long)&script[0]);
+            actorscrptr[i] = (int *)((intptr_t)&script[0] + ptrbuf[i]);
         }
 
     if (kdfread(&hittype[0],sizeof(struct weaponhit),MAXSPRITES,fil) != MAXSPRITES) goto corrupt;
@@ -309,7 +296,7 @@ int loadplayer(signed char spot)
     if (kdfread(&animatecnt,sizeof(animatecnt),1,fil) != 1) goto corrupt;
     if (kdfread(&animatesect[0],2,MAXANIMATES,fil) != MAXANIMATES) goto corrupt;
     if (kdfread(&ptrbuf[0],4,MAXANIMATES,fil) != MAXANIMATES) goto corrupt;
-    for(i = animatecnt-1;i>=0;i--) animateptr[i] = (long *)(ptrbuf[i] + (long)&sector[0]);
+    for(i = animatecnt-1;i>=0;i--) animateptr[i] = (int *)((intptr_t)&sector[0] + ptrbuf[i]);
     if (kdfread(&animategoal[0],4,MAXANIMATES,fil) != MAXANIMATES) goto corrupt;
     if (kdfread(&animatevel[0],4,MAXANIMATES,fil) != MAXANIMATES) goto corrupt;
 
@@ -458,20 +445,20 @@ int loadplayer(signed char spot)
 
      return(0);
 corrupt:
-	 Bsprintf(tempbuf,"Save game file \"%s\" is corrupt.",fnptr);
-	 gameexit(tempbuf);
-	 return -1;
+     Bsprintf(tempbuf,"Save game file \"%s\" is corrupt.",fnptr);
+     gameexit(tempbuf);
+     return -1;
 }
 
 int saveplayer(signed char spot)
 {
-    long i, j;
+    int i, j;
     char fn[13];
     char mpfn[13];
     char *fnptr;
     FILE *fil;
-    long bv = BYTEVERSION;
-    long ptrbuf[MAXTILES];
+    int bv = BYTEVERSION;
+    int ptrbuf[MAXTILES];
 
     assert(MAXTILES > MAXANIMATES);
     
@@ -521,7 +508,7 @@ int saveplayer(signed char spot)
 
     if (!waloff[TILE_SAVESHOT]) {
         walock[TILE_SAVESHOT] = 254;
-        allocache((long *)&waloff[TILE_SAVESHOT],200*320,&walock[TILE_SAVESHOT]);
+        allocache((void **)&waloff[TILE_SAVESHOT],200*320,&walock[TILE_SAVESHOT]);
         clearbuf((void*)waloff[TILE_SAVESHOT],(200*320)/4,0);
         walock[TILE_SAVESHOT] = 1;
     }
@@ -545,8 +532,8 @@ int saveplayer(signed char spot)
     dfwrite(po,sizeof(po),1,fil);
     dfwrite(&numanimwalls,sizeof(numanimwalls),1,fil);
     dfwrite(&animwall,sizeof(animwall),1,fil);
-    dfwrite(&msx[0],sizeof(long),sizeof(msx)/sizeof(long),fil);
-    dfwrite(&msy[0],sizeof(long),sizeof(msy)/sizeof(long),fil);
+    dfwrite(&msx[0],sizeof(int),sizeof(msx)/sizeof(int),fil);
+    dfwrite(&msy[0],sizeof(int),sizeof(msy)/sizeof(int),fil);
     dfwrite(&spriteqloc,sizeof(short),1,fil);
     dfwrite(&spriteqamount,sizeof(short),1,fil);
     dfwrite(&spriteq[0],sizeof(short),spriteqamount,fil);
@@ -567,7 +554,7 @@ int saveplayer(signed char spot)
     for(i=0;i<MAXTILES;i++)
         if(actorscrptr[i])
         {
-            ptrbuf[i] = ((long)actorscrptr[i] - (long)&script[0]);
+            ptrbuf[i] = (int)((intptr_t)actorscrptr[i] - (intptr_t)&script[0]);
         }
     dfwrite(&ptrbuf[0],4,MAXTILES,fil);
 
@@ -578,7 +565,7 @@ int saveplayer(signed char spot)
     dfwrite(&pskyoff[0],sizeof(pskyoff[0]),MAXPSKYTILES,fil);
     dfwrite(&animatecnt,sizeof(animatecnt),1,fil);
     dfwrite(&animatesect[0],2,MAXANIMATES,fil);
-    for(i = animatecnt-1;i>=0;i--) ptrbuf[i] = ((long)animateptr[i] - (long)&sector[0]);
+    for(i = animatecnt-1;i>=0;i--) ptrbuf[i] = (int)((intptr_t)animateptr[i] - (intptr_t)&sector[0]);
     dfwrite(&ptrbuf[0],4,MAXANIMATES,fil);
     dfwrite(&animategoal[0],4,MAXANIMATES,fil);
     dfwrite(&animatevel[0],4,MAXANIMATES,fil);
@@ -630,7 +617,7 @@ int saveplayer(signed char spot)
 
 ControlInfo minfo;
 
-long mi;
+int mi;
 
 static int probe_(int type,int x,int y,int i,int n)
 {
@@ -1048,38 +1035,38 @@ void dispnames(void)
 
 void clearfilenames(void)
 {
-	klistfree(finddirs);
-	klistfree(findfiles);
-	finddirs = findfiles = NULL;
-	numfiles = numdirs = 0;
+    klistfree(finddirs);
+    klistfree(findfiles);
+    finddirs = findfiles = NULL;
+    numfiles = numdirs = 0;
 }
 
 int getfilenames(char *path, char kind[])
 {
-	CACHE1D_FIND_REC *r;
-	
-	clearfilenames();
-	finddirs = klistpath(path,"*",CACHE1D_FIND_DIR);
-	findfiles = klistpath(path,kind,CACHE1D_FIND_FILE);
-	for (r = finddirs; r; r=r->next) numdirs++;
-	for (r = findfiles; r; r=r->next) numfiles++;
-	
-	finddirshigh = finddirs;
-	findfileshigh = findfiles;
-	currentlist = 0;
-	if (findfileshigh) currentlist = 1;
-	
-	return(0);
+    CACHE1D_FIND_REC *r;
+    
+    clearfilenames();
+    finddirs = klistpath(path,"*",CACHE1D_FIND_DIR);
+    findfiles = klistpath(path,kind,CACHE1D_FIND_FILE);
+    for (r = finddirs; r; r=r->next) numdirs++;
+    for (r = findfiles; r; r=r->next) numfiles++;
+    
+    finddirshigh = finddirs;
+    findfileshigh = findfiles;
+    currentlist = 0;
+    if (findfileshigh) currentlist = 1;
+    
+    return(0);
 }
 
-long quittimer = 0;
+int quittimer = 0;
 
 void menus(void)
 {
-	CACHE1D_FIND_REC *dir;
+    CACHE1D_FIND_REC *dir;
     short c,x,i;
-    long l,m;
-	char *p = NULL;
+    int l,m;
+    char *p = NULL;
 
     getpackets();
 
@@ -1148,109 +1135,109 @@ void menus(void)
             if( x >= -1 ) cmenu(100);
             break;
 
-		case 20001:
-        	rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
-	        menutext(160,24,0,0,"NETWORK GAME");
+        case 20001:
+            rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
+            menutext(160,24,0,0,"NETWORK GAME");
 
-			x = probe(160,100-18,18,3);
+            x = probe(160,100-18,18,3);
 
-			if (x == -1) cmenu(0);
-			else if (x == 2) cmenu(20010);
-			else if (x == 1) cmenu(20020);
-			else if (x == 0) cmenu(20002);
-			
-			menutext(160,100-18,0,0,"PLAYER SETUP");
-			menutext(160,100,0,0,"JOIN GAME");
-			menutext(160,100+18,0,0,"HOST GAME");
-	    	break;
+            if (x == -1) cmenu(0);
+            else if (x == 2) cmenu(20010);
+            else if (x == 1) cmenu(20020);
+            else if (x == 0) cmenu(20002);
+            
+            menutext(160,100-18,0,0,"PLAYER SETUP");
+            menutext(160,100,0,0,"JOIN GAME");
+            menutext(160,100+18,0,0,"HOST GAME");
+            break;
 
-		case 20002:
-		case 20003:
-        	rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
-	        menutext(160,24,0,0,"PLAYER SETUP");
+        case 20002:
+        case 20003:
+            rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
+            menutext(160,24,0,0,"PLAYER SETUP");
 
-			if (current_menu == 20002) {
-				x = probe(46,50,20,2);
+            if (current_menu == 20002) {
+                x = probe(46,50,20,2);
 
-				if (x == -1) cmenu(20001);					
-				else if (x == 0) {
-					strcpy(buf, myname);
-					inputloc = strlen(buf);
-					current_menu = 20003;
+                if (x == -1) cmenu(20001);                  
+                else if (x == 0) {
+                    strcpy(buf, myname);
+                    inputloc = strlen(buf);
+                    current_menu = 20003;
 
-					KB_ClearKeyDown(sc_Enter);
-    	            KB_ClearKeyDown(sc_kpad_Enter);
-					KB_FlushKeyboardQueue();
-				} else if (x == 1) {
-					// send colour update
-				}
-			} else {
-				x = strget(40+100,50-9,buf,31,0);
-				if (x) {
-					if (x == 1) {
-						strcpy(myname,buf);
-						// send name update
-					}
+                    KB_ClearKeyDown(sc_Enter);
+                    KB_ClearKeyDown(sc_kpad_Enter);
+                    KB_FlushKeyboardQueue();
+                } else if (x == 1) {
+                    // send colour update
+                }
+            } else {
+                x = strget(40+100,50-9,buf,31,0);
+                if (x) {
+                    if (x == 1) {
+                        strcpy(myname,buf);
+                        // send name update
+                    }
 
-	                KB_ClearKeyDown(sc_Enter);
-    	            KB_ClearKeyDown(sc_kpad_Enter);
-        	        KB_FlushKeyboardQueue();
+                    KB_ClearKeyDown(sc_Enter);
+                    KB_ClearKeyDown(sc_kpad_Enter);
+                    KB_FlushKeyboardQueue();
 
-					current_menu = 20002;
-				}
-			}
-			
-			menutext(40,50,0,0,"NAME");
-			if (current_menu == 20002) gametext(40+100,50-9,myname,0,2+8+16);
+                    current_menu = 20002;
+                }
+            }
+            
+            menutext(40,50,0,0,"NAME");
+            if (current_menu == 20002) gametext(40+100,50-9,myname,0,2+8+16);
 
-			menutext(40,50+20,0,0,"COLOR");
-			rotatesprite((40+120)<<16,(50+20+(tilesizy[APLAYER]>>1))<<16,65536L,0,APLAYER,0,0,10,0,0,xdim-1,ydim-1);
+            menutext(40,50+20,0,0,"COLOR");
+            rotatesprite((40+120)<<16,(50+20+(tilesizy[APLAYER]>>1))<<16,65536L,0,APLAYER,0,0,10,0,0,xdim-1,ydim-1);
 
-			break;
+            break;
 
-		case 20010:
-			rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
-			menutext(160,24,0,0,"HOST NETWORK GAME");
+        case 20010:
+            rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
+            menutext(160,24,0,0,"HOST NETWORK GAME");
 
-			x = probe(46,50,80,2);
+            x = probe(46,50,80,2);
 
-			if (x == -1) {
-				cmenu(20001);
-				probey = 2;
-			}
-			else if (x == 0) cmenu(20011);
+            if (x == -1) {
+                cmenu(20001);
+                probey = 2;
+            }
+            else if (x == 0) cmenu(20011);
 
-			menutext(40,50,0,0,"GAME OPTIONS");
-				minitext(90,60,            "GAME TYPE"    ,2,26);
-				minitext(90,60+8,          "EPISODE"      ,2,26);
-				minitext(90,60+8+8,        "LEVEL"        ,2,26);
-				minitext(90,60+8+8+8,      "MONSTERS"     ,2,26);
-				if (ud.m_coop == 0)
-				minitext(90,60+8+8+8+8,    "MARKERS"      ,2,26);
-				else if (ud.m_coop == 1)
-				minitext(90,60+8+8+8+8,    "FRIENDLY FIRE",2,26);
-				minitext(90,60+8+8+8+8+8,  "USER MAP"     ,2,26);
+            menutext(40,50,0,0,"GAME OPTIONS");
+                minitext(90,60,            "GAME TYPE"    ,2,26);
+                minitext(90,60+8,          "EPISODE"      ,2,26);
+                minitext(90,60+8+8,        "LEVEL"        ,2,26);
+                minitext(90,60+8+8+8,      "MONSTERS"     ,2,26);
+                if (ud.m_coop == 0)
+                minitext(90,60+8+8+8+8,    "MARKERS"      ,2,26);
+                else if (ud.m_coop == 1)
+                minitext(90,60+8+8+8+8,    "FRIENDLY FIRE",2,26);
+                minitext(90,60+8+8+8+8+8,  "USER MAP"     ,2,26);
 
-				if (ud.m_coop == 1)	minitext(90+60,60,"COOPERATIVE PLAY",0,26);
-				else if (ud.m_coop == 2) minitext(90+60,60,"DUKEMATCH (NO SPAWN)",0,26);
-				else minitext(90+60,60,"DUKEMATCH (SPAWN)",0,26);
-				minitext(90+60,60+8,      volume_names[ud.m_volume_number],0,26);
-				minitext(90+60,60+8+8,    level_names[11*ud.m_volume_number+ud.m_level_number],0,26);
-				if (ud.m_monsters_off == 0 || ud.m_player_skill > 0)
-				minitext(90+60,60+8+8+8,  skill_names[ud.m_player_skill],0,26);
-				else minitext(90+60,60+8+8+8,  "NONE",0,28);
-				if (ud.m_coop == 0) {
-					if (ud.m_marker) minitext(90+60,60+8+8+8+8,"ON",0,26);
-					else minitext(90+60,60+8+8+8+8,"OFF",0,26);
-				} else if (ud.m_coop == 1) {
-					if (ud.m_ffire) minitext(90+60,60+8+8+8+8,"ON",0,26);
-					else minitext(90+60,60+8+8+8+8,"OFF",0,26);
-				}
-			
-			menutext(40,50+80,0,0,"LAUNCH GAME");
-			break;
+                if (ud.m_coop == 1) minitext(90+60,60,"COOPERATIVE PLAY",0,26);
+                else if (ud.m_coop == 2) minitext(90+60,60,"DUKEMATCH (NO SPAWN)",0,26);
+                else minitext(90+60,60,"DUKEMATCH (SPAWN)",0,26);
+                minitext(90+60,60+8,      volume_names[ud.m_volume_number],0,26);
+                minitext(90+60,60+8+8,    level_names[11*ud.m_volume_number+ud.m_level_number],0,26);
+                if (ud.m_monsters_off == 0 || ud.m_player_skill > 0)
+                minitext(90+60,60+8+8+8,  skill_names[ud.m_player_skill],0,26);
+                else minitext(90+60,60+8+8+8,  "NONE",0,28);
+                if (ud.m_coop == 0) {
+                    if (ud.m_marker) minitext(90+60,60+8+8+8+8,"ON",0,26);
+                    else minitext(90+60,60+8+8+8+8,"OFF",0,26);
+                } else if (ud.m_coop == 1) {
+                    if (ud.m_ffire) minitext(90+60,60+8+8+8+8,"ON",0,26);
+                    else minitext(90+60,60+8+8+8+8,"OFF",0,26);
+                }
+            
+            menutext(40,50+80,0,0,"LAUNCH GAME");
+            break;
 
-		case 20011:
+        case 20011:
             c = (320>>1) - 120;
             rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(160,24,0,0,"NET GAME OPTIONS");
@@ -1318,11 +1305,11 @@ if (!VOLUMEONE) {
                     break;
 
                 case 6:
-					// pick the user map
+                    // pick the user map
                     break;
 
                 case 7:
-					cmenu(20010);
+                    cmenu(20010);
                     break;
             }
 
@@ -1358,12 +1345,12 @@ if (!VOLUMEONE) {
 
             menutext(c,57-9,SHX(-2),PHX(-2),"GAME TYPE");
 
-            sprintf(tempbuf,"EPISODE %ld",ud.m_volume_number+1);
+            sprintf(tempbuf,"EPISODE %d",ud.m_volume_number+1);
             menutext(c,57+16-9,SHX(-3),PHX(-3),tempbuf);
 
-            sprintf(tempbuf,"LEVEL %ld",ud.m_level_number+1);
+            sprintf(tempbuf,"LEVEL %d",ud.m_level_number+1);
             menutext(c,57+16+16-9,SHX(-4),PHX(-4),tempbuf);
-			
+            
             menutext(c,57+16+16+16-9,SHX(-5),PHX(-5),"MONSTERS");
 
             if(ud.m_coop == 0)
@@ -1384,77 +1371,77 @@ if (VOLUMEALL) {
 }
 
             menutext(c,57+16+16+16+16+16+16+16-9,SHX(-8),PHX(-8),"ACCEPT");
-			break;
+            break;
 
-		case 20020:
-		case 20021:	// editing server
-		case 20022:	// editing port
-			rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
-			menutext(160,24,0,0,"JOIN NETWORK GAME");
+        case 20020:
+        case 20021: // editing server
+        case 20022: // editing port
+            rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
+            menutext(160,24,0,0,"JOIN NETWORK GAME");
 
-			if (current_menu == 20020) {
-				x = probe(46,50,20,3);
+            if (current_menu == 20020) {
+                x = probe(46,50,20,3);
 
-				if (x == -1) {
-					cmenu(20001);
-					probey = 1;
-				} else if (x == 0) {
-					strcpy(buf, "localhost");
-					inputloc = strlen(buf);
-					current_menu = 20021;
-				} else if (x == 1) {
-					strcpy(buf, "19014");
-					inputloc = strlen(buf);
-					current_menu = 20022;
-				} else if (x == 2) {
-				}
-				KB_ClearKeyDown(sc_Enter);
+                if (x == -1) {
+                    cmenu(20001);
+                    probey = 1;
+                } else if (x == 0) {
+                    strcpy(buf, "localhost");
+                    inputloc = strlen(buf);
+                    current_menu = 20021;
+                } else if (x == 1) {
+                    strcpy(buf, "19014");
+                    inputloc = strlen(buf);
+                    current_menu = 20022;
+                } else if (x == 2) {
+                }
+                KB_ClearKeyDown(sc_Enter);
                 KB_ClearKeyDown(sc_kpad_Enter);
-				KB_FlushKeyboardQueue();
-			} else if (current_menu == 20021) {
-				x = strget(40+100,50-9,buf,31,0);
-				if (x) {
-					if (x == 1) {
-						//strcpy(myname,buf);
-					}
+                KB_FlushKeyboardQueue();
+            } else if (current_menu == 20021) {
+                x = strget(40+100,50-9,buf,31,0);
+                if (x) {
+                    if (x == 1) {
+                        //strcpy(myname,buf);
+                    }
 
-	                KB_ClearKeyDown(sc_Enter);
-    	            KB_ClearKeyDown(sc_kpad_Enter);
-        	        KB_FlushKeyboardQueue();
+                    KB_ClearKeyDown(sc_Enter);
+                    KB_ClearKeyDown(sc_kpad_Enter);
+                    KB_FlushKeyboardQueue();
 
-					current_menu = 20020;
-				}
-			} else if (current_menu == 20022) {
-				x = strget(40+100,50+20-9,buf,5,997);
-				if (x) {
-					if (x == 1) {
-						//strcpy(myname,buf);
-					}
+                    current_menu = 20020;
+                }
+            } else if (current_menu == 20022) {
+                x = strget(40+100,50+20-9,buf,5,997);
+                if (x) {
+                    if (x == 1) {
+                        //strcpy(myname,buf);
+                    }
 
-	                KB_ClearKeyDown(sc_Enter);
-    	            KB_ClearKeyDown(sc_kpad_Enter);
-        	        KB_FlushKeyboardQueue();
+                    KB_ClearKeyDown(sc_Enter);
+                    KB_ClearKeyDown(sc_kpad_Enter);
+                    KB_FlushKeyboardQueue();
 
-					current_menu = 20020;
-				}
-			}
-			
-			menutext(40,50,0,0,"SERVER");
-			if (current_menu != 20021) gametext(40+100,50-9,"server",0,2+8+16);
+                    current_menu = 20020;
+                }
+            }
+            
+            menutext(40,50,0,0,"SERVER");
+            if (current_menu != 20021) gametext(40+100,50-9,"server",0,2+8+16);
 
-			menutext(40,50+20,0,0,"PORT");
-			if (current_menu != 20022) {
-				sprintf(tempbuf,"%d",19014);
-				gametext(40+100,50+20-9,tempbuf,0,2+8+16);
-			}
+            menutext(40,50+20,0,0,"PORT");
+            if (current_menu != 20022) {
+                sprintf(tempbuf,"%d",19014);
+                gametext(40+100,50+20-9,tempbuf,0,2+8+16);
+            }
 
-			menutext(160,50+20+20,0,0,"CONNECT");
+            menutext(160,50+20+20,0,0,"CONNECT");
 
 
-			// ADDRESS
-			// PORT
-			// CONNECT
-			break;
+            // ADDRESS
+            // PORT
+            // CONNECT
+            break;
 
         case 15001:
         case 15000:
@@ -1488,7 +1475,7 @@ if (VOLUMEALL) {
             if(  KB_KeyPressed(sc_Space) || KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Y) || LMB )
             {
                 KB_FlushKeyboardQueue();
-				KB_ClearKeysDown();
+                KB_ClearKeysDown();
                 FX_StopAllSounds();
 
                 if(ud.multimode > 1)
@@ -1510,7 +1497,7 @@ if (VOLUMEALL) {
 
         case 10000:
         case 10001:
-			if (NAM) { cmenu(0); break; }
+            if (NAM) { cmenu(0); break; }
 
             c = 60;
             rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
@@ -1623,15 +1610,15 @@ if (VOLUMEALL) {
 
             dispnames();
 
-            sprintf(tempbuf,"PLAYERS: %-2ld                      ",savehead.numplr);
+            sprintf(tempbuf,"PLAYERS: %-2d                      ",savehead.numplr);
             gametext(160,156,tempbuf,0,2+8+16);
 
-            sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+savehead.volnum,1+savehead.levnum,savehead.plrskl);
+            sprintf(tempbuf,"EPISODE: %-2d / LEVEL: %-2d / SKILL: %-2d",1+savehead.volnum,1+savehead.levnum,savehead.plrskl);
             gametext(160,168,tempbuf,0,2+8+16);
 
-			if (savehead.volnum == 0 && savehead.levnum == 7)
-				gametext(160,180,savehead.boardfn,0,2+8+16);
-			
+            if (savehead.volnum == 0 && savehead.levnum == 7)
+                gametext(160,180,savehead.boardfn,0,2+8+16);
+            
             gametext(160,90,"LOAD game:",0,2+8+16);
             sprintf(tempbuf,"\"%s\"",ud.savegame[current_menu-1000]);
             gametext(160,99,tempbuf,0,2+8+16);
@@ -1642,7 +1629,7 @@ if (VOLUMEALL) {
                 lastsavedpos = current_menu-1000;
 
                 KB_FlushKeyboardQueue();
-				KB_ClearKeysDown();
+                KB_ClearKeysDown();
                 if(ud.multimode < 2 && ud.recstat != 2)
                 {
                     ready2send = 1;
@@ -1660,12 +1647,12 @@ if (VOLUMEALL) {
                     {
                         tempbuf[0] = 126;
                         tempbuf[1] = lastsavedpos;
-						tempbuf[2] = myconnectindex;
+                        tempbuf[2] = myconnectindex;
                         for(x=connecthead;x>=0;x=connectpoint2[x])
-						{
-							 if (x != myconnectindex) sendpacket(x,tempbuf,3);
-							 if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
-						}
+                        {
+                             if (x != myconnectindex) sendpacket(x,(unsigned char *)tempbuf,3);
+                             if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
+                        }
                         getpackets();
 
                         loadplayer(lastsavedpos);
@@ -1745,23 +1732,23 @@ if (VOLUMEALL) {
             menutext(160,24,0,0,"SAVE GAME");
 
             rotatesprite(101<<16,97<<16,65536L>>1,512,TILE_LOADSHOT,-32,0,4+10+64,0,0,xdim-1,ydim-1);
-            sprintf(tempbuf,"PLAYERS: %-2ld                      ",ud.multimode);
+            sprintf(tempbuf,"PLAYERS: %-2d                      ",ud.multimode);
             gametext(160,156,tempbuf,0,2+8+16);
 
-            sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+ud.volume_number,1+ud.level_number,ud.player_skill);
+            sprintf(tempbuf,"EPISODE: %-2d / LEVEL: %-2d / SKILL: %-2d",1+ud.volume_number,1+ud.level_number,ud.player_skill);
             gametext(160,168,tempbuf,0,2+8+16);
 
-			if (ud.volume_number == 0 && ud.level_number == 7)
-				gametext(160,180,boardfilename,0,2+8+16);
+            if (ud.volume_number == 0 && ud.level_number == 7)
+                gametext(160,180,boardfilename,0,2+8+16);
 
-		  	dispnames();
+            dispnames();
 
             gametext(160,90,"OVERWRITE previous SAVED game?",0,2+8+16);
             gametext(160,90+9,"(Y/N)",0,2+8+16);
 
             if( KB_KeyPressed(sc_Space) || KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Y) || LMB )
             {
-		inputloc = strlen(&ud.savegame[current_menu-2000][0]);
+        inputloc = strlen(&ud.savegame[current_menu-2000][0]);
 
                 cmenu(current_menu-2000+360);
 
@@ -1788,17 +1775,17 @@ if (VOLUMEALL) {
         case 995:
         case 996:
         case 997:
-		case 998:
-			c = 160;
-			if (!VOLUMEALL || !PLUTOPAK) {
-            	//rotatesprite(c<<16,200<<15,65536L,0,MENUSCREEN,16,0,10+64,0,0,xdim-1,ydim-1);
-            	rotatesprite(c<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
-            	menutext(c,24,0,0,current_menu == 998 ? "PORT CREDITS" : "CREDITS");
+        case 998:
+            c = 160;
+            if (!VOLUMEALL || !PLUTOPAK) {
+                //rotatesprite(c<<16,200<<15,65536L,0,MENUSCREEN,16,0,10+64,0,0,xdim-1,ydim-1);
+                rotatesprite(c<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
+                menutext(c,24,0,0,current_menu == 998 ? "PORT CREDITS" : "CREDITS");
 
-				l = 8;
-			} else {
-				l = 3;
-			}
+                l = 8;
+            } else {
+                l = 3;
+            }
 
             if(KB_KeyPressed(sc_Escape)) { cmenu(0); break; }
 
@@ -1843,120 +1830,120 @@ if (VOLUMEALL) {
                 if(current_menu > 990+l) current_menu = 990;
             }
 
-			if (!VOLUMEALL || !PLUTOPAK) {
-			switch (current_menu) {
-				case 990:
-					gametext(c,40,                      "ORIGINAL CONCEPT",0,2+8+16);
-					gametext(c,40+9,                    "TODD REPLOGLE",0,2+8+16);
-					gametext(c,40+9+9,                  "ALLEN H. BLUM III",0,2+8+16);
-						
-					gametext(c,40+9+9+9+9,              "PRODUCED & DIRECTED BY",0,2+8+16);
-					gametext(c,40+9+9+9+9+9,            "GREG MALONE",0,2+8+16);
+            if (!VOLUMEALL || !PLUTOPAK) {
+            switch (current_menu) {
+                case 990:
+                    gametext(c,40,                      "ORIGINAL CONCEPT",0,2+8+16);
+                    gametext(c,40+9,                    "TODD REPLOGLE",0,2+8+16);
+                    gametext(c,40+9+9,                  "ALLEN H. BLUM III",0,2+8+16);
+                        
+                    gametext(c,40+9+9+9+9,              "PRODUCED & DIRECTED BY",0,2+8+16);
+                    gametext(c,40+9+9+9+9+9,            "GREG MALONE",0,2+8+16);
 
-					gametext(c,40+9+9+9+9+9+9+9,        "EXECUTIVE PRODUCER",0,2+8+16);
-					gametext(c,40+9+9+9+9+9+9+9+9,      "GEORGE BROUSSARD",0,2+8+16);
+                    gametext(c,40+9+9+9+9+9+9+9,        "EXECUTIVE PRODUCER",0,2+8+16);
+                    gametext(c,40+9+9+9+9+9+9+9+9,      "GEORGE BROUSSARD",0,2+8+16);
 
-					gametext(c,40+9+9+9+9+9+9+9+9+9+9,  "BUILD ENGINE",0,2+8+16);
-					gametext(c,40+9+9+9+9+9+9+9+9+9+9+9,"KEN SILVERMAN",0,2+8+16);
-					break;
-				case 991:
-					gametext(c,40,                      "GAME PROGRAMMING",0,2+8+16);
-					gametext(c,40+9,                    "TODD REPLOGLE",0,2+8+16);
-						
-					gametext(c,40+9+9+9,                "3D ENGINE/TOOLS/NET",0,2+8+16);
-					gametext(c,40+9+9+9+9,              "KEN SILVERMAN",0,2+8+16);
+                    gametext(c,40+9+9+9+9+9+9+9+9+9+9,  "BUILD ENGINE",0,2+8+16);
+                    gametext(c,40+9+9+9+9+9+9+9+9+9+9+9,"KEN SILVERMAN",0,2+8+16);
+                    break;
+                case 991:
+                    gametext(c,40,                      "GAME PROGRAMMING",0,2+8+16);
+                    gametext(c,40+9,                    "TODD REPLOGLE",0,2+8+16);
+                        
+                    gametext(c,40+9+9+9,                "3D ENGINE/TOOLS/NET",0,2+8+16);
+                    gametext(c,40+9+9+9+9,              "KEN SILVERMAN",0,2+8+16);
 
-					gametext(c,40+9+9+9+9+9+9,          "NETWORK LAYER/SETUP PROGRAM",0,2+8+16);
-					gametext(c,40+9+9+9+9+9+9+9,        "MARK DOCHTERMANN",0,2+8+16);
-					break;
-				case 992:
-					gametext(c,40,                      "MAP DESIGN",0,2+8+16);
-					gametext(c,40+9,                    "ALLEN H BLUM III",0,2+8+16);
-					gametext(c,40+9+9,                  "RICHARD GRAY",0,2+8+16);
-						
-					gametext(c,40+9+9+9+9,              "3D MODELING",0,2+8+16);
-					gametext(c,40+9+9+9+9+9,            "CHUCK JONES",0,2+8+16);
-					gametext(c,40+9+9+9+9+9+9,          "SAPPHIRE CORPORATION",0,2+8+16);
+                    gametext(c,40+9+9+9+9+9+9,          "NETWORK LAYER/SETUP PROGRAM",0,2+8+16);
+                    gametext(c,40+9+9+9+9+9+9+9,        "MARK DOCHTERMANN",0,2+8+16);
+                    break;
+                case 992:
+                    gametext(c,40,                      "MAP DESIGN",0,2+8+16);
+                    gametext(c,40+9,                    "ALLEN H BLUM III",0,2+8+16);
+                    gametext(c,40+9+9,                  "RICHARD GRAY",0,2+8+16);
+                        
+                    gametext(c,40+9+9+9+9,              "3D MODELING",0,2+8+16);
+                    gametext(c,40+9+9+9+9+9,            "CHUCK JONES",0,2+8+16);
+                    gametext(c,40+9+9+9+9+9+9,          "SAPPHIRE CORPORATION",0,2+8+16);
 
-					gametext(c,40+9+9+9+9+9+9+9+9,      "ARTWORK",0,2+8+16);
-					gametext(c,40+9+9+9+9+9+9+9+9+9,    "DIRK JONES, STEPHEN HORNBACK",0,2+8+16);
-					gametext(c,40+9+9+9+9+9+9+9+9+9+9,  "JAMES STOREY, DAVID DEMARET",0,2+8+16);
-					gametext(c,40+9+9+9+9+9+9+9+9+9+9+9,"DOUGLAS R WOOD",0,2+8+16);
-					break;
-				case 993:
-					gametext(c,40,                      "SOUND ENGINE",0,2+8+16);
-					gametext(c,40+9,                    "JIM DOSE",0,2+8+16);
-						
-					gametext(c,40+9+9+9,                "SOUND & MUSIC DEVELOPMENT",0,2+8+16);
-					gametext(c,40+9+9+9+9,              "ROBERT PRINCE",0,2+8+16);
-					gametext(c,40+9+9+9+9+9,            "LEE JACKSON",0,2+8+16);
+                    gametext(c,40+9+9+9+9+9+9+9+9,      "ARTWORK",0,2+8+16);
+                    gametext(c,40+9+9+9+9+9+9+9+9+9,    "DIRK JONES, STEPHEN HORNBACK",0,2+8+16);
+                    gametext(c,40+9+9+9+9+9+9+9+9+9+9,  "JAMES STOREY, DAVID DEMARET",0,2+8+16);
+                    gametext(c,40+9+9+9+9+9+9+9+9+9+9+9,"DOUGLAS R WOOD",0,2+8+16);
+                    break;
+                case 993:
+                    gametext(c,40,                      "SOUND ENGINE",0,2+8+16);
+                    gametext(c,40+9,                    "JIM DOSE",0,2+8+16);
+                        
+                    gametext(c,40+9+9+9,                "SOUND & MUSIC DEVELOPMENT",0,2+8+16);
+                    gametext(c,40+9+9+9+9,              "ROBERT PRINCE",0,2+8+16);
+                    gametext(c,40+9+9+9+9+9,            "LEE JACKSON",0,2+8+16);
 
-					gametext(c,40+9+9+9+9+9+9+9,        "VOICE TALENT",0,2+8+16);
-					gametext(c,40+9+9+9+9+9+9+9+9,      "LANI MINELLA - VOICE PRODUCER",0,2+8+16);
-					gametext(c,40+9+9+9+9+9+9+9+9+9,    "JON ST. JOHN AS \"DUKE NUKEM\"",0,2+8+16);
-					break;
-				case 994:
-					gametext(c,60,                      "GRAPHIC DESIGN",0,2+8+16);
-					gametext(c,60+9,                    "PACKAGING, MANUAL, ADS",0,2+8+16);
-					gametext(c,60+9+9,                  "ROBERT M. ATKINS",0,2+8+16);
-					gametext(c,60+9+9+9,                "MICHAEL HADWIN",0,2+8+16);
-					
-					gametext(c,60+9+9+9+9+9,            "SPECIAL THANKS TO",0,2+8+16);
-					gametext(c,60+9+9+9+9+9+9,          "STEVEN BLACKBURN, TOM HALL",0,2+8+16);
-					gametext(c,60+9+9+9+9+9+9+9,        "SCOTT MILLER, JOE SIEGLER",0,2+8+16);
-					gametext(c,60+9+9+9+9+9+9+9+9,      "TERRY NAGY, COLLEEN COMPTON",0,2+8+16);
-					gametext(c,60+9+9+9+9+9+9+9+9+9,    "HASH INC., FORMGEN, INC.",0,2+8+16);
-					break;
-				case 995:
-					gametext(c,49,                      "THE 3D REALMS BETA TESTERS",0,2+8+16);
+                    gametext(c,40+9+9+9+9+9+9+9,        "VOICE TALENT",0,2+8+16);
+                    gametext(c,40+9+9+9+9+9+9+9+9,      "LANI MINELLA - VOICE PRODUCER",0,2+8+16);
+                    gametext(c,40+9+9+9+9+9+9+9+9+9,    "JON ST. JOHN AS \"DUKE NUKEM\"",0,2+8+16);
+                    break;
+                case 994:
+                    gametext(c,60,                      "GRAPHIC DESIGN",0,2+8+16);
+                    gametext(c,60+9,                    "PACKAGING, MANUAL, ADS",0,2+8+16);
+                    gametext(c,60+9+9,                  "ROBERT M. ATKINS",0,2+8+16);
+                    gametext(c,60+9+9+9,                "MICHAEL HADWIN",0,2+8+16);
+                    
+                    gametext(c,60+9+9+9+9+9,            "SPECIAL THANKS TO",0,2+8+16);
+                    gametext(c,60+9+9+9+9+9+9,          "STEVEN BLACKBURN, TOM HALL",0,2+8+16);
+                    gametext(c,60+9+9+9+9+9+9+9,        "SCOTT MILLER, JOE SIEGLER",0,2+8+16);
+                    gametext(c,60+9+9+9+9+9+9+9+9,      "TERRY NAGY, COLLEEN COMPTON",0,2+8+16);
+                    gametext(c,60+9+9+9+9+9+9+9+9+9,    "HASH INC., FORMGEN, INC.",0,2+8+16);
+                    break;
+                case 995:
+                    gametext(c,49,                      "THE 3D REALMS BETA TESTERS",0,2+8+16);
 
-					gametext(c,49+9+9,                  "NATHAN ANDERSON, WAYNE BENNER",0,2+8+16);
-					gametext(c,49+9+9+9,                "GLENN BRENSINGER, ROB BROWN",0,2+8+16);
-					gametext(c,49+9+9+9+9,              "ERIK HARRIS, KEN HECKBERT",0,2+8+16);
-					gametext(c,49+9+9+9+9+9,            "TERRY HERRIN, GREG HIVELY",0,2+8+16);
-					gametext(c,49+9+9+9+9+9+9,          "HANK LEUKART, ERIC BAKER",0,2+8+16);
-					gametext(c,49+9+9+9+9+9+9+9,        "JEFF RAUSCH, KELLY ROGERS",0,2+8+16);
-					gametext(c,49+9+9+9+9+9+9+9+9,      "MIKE DUNCAN, DOUG HOWELL",0,2+8+16);
-					gametext(c,49+9+9+9+9+9+9+9+9+9,    "BILL BLAIR",0,2+8+16);
-					break;
-				case 996:
-					gametext(c,32,                      "COMPANY PRODUCT SUPPORT",0,2+8+16);
+                    gametext(c,49+9+9,                  "NATHAN ANDERSON, WAYNE BENNER",0,2+8+16);
+                    gametext(c,49+9+9+9,                "GLENN BRENSINGER, ROB BROWN",0,2+8+16);
+                    gametext(c,49+9+9+9+9,              "ERIK HARRIS, KEN HECKBERT",0,2+8+16);
+                    gametext(c,49+9+9+9+9+9,            "TERRY HERRIN, GREG HIVELY",0,2+8+16);
+                    gametext(c,49+9+9+9+9+9+9,          "HANK LEUKART, ERIC BAKER",0,2+8+16);
+                    gametext(c,49+9+9+9+9+9+9+9,        "JEFF RAUSCH, KELLY ROGERS",0,2+8+16);
+                    gametext(c,49+9+9+9+9+9+9+9+9,      "MIKE DUNCAN, DOUG HOWELL",0,2+8+16);
+                    gametext(c,49+9+9+9+9+9+9+9+9+9,    "BILL BLAIR",0,2+8+16);
+                    break;
+                case 996:
+                    gametext(c,32,                      "COMPANY PRODUCT SUPPORT",0,2+8+16);
 
-					gametext(c,32+9+9,                  "THE FOLLOWING COMPANIES WERE COOL",0,2+8+16);
-					gametext(c,32+9+9+9,                "ENOUGH TO GIVE US LOTS OF STUFF",0,2+8+16);
-					gametext(c,32+9+9+9+9,              "DURING THE MAKING OF DUKE NUKEM 3D.",0,2+8+16);
+                    gametext(c,32+9+9,                  "THE FOLLOWING COMPANIES WERE COOL",0,2+8+16);
+                    gametext(c,32+9+9+9,                "ENOUGH TO GIVE US LOTS OF STUFF",0,2+8+16);
+                    gametext(c,32+9+9+9+9,              "DURING THE MAKING OF DUKE NUKEM 3D.",0,2+8+16);
 
-					gametext(c,32+9+9+9+9+9+9,          "ALTEC LANSING MULTIMEDIA",0,2+8+16);
-					gametext(c,32+9+9+9+9+9+9+9,        "FOR TONS OF SPEAKERS AND THE",0,2+8+16);
-					gametext(c,32+9+9+9+9+9+9+9+9,      "THX-LICENSED SOUND SYSTEM",0,2+8+16);
-					gametext(c,32+9+9+9+9+9+9+9+9+9,    "FOR INFO CALL 1-800-548-0620",0,2+8+16);
-					
-					gametext(c,32+9+9+9+9+9+9+9+9+9+9+9,"CREATIVE LABS, INC.",0,2+8+16);
+                    gametext(c,32+9+9+9+9+9+9,          "ALTEC LANSING MULTIMEDIA",0,2+8+16);
+                    gametext(c,32+9+9+9+9+9+9+9,        "FOR TONS OF SPEAKERS AND THE",0,2+8+16);
+                    gametext(c,32+9+9+9+9+9+9+9+9,      "THX-LICENSED SOUND SYSTEM",0,2+8+16);
+                    gametext(c,32+9+9+9+9+9+9+9+9+9,    "FOR INFO CALL 1-800-548-0620",0,2+8+16);
+                    
+                    gametext(c,32+9+9+9+9+9+9+9+9+9+9+9,"CREATIVE LABS, INC.",0,2+8+16);
 
-					gametext(c,32+9+9+9+9+9+9+9+9+9+9+9+9+9,"THANKS FOR THE HARDWARE, GUYS.",0,2+8+16);
-					break;
-				case 997:
-					gametext(c,50,                      "DUKE NUKEM IS A TRADEMARK OF",0,2+8+16);
-					gametext(c,50+9,                    "3D REALMS ENTERTAINMENT",0,2+8+16);
-						
-					gametext(c,50+9+9+9,                "DUKE NUKEM",0,2+8+16);
-					gametext(c,50+9+9+9+9,              "(C) 1996 3D REALMS ENTERTAINMENT",0,2+8+16);
+                    gametext(c,32+9+9+9+9+9+9+9+9+9+9+9+9+9,"THANKS FOR THE HARDWARE, GUYS.",0,2+8+16);
+                    break;
+                case 997:
+                    gametext(c,50,                      "DUKE NUKEM IS A TRADEMARK OF",0,2+8+16);
+                    gametext(c,50+9,                    "3D REALMS ENTERTAINMENT",0,2+8+16);
+                        
+                    gametext(c,50+9+9+9,                "DUKE NUKEM",0,2+8+16);
+                    gametext(c,50+9+9+9+9,              "(C) 1996 3D REALMS ENTERTAINMENT",0,2+8+16);
 
-					if (VOLUMEONE) {
-					gametext(c,106,                     "PLEASE READ LICENSE.DOC FOR SHAREWARE",0,2+8+16);
-					gametext(c,106+9,                   "DISTRIBUTION GRANTS AND RESTRICTIONS",0,2+8+16);
-					}
+                    if (VOLUMEONE) {
+                    gametext(c,106,                     "PLEASE READ LICENSE.DOC FOR SHAREWARE",0,2+8+16);
+                    gametext(c,106+9,                   "DISTRIBUTION GRANTS AND RESTRICTIONS",0,2+8+16);
+                    }
 
-					gametext(c,VOLUMEONE?134:115,       "MADE IN DALLAS, TEXAS USA",0,2+8+16);
-					break;
-				case 998:
-					l = 10;
-					goto cheat_for_port_credits;
-			}
-			break;
-			}
+                    gametext(c,VOLUMEONE?134:115,       "MADE IN DALLAS, TEXAS USA",0,2+8+16);
+                    break;
+                case 998:
+                    l = 10;
+                    goto cheat_for_port_credits;
+            }
+            break;
+            }
 
-			// Plutonium pak menus
+            // Plutonium pak menus
             switch(current_menu)
             {
                 case 990:
@@ -1964,81 +1951,81 @@ if (VOLUMEALL) {
                 case 992:
                    rotatesprite(160<<16,200<<15,65536L,0,2504+current_menu-990,0,0,10+64,0,0,xdim-1,ydim-1);
                    break;
-				case 993:	// JBF 20031220
+                case 993:   // JBF 20031220
                    rotatesprite(160<<16,200<<15,65536L,0,MENUSCREEN,0,0,10+64,0,0,xdim-1,ydim-1);
-				   menutext(160,28,0,0,"PORT CREDITS");
+                   menutext(160,28,0,0,"PORT CREDITS");
 
-				   l = 0;
+                   l = 0;
 cheat_for_port_credits:
-				   gametext(160,40-l,"GAME AND ENGINE PORT",0,2+8+16);
-				   p = "Jonathon \"JonoF\" Fowler";
-				   minitext(160-(Bstrlen(p)<<1), 40+10-l, p, 12, 10+16+128);
-				   
-				   gametext(160,60-l,"\"POLYMOST\" 3D RENDERER",0,2+8+16);
-				   gametext(160,60+8-l,"NETWORKING, OTHER CODE",0,2+8+16);
-				   p = "Ken \"Awesoken\" Silverman";
-				   minitext(160-(Bstrlen(p)<<1), 60+8+10-l, p, 12, 10+16+128);
+                   gametext(160,40-l,"GAME AND ENGINE PORT",0,2+8+16);
+                   p = "Jonathon \"JonoF\" Fowler";
+                   minitext(160-(Bstrlen(p)<<1), 40+10-l, p, 12, 10+16+128);
+                   
+                   gametext(160,60-l,"\"POLYMOST\" 3D RENDERER",0,2+8+16);
+                   gametext(160,60+8-l,"NETWORKING, OTHER CODE",0,2+8+16);
+                   p = "Ken \"Awesoken\" Silverman";
+                   minitext(160-(Bstrlen(p)<<1), 60+8+10-l, p, 12, 10+16+128);
 
-				   p = "Icon and startup graphics by Lachlan \"NetNessie\" McDonald";
-				   minitext(160-(Bstrlen(p)<<1), 92-l, p, 12, 10+16+128);
+                   p = "Icon and startup graphics by Lachlan \"NetNessie\" McDonald";
+                   minitext(160-(Bstrlen(p)<<1), 92-l, p, 12, 10+16+128);
 
-				   {
-						const char *scroller[] = {
-							"This program is free software; you can redistribute it",
-							"and/or modify it under the terms of the GNU General",
-							"Public License as published by the Free Software",
-							"Foundation; either version 2 of the License, or (at your",
-							"option) any later version.",
-							"",
-							"This program is distributed in the hope that it will be",
-							"useful but WITHOUT ANY WARRANTY; without even the implied",
-							"warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR",
-							"PURPOSE. See the GNU General Public License (GPL.TXT) for",
-							"more details.",
-							"",
-							"",
-							"",
-							"",
-							"Thanks to these people for their input and contributions:",
-							"",
-							"Michael Burgwin",
-							"Richard \"TerminX\" Gobeille, ",
-							"Par \"Parkar\" Karlsson", // "Pär \"Parkar\" Karlsson",
-							"Matthieu Klein",
-							"Ben \"ProAsm\" Smit,",
-							"",
-							"and all those who submitted bug reports and ",
-							"supported the project financially!",
-							"",
-							"",
-							"--x--",
-							"",
-							"",
-							"",
-							""
-						};
-						const int numlines = sizeof(scroller)/sizeof(char *);
-						for (m=0,i=(totalclock/104)%numlines; m<4; m++,i++) {
-							if (i==numlines) i=0;
-							minitext(160-(Bstrlen(scroller[i])<<1), 100+10+(m*7)-l, (char*)scroller[i], 8, 10+16+128);
-						}
-				   }
+                   {
+                        const char *scroller[] = {
+                            "This program is free software; you can redistribute it",
+                            "and/or modify it under the terms of the GNU General",
+                            "Public License as published by the Free Software",
+                            "Foundation; either version 2 of the License, or (at your",
+                            "option) any later version.",
+                            "",
+                            "This program is distributed in the hope that it will be",
+                            "useful but WITHOUT ANY WARRANTY; without even the implied",
+                            "warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR",
+                            "PURPOSE. See the GNU General Public License (GPL.TXT) for",
+                            "more details.",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "Thanks to these people for their input and contributions:",
+                            "",
+                            "Michael Burgwin",
+                            "Richard \"TerminX\" Gobeille, ",
+                            "Par \"Parkar\" Karlsson", // "Pär \"Parkar\" Karlsson",
+                            "Matthieu Klein",
+                            "Ben \"ProAsm\" Smit,",
+                            "",
+                            "and all those who submitted bug reports and ",
+                            "supported the project financially!",
+                            "",
+                            "",
+                            "--x--",
+                            "",
+                            "",
+                            "",
+                            ""
+                        };
+                        const int numlines = sizeof(scroller)/sizeof(char *);
+                        for (m=0,i=(totalclock/104)%numlines; m<4; m++,i++) {
+                            if (i==numlines) i=0;
+                            minitext(160-(Bstrlen(scroller[i])<<1), 100+10+(m*7)-l, scroller[i], 8, 10+16+128);
+                        }
+                   }
 
-				   for (i=0;i<2;i++) {
-					   switch (i) {
-						   case 0: p = "Visit http://www.jonof.id.au/jfduke3d for"; break;
-						   case 1: p = "the source code, latest news, and updates of this port."; break;
-					   }
-				       minitext(160-(Bstrlen(p)<<1), 135+10+(i*7)-l, p, 8, 10+16+128);
-			       }
-				   break;
+                   for (i=0;i<2;i++) {
+                       switch (i) {
+                           case 0: p = "Visit http://www.jonof.id.au/jfduke3d for"; break;
+                           case 1: p = "the source code, latest news, and updates of this port."; break;
+                       }
+                       minitext(160-(Bstrlen(p)<<1), 135+10+(i*7)-l, p, 8, 10+16+128);
+                   }
+                   break;
             }
             break;
 
         case 0:
             c = (320>>1);
             rotatesprite(c<<16,28<<16,65536L,0,INGAMEDUKETHREEDEE,0,0,10,0,0,xdim-1,ydim-1);
-	    if (PLUTOPAK)	// JBF 20030804
+        if (PLUTOPAK)   // JBF 20030804
             rotatesprite((c+100)<<16,36<<16,65536L,0,PLUTOPAKSPRITE+2,(sintable[(totalclock<<4)&2047]>>11),0,2+8,0,0,xdim-1,ydim-1);
             x = probe(c,67,16,6);
             if(x >= 0)
@@ -2060,8 +2047,8 @@ cheat_for_port_credits:
                             cmenu(100);
                             break;
 
-			//case 1: break;//cmenu(20001);break;	// JBF 20031128: I'm taking over the TEN menu option
-			case 1: cmenu(202);break;	// JBF 20031205: was 200
+            //case 1: break;//cmenu(20001);break;   // JBF 20031128: I'm taking over the TEN menu option
+            case 1: cmenu(202);break;   // JBF 20031205: was 200
                         case 2:
                             if(movesperpacket == 4 && connecthead != myconnectindex)
                                 break;
@@ -2096,7 +2083,7 @@ cheat_for_port_credits:
             else
                 menutext(c,67,SHX(-2),PHX(-2),"NEW GAME");
 
-	//    menutext(c,67+16,0,1,"NETWORK GAME");
+    //    menutext(c,67+16,0,1,"NETWORK GAME");
 
             menutext(c,67+16/*+16*/,SHX(-3),PHX(-3),"OPTIONS");
 
@@ -2117,7 +2104,7 @@ if (!VOLUMEALL) {
         case 50:
             c = (320>>1);
             rotatesprite(c<<16,32<<16,65536L,0,INGAMEDUKETHREEDEE,0,0,10,0,0,xdim-1,ydim-1);
-	    if (PLUTOPAK)	// JBF 20030804
+        if (PLUTOPAK)   // JBF 20030804
             rotatesprite((c+100)<<16,36<<16,65536L,0,PLUTOPAKSPRITE+2,(sintable[(totalclock<<4)&2047]>>11),0,2+8,0,0,xdim-1,ydim-1);
             x = probe(c,67,16,7);
             switch(x)
@@ -2151,7 +2138,7 @@ if (!VOLUMEALL) {
                     break;
                 case 3:
                     last_fifty = 3;
-                    cmenu(202);		// JBF 20031205: was 200
+                    cmenu(202);     // JBF 20031205: was 200
                     break;
                 case 4:
                     last_fifty = 4;
@@ -2236,15 +2223,15 @@ if (!VOLUMEONE) {
                 {
                     //ud.m_volume_number = 0;
                     //ud.m_level_number = 7;
-		    currentlist = 1;
-		    cmenu(101);
+            currentlist = 1;
+            cmenu(101);
                 }
-		else if(PLUTOPAK && x == 4 /*&& boardfilename[0]*/)
+        else if(PLUTOPAK && x == 4 /*&& boardfilename[0]*/)
                 {
                     //ud.m_volume_number = 0;
                     //ud.m_level_number = 7;
-		    currentlist = 1;
-		    cmenu(101);
+            currentlist = 1;
+            cmenu(101);
                 }
 
                 else
@@ -2273,7 +2260,7 @@ if (PLUTOPAK)
             menutext(160,60+20,SHX(-3),PHX(-3),volume_names[1]);
             menutext(160,60+20+20,SHX(-4),PHX(-4),volume_names[2]);
 if (PLUTOPAK) {
-	    menutext(160,60+20+20+20,SHX(-5),PHX(-5),volume_names[3]);
+        menutext(160,60+20+20+20,SHX(-5),PHX(-5),volume_names[3]);
 //            if(boardfilename[0])
 //            {
                 menutext(160,60+20+20+20+20,SHX(-6),PHX(-6),"USER MAP");
@@ -2290,127 +2277,127 @@ if (PLUTOPAK) {
 }
             break;
 
-	case 101:
-	    if (boardfilename[0] == 0) strcpy(boardfilename, "./");
-	    Bcorrectfilename(boardfilename,1);
-		getfilenames(boardfilename,"*.map");
-	    cmenu(102);
-		KB_FlushKeyboardQueue();
-	case 102:
+    case 101:
+        if (boardfilename[0] == 0) strcpy(boardfilename, "./");
+        Bcorrectfilename(boardfilename,1);
+        getfilenames(boardfilename,"*.map");
+        cmenu(102);
+        KB_FlushKeyboardQueue();
+    case 102:
             rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(160,24,0,0,"SELECT A USER MAP");
 
-	    // black translucent background underneath file lists
-	    rotatesprite(0<<16, 0<<16, 65536l<<5, 0, BLANK, 0, 0, 10+16+1+32,
-			    scale(40-4,xdim,320),scale(12+32-2,ydim,200),
-			    scale(320-40+4,xdim,320)-1,scale(12+32+112+4,ydim,200)-1);
+        // black translucent background underneath file lists
+        rotatesprite(0<<16, 0<<16, 65536l<<5, 0, BLANK, 0, 0, 10+16+1+32,
+                scale(40-4,xdim,320),scale(12+32-2,ydim,200),
+                scale(320-40+4,xdim,320)-1,scale(12+32+112+4,ydim,200)-1);
 
-	    // path
-	    minitext(52,32,boardfilename,0,26);
+        // path
+        minitext(52,32,boardfilename,0,26);
 
-		{	// JBF 20040208: seek to first name matching pressed character
-			CACHE1D_FIND_REC *seeker = currentlist ? findfiles : finddirs;
-			char ch2, ch;
-			ch = KB_Getch();
-			if (ch > 0 && ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9'))) {
-				if (ch >= 'a') ch -= ('a'-'A');
-				while (seeker) {
-					ch2 = seeker->name[0];
-					if (ch2 >= 'a' && ch2 <= 'z') ch2 -= ('a'-'A');
-					if (ch2 == ch) break;
-					seeker = seeker->next;
-				}
-				if (seeker) {
-					if (currentlist) findfileshigh = seeker;
-					else finddirshigh = seeker;
-					sound(KICK_HIT);
-				}
-			}
-		}
-	    
-		gametext(40+4,12+32,"DIRECTORIES",0,2+8+16);
-	    
-		if (finddirshigh) {
-			dir = finddirshigh;
-			for(i=0; i<2; i++) if (!dir->prev) break; else dir=dir->prev;
-			for(i=2; i>-2 && dir; i--, dir=dir->next) {
-				if (dir == finddirshigh) c=0; else c=16;
-				minitextshade(40,1+12+32+8*(3-i),dir->name,c,0,26);
-			}
-	    }
+        {   // JBF 20040208: seek to first name matching pressed character
+            CACHE1D_FIND_REC *seeker = currentlist ? findfiles : finddirs;
+            char ch2, ch;
+            ch = KB_Getch();
+            if (ch > 0 && ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9'))) {
+                if (ch >= 'a') ch -= ('a'-'A');
+                while (seeker) {
+                    ch2 = seeker->name[0];
+                    if (ch2 >= 'a' && ch2 <= 'z') ch2 -= ('a'-'A');
+                    if (ch2 == ch) break;
+                    seeker = seeker->next;
+                }
+                if (seeker) {
+                    if (currentlist) findfileshigh = seeker;
+                    else finddirshigh = seeker;
+                    sound(KICK_HIT);
+                }
+            }
+        }
+        
+        gametext(40+4,12+32,"DIRECTORIES",0,2+8+16);
+        
+        if (finddirshigh) {
+            dir = finddirshigh;
+            for(i=0; i<2; i++) if (!dir->prev) break; else dir=dir->prev;
+            for(i=2; i>-2 && dir; i--, dir=dir->next) {
+                if (dir == finddirshigh) c=0; else c=16;
+                minitextshade(40,1+12+32+8*(3-i),dir->name,c,0,26);
+            }
+        }
 
-		gametext(40+4,8+32+40+8-1,"MAP FILES",0,2+8+16);
+        gametext(40+4,8+32+40+8-1,"MAP FILES",0,2+8+16);
 
-	    if (findfileshigh) {
-			dir = findfileshigh;
-			for(i=0; i<4; i++) if (!dir->prev) break; else dir=dir->prev;
-			for(i=4; i>-4 && dir; i--, dir=dir->next) {
-				if (dir == findfileshigh) c=0; else c=16;
-				minitextshade(40,(8+32+8*5)+8*(6-i),dir->name,c,2,26);
-			}
-	    }
+        if (findfileshigh) {
+            dir = findfileshigh;
+            for(i=0; i<4; i++) if (!dir->prev) break; else dir=dir->prev;
+            for(i=4; i>-4 && dir; i--, dir=dir->next) {
+                if (dir == findfileshigh) c=0; else c=16;
+                minitextshade(40,(8+32+8*5)+8*(6-i),dir->name,c,2,26);
+            }
+        }
 
             if( KB_KeyPressed( sc_LeftArrow ) || KB_KeyPressed( sc_kpad_4 ) || ((buttonstat&1) && minfo.dyaw < -256 ) ||
                 KB_KeyPressed( sc_RightArrow ) || KB_KeyPressed( sc_kpad_6 ) || ((buttonstat&1) && minfo.dyaw > 256 ) ||
-		KB_KeyPressed( sc_Tab ) )
+        KB_KeyPressed( sc_Tab ) )
             {
                 KB_ClearKeyDown( sc_LeftArrow );
                 KB_ClearKeyDown( sc_kpad_4 );
                 KB_ClearKeyDown( sc_RightArrow );
                 KB_ClearKeyDown( sc_kpad_6 );
-		KB_ClearKeyDown( sc_Tab );
+        KB_ClearKeyDown( sc_Tab );
                 currentlist = 1-currentlist;
                 sound(KICK_HIT);
             }
-		
-	    onbar = 0;
-	    probey = 2;
-		if (currentlist == 0) x = probe(50,12+32+16+4,0,3);
-	    else x = probe(50,8+32+40+40+4,0,3);
+        
+        onbar = 0;
+        probey = 2;
+        if (currentlist == 0) x = probe(50,12+32+16+4,0,3);
+        else x = probe(50,8+32+40+40+4,0,3);
 
-	    if (probey == 1) {
-			if (currentlist == 0) {
-				if (finddirshigh)
-					if (finddirshigh->prev) finddirshigh = finddirshigh->prev;
-			} else {
-				if (findfileshigh)
-					if (findfileshigh->prev) findfileshigh = findfileshigh->prev;
-			}
-		} else if (probey == 0) {
-			if (currentlist == 0) {
-				if (finddirshigh)
-					if (finddirshigh->next) finddirshigh = finddirshigh->next;
-			} else {
-				if (findfileshigh)
-					if (findfileshigh->next) findfileshigh = findfileshigh->next;
-			}
-	    }
+        if (probey == 1) {
+            if (currentlist == 0) {
+                if (finddirshigh)
+                    if (finddirshigh->prev) finddirshigh = finddirshigh->prev;
+            } else {
+                if (findfileshigh)
+                    if (findfileshigh->prev) findfileshigh = findfileshigh->prev;
+            }
+        } else if (probey == 0) {
+            if (currentlist == 0) {
+                if (finddirshigh)
+                    if (finddirshigh->next) finddirshigh = finddirshigh->next;
+            } else {
+                if (findfileshigh)
+                    if (findfileshigh->next) findfileshigh = findfileshigh->next;
+            }
+        }
 
-	    if(x == -1) {
-			cmenu(100);
-			clearfilenames();
-			boardfilename[0] = 0;
-	    }
-	    else if(x >= 0)
-		{
-			if (currentlist == 0) {
-				if (!finddirshigh) break;
-			    strcat(boardfilename, finddirshigh->name);
-			    strcat(boardfilename, "/");
-				Bcorrectfilename(boardfilename, 1);
-				cmenu(101);
-				KB_FlushKeyboardQueue();
-			} else {
-				if (!findfileshigh) break;
-				strcat(boardfilename, findfileshigh->name);
-				ud.m_volume_number = 0;
-				ud.m_level_number = 7;
-				cmenu(110);
-			}
-			clearfilenames();
-		}
-	    break;
-	    
+        if(x == -1) {
+            cmenu(100);
+            clearfilenames();
+            boardfilename[0] = 0;
+        }
+        else if(x >= 0)
+        {
+            if (currentlist == 0) {
+                if (!finddirshigh) break;
+                strcat(boardfilename, finddirshigh->name);
+                strcat(boardfilename, "/");
+                Bcorrectfilename(boardfilename, 1);
+                cmenu(101);
+                KB_FlushKeyboardQueue();
+            } else {
+                if (!findfileshigh) break;
+                strcat(boardfilename, findfileshigh->name);
+                ud.m_volume_number = 0;
+                ud.m_level_number = 7;
+                cmenu(110);
+            }
+            clearfilenames();
+        }
+        break;
+        
 
         case 110:
             c = (320>>1);
@@ -2470,607 +2457,607 @@ if (PLUTOPAK) {
 
             c = (320>>1)-120;
 
-		{
-			int io, ii, yy, d=c+160+40, enabled;
-			char *opts[] = {
-				"Crosshair",
-				"Level stats",
-				"Status bar size",
-				"-",
-				"Mouse aiming",
-				"Invert mouse aim",
-				"Mouse aiming type",
-				"Auto-aiming",
-				"Run key style",
-				"Auto weapon switch",
-				"-",
-				"Screen size",
-				"Detail",
-				"Shadows",
-				"Screen tilting",
-				"-",
-				"Record demo",
-				"Show startup window",
-				NULL
-			};
+        {
+            int io, ii, yy, d=c+160+40, enabled;
+            static const char *opts[] = {
+                "Crosshair",
+                "Level stats",
+                "Status bar size",
+                "-",
+                "Mouse aiming",
+                "Invert mouse aim",
+                "Mouse aiming type",
+                "Auto-aiming",
+                "Run key style",
+                "Auto weapon switch",
+                "-",
+                "Screen size",
+                "Detail",
+                "Shadows",
+                "Screen tilting",
+                "-",
+                "Record demo",
+                "Show startup window",
+                NULL
+            };
 
-			yy = 31;
-			for (ii=io=0; opts[ii]; ii++) {
-				if (opts[ii][0] == '-' && !opts[ii][1]) {
-					if (io <= probey) yy += 4;
-					continue;
-				}
-				if (io < probey) yy += 8;
-				io++;
-			}
+            yy = 31;
+            for (ii=io=0; opts[ii]; ii++) {
+                if (opts[ii][0] == '-' && !opts[ii][1]) {
+                    if (io <= probey) yy += 4;
+                    continue;
+                }
+                if (io < probey) yy += 8;
+                io++;
+            }
 
-			onbar = (probey == 2 || probey == 9);
-			x = probesm(c,yy+5,0,io);
+            onbar = (probey == 2 || probey == 9);
+            x = probesm(c,yy+5,0,io);
 
-			if (x == -1) { cmenu(202); break; }
-#define OFFSHADE 16	
-			yy = 31;
-			for (ii=io=0; opts[ii]; ii++) {
-				if (opts[ii][0] == '-' && !opts[ii][1]) {
-					yy += 4;
-					continue;
-				}
-				enabled = 1;
-				switch (io) {
-					case 0:  if (x==io) ud.crosshair = 1-ud.crosshair;
-					         gametextpal(d,yy, ud.crosshair ? "On" : "Off", 0, 0); break;
-					case 1:  if (x==io) ud.levelstats = 1-ud.levelstats;
-					         gametextpal(d,yy, ud.levelstats ? "Shown" : "Hidden", 0, 0); break;
-					case 2:
-						{
-							short sbs, sbsl;
-							sbs = sbsl = scale(max(0,ud.statusbarscale-50),63,100-50);
-							barsm(d+8,yy+7, (short *)&sbs,9,x==io,SHX(-5),PHX(-5));
-							if (x == io && sbs != sbsl) {
-								sbs = scale(sbs,100-50,63)+50;
-								setstatusbarscale(sbs);
-							}
-						}
-						break;
-					case 3:  enabled = !ud.mouseaiming;
-						 if (enabled && x==io) myaimmode = 1-myaimmode;
-						 gametextpal(d,yy, myaimmode ? "On" : "Off", enabled?0:OFFSHADE, 0); break;
-					case 4:  if (x==io) ud.mouseflip = 1-ud.mouseflip;
-						 gametextpal(d,yy, ud.mouseflip ? "On" : "Off", 0, 0); break;
-					case 5:  if (ps[myconnectindex].gm&MODE_GAME || numplayers > 1) enabled = 0;
-						 if (enabled && x==io) ud.mouseaiming = 1-ud.mouseaiming;
-		    					// don't change when in a multiplayer game
-		    					// because the state is sent during getnames()
-							// however, this will be fixed later
-						 gametextpal(d,yy, ud.mouseaiming ? "Held" : "Toggle", enabled?0:OFFSHADE, 0); break;
-					case 6:  if (ps[myconnectindex].gm&MODE_GAME || numplayers > 1) enabled = 0;
-						 if (enabled && x==io) AutoAim = 1-AutoAim;
-						 gametextpal(d,yy, AutoAim ? "On" : "Off", enabled?0:OFFSHADE, 0); break;
-					case 7:  if (x==io) ud.runkey_mode = 1-ud.runkey_mode;
-						 gametextpal(d,yy, ud.runkey_mode ? "Classic" : "Modern", 0, 0); break;
-					case 8:  if (ps[myconnectindex].gm&MODE_GAME || numplayers > 1) enabled = 0;
-						 if (enabled && x==io) { ud.weaponswitch = (ud.weaponswitch == 3) ? 0 : ud.weaponswitch+1; }
-							 { char *s[] = { "Off", "New", "Empty", "New+Empty" };
-								 gametextpal(d,yy, s[ud.weaponswitch], enabled?0:OFFSHADE, 0); break; }
-						 break;
-					case 9:  barsm(d+8,yy+7, (short *)&ud.screen_size,-4,x==io,SHX(-5),PHX(-5)); break;
-					case 10: if (x==io) ud.detail = 1-ud.detail;
-						 gametextpal(d,yy, ud.detail ? "High" : "Low", 0, 0); break;
-					case 11: if (x==io) ud.shadows = 1-ud.shadows;
-						 gametextpal(d,yy, ud.shadows ? "On" : "Off", 0, 0); break;
-					case 12: if (x==io) ud.screen_tilting = 1-ud.screen_tilting;
-						 gametextpal(d,yy, ud.screen_tilting ? "On" : "Off", 0, 0); break;	// original had a 'full' option
-					case 13: if (x==io) {
-					            if( (ps[myconnectindex].gm&MODE_GAME) ) closedemowrite();
-					            else ud.m_recstat = !ud.m_recstat;
-						 }
-					         if( (ps[myconnectindex].gm&MODE_GAME) && ud.m_recstat != 1 )
-							 enabled = 0;
-						 gametextpal(d,yy, ud.m_recstat==1 ? "On" : "Off", enabled?0:OFFSHADE, 0); break;
-					case 14: if (x==io) ForceSetup = 1-ForceSetup;
-						 gametextpal(d,yy, ForceSetup ? "Yes" : "No", 0, 0); break;
-					default: break;
-				}
-				gametextpal(c,yy, opts[ii], enabled?0:OFFSHADE, 2);
-				io++;
-				yy += 8;
-			}
-		}
-		break;
-			
-	    // JBF 20031205: Second level options menu selection
-	case 202:
+            if (x == -1) { cmenu(202); break; }
+#define OFFSHADE 16 
+            yy = 31;
+            for (ii=io=0; opts[ii]; ii++) {
+                if (opts[ii][0] == '-' && !opts[ii][1]) {
+                    yy += 4;
+                    continue;
+                }
+                enabled = 1;
+                switch (io) {
+                    case 0:  if (x==io) ud.crosshair = 1-ud.crosshair;
+                             gametextpal(d,yy, ud.crosshair ? "On" : "Off", 0, 0); break;
+                    case 1:  if (x==io) ud.levelstats = 1-ud.levelstats;
+                             gametextpal(d,yy, ud.levelstats ? "Shown" : "Hidden", 0, 0); break;
+                    case 2:
+                        {
+                            short sbs, sbsl;
+                            sbs = sbsl = scale(max(0,ud.statusbarscale-50),63,100-50);
+                            barsm(d+8,yy+7, (short *)&sbs,9,x==io,SHX(-5),PHX(-5));
+                            if (x == io && sbs != sbsl) {
+                                sbs = scale(sbs,100-50,63)+50;
+                                setstatusbarscale(sbs);
+                            }
+                        }
+                        break;
+                    case 3:  enabled = !ud.mouseaiming;
+                         if (enabled && x==io) myaimmode = 1-myaimmode;
+                         gametextpal(d,yy, myaimmode ? "On" : "Off", enabled?0:OFFSHADE, 0); break;
+                    case 4:  if (x==io) ud.mouseflip = 1-ud.mouseflip;
+                         gametextpal(d,yy, ud.mouseflip ? "On" : "Off", 0, 0); break;
+                    case 5:  if (ps[myconnectindex].gm&MODE_GAME || numplayers > 1) enabled = 0;
+                         if (enabled && x==io) ud.mouseaiming = 1-ud.mouseaiming;
+                                // don't change when in a multiplayer game
+                                // because the state is sent during getnames()
+                            // however, this will be fixed later
+                         gametextpal(d,yy, ud.mouseaiming ? "Held" : "Toggle", enabled?0:OFFSHADE, 0); break;
+                    case 6:  if (ps[myconnectindex].gm&MODE_GAME || numplayers > 1) enabled = 0;
+                         if (enabled && x==io) AutoAim = 1-AutoAim;
+                         gametextpal(d,yy, AutoAim ? "On" : "Off", enabled?0:OFFSHADE, 0); break;
+                    case 7:  if (x==io) ud.runkey_mode = 1-ud.runkey_mode;
+                         gametextpal(d,yy, ud.runkey_mode ? "Classic" : "Modern", 0, 0); break;
+                    case 8:  if (ps[myconnectindex].gm&MODE_GAME || numplayers > 1) enabled = 0;
+                         if (enabled && x==io) { ud.weaponswitch = (ud.weaponswitch == 3) ? 0 : ud.weaponswitch+1; }
+                             { static const char *s[] = { "Off", "New", "Empty", "New+Empty" };
+                                 gametextpal(d,yy, s[ud.weaponswitch], enabled?0:OFFSHADE, 0); break; }
+                         break;
+                    case 9:  barsm(d+8,yy+7, (short *)&ud.screen_size,-4,x==io,SHX(-5),PHX(-5)); break;
+                    case 10: if (x==io) ud.detail = 1-ud.detail;
+                         gametextpal(d,yy, ud.detail ? "High" : "Low", 0, 0); break;
+                    case 11: if (x==io) ud.shadows = 1-ud.shadows;
+                         gametextpal(d,yy, ud.shadows ? "On" : "Off", 0, 0); break;
+                    case 12: if (x==io) ud.screen_tilting = 1-ud.screen_tilting;
+                         gametextpal(d,yy, ud.screen_tilting ? "On" : "Off", 0, 0); break;  // original had a 'full' option
+                    case 13: if (x==io) {
+                                if( (ps[myconnectindex].gm&MODE_GAME) ) closedemowrite();
+                                else ud.m_recstat = !ud.m_recstat;
+                         }
+                             if( (ps[myconnectindex].gm&MODE_GAME) && ud.m_recstat != 1 )
+                             enabled = 0;
+                         gametextpal(d,yy, ud.m_recstat==1 ? "On" : "Off", enabled?0:OFFSHADE, 0); break;
+                    case 14: if (x==io) ForceSetup = 1-ForceSetup;
+                         gametextpal(d,yy, ForceSetup ? "Yes" : "No", 0, 0); break;
+                    default: break;
+                }
+                gametextpal(c,yy, opts[ii], enabled?0:OFFSHADE, 2);
+                io++;
+                yy += 8;
+            }
+        }
+        break;
+            
+        // JBF 20031205: Second level options menu selection
+    case 202:
             rotatesprite(320<<15,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,24,0,0,"OPTIONS");
 
-	    c = 200>>1;
+        c = 200>>1;
 
             onbar = 0;
             x = probe(160,c-18-18-18,18,7-NAM);
 
-	    switch (x) {
-		case -1:
+        switch (x) {
+        case -1:
             if(ps[myconnectindex].gm&MODE_GAME) cmenu(50);else cmenu(0);
-		    break;
+            break;
 
-		case 0:
-		    cmenu(200);
-		    break;
+        case 0:
+            cmenu(200);
+            break;
 
-		case 1:
-			cmenu(700);
-			break;
+        case 1:
+            cmenu(700);
+            break;
 
-		case 2:
-			{
-				int dax = xdim, day = ydim, daz;
-				curvidmode = newvidmode = checkvideomode(&dax,&day,bpp,fullscreen,0);
-				if (newvidmode == 0x7fffffffl) newvidmode = validmodecnt;
-				newfullscreen = fullscreen;
-				changesmade = 0;
+        case 2:
+            {
+                int dax = xdim, day = ydim, daz;
+                curvidmode = newvidmode = checkvideomode(&dax,&day,bpp,fullscreen,0);
+                if (newvidmode == 0x7fffffffl) newvidmode = validmodecnt;
+                newfullscreen = fullscreen;
+                changesmade = 0;
 
-				dax = 0;
-				for (day = 0; day < validmodecnt; day++) {
-					if (dax == sizeof(vidsets)/sizeof(vidsets[1])) break;
-					for (daz = 0; daz < dax; daz++)
-						if ((validmode[day].bpp|((validmode[day].fs&1)<<16)) == (vidsets[daz]&0x1ffffl)) break;
-					if (vidsets[daz] != -1) continue;
-					if (validmode[day].bpp == 8) {
-						vidsets[dax++] = 8|((validmode[day].fs&1)<<16);
-						vidsets[dax++] = 0x20000|8|((validmode[day].fs&1)<<16);
-					} else
-						vidsets[dax++] = 0x20000|validmode[day].bpp|((validmode[day].fs&1)<<16);
-				}
-				for (dax = 0; dax < (long)(sizeof(vidsets)/sizeof(vidsets[1])) && vidsets[dax] != -1; dax++)
-					if (vidsets[dax] == (((getrendermode()>=2)<<17)|(fullscreen<<16)|bpp)) break;
-				if (dax < (long)(sizeof(vidsets)/sizeof(vidsets[1]))) newvidset = dax;
-				curvidset = newvidset;
-				
-				cmenu(203);
-			}
-		    break;
-		    
-		case 3:
-		    currentlist = 0;
-		case 4:
-		case 5:
-			if (x==5 && !CONTROL_JoyPresent) break;
-		    cmenu(204+x-3);
-		    break;
+                dax = 0;
+                for (day = 0; day < validmodecnt; day++) {
+                    if (dax == sizeof(vidsets)/sizeof(vidsets[1])) break;
+                    for (daz = 0; daz < dax; daz++)
+                        if ((validmode[day].bpp|((validmode[day].fs&1)<<16)) == (vidsets[daz]&0x1ffffl)) break;
+                    if (vidsets[daz] != -1) continue;
+                    if (validmode[day].bpp == 8) {
+                        vidsets[dax++] = 8|((validmode[day].fs&1)<<16);
+                        vidsets[dax++] = 0x20000|8|((validmode[day].fs&1)<<16);
+                    } else
+                        vidsets[dax++] = 0x20000|validmode[day].bpp|((validmode[day].fs&1)<<16);
+                }
+                for (dax = 0; dax < (int)(sizeof(vidsets)/sizeof(vidsets[1])) && vidsets[dax] != -1; dax++)
+                    if (vidsets[dax] == (((getrendermode()>=2)<<17)|(fullscreen<<16)|bpp)) break;
+                if (dax < (int)(sizeof(vidsets)/sizeof(vidsets[1]))) newvidset = dax;
+                curvidset = newvidset;
+                
+                cmenu(203);
+            }
+            break;
+            
+        case 3:
+            currentlist = 0;
+        case 4:
+        case 5:
+            if (x==5 && !CONTROL_JoyPresent) break;
+            cmenu(204+x-3);
+            break;
 
-		case 6:
+        case 6:
 #ifndef AUSTRALIA
             cmenu(10000);
 #endif
-			break;
-	    }
+            break;
+        }
 
-	    menutext(160,c-18-18-18,0,0,"GAME OPTIONS");
-		menutext(160,c-18-18,   0,0,"SOUND OPTIONS");
-	    menutext(160,c-18,      0,0,"VIDEO SETTINGS");
-	    menutext(160,c,         0,0,"KEYS SETUP");
-	    menutext(160,c+18,      0,0,"MOUSE SETUP");
-		menutext(160,c+18+18,   0,CONTROL_JoyPresent==0,"JOYSTICK SETUP");
-		if (!NAM) {
+        menutext(160,c-18-18-18,0,0,"GAME OPTIONS");
+        menutext(160,c-18-18,   0,0,"SOUND OPTIONS");
+        menutext(160,c-18,      0,0,"VIDEO SETTINGS");
+        menutext(160,c,         0,0,"KEYS SETUP");
+        menutext(160,c+18,      0,0,"MOUSE SETUP");
+        menutext(160,c+18+18,   0,CONTROL_JoyPresent==0,"JOYSTICK SETUP");
+        if (!NAM) {
 #ifndef AUSTRALIA
-		menutext(160,c+18+18+18,0,0,"PARENTAL LOCK");
+        menutext(160,c+18+18+18,0,0,"PARENTAL LOCK");
 #else
-		menutext(160,c+18+18+18,0,1,"PARENTAL LOCK");
+        menutext(160,c+18+18+18,0,1,"PARENTAL LOCK");
 #endif
-		}
-	    break;
+        }
+        break;
 
-	    // JBF 20031206: Video settings menu
-	case 203:
+        // JBF 20031206: Video settings menu
+    case 203:
             rotatesprite(320<<15,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,24,0,0,"VIDEO SETTINGS");
 
-	    c = (320>>1)-120;
+        c = (320>>1)-120;
 
 #if defined(POLYMOST) && defined(USE_OPENGL)
-		x = 7;
+        x = 7;
 #else
-		x = 5;
+        x = 5;
 #endif
-	    onbar = (probey == 4);
-		if (probey == 0 || probey == 1 || probey == 2)
-		    x = probe(c+6,50,16,x);
-		else if (probey == 3)
-			x = probe(c+6,50+16+16+22,0,x);
-		else
-			x = probe(c+6,50+62-16-16-16,16,x);
+        onbar = (probey == 4);
+        if (probey == 0 || probey == 1 || probey == 2)
+            x = probe(c+6,50,16,x);
+        else if (probey == 3)
+            x = probe(c+6,50+16+16+22,0,x);
+        else
+            x = probe(c+6,50+62-16-16-16,16,x);
 
-		if (probey==0 && (KB_KeyPressed(sc_LeftArrow) || KB_KeyPressed(sc_RightArrow))) {
-			sound(PISTOL_BODYHIT);
-			x=0;
-		}
-	    switch (x) {
-		case -1:
-		    cmenu(202);
-		    probey = 2;
-		    break;
+        if (probey==0 && (KB_KeyPressed(sc_LeftArrow) || KB_KeyPressed(sc_RightArrow))) {
+            sound(PISTOL_BODYHIT);
+            x=0;
+        }
+        switch (x) {
+        case -1:
+            cmenu(202);
+            probey = 2;
+            break;
 
-		case 0:
-		    do {
-				if (KB_KeyPressed(sc_LeftArrow)) {
-					newvidmode--;
-					if (newvidmode < 0) newvidmode = validmodecnt-1;
-				} else {
-			        newvidmode++;
-			        if (newvidmode >= validmodecnt) newvidmode = 0;
-				}
-		    } while ((validmode[newvidmode].fs&1) != ((vidsets[newvidset]>>16)&1) || validmode[newvidmode].bpp != (vidsets[newvidset] & 0x0ffff));
-			//OSD_Printf("New mode is %dx%dx%d-%d %d\n",validmode[newvidmode].xdim,validmode[newvidmode].ydim,validmode[newvidmode].bpp,validmode[newvidmode].fs,newvidmode);
-		    if ((curvidmode == 0x7fffffffl && newvidmode == validmodecnt) || curvidmode == newvidmode)
-				changesmade &= ~1;
-		    else
-		        changesmade |= 1;
-			KB_ClearKeyDown(sc_LeftArrow);
-			KB_ClearKeyDown(sc_RightArrow);
-		    break;
+        case 0:
+            do {
+                if (KB_KeyPressed(sc_LeftArrow)) {
+                    newvidmode--;
+                    if (newvidmode < 0) newvidmode = validmodecnt-1;
+                } else {
+                    newvidmode++;
+                    if (newvidmode >= validmodecnt) newvidmode = 0;
+                }
+            } while ((validmode[newvidmode].fs&1) != ((vidsets[newvidset]>>16)&1) || validmode[newvidmode].bpp != (vidsets[newvidset] & 0x0ffff));
+            //OSD_Printf("New mode is %dx%dx%d-%d %d\n",validmode[newvidmode].xdim,validmode[newvidmode].ydim,validmode[newvidmode].bpp,validmode[newvidmode].fs,newvidmode);
+            if ((curvidmode == 0x7fffffffl && newvidmode == validmodecnt) || curvidmode == newvidmode)
+                changesmade &= ~1;
+            else
+                changesmade |= 1;
+            KB_ClearKeyDown(sc_LeftArrow);
+            KB_ClearKeyDown(sc_RightArrow);
+            break;
 
-		case 1:
-			{
-				int lastvidset, lastvidmode, safevidmode = -1;
-				lastvidset = newvidset;
-				lastvidmode = newvidmode;
-				// find the next vidset compatible with the current fullscreen setting
-				while (vidsets[0] != -1) {
-					newvidset++;
-					if (newvidset == sizeof(vidsets)/sizeof(vidsets[0]) || vidsets[newvidset] == -1) { newvidset = -1; continue; }
-					if (((vidsets[newvidset]>>16)&1) != newfullscreen) continue;
-					break;
-				}
+        case 1:
+            {
+                int lastvidset, lastvidmode, safevidmode = -1;
+                lastvidset = newvidset;
+                lastvidmode = newvidmode;
+                // find the next vidset compatible with the current fullscreen setting
+                while (vidsets[0] != -1) {
+                    newvidset++;
+                    if (newvidset == sizeof(vidsets)/sizeof(vidsets[0]) || vidsets[newvidset] == -1) { newvidset = -1; continue; }
+                    if (((vidsets[newvidset]>>16)&1) != newfullscreen) continue;
+                    break;
+                }
 
-				if ((vidsets[newvidset] & 0x0ffff) != (vidsets[lastvidset] & 0x0ffff)) {
-					// adjust the video mode to something legal for the new vidset
-					do {
-						newvidmode++;
-						if (newvidmode == lastvidmode) break;	// end of cycle
-						if (newvidmode >= validmodecnt) newvidmode = 0;
-						if (validmode[newvidmode].bpp == (vidsets[newvidset]&0x0ffff) &&
-							validmode[newvidmode].fs == newfullscreen &&
-							validmode[newvidmode].xdim <= validmode[lastvidmode].xdim &&
-							   (safevidmode==-1?1:(validmode[newvidmode].xdim>=validmode[safevidmode].xdim)) &&
-							validmode[newvidmode].ydim <= validmode[lastvidmode].ydim &&
-							   (safevidmode==-1?1:(validmode[newvidmode].ydim>=validmode[safevidmode].ydim))
-							)
-							safevidmode = newvidmode;
-					} while (1);
-					if (safevidmode == -1) {
-						//OSD_Printf("No best fit!\n");
-						newvidmode = lastvidmode;
-						newvidset = lastvidset;
-					} else {
-						//OSD_Printf("Best fit is %dx%dx%d-%d %d\n",validmode[safevidmode].xdim,validmode[safevidmode].ydim,validmode[safevidmode].bpp,validmode[safevidmode].fs,safevidmode);
-						newvidmode = safevidmode;
-					}
-				}
-				if (newvidset != curvidset) changesmade |= 4; else changesmade &= ~4;
-				if (newvidmode != curvidmode) changesmade |= 1; else changesmade &= ~1;
-			}
-			break;
+                if ((vidsets[newvidset] & 0x0ffff) != (vidsets[lastvidset] & 0x0ffff)) {
+                    // adjust the video mode to something legal for the new vidset
+                    do {
+                        newvidmode++;
+                        if (newvidmode == lastvidmode) break;   // end of cycle
+                        if (newvidmode >= validmodecnt) newvidmode = 0;
+                        if (validmode[newvidmode].bpp == (vidsets[newvidset]&0x0ffff) &&
+                            validmode[newvidmode].fs == newfullscreen &&
+                            validmode[newvidmode].xdim <= validmode[lastvidmode].xdim &&
+                               (safevidmode==-1?1:(validmode[newvidmode].xdim>=validmode[safevidmode].xdim)) &&
+                            validmode[newvidmode].ydim <= validmode[lastvidmode].ydim &&
+                               (safevidmode==-1?1:(validmode[newvidmode].ydim>=validmode[safevidmode].ydim))
+                            )
+                            safevidmode = newvidmode;
+                    } while (1);
+                    if (safevidmode == -1) {
+                        //OSD_Printf("No best fit!\n");
+                        newvidmode = lastvidmode;
+                        newvidset = lastvidset;
+                    } else {
+                        //OSD_Printf("Best fit is %dx%dx%d-%d %d\n",validmode[safevidmode].xdim,validmode[safevidmode].ydim,validmode[safevidmode].bpp,validmode[safevidmode].fs,safevidmode);
+                        newvidmode = safevidmode;
+                    }
+                }
+                if (newvidset != curvidset) changesmade |= 4; else changesmade &= ~4;
+                if (newvidmode != curvidmode) changesmade |= 1; else changesmade &= ~1;
+            }
+            break;
 
-		case 2:
-		    newfullscreen = !newfullscreen;
-			{
-				int lastvidset, lastvidmode, safevidmode = -1, safevidset = -1;
-				lastvidset = newvidset;
-				lastvidmode = newvidmode;
-				// find the next vidset compatible with the current fullscreen setting
-				while (vidsets[0] != -1) {
-					newvidset++;
-					if (newvidset == lastvidset) break;
-					if (newvidset == sizeof(vidsets)/sizeof(vidsets[0]) || vidsets[newvidset] == -1) { newvidset = -1; continue; }
-					if (((vidsets[newvidset]>>16)&1) != newfullscreen) continue;
-					if ((vidsets[newvidset] & 0x2ffff) != (vidsets[lastvidset] & 0x2ffff)) {
-						if ((vidsets[newvidset] & 0x20000) == (vidsets[lastvidset] & 0x20000)) safevidset = newvidset;
-						continue;
-					}
-					break;
-				}
-				if (newvidset == lastvidset) {
-					if (safevidset == -1) {
-						newfullscreen = !newfullscreen;
-						break;
-					} else {
-						newvidset = safevidset;
-					}
-				}
+        case 2:
+            newfullscreen = !newfullscreen;
+            {
+                int lastvidset, lastvidmode, safevidmode = -1, safevidset = -1;
+                lastvidset = newvidset;
+                lastvidmode = newvidmode;
+                // find the next vidset compatible with the current fullscreen setting
+                while (vidsets[0] != -1) {
+                    newvidset++;
+                    if (newvidset == lastvidset) break;
+                    if (newvidset == sizeof(vidsets)/sizeof(vidsets[0]) || vidsets[newvidset] == -1) { newvidset = -1; continue; }
+                    if (((vidsets[newvidset]>>16)&1) != newfullscreen) continue;
+                    if ((vidsets[newvidset] & 0x2ffff) != (vidsets[lastvidset] & 0x2ffff)) {
+                        if ((vidsets[newvidset] & 0x20000) == (vidsets[lastvidset] & 0x20000)) safevidset = newvidset;
+                        continue;
+                    }
+                    break;
+                }
+                if (newvidset == lastvidset) {
+                    if (safevidset == -1) {
+                        newfullscreen = !newfullscreen;
+                        break;
+                    } else {
+                        newvidset = safevidset;
+                    }
+                }
 
-				// adjust the video mode to something legal for the new vidset
-				do {
-					newvidmode++;
-					if (newvidmode == lastvidmode) break;	// end of cycle
-					if (newvidmode >= validmodecnt) newvidmode = 0;
-					if (validmode[newvidmode].bpp == (vidsets[newvidset]&0x0ffff) &&
-						validmode[newvidmode].fs == newfullscreen &&
-						validmode[newvidmode].xdim <= validmode[lastvidmode].xdim &&
-						   (safevidmode==-1?1:(validmode[newvidmode].xdim>=validmode[safevidmode].xdim)) &&
-						validmode[newvidmode].ydim <= validmode[lastvidmode].ydim &&
-						   (safevidmode==-1?1:(validmode[newvidmode].ydim>=validmode[safevidmode].ydim))
-						)
-						safevidmode = newvidmode;
-				} while (1);
-				if (safevidmode == -1) {
-					//OSD_Printf("No best fit!\n");
-					newvidmode = lastvidmode;
-					newvidset = lastvidset;
-					newfullscreen = !newfullscreen;
-				} else {
-					//OSD_Printf("Best fit is %dx%dx%d-%d %d\n",validmode[safevidmode].xdim,validmode[safevidmode].ydim,validmode[safevidmode].bpp,validmode[safevidmode].fs,safevidmode);
-					newvidmode = safevidmode;
-				}
-				if (newvidset != curvidset) changesmade |= 4; else changesmade &= ~4;
-				if (newvidmode != curvidmode) changesmade |= 1; else changesmade &= ~1;
-			}
-		    if (newfullscreen == fullscreen) changesmade &= ~2; else changesmade |= 2;
-		    break;
+                // adjust the video mode to something legal for the new vidset
+                do {
+                    newvidmode++;
+                    if (newvidmode == lastvidmode) break;   // end of cycle
+                    if (newvidmode >= validmodecnt) newvidmode = 0;
+                    if (validmode[newvidmode].bpp == (vidsets[newvidset]&0x0ffff) &&
+                        validmode[newvidmode].fs == newfullscreen &&
+                        validmode[newvidmode].xdim <= validmode[lastvidmode].xdim &&
+                           (safevidmode==-1?1:(validmode[newvidmode].xdim>=validmode[safevidmode].xdim)) &&
+                        validmode[newvidmode].ydim <= validmode[lastvidmode].ydim &&
+                           (safevidmode==-1?1:(validmode[newvidmode].ydim>=validmode[safevidmode].ydim))
+                        )
+                        safevidmode = newvidmode;
+                } while (1);
+                if (safevidmode == -1) {
+                    //OSD_Printf("No best fit!\n");
+                    newvidmode = lastvidmode;
+                    newvidset = lastvidset;
+                    newfullscreen = !newfullscreen;
+                } else {
+                    //OSD_Printf("Best fit is %dx%dx%d-%d %d\n",validmode[safevidmode].xdim,validmode[safevidmode].ydim,validmode[safevidmode].bpp,validmode[safevidmode].fs,safevidmode);
+                    newvidmode = safevidmode;
+                }
+                if (newvidset != curvidset) changesmade |= 4; else changesmade &= ~4;
+                if (newvidmode != curvidmode) changesmade |= 1; else changesmade &= ~1;
+            }
+            if (newfullscreen == fullscreen) changesmade &= ~2; else changesmade |= 2;
+            break;
 
-		case 3:
-		    if (!changesmade) break;
-			{
-				long pxdim, pydim, pfs, pbpp, prend;
-				long nxdim, nydim, nfs, nbpp, nrend;
+        case 3:
+            if (!changesmade) break;
+            {
+                int pxdim, pydim, pfs, pbpp, prend;
+                int nxdim, nydim, nfs, nbpp, nrend;
 
-				pxdim = xdim; pydim = ydim; pbpp = bpp; pfs = fullscreen; prend = getrendermode();
-				nxdim = (newvidmode==validmodecnt)?xdim:validmode[newvidmode].xdim;
-				nydim = (newvidmode==validmodecnt)?ydim:validmode[newvidmode].ydim;
-				nfs   = newfullscreen;
-				nbpp  = (newvidmode==validmodecnt)?bpp:validmode[newvidmode].bpp;
-				nrend = (vidsets[newvidset] & 0x20000) ? (nbpp==8?2:3) : 0;
+                pxdim = xdim; pydim = ydim; pbpp = bpp; pfs = fullscreen; prend = getrendermode();
+                nxdim = (newvidmode==validmodecnt)?xdim:validmode[newvidmode].xdim;
+                nydim = (newvidmode==validmodecnt)?ydim:validmode[newvidmode].ydim;
+                nfs   = newfullscreen;
+                nbpp  = (newvidmode==validmodecnt)?bpp:validmode[newvidmode].bpp;
+                nrend = (vidsets[newvidset] & 0x20000) ? (nbpp==8?2:3) : 0;
 
-				if (setgamemode(nfs, nxdim, nydim, nbpp) < 0) {
-		    		if (setgamemode(pfs, pxdim, pydim, pbpp) < 0) {
-						setrendermode(prend);
-						gameexit("Failed restoring old video mode.");
-					} else onvideomodechange(pbpp > 8);
-				} else onvideomodechange(nbpp > 8);
-				vscrn();
-				setrendermode(nrend);
+                if (setgamemode(nfs, nxdim, nydim, nbpp) < 0) {
+                    if (setgamemode(pfs, pxdim, pydim, pbpp) < 0) {
+                        setrendermode(prend);
+                        gameexit("Failed restoring old video mode.");
+                    } else onvideomodechange(pbpp > 8);
+                } else onvideomodechange(nbpp > 8);
+                vscrn();
+                setrendermode(nrend);
 
-			    curvidmode = newvidmode; curvidset = newvidset;
-			    changesmade = 0;
+                curvidmode = newvidmode; curvidset = newvidset;
+                changesmade = 0;
 
-			    ScreenMode = fullscreen;
-			    ScreenWidth = xdim;
-		    	ScreenHeight = ydim;
-				ScreenBPP = bpp;
-			}
-		    break;
+                ScreenMode = fullscreen;
+                ScreenWidth = xdim;
+                ScreenHeight = ydim;
+                ScreenBPP = bpp;
+            }
+            break;
 
-		case 4:
-			break;
+        case 4:
+            break;
 
 #if defined(POLYMOST) && defined(USE_OPENGL)
-		case 5:
-			if (bpp==8) break;
-			switch (gltexfiltermode) {
-				case 0: gltexfiltermode = 3; break;
-				case 3: gltexfiltermode = 5; break;
-				case 5: gltexfiltermode = 0; break;
-				default: gltexfiltermode = 3; break;
-			}
-			gltexapplyprops();
-			break;
+        case 5:
+            if (bpp==8) break;
+            switch (gltexfiltermode) {
+                case 0: gltexfiltermode = 3; break;
+                case 3: gltexfiltermode = 5; break;
+                case 5: gltexfiltermode = 0; break;
+                default: gltexfiltermode = 3; break;
+            }
+            gltexapplyprops();
+            break;
 
-		case 6:
-			if (bpp==8) break;
-			glanisotropy *= 2;
-			if (glanisotropy > glinfo.maxanisotropy) glanisotropy = 1;
-			gltexapplyprops();
-			break;
+        case 6:
+            if (bpp==8) break;
+            glanisotropy *= 2;
+            if (glanisotropy > glinfo.maxanisotropy) glanisotropy = 1;
+            gltexapplyprops();
+            break;
 #endif
-	    }
+        }
 
-	    menutext(c,50,0,0,"RESOLUTION");
-	    sprintf(tempbuf,"%ld x %ld",
-			    (newvidmode==validmodecnt)?xdim:validmode[newvidmode].xdim,
-			    (newvidmode==validmodecnt)?ydim:validmode[newvidmode].ydim);
+        menutext(c,50,0,0,"RESOLUTION");
+        sprintf(tempbuf,"%d x %d",
+                (newvidmode==validmodecnt)?xdim:validmode[newvidmode].xdim,
+                (newvidmode==validmodecnt)?ydim:validmode[newvidmode].ydim);
             gametext(c+154,50-8,tempbuf,0,2+8+16);
-	    
-	    menutext(c,50+16,0,0,"VIDEO MODE");
-			sprintf(tempbuf, "%dbit %s", vidsets[newvidset]&0x0ffff, (vidsets[newvidset]&0x20000)?"Polymost":"Classic");
-			gametext(c+154,50+16-8,tempbuf,0,2+8+16);
+        
+        menutext(c,50+16,0,0,"VIDEO MODE");
+            sprintf(tempbuf, "%dbit %s", vidsets[newvidset]&0x0ffff, (vidsets[newvidset]&0x20000)?"Polymost":"Classic");
+            gametext(c+154,50+16-8,tempbuf,0,2+8+16);
 
-	    menutext(c,50+16+16,0,0,"FULLSCREEN");
+        menutext(c,50+16+16,0,0,"FULLSCREEN");
             menutext(c+154,50+16+16,0,0,newfullscreen?"YES":"NO");
 
-	    menutext(c+16,50+16+16+22,0,changesmade==0,"APPLY CHANGES");
-	    
+        menutext(c+16,50+16+16+22,0,changesmade==0,"APPLY CHANGES");
+        
         menutext(c,50+62+16,SHX(-6),PHX(-6),"BRIGHTNESS");
-		{
-			short ss = ud.brightness;
+        {
+            short ss = ud.brightness;
             bar(c+167,50+62+16,&ss,8,x==4,SHX(-6),PHX(-6));
             if(x==4) {
-				ud.brightness = ss;
-				setbrightness(ud.brightness>>2,&ps[myconnectindex].palette[0],0);
-			}
-		}
+                ud.brightness = ss;
+                setbrightness(ud.brightness>>2,&ps[myconnectindex].palette[0],0);
+            }
+        }
 
 #if defined(POLYMOST) && defined(USE_OPENGL)
-		menutext(c,50+62+16+16,0,bpp==8,"FILTERING");
-			switch (gltexfiltermode) {
-				case 0: strcpy(tempbuf,"NEAREST"); break;
-				case 3: strcpy(tempbuf,"BILINEAR"); break;
-				case 5: strcpy(tempbuf,"TRILINEAR"); break;
-				default: strcpy(tempbuf,"OTHER"); break;
-			}
-			menutext(c+154,50+62+16+16,0,bpp==8,tempbuf);
+        menutext(c,50+62+16+16,0,bpp==8,"FILTERING");
+            switch (gltexfiltermode) {
+                case 0: strcpy(tempbuf,"NEAREST"); break;
+                case 3: strcpy(tempbuf,"BILINEAR"); break;
+                case 5: strcpy(tempbuf,"TRILINEAR"); break;
+                default: strcpy(tempbuf,"OTHER"); break;
+            }
+            menutext(c+154,50+62+16+16,0,bpp==8,tempbuf);
 
-		menutext(c,50+62+16+16+16,0,bpp==8,"ANISOTROPY");
-			if (glanisotropy == 1) strcpy(tempbuf,"NONE");
-			else sprintf(tempbuf,"%ld-tap",glanisotropy);
-			menutext(c+154,50+62+16+16+16,0,bpp==8,tempbuf);
+        menutext(c,50+62+16+16+16,0,bpp==8,"ANISOTROPY");
+            if (glanisotropy == 1) strcpy(tempbuf,"NONE");
+            else sprintf(tempbuf,"%d-tap",glanisotropy);
+            menutext(c+154,50+62+16+16+16,0,bpp==8,tempbuf);
 #endif
-	    break;
+        break;
 
-	case 204:
+    case 204:
             rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,15,0,0,"KEYS SETUP");
 
-	    c = (320>>1)-120;
+        c = (320>>1)-120;
 
-	    onbar = 0;
-	    x = probe(0,0,0,NUMGAMEFUNCTIONS);
+        onbar = 0;
+        x = probe(0,0,0,NUMGAMEFUNCTIONS);
 
-	    if (x==-1) {
-			cmenu(202);
-			probey = 3;
-	    } else if (x>=0) {
-			function = probey;
-			whichkey = currentlist;
-			cmenu(210);
-			KB_FlushKeyboardQueue();
-			KB_ClearLastScanCode();
-			break;
-	    }
+        if (x==-1) {
+            cmenu(202);
+            probey = 3;
+        } else if (x>=0) {
+            function = probey;
+            whichkey = currentlist;
+            cmenu(210);
+            KB_FlushKeyboardQueue();
+            KB_ClearLastScanCode();
+            break;
+        }
 
-	    // the top of our list
+        // the top of our list
         m = probey - 6;
-	    if (m < 0) m = 0;
-	    else if (m + 13 >= NUMGAMEFUNCTIONS) m = NUMGAMEFUNCTIONS-13;
-	    
+        if (m < 0) m = 0;
+        else if (m + 13 >= NUMGAMEFUNCTIONS) m = NUMGAMEFUNCTIONS-13;
+        
         if (probey == gamefunc_Show_Console) currentlist = 0;
-	    else if (KB_KeyPressed( sc_LeftArrow ) || KB_KeyPressed( sc_kpad_4 ) ||
-		     KB_KeyPressed( sc_RightArrow ) || KB_KeyPressed( sc_kpad_6 ) ||
-		     KB_KeyPressed( sc_Tab )) {
-			currentlist ^= 1;
-			KB_ClearKeyDown( sc_LeftArrow );
-			KB_ClearKeyDown( sc_RightArrow );
-			KB_ClearKeyDown( sc_kpad_4 );
-			KB_ClearKeyDown( sc_kpad_6 );
-			KB_ClearKeyDown( sc_Tab );
-			sound(KICK_HIT);
-	    } else if (KB_KeyPressed( sc_Delete )) {
-			KeyboardKeys[probey][currentlist] = 0;
-			CONTROL_MapKey( probey, KeyboardKeys[probey][0], KeyboardKeys[probey][1] );
-			sound(KICK_HIT);
-			KB_ClearKeyDown( sc_Delete );
-	    }
-	    
-	    for (l=0; l < min(13,NUMGAMEFUNCTIONS); l++) {
-			p = CONFIG_FunctionNumToName(m+l);
-			if (!p) continue;
+        else if (KB_KeyPressed( sc_LeftArrow ) || KB_KeyPressed( sc_kpad_4 ) ||
+             KB_KeyPressed( sc_RightArrow ) || KB_KeyPressed( sc_kpad_6 ) ||
+             KB_KeyPressed( sc_Tab )) {
+            currentlist ^= 1;
+            KB_ClearKeyDown( sc_LeftArrow );
+            KB_ClearKeyDown( sc_RightArrow );
+            KB_ClearKeyDown( sc_kpad_4 );
+            KB_ClearKeyDown( sc_kpad_6 );
+            KB_ClearKeyDown( sc_Tab );
+            sound(KICK_HIT);
+        } else if (KB_KeyPressed( sc_Delete )) {
+            KeyboardKeys[probey][currentlist] = 0;
+            CONTROL_MapKey( probey, KeyboardKeys[probey][0], KeyboardKeys[probey][1] );
+            sound(KICK_HIT);
+            KB_ClearKeyDown( sc_Delete );
+        }
+        
+        for (l=0; l < min(13,NUMGAMEFUNCTIONS); l++) {
+            p = CONFIG_FunctionNumToName(m+l);
+            if (!p) continue;
 
-			strcpy(tempbuf, p);
-			for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
-			minitextshade(70,30+l*8,tempbuf,(m+l == probey)?0:16,0,10+16);
+            strcpy(tempbuf, p);
+            for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
+            minitextshade(70,30+l*8,tempbuf,(m+l == probey)?0:16,0,10+16);
 
-		    //strcpy(tempbuf, KB_ScanCodeToString(KeyboardKeys[m+l][0]));
-			strcpy(tempbuf, getkeyname(KeyboardKeys[m+l][0]));
-		    if (!tempbuf[0]) strcpy(tempbuf, "  -");
-		    minitextshade(70+100,30+l*8,tempbuf,
-				    (m+l == probey && !currentlist?0:16),2,10+16);
+            //strcpy(tempbuf, KB_ScanCodeToString(KeyboardKeys[m+l][0]));
+            strcpy(tempbuf, getkeyname(KeyboardKeys[m+l][0]));
+            if (!tempbuf[0]) strcpy(tempbuf, "  -");
+            minitextshade(70+100,30+l*8,tempbuf,
+                    (m+l == probey && !currentlist?0:16),2,10+16);
 
-		    //strcpy(tempbuf, KB_ScanCodeToString(KeyboardKeys[m+l][1]));
-			strcpy(tempbuf, getkeyname(KeyboardKeys[m+l][1]));
-		    if (!tempbuf[0]) strcpy(tempbuf, "  -");
-		    minitextshade(70+120+34,30+l*8,tempbuf,
-				    (m+l == probey && currentlist?0:16),2,10+16);
-	    }
+            //strcpy(tempbuf, KB_ScanCodeToString(KeyboardKeys[m+l][1]));
+            strcpy(tempbuf, getkeyname(KeyboardKeys[m+l][1]));
+            if (!tempbuf[0]) strcpy(tempbuf, "  -");
+            minitextshade(70+120+34,30+l*8,tempbuf,
+                    (m+l == probey && currentlist?0:16),2,10+16);
+        }
 
-	    gametext(160,140,"UP/DOWN = SELECT ACTION",0,2+8+16);
-	    gametext(160,140+9,"LEFT/RIGHT = SELECT LIST",0,2+8+16);
-	    gametext(160,140+9+9,"ENTER = MODIFY   DELETE = CLEAR",0,2+8+16);
+        gametext(160,140,"UP/DOWN = SELECT ACTION",0,2+8+16);
+        gametext(160,140+9,"LEFT/RIGHT = SELECT LIST",0,2+8+16);
+        gametext(160,140+9+9,"ENTER = MODIFY   DELETE = CLEAR",0,2+8+16);
 
-	    break;
+        break;
 
-	case 210: {
-		int32 sc;
+    case 210: {
+        int32 sc;
 
         rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
         menutext(320>>1,15,0,0,"KEYS SETUP");
 
-	    gametext(320>>1,90,"PRESS THE KEY TO ASSIGN AS",0,2+8+16);
-	    sprintf(tempbuf,"%s FOR \"%s\"", whichkey?"SECONDARY":"PRIMARY", CONFIG_FunctionNumToName(function));
-	    gametext(320>>1,90+9,tempbuf,0,2+8+16);
-	    gametext(320>>1,90+9+9+9,"PRESS \"ESCAPE\" TO CANCEL",0,2+8+16);
+        gametext(320>>1,90,"PRESS THE KEY TO ASSIGN AS",0,2+8+16);
+        sprintf(tempbuf,"%s FOR \"%s\"", whichkey?"SECONDARY":"PRIMARY", CONFIG_FunctionNumToName(function));
+        gametext(320>>1,90+9,tempbuf,0,2+8+16);
+        gametext(320>>1,90+9+9+9,"PRESS \"ESCAPE\" TO CANCEL",0,2+8+16);
 
-		sc = KB_GetLastScanCode();
-	    if ( sc != sc_None ) {
-			if ( sc == sc_Escape ) {
-			    sound(EXITMENUSOUND);
-			} else {
-			    sound(PISTOL_BODYHIT);
+        sc = KB_GetLastScanCode();
+        if ( sc != sc_None ) {
+            if ( sc == sc_Escape ) {
+                sound(EXITMENUSOUND);
+            } else {
+                sound(PISTOL_BODYHIT);
 
-			    KeyboardKeys[function][whichkey] = KB_GetLastScanCode();
-			    if (function == gamefunc_Show_Console)
-					OSD_CaptureKey(KB_GetLastScanCode());
-		    	else
-		        	CONTROL_MapKey( function, KeyboardKeys[function][0], KeyboardKeys[function][1] );
-			}
-		
-			cmenu(204);
+                KeyboardKeys[function][whichkey] = KB_GetLastScanCode();
+                if (function == gamefunc_Show_Console)
+                    OSD_CaptureKey(KB_GetLastScanCode());
+                else
+                    CONTROL_MapKey( function, KeyboardKeys[function][0], KeyboardKeys[function][1] );
+            }
+        
+            cmenu(204);
 
-			currentlist = whichkey;
-			probey = function;
+            currentlist = whichkey;
+            probey = function;
 
-	        KB_ClearKeyDown(sc);
-	    }
+            KB_ClearKeyDown(sc);
+        }
 
-	    break;
-	}
+        break;
+    }
 
-	case 205:
+    case 205:
          rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,15,0,0,"MOUSE SETUP");
 
-	    c = 60-4;
+        c = 60-4;
 
-	    onbar = (probey == (MAXMOUSEBUTTONS-2)*2+2);
-		if (probey < (MAXMOUSEBUTTONS-2)*2+2)
-		    x = probe(0,0,0,(MAXMOUSEBUTTONS-2)*2+2+2);
-		else
-			x = probe(c+6,125-((MAXMOUSEBUTTONS-2)*2+2)*16,16,(MAXMOUSEBUTTONS-2)*2+2+2);
+        onbar = (probey == (MAXMOUSEBUTTONS-2)*2+2);
+        if (probey < (MAXMOUSEBUTTONS-2)*2+2)
+            x = probe(0,0,0,(MAXMOUSEBUTTONS-2)*2+2+2);
+        else
+            x = probe(c+6,125-((MAXMOUSEBUTTONS-2)*2+2)*16,16,(MAXMOUSEBUTTONS-2)*2+2+2);
 
-		if (x==-1) {
-		    cmenu(202);
-		    probey = 4;
-		    break;
-	    } else if (x == (MAXMOUSEBUTTONS-2)*2+2) {
-			// sensitivity
-	    } else if (x == (MAXMOUSEBUTTONS-2)*2+2+1) {
-			//advanced
-			cmenu(212);
-			break;
-		} else if (x >= 0) {
-			//set an option
-			cmenu(211);
-			function = 0;
-			whichkey = x;
-			if (x < (MAXMOUSEBUTTONS-2)*2)
-				probey = MouseFunctions[x>>1][x&1];
-			else
-				probey = MouseFunctions[x-4][0];
-			if (probey < 0) probey = NUMGAMEFUNCTIONS-1;
-			break;
-		}
+        if (x==-1) {
+            cmenu(202);
+            probey = 4;
+            break;
+        } else if (x == (MAXMOUSEBUTTONS-2)*2+2) {
+            // sensitivity
+        } else if (x == (MAXMOUSEBUTTONS-2)*2+2+1) {
+            //advanced
+            cmenu(212);
+            break;
+        } else if (x >= 0) {
+            //set an option
+            cmenu(211);
+            function = 0;
+            whichkey = x;
+            if (x < (MAXMOUSEBUTTONS-2)*2)
+                probey = MouseFunctions[x>>1][x&1];
+            else
+                probey = MouseFunctions[x-4][0];
+            if (probey < 0) probey = NUMGAMEFUNCTIONS-1;
+            break;
+        }
 
-	    for (l=0; l < (MAXMOUSEBUTTONS-2)*2+2; l++) {
-			tempbuf[0] = 0;
-			if (l < (MAXMOUSEBUTTONS-2)*2) {
-				if (l&1) {
-					Bstrcpy(tempbuf, "Double ");
-					m = MouseFunctions[l>>1][1];
-				} else
-					m = MouseFunctions[l>>1][0];
-				Bstrcat(tempbuf, mousebuttonnames[l>>1]);
-			} else {
-				Bstrcpy(tempbuf, mousebuttonnames[l-(MAXMOUSEBUTTONS-2)]);
-				m = MouseFunctions[l-(MAXMOUSEBUTTONS-2)][0];
-			}
+        for (l=0; l < (MAXMOUSEBUTTONS-2)*2+2; l++) {
+            tempbuf[0] = 0;
+            if (l < (MAXMOUSEBUTTONS-2)*2) {
+                if (l&1) {
+                    Bstrcpy(tempbuf, "Double ");
+                    m = MouseFunctions[l>>1][1];
+                } else
+                    m = MouseFunctions[l>>1][0];
+                Bstrcat(tempbuf, mousebuttonnames[l>>1]);
+            } else {
+                Bstrcpy(tempbuf, mousebuttonnames[l-(MAXMOUSEBUTTONS-2)]);
+                m = MouseFunctions[l-(MAXMOUSEBUTTONS-2)][0];
+            }
 
-			minitextshade(c+20,30+l*8,tempbuf,(l==probey)?0:16,0,10+16);
+            minitextshade(c+20,30+l*8,tempbuf,(l==probey)?0:16,0,10+16);
 
-			if (m == -1)
-				minitextshade(c+100+20,30+l*8,"  -NONE-",(l==probey)?0:16,0,10+16);
-			else {
-				strcpy(tempbuf, CONFIG_FunctionNumToName(m));
-			    for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
-				minitextshade(c+100+20,30+l*8,tempbuf,(l==probey)?0:16,0,10+16);
-			}
-	    }
+            if (m == -1)
+                minitextshade(c+100+20,30+l*8,"  -NONE-",(l==probey)?0:16,0,10+16);
+            else {
+                strcpy(tempbuf, CONFIG_FunctionNumToName(m));
+                for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
+                minitextshade(c+100+20,30+l*8,tempbuf,(l==probey)?0:16,0,10+16);
+            }
+        }
 
             {
                 short sense;
@@ -3081,565 +3068,565 @@ if (PLUTOPAK) {
                 CONTROL_SetMouseSensitivity( sense<<10 );
             }
 
-		menutext(c,125+16,0,0,"ADVANCED...");
-		
-		if (probey < (MAXMOUSEBUTTONS-2)*2+2) {
-		    gametext(160,149,"UP/DOWN = SELECT BUTTON",0,2+8+16);
-		    gametext(160,149+9,"ENTER = MODIFY",0,2+8+16);
-		}
-	    break;
+        menutext(c,125+16,0,0,"ADVANCED...");
+        
+        if (probey < (MAXMOUSEBUTTONS-2)*2+2) {
+            gametext(160,149,"UP/DOWN = SELECT BUTTON",0,2+8+16);
+            gametext(160,149+9,"ENTER = MODIFY",0,2+8+16);
+        }
+        break;
 
-	case 211:
+    case 211:
          rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             if (function == 0) menutext(320>>1,15,0,0,"MOUSE SETUP");
-			else if (function == 1) menutext(320>>1,15,0,0,"ADVANCED MOUSE");
-			else if (function == 2) menutext(320>>1,15,0,0,"JOYSTICK BUTTONS");
-			else if (function == 3) menutext(320>>1,15,0,0,"JOYSTICK AXES");
-	
-		x = probe(0,0,0,NUMGAMEFUNCTIONS);
+            else if (function == 1) menutext(320>>1,15,0,0,"ADVANCED MOUSE");
+            else if (function == 2) menutext(320>>1,15,0,0,"JOYSTICK BUTTONS");
+            else if (function == 3) menutext(320>>1,15,0,0,"JOYSTICK AXES");
+    
+        x = probe(0,0,0,NUMGAMEFUNCTIONS);
 
-		if (x==-1) {
-			if (function == 0) {	// mouse button
-				cmenu(205);
-				probey = whichkey;
-			} else if (function == 1) {	// mouse digital axis
-				cmenu(212);
-				probey = 2+(whichkey^2);
-			} else if (function == 2) {	// joystick button/hat
-				cmenu(207);
-				probey = whichkey;
-			} else if (function == 3) {	// joystick digital axis
-				cmenu((whichkey>>2)+208);
-				probey = 1+((whichkey>>1)&1)*4+(whichkey&1);
-			}
-			break;
-		} else if (x >= 0) {
-			if (x == NUMGAMEFUNCTIONS-1) x = -1;
-	
-			if (function == 0) {
-				if (whichkey < (MAXMOUSEBUTTONS-2)*2) {
-					MouseFunctions[whichkey>>1][whichkey&1] = x;
-					CONTROL_MapButton( x, whichkey>>1, whichkey&1, controldevice_mouse);
-				} else {
-					MouseFunctions[whichkey-(MAXMOUSEBUTTONS-2)][0] = x;
-					CONTROL_MapButton( x, whichkey-(MAXMOUSEBUTTONS-2), 0, controldevice_mouse);
-				}
-				cmenu(205);
-				probey = whichkey;
-			} else if (function == 1) {
-				MouseDigitalFunctions[whichkey>>1][whichkey&1] = x;
-				CONTROL_MapDigitalAxis(whichkey>>1, x, whichkey&1, controldevice_mouse);
-				cmenu(212);
-				probey = 2+(whichkey^2);
-			} else if (function == 2) {
-				if (whichkey < 2*joynumbuttons) {
-					JoystickFunctions[whichkey>>1][whichkey&1] = x;
-					CONTROL_MapButton( x, whichkey>>1, whichkey&1, controldevice_joystick);
-				} else {
-					JoystickFunctions[joynumbuttons + (whichkey-2*joynumbuttons)][0] = x;
-					CONTROL_MapButton( x, joynumbuttons + (whichkey-2*joynumbuttons), 0, controldevice_joystick);
-				}
-				cmenu(207);
-				probey = whichkey;
-			} else if (function == 3) {
-				JoystickDigitalFunctions[whichkey>>1][whichkey&1] = x;
-				CONTROL_MapDigitalAxis(whichkey>>1, x, whichkey&1, controldevice_joystick);
-				cmenu((whichkey>>2)+208);
-				probey = 1+((whichkey>>1)&1)*4+(whichkey&1);
-			}
-			break;
-		}
+        if (x==-1) {
+            if (function == 0) {    // mouse button
+                cmenu(205);
+                probey = whichkey;
+            } else if (function == 1) { // mouse digital axis
+                cmenu(212);
+                probey = 2+(whichkey^2);
+            } else if (function == 2) { // joystick button/hat
+                cmenu(207);
+                probey = whichkey;
+            } else if (function == 3) { // joystick digital axis
+                cmenu((whichkey>>2)+208);
+                probey = 1+((whichkey>>1)&1)*4+(whichkey&1);
+            }
+            break;
+        } else if (x >= 0) {
+            if (x == NUMGAMEFUNCTIONS-1) x = -1;
+    
+            if (function == 0) {
+                if (whichkey < (MAXMOUSEBUTTONS-2)*2) {
+                    MouseFunctions[whichkey>>1][whichkey&1] = x;
+                    CONTROL_MapButton( x, whichkey>>1, whichkey&1, controldevice_mouse);
+                } else {
+                    MouseFunctions[whichkey-(MAXMOUSEBUTTONS-2)][0] = x;
+                    CONTROL_MapButton( x, whichkey-(MAXMOUSEBUTTONS-2), 0, controldevice_mouse);
+                }
+                cmenu(205);
+                probey = whichkey;
+            } else if (function == 1) {
+                MouseDigitalFunctions[whichkey>>1][whichkey&1] = x;
+                CONTROL_MapDigitalAxis(whichkey>>1, x, whichkey&1, controldevice_mouse);
+                cmenu(212);
+                probey = 2+(whichkey^2);
+            } else if (function == 2) {
+                if (whichkey < 2*joynumbuttons) {
+                    JoystickFunctions[whichkey>>1][whichkey&1] = x;
+                    CONTROL_MapButton( x, whichkey>>1, whichkey&1, controldevice_joystick);
+                } else {
+                    JoystickFunctions[joynumbuttons + (whichkey-2*joynumbuttons)][0] = x;
+                    CONTROL_MapButton( x, joynumbuttons + (whichkey-2*joynumbuttons), 0, controldevice_joystick);
+                }
+                cmenu(207);
+                probey = whichkey;
+            } else if (function == 3) {
+                JoystickDigitalFunctions[whichkey>>1][whichkey&1] = x;
+                CONTROL_MapDigitalAxis(whichkey>>1, x, whichkey&1, controldevice_joystick);
+                cmenu((whichkey>>2)+208);
+                probey = 1+((whichkey>>1)&1)*4+(whichkey&1);
+            }
+            break;
+        }
 
-	    gametext(320>>1,25,"SELECT A FUNCTION TO ASSIGN",0,2+8+16);
+        gametext(320>>1,25,"SELECT A FUNCTION TO ASSIGN",0,2+8+16);
 
-		if (function == 0) {
-			if (whichkey < (MAXMOUSEBUTTONS-2)*2)
-			    sprintf(tempbuf,"TO %s%s", (whichkey&1)?"DOUBLE-CLICKED ":"", mousebuttonnames[whichkey>>1]);
-			else
-				Bstrcpy(tempbuf, mousebuttonnames[whichkey-(MAXMOUSEBUTTONS-2)]);
-		} else if (function == 1) {
-			Bstrcpy(tempbuf,"TO DIGITAL ");
-			switch (whichkey) {
-				case 0: Bstrcat(tempbuf, "LEFT"); break;
-				case 1: Bstrcat(tempbuf, "RIGHT"); break;
-				case 2: Bstrcat(tempbuf, "UP"); break;
-				case 3: Bstrcat(tempbuf, "DOWN"); break;
-			}
-		} else if (function == 2) {
-			static char *directions[] = { "UP", "RIGHT", "DOWN", "LEFT" };
-			if (whichkey < 2*joynumbuttons)
-				Bsprintf(tempbuf,"TO %s%s", (whichkey&1)?"DOUBLE-CLICKED ":"", getjoyname(1,whichkey>>1));
-			else
-				Bsprintf(tempbuf,"TO HAT %s", directions[whichkey-2*joynumbuttons]);
-		} else if (function == 3) {
-			Bsprintf(tempbuf,"TO DIGITAL %s %s",getjoyname(0,whichkey>>1),(whichkey&1)?"POSITIVE":"NEGATIVE");
-		}
+        if (function == 0) {
+            if (whichkey < (MAXMOUSEBUTTONS-2)*2)
+                sprintf(tempbuf,"TO %s%s", (whichkey&1)?"DOUBLE-CLICKED ":"", mousebuttonnames[whichkey>>1]);
+            else
+                Bstrcpy(tempbuf, mousebuttonnames[whichkey-(MAXMOUSEBUTTONS-2)]);
+        } else if (function == 1) {
+            Bstrcpy(tempbuf,"TO DIGITAL ");
+            switch (whichkey) {
+                case 0: Bstrcat(tempbuf, "LEFT"); break;
+                case 1: Bstrcat(tempbuf, "RIGHT"); break;
+                case 2: Bstrcat(tempbuf, "UP"); break;
+                case 3: Bstrcat(tempbuf, "DOWN"); break;
+            }
+        } else if (function == 2) {
+            static const char *directions[] = { "UP", "RIGHT", "DOWN", "LEFT" };
+            if (whichkey < 2*joynumbuttons)
+                Bsprintf(tempbuf,"TO %s%s", (whichkey&1)?"DOUBLE-CLICKED ":"", getjoyname(1,whichkey>>1));
+            else
+                Bsprintf(tempbuf,"TO HAT %s", directions[whichkey-2*joynumbuttons]);
+        } else if (function == 3) {
+            Bsprintf(tempbuf,"TO DIGITAL %s %s",getjoyname(0,whichkey>>1),(whichkey&1)?"POSITIVE":"NEGATIVE");
+        }
 
-	    gametext(320>>1,25+9,tempbuf,0,2+8+16);
+        gametext(320>>1,25+9,tempbuf,0,2+8+16);
 
-		if (KB_KeyPressed( sc_End )) { KB_ClearKeyDown(sc_End); probey = NUMGAMEFUNCTIONS-1; sound(KICK_HIT); }
-		else if (KB_KeyPressed( sc_Home )) { KB_ClearKeyDown(sc_Home); probey = 0; sound(KICK_HIT); }
-		
+        if (KB_KeyPressed( sc_End )) { KB_ClearKeyDown(sc_End); probey = NUMGAMEFUNCTIONS-1; sound(KICK_HIT); }
+        else if (KB_KeyPressed( sc_Home )) { KB_ClearKeyDown(sc_Home); probey = 0; sound(KICK_HIT); }
+        
         m = probey - 6;
-	    if (m < 0) m = 0;
-	    else if (m + 13 >= NUMGAMEFUNCTIONS) m = NUMGAMEFUNCTIONS-13;
+        if (m < 0) m = 0;
+        else if (m + 13 >= NUMGAMEFUNCTIONS) m = NUMGAMEFUNCTIONS-13;
 
-	    for (l=0; l < min(13,NUMGAMEFUNCTIONS); l++) {
-			if (l+m == NUMGAMEFUNCTIONS-1)
-				strcpy(tempbuf, "  -NONE-");
-			else
-			    strcpy(tempbuf, CONFIG_FunctionNumToName(m+l));
+        for (l=0; l < min(13,NUMGAMEFUNCTIONS); l++) {
+            if (l+m == NUMGAMEFUNCTIONS-1)
+                strcpy(tempbuf, "  -NONE-");
+            else
+                strcpy(tempbuf, CONFIG_FunctionNumToName(m+l));
 
-		    for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
+            for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
             minitextshade(100,46+l*8,tempbuf,(m+l == probey)?0:16,0,10+16);
-		}
+        }
 
-	    gametext(320>>1,154,"PRESS \"ESCAPE\" TO CANCEL",0,2+8+16);
+        gametext(320>>1,154,"PRESS \"ESCAPE\" TO CANCEL",0,2+8+16);
 
-		break;
+        break;
 
-	case 212:
+    case 212:
          rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,15,0,0,"ADVANCED MOUSE");
 
         c = (320>>1)-120;
 
-		onbar = (probey == 0 || probey == 1);
-		if (probey < 2)
-			x = probe(c+6,40,16,6);
-		else if (probey < 6) {
-			m=50;
-			x = probe(c+6+10,91-(10+10),10,6);
-		} else {
-			x = probe(c+6,140-(16+16+16+16+16+16),16,6);
-		}
+        onbar = (probey == 0 || probey == 1);
+        if (probey < 2)
+            x = probe(c+6,40,16,6);
+        else if (probey < 6) {
+            m=50;
+            x = probe(c+6+10,91-(10+10),10,6);
+        } else {
+            x = probe(c+6,140-(16+16+16+16+16+16),16,6);
+        }
 
-		switch (x) {
-			case -1:
-				cmenu(205);
-				probey = (MAXMOUSEBUTTONS-2)*2+2+1;
-				break;
+        switch (x) {
+            case -1:
+                cmenu(205);
+                probey = (MAXMOUSEBUTTONS-2)*2+2+1;
+                break;
 
-			case 0:
-				// x-axis scale
-			case 1:
-				// y-axis scale
-				break;
+            case 0:
+                // x-axis scale
+            case 1:
+                // y-axis scale
+                break;
 
-			case 2:
-				// digital up
-			case 3:
-				// digital down
-			case 4:
-				// digital left
-			case 5:
-				// digital right
-				function = 1;
-				whichkey = (x-2)^2;	// flip the actual axis number
-				cmenu(211);
-				probey = MouseDigitalFunctions[whichkey>>1][whichkey&1];
-				if (probey < 0) probey = NUMGAMEFUNCTIONS-1;
-				break;
+            case 2:
+                // digital up
+            case 3:
+                // digital down
+            case 4:
+                // digital left
+            case 5:
+                // digital right
+                function = 1;
+                whichkey = (x-2)^2; // flip the actual axis number
+                cmenu(211);
+                probey = MouseDigitalFunctions[whichkey>>1][whichkey&1];
+                if (probey < 0) probey = NUMGAMEFUNCTIONS-1;
+                break;
 
-			case 6:
-				// analogue x
-			case 7:
-				// analogue y
-				l = MouseAnalogueAxes[x-6];
-				if (l == analog_turning) l = analog_strafing;
-				else if (l == analog_strafing) l = analog_lookingupanddown;
-				else if (l == analog_lookingupanddown) l = analog_moving;
-				else if (l == analog_moving) l = -1;
-				else l = analog_turning;
-				MouseAnalogueAxes[x-6] = l;
-				CONTROL_MapAnalogAxis(x-6,l,controldevice_mouse);
-				{
-					extern int32 mouseyaxismode;	// player.c
-					mouseyaxismode = -1;
-				}
-				break;
+            case 6:
+                // analogue x
+            case 7:
+                // analogue y
+                l = MouseAnalogueAxes[x-6];
+                if (l == analog_turning) l = analog_strafing;
+                else if (l == analog_strafing) l = analog_lookingupanddown;
+                else if (l == analog_lookingupanddown) l = analog_moving;
+                else if (l == analog_moving) l = -1;
+                else l = analog_turning;
+                MouseAnalogueAxes[x-6] = l;
+                CONTROL_MapAnalogAxis(x-6,l,controldevice_mouse);
+                {
+                    extern int32 mouseyaxismode;    // player.c
+                    mouseyaxismode = -1;
+                }
+                break;
 
-		}
+        }
 
-		menutext(c,40,0,0,"X-AXIS SCALE");
-		l = (MouseAnalogueScale[0]+262144) >> 13;
-		bar(c+160+40,40,(short *)&l,1,x==0,0,0);
-		l = (l<<13)-262144;
-		if (l != MouseAnalogueScale[0]) {
-			CONTROL_SetAnalogAxisScale( 0, l, controldevice_mouse );
-			MouseAnalogueScale[0] = l;
-		}
-		Bsprintf(tempbuf,"%s%.2f",l>=0?" ":"",(float)l/65536.0);
-		gametext(c+160-16,40-8,tempbuf,0,2+8+16);
-		
-		menutext(c,40+16,0,0,"Y-AXIS SCALE");
-		l = (MouseAnalogueScale[1]+262144) >> 13;
-		bar(c+160+40,40+16,(short *)&l,1,x==1,0,0);
-		l = (l<<13)-262144;
-		if (l != MouseAnalogueScale[1]) {
-			CONTROL_SetAnalogAxisScale( 1, l, controldevice_mouse );
-			MouseAnalogueScale[1] = l;
-		}
-		Bsprintf(tempbuf,"%s%.2f",l>=0?" ":"",(float)l/65536.0);
-		gametext(c+160-16,40+16-8,tempbuf,0,2+8+16);
-		
-		menutext(c,40+16+16+8,0,0,"DIGITAL AXES ACTIONS");
-		
-		gametext(c+10,84,"UP:",0,2+8+16);
-			if (MouseDigitalFunctions[1][0] < 0)
-				strcpy(tempbuf, "  -NONE-");
-			else
-			    strcpy(tempbuf, CONFIG_FunctionNumToName(MouseDigitalFunctions[1][0]));
+        menutext(c,40,0,0,"X-AXIS SCALE");
+        l = (MouseAnalogueScale[0]+262144) >> 13;
+        bar(c+160+40,40,(short *)&l,1,x==0,0,0);
+        l = (l<<13)-262144;
+        if (l != MouseAnalogueScale[0]) {
+            CONTROL_SetAnalogAxisScale( 0, l, controldevice_mouse );
+            MouseAnalogueScale[0] = l;
+        }
+        Bsprintf(tempbuf,"%s%.2f",l>=0?" ":"",(float)l/65536.0);
+        gametext(c+160-16,40-8,tempbuf,0,2+8+16);
+        
+        menutext(c,40+16,0,0,"Y-AXIS SCALE");
+        l = (MouseAnalogueScale[1]+262144) >> 13;
+        bar(c+160+40,40+16,(short *)&l,1,x==1,0,0);
+        l = (l<<13)-262144;
+        if (l != MouseAnalogueScale[1]) {
+            CONTROL_SetAnalogAxisScale( 1, l, controldevice_mouse );
+            MouseAnalogueScale[1] = l;
+        }
+        Bsprintf(tempbuf,"%s%.2f",l>=0?" ":"",(float)l/65536.0);
+        gametext(c+160-16,40+16-8,tempbuf,0,2+8+16);
+        
+        menutext(c,40+16+16+8,0,0,"DIGITAL AXES ACTIONS");
+        
+        gametext(c+10,84,"UP:",0,2+8+16);
+            if (MouseDigitalFunctions[1][0] < 0)
+                strcpy(tempbuf, "  -NONE-");
+            else
+                strcpy(tempbuf, CONFIG_FunctionNumToName(MouseDigitalFunctions[1][0]));
 
-		    for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
+            for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
             minitext(c+10+60,85,tempbuf,0,10+16);
-		
-		gametext(c+10,84+10,"DOWN:",0,2+8+16);
-			if (MouseDigitalFunctions[1][1] < 0)
-				strcpy(tempbuf, "  -NONE-");
-			else
-			    strcpy(tempbuf, CONFIG_FunctionNumToName(MouseDigitalFunctions[1][1]));
+        
+        gametext(c+10,84+10,"DOWN:",0,2+8+16);
+            if (MouseDigitalFunctions[1][1] < 0)
+                strcpy(tempbuf, "  -NONE-");
+            else
+                strcpy(tempbuf, CONFIG_FunctionNumToName(MouseDigitalFunctions[1][1]));
 
-		    for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
+            for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
             minitext(c+10+60,85+10,tempbuf,0,10+16);
 
-		gametext(c+10,84+10+10,"LEFT:",0,2+8+16);
-			if (MouseDigitalFunctions[0][0] < 0)
-				strcpy(tempbuf, "  -NONE-");
-			else
-			    strcpy(tempbuf, CONFIG_FunctionNumToName(MouseDigitalFunctions[0][0]));
+        gametext(c+10,84+10+10,"LEFT:",0,2+8+16);
+            if (MouseDigitalFunctions[0][0] < 0)
+                strcpy(tempbuf, "  -NONE-");
+            else
+                strcpy(tempbuf, CONFIG_FunctionNumToName(MouseDigitalFunctions[0][0]));
 
-		    for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
+            for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
             minitext(c+10+60,85+10+10,tempbuf,0,10+16);
 
-		gametext(c+10,84+10+10+10,"RIGHT:",0,2+8+16);
-			if (MouseDigitalFunctions[0][1] < 0)
-				strcpy(tempbuf, "  -NONE-");
-			else
-			    strcpy(tempbuf, CONFIG_FunctionNumToName(MouseDigitalFunctions[0][1]));
+        gametext(c+10,84+10+10+10,"RIGHT:",0,2+8+16);
+            if (MouseDigitalFunctions[0][1] < 0)
+                strcpy(tempbuf, "  -NONE-");
+            else
+                strcpy(tempbuf, CONFIG_FunctionNumToName(MouseDigitalFunctions[0][1]));
 
-		    for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
+            for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
             minitext(c+10+60,85+10+10+10,tempbuf,0,10+16);
 
 /* JBF 20040107: It would appear giving these options confuses some tinkerers, so they've
  * been moved to the bottom, and hidden in case I dare to reenable them again.
-		menutext(c,116+16+8,0,0,"ANALOG X");
-		if (CONFIG_AnalogNumToName( MouseAnalogueAxes[0] )) {
-			p = CONFIG_AnalogNumToName( MouseAnalogueAxes[0] );
-			if (p) {
-				gametext(c+148+4,118+16, strchr(p,'_')+1, 0, 2+8+16 );
-			}
-		}
-		if (probey == 6) gametext(160,158,"Default is \"turning\"",8,2+8+16);
-		
-		menutext(c,116+16+16+8,0,0,"ANALOG Y");
-		if (CONFIG_AnalogNumToName( MouseAnalogueAxes[1] )) {
-			p = CONFIG_AnalogNumToName( MouseAnalogueAxes[1] );
-			if (p) {
-				gametext(c+148+4,118+16+16, strchr(p,'_')+1, 0, 2+8+16 );
-			}
-		}
-		if (probey == 7) gametext(160,158,"Default is \"moving\"",8,2+8+16);
+        menutext(c,116+16+8,0,0,"ANALOG X");
+        if (CONFIG_AnalogNumToName( MouseAnalogueAxes[0] )) {
+            p = CONFIG_AnalogNumToName( MouseAnalogueAxes[0] );
+            if (p) {
+                gametext(c+148+4,118+16, strchr(p,'_')+1, 0, 2+8+16 );
+            }
+        }
+        if (probey == 6) gametext(160,158,"Default is \"turning\"",8,2+8+16);
+        
+        menutext(c,116+16+16+8,0,0,"ANALOG Y");
+        if (CONFIG_AnalogNumToName( MouseAnalogueAxes[1] )) {
+            p = CONFIG_AnalogNumToName( MouseAnalogueAxes[1] );
+            if (p) {
+                gametext(c+148+4,118+16+16, strchr(p,'_')+1, 0, 2+8+16 );
+            }
+        }
+        if (probey == 7) gametext(160,158,"Default is \"moving\"",8,2+8+16);
 */
-		break;
+        break;
 
-	case 206:
+    case 206:
          rotatesprite(320<<15,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,24,0,0,"JOYSTICK SETUP");
 
-		x = probe(160,100-18,18,3);
+        x = probe(160,100-18,18,3);
 
-	    switch (x) {
-			case -1:
-		    	cmenu(202);
-			    probey = 5;
-			    break;
-			case 0:
-			case 1:
-				cmenu(207+x);
-				break;
-			case 2:
-				cmenu(213);
-				break;
-		}
+        switch (x) {
+            case -1:
+                cmenu(202);
+                probey = 5;
+                break;
+            case 0:
+            case 1:
+                cmenu(207+x);
+                break;
+            case 2:
+                cmenu(213);
+                break;
+        }
 
-		menutext(160,100-18,0,0,"EDIT BUTTONS");
-		menutext(160,100,0,0,"EDIT AXES");
-		menutext(160,100+18,0,0,"DEAD ZONES");
+        menutext(160,100-18,0,0,"EDIT BUTTONS");
+        menutext(160,100,0,0,"EDIT AXES");
+        menutext(160,100+18,0,0,"DEAD ZONES");
 
-		break;
+        break;
 
-	case 207:
+    case 207:
          rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,15,0,0,"JOYSTICK BUTTONS");
 
-		c = 2*joynumbuttons + 4*(joynumhats>0);
+        c = 2*joynumbuttons + 4*(joynumhats>0);
 
-		x = probe(0,0,0,c);
-			
-	    if (x == -1) {
-	    	cmenu(206);
-		    probey = 0;
-		    break;
-		} else if (x >= 0) {
-			function = 2;
-			whichkey = x;
-			cmenu(211);
-			if (x < 2*joynumbuttons) {
-				probey = JoystickFunctions[x>>1][x&1];
-			} else {
-				probey = JoystickFunctions[joynumbuttons + (x-2*joynumbuttons)][0];
-			}
-			if (probey < 0) probey = NUMGAMEFUNCTIONS-1;
-			break;
-		}
+        x = probe(0,0,0,c);
+            
+        if (x == -1) {
+            cmenu(206);
+            probey = 0;
+            break;
+        } else if (x >= 0) {
+            function = 2;
+            whichkey = x;
+            cmenu(211);
+            if (x < 2*joynumbuttons) {
+                probey = JoystickFunctions[x>>1][x&1];
+            } else {
+                probey = JoystickFunctions[joynumbuttons + (x-2*joynumbuttons)][0];
+            }
+            if (probey < 0) probey = NUMGAMEFUNCTIONS-1;
+            break;
+        }
 
-	    // the top of our list
-		if (c < 13) m = 0;
-		else {
-	        m = probey - 6;
-		    if (m < 0) m = 0;
-	    	else if (m + 13 >= c) m = c-13;
-		}
-	    
-		for (l=0; l<min(13,c); l++) {
-			if (m+l < 2*joynumbuttons) {
-				sprintf(tempbuf, "%s%s", ((l+m)&1)?"Double ":"", getjoyname(1,(l+m)>>1));
-				x = JoystickFunctions[(l+m)>>1][(l+m)&1];
-			} else {
-				static char *directions[] = { "Up", "Right", "Down", "Left" };
-				sprintf(tempbuf, "Hat %s", directions[(l+m)-2*joynumbuttons]);
-				x = JoystickFunctions[joynumbuttons + ((l+m)-2*joynumbuttons)][0];
-			}
-			minitextshade(80-4,33+l*8,tempbuf,(m+l == probey)?0:16,0,10+16);
+        // the top of our list
+        if (c < 13) m = 0;
+        else {
+            m = probey - 6;
+            if (m < 0) m = 0;
+            else if (m + 13 >= c) m = c-13;
+        }
+        
+        for (l=0; l<min(13,c); l++) {
+            if (m+l < 2*joynumbuttons) {
+                sprintf(tempbuf, "%s%s", ((l+m)&1)?"Double ":"", getjoyname(1,(l+m)>>1));
+                x = JoystickFunctions[(l+m)>>1][(l+m)&1];
+            } else {
+                static const char *directions[] = { "Up", "Right", "Down", "Left" };
+                sprintf(tempbuf, "Hat %s", directions[(l+m)-2*joynumbuttons]);
+                x = JoystickFunctions[joynumbuttons + ((l+m)-2*joynumbuttons)][0];
+            }
+            minitextshade(80-4,33+l*8,tempbuf,(m+l == probey)?0:16,0,10+16);
 
-			if (x == -1)
-				minitextshade(176,33+l*8,"  -NONE-",(m+l==probey)?0:16,0,10+16);
-			else {
-				strcpy(tempbuf, CONFIG_FunctionNumToName(x));
-			    for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
-				minitextshade(176,33+l*8,tempbuf,(m+l==probey)?0:16,0,10+16);
-			}
-		}
-		
-	    gametext(160,149,"UP/DOWN = SELECT BUTTON",0,2+8+16);
-	    gametext(160,149+9,"ENTER = MODIFY",0,2+8+16);
-		break;
+            if (x == -1)
+                minitextshade(176,33+l*8,"  -NONE-",(m+l==probey)?0:16,0,10+16);
+            else {
+                strcpy(tempbuf, CONFIG_FunctionNumToName(x));
+                for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
+                minitextshade(176,33+l*8,tempbuf,(m+l==probey)?0:16,0,10+16);
+            }
+        }
+        
+        gametext(160,149,"UP/DOWN = SELECT BUTTON",0,2+8+16);
+        gametext(160,149+9,"ENTER = MODIFY",0,2+8+16);
+        break;
 
-	case 208:
-	case 209:
-	case 217:
-	case 218:
-	case 219:
-	case 220:
-	case 221:
-	case 222: {
-		int thispage, twothispage;
+    case 208:
+    case 209:
+    case 217:
+    case 218:
+    case 219:
+    case 220:
+    case 221:
+    case 222: {
+        int thispage, twothispage;
          rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,15,0,0,"JOYSTICK AXES");
 
-		thispage = (current_menu < 217) ? (current_menu-208) : (current_menu-217)+2;
-		twothispage = (thispage*2+1 < joynumaxes);
-		
-		onbar = 0;
-		switch (probey) {
-			case 0:
-			case 4: onbar = 1; x = probe(88,45+(probey==4)*64,0,1+(4<<twothispage)); break;
-			case 1:
-			case 2:
-			case 5:
-			case 6: x = probe(172+(probey==2||probey==6)*72,45+15+(probey==5||probey==6)*64,0,1+(4<<twothispage)); break;
-			case 3:
-			case 7: x = probe(88,45+15+15+(probey==7)*64,0,1+(4<<twothispage)); break;
-			default: x = probe(60,79+79*twothispage,0,1+(4<<twothispage)); break;
-		}
+        thispage = (current_menu < 217) ? (current_menu-208) : (current_menu-217)+2;
+        twothispage = (thispage*2+1 < joynumaxes);
+        
+        onbar = 0;
+        switch (probey) {
+            case 0:
+            case 4: onbar = 1; x = probe(88,45+(probey==4)*64,0,1+(4<<twothispage)); break;
+            case 1:
+            case 2:
+            case 5:
+            case 6: x = probe(172+(probey==2||probey==6)*72,45+15+(probey==5||probey==6)*64,0,1+(4<<twothispage)); break;
+            case 3:
+            case 7: x = probe(88,45+15+15+(probey==7)*64,0,1+(4<<twothispage)); break;
+            default: x = probe(60,79+79*twothispage,0,1+(4<<twothispage)); break;
+        }
 
-		switch (x) {
-			case -1:
-		    	cmenu(206);
-			    probey = 1;
-			    break;
-			case 8:
-				if (joynumaxes > 2) {
-					if (thispage == ((joynumaxes+1)/2)-1) cmenu(208);
-					else {
-						if (current_menu == 209) cmenu(217);
-						else cmenu( current_menu+1 );
-					}
-				}
-				break;
+        switch (x) {
+            case -1:
+                cmenu(206);
+                probey = 1;
+                break;
+            case 8:
+                if (joynumaxes > 2) {
+                    if (thispage == ((joynumaxes+1)/2)-1) cmenu(208);
+                    else {
+                        if (current_menu == 209) cmenu(217);
+                        else cmenu( current_menu+1 );
+                    }
+                }
+                break;
 
-			case 4: // bar
-				if (!twothispage && joynumaxes > 2)
-					cmenu(208);
-			case 0: break;
+            case 4: // bar
+                if (!twothispage && joynumaxes > 2)
+                    cmenu(208);
+            case 0: break;
 
-			case 1:	// digitals
-			case 2:
-			case 5:
-			case 6:
-				function = 3;
-				whichkey = ((thispage*2+(x==5||x==6)) << 1) + (x==2||x==6);
-				cmenu(211);
-				probey = JoystickDigitalFunctions[whichkey>>1][whichkey&1];
-				if (probey < 0) probey = NUMGAMEFUNCTIONS-1;
-				break;
+            case 1: // digitals
+            case 2:
+            case 5:
+            case 6:
+                function = 3;
+                whichkey = ((thispage*2+(x==5||x==6)) << 1) + (x==2||x==6);
+                cmenu(211);
+                probey = JoystickDigitalFunctions[whichkey>>1][whichkey&1];
+                if (probey < 0) probey = NUMGAMEFUNCTIONS-1;
+                break;
 
-			case 3:	// analogues
-			case 7:
-				l = JoystickAnalogueAxes[thispage*2+(x==7)];
-				if (l == analog_turning) l = analog_strafing;
-				else if (l == analog_strafing) l = analog_lookingupanddown;
-				else if (l == analog_lookingupanddown) l = analog_moving;
-				else if (l == analog_moving) l = -1;
-				else l = analog_turning;
-				JoystickAnalogueAxes[thispage*2+(x==7)] = l;
-				CONTROL_MapAnalogAxis(thispage*2+(x==7),l,controldevice_joystick);
-				break;
-			default:break;
-		}
+            case 3: // analogues
+            case 7:
+                l = JoystickAnalogueAxes[thispage*2+(x==7)];
+                if (l == analog_turning) l = analog_strafing;
+                else if (l == analog_strafing) l = analog_lookingupanddown;
+                else if (l == analog_lookingupanddown) l = analog_moving;
+                else if (l == analog_moving) l = -1;
+                else l = analog_turning;
+                JoystickAnalogueAxes[thispage*2+(x==7)] = l;
+                CONTROL_MapAnalogAxis(thispage*2+(x==7),l,controldevice_joystick);
+                break;
+            default:break;
+        }
 
-		menutext(42,32,0,0,getjoyname(0,thispage*2));
-		if (twothispage) menutext(42,32+64,0,0,getjoyname(0,thispage*2+1));
+        menutext(42,32,0,0,getjoyname(0,thispage*2));
+        if (twothispage) menutext(42,32+64,0,0,getjoyname(0,thispage*2+1));
 
-		gametext(76,38,"SCALE",0,2+8+16);
-		l = (JoystickAnalogueScale[thispage*2]+262144) >> 13;
-		bar(140+56,38+8,(short *)&l,1,x==0,0,0);
-		l = (l<<13)-262144;
-		if (l != JoystickAnalogueScale[thispage*2]) {
-			CONTROL_SetAnalogAxisScale( thispage*2, l, controldevice_joystick );
-			JoystickAnalogueScale[thispage*2] = l;
-		}
-		Bsprintf(tempbuf,"%s%.2f",l>=0?" ":"",(float)l/65536.0);
-		gametext(140,38,tempbuf,0,2+8+16);
+        gametext(76,38,"SCALE",0,2+8+16);
+        l = (JoystickAnalogueScale[thispage*2]+262144) >> 13;
+        bar(140+56,38+8,(short *)&l,1,x==0,0,0);
+        l = (l<<13)-262144;
+        if (l != JoystickAnalogueScale[thispage*2]) {
+            CONTROL_SetAnalogAxisScale( thispage*2, l, controldevice_joystick );
+            JoystickAnalogueScale[thispage*2] = l;
+        }
+        Bsprintf(tempbuf,"%s%.2f",l>=0?" ":"",(float)l/65536.0);
+        gametext(140,38,tempbuf,0,2+8+16);
 
-		gametext(76,38+15,"DIGITAL",0,2+8+16);
-			if (JoystickDigitalFunctions[thispage*2][0] < 0)
-				strcpy(tempbuf, "  -NONE-");
-			else
-			    strcpy(tempbuf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[thispage*2][0]));
+        gametext(76,38+15,"DIGITAL",0,2+8+16);
+            if (JoystickDigitalFunctions[thispage*2][0] < 0)
+                strcpy(tempbuf, "  -NONE-");
+            else
+                strcpy(tempbuf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[thispage*2][0]));
 
-		    for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
+            for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
             minitext(140+12,38+15,tempbuf,0,10+16);
 
-			if (JoystickDigitalFunctions[thispage*2][1] < 0)
-				strcpy(tempbuf, "  -NONE-");
-			else
-			    strcpy(tempbuf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[thispage*2][1]));
+            if (JoystickDigitalFunctions[thispage*2][1] < 0)
+                strcpy(tempbuf, "  -NONE-");
+            else
+                strcpy(tempbuf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[thispage*2][1]));
 
-		    for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
+            for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
             minitext(140+12+72,38+15,tempbuf,0,10+16);
-			
-		gametext(76,38+15+15,"ANALOG",0,2+8+16);
-		if (CONFIG_AnalogNumToName( JoystickAnalogueAxes[thispage*2] )) {
-			p = CONFIG_AnalogNumToName( JoystickAnalogueAxes[thispage*2] );
-			if (p) {
-				gametext(140+12,38+15+15, strchr(p,'_')+1, 0, 2+8+16 );
-			}
-		}
-		
-		if (twothispage) {
-			gametext(76,38+64,"SCALE",0,2+8+16);
-			l = (JoystickAnalogueScale[thispage*2+1]+262144) >> 13;
-			bar(140+56,38+8+64,(short *)&l,1,x==4,0,0);
-			l = (l<<13)-262144;
-			if (l != JoystickAnalogueScale[thispage*2+1]) {
-				CONTROL_SetAnalogAxisScale( thispage*2+1, l, controldevice_joystick );
-				JoystickAnalogueScale[thispage*2+1] = l;
-			}
-			Bsprintf(tempbuf,"%s%.2f",l>=0?" ":"",(float)l/65536.0);
-			gametext(140,38+64,tempbuf,0,2+8+16);
+            
+        gametext(76,38+15+15,"ANALOG",0,2+8+16);
+        if (CONFIG_AnalogNumToName( JoystickAnalogueAxes[thispage*2] )) {
+            p = CONFIG_AnalogNumToName( JoystickAnalogueAxes[thispage*2] );
+            if (p) {
+                gametext(140+12,38+15+15, strchr(p,'_')+1, 0, 2+8+16 );
+            }
+        }
+        
+        if (twothispage) {
+            gametext(76,38+64,"SCALE",0,2+8+16);
+            l = (JoystickAnalogueScale[thispage*2+1]+262144) >> 13;
+            bar(140+56,38+8+64,(short *)&l,1,x==4,0,0);
+            l = (l<<13)-262144;
+            if (l != JoystickAnalogueScale[thispage*2+1]) {
+                CONTROL_SetAnalogAxisScale( thispage*2+1, l, controldevice_joystick );
+                JoystickAnalogueScale[thispage*2+1] = l;
+            }
+            Bsprintf(tempbuf,"%s%.2f",l>=0?" ":"",(float)l/65536.0);
+            gametext(140,38+64,tempbuf,0,2+8+16);
 
-			gametext(76,38+64+15,"DIGITAL",0,2+8+16);
-				if (JoystickDigitalFunctions[thispage*2+1][0] < 0)
-					strcpy(tempbuf, "  -NONE-");
-				else
-					strcpy(tempbuf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[thispage*2+1][0]));
+            gametext(76,38+64+15,"DIGITAL",0,2+8+16);
+                if (JoystickDigitalFunctions[thispage*2+1][0] < 0)
+                    strcpy(tempbuf, "  -NONE-");
+                else
+                    strcpy(tempbuf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[thispage*2+1][0]));
 
-				for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
-				minitext(140+12,38+15+64,tempbuf,0,10+16);
+                for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
+                minitext(140+12,38+15+64,tempbuf,0,10+16);
 
-				if (JoystickDigitalFunctions[thispage*2+1][1] < 0)
-					strcpy(tempbuf, "  -NONE-");
-				else
-					strcpy(tempbuf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[thispage*2+1][1]));
+                if (JoystickDigitalFunctions[thispage*2+1][1] < 0)
+                    strcpy(tempbuf, "  -NONE-");
+                else
+                    strcpy(tempbuf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[thispage*2+1][1]));
 
-				for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
-				minitext(140+12+72,38+15+64,tempbuf,0,10+16);
-			
-			gametext(76,38+64+15+15,"ANALOG",0,2+8+16);
-			if (CONFIG_AnalogNumToName( JoystickAnalogueAxes[thispage*2+1] )) {
-				p = CONFIG_AnalogNumToName( JoystickAnalogueAxes[thispage*2+1] );
-				if (p) {
-					gametext(140+12,38+64+15+15, strchr(p,'_')+1, 0, 2+8+16 );
-				}
-			}
-		}
-		
-		if (joynumaxes > 2) {
-		    menutext(320>>1,twothispage?158:108,SHX(-10),(joynumaxes<=2),"NEXT...");
-			sprintf(tempbuf,"Page %d of %d",thispage+1,(joynumaxes+1)/2);
-			gametext(320-100,158,tempbuf,0,2+8+16);
-		}
-		break;
-	}
+                for (i=0;tempbuf[i];i++) if (tempbuf[i]=='_') tempbuf[i] = ' ';
+                minitext(140+12+72,38+15+64,tempbuf,0,10+16);
+            
+            gametext(76,38+64+15+15,"ANALOG",0,2+8+16);
+            if (CONFIG_AnalogNumToName( JoystickAnalogueAxes[thispage*2+1] )) {
+                p = CONFIG_AnalogNumToName( JoystickAnalogueAxes[thispage*2+1] );
+                if (p) {
+                    gametext(140+12,38+64+15+15, strchr(p,'_')+1, 0, 2+8+16 );
+                }
+            }
+        }
+        
+        if (joynumaxes > 2) {
+            menutext(320>>1,twothispage?158:108,SHX(-10),(joynumaxes<=2),"NEXT...");
+            sprintf(tempbuf,"Page %d of %d",thispage+1,(joynumaxes+1)/2);
+            gametext(320-100,158,tempbuf,0,2+8+16);
+        }
+        break;
+    }
 
-	case 213:
-	case 214:
-	case 215:
-	case 216: {	// Pray this is enough pages for now :-|
-		int first,last;
+    case 213:
+    case 214:
+    case 215:
+    case 216: { // Pray this is enough pages for now :-|
+        int first,last;
          rotatesprite(320<<15,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,24,0,0,"JOY DEAD ZONES");
 
-			first = 4*(current_menu-213);
-			last  = min(4*(current_menu-213)+4,joynumaxes);
+            first = 4*(current_menu-213);
+            last  = min(4*(current_menu-213)+4,joynumaxes);
 
-			onbar = 1;
-			x = probe(320,48,15,2*(last-first)+(joynumaxes>4));
+            onbar = 1;
+            x = probe(320,48,15,2*(last-first)+(joynumaxes>4));
 
-			if (x==-1) {
-				cmenu(206);
-				probey = 2;
-				break;
-			} else if (x==2*(last-first) && joynumaxes>4) {
-				cmenu( (current_menu-213) == (joynumaxes/4) ? 213 : (current_menu+1) );
-				probey = 0;
-				break;
-			}
+            if (x==-1) {
+                cmenu(206);
+                probey = 2;
+                break;
+            } else if (x==2*(last-first) && joynumaxes>4) {
+                cmenu( (current_menu-213) == (joynumaxes/4) ? 213 : (current_menu+1) );
+                probey = 0;
+                break;
+            }
 
-			for (m=first;m<last;m++) {
-				unsigned short odx,dx,ody,dy;
-				menutext(32,48+30*(m-first),0,0,getjoyname(0,m));
+            for (m=first;m<last;m++) {
+                unsigned short odx,dx,ody,dy;
+                menutext(32,48+30*(m-first),0,0,getjoyname(0,m));
 
-				gametext(128,48+30*(m-first)-8,"DEAD",0,2+8+16);
-				gametext(128,48+30*(m-first)-8+15,"SATU",0,2+8+16);
-				
-				dx = odx = min(64,64l*JoystickAnalogueDead[m]/10000l);
-				dy = ody = min(64,64l*JoystickAnalogueSaturate[m]/10000l);
+                gametext(128,48+30*(m-first)-8,"DEAD",0,2+8+16);
+                gametext(128,48+30*(m-first)-8+15,"SATU",0,2+8+16);
+                
+                dx = odx = min(64,64l*JoystickAnalogueDead[m]/10000l);
+                dy = ody = min(64,64l*JoystickAnalogueSaturate[m]/10000l);
 
-				bar(217,48+30*(m-first),&dx,4,x==((m-first)*2),0,0);
-				bar(217,48+30*(m-first)+15,&dy,4,x==((m-first)*2+1),0,0);
+                bar(217,48+30*(m-first),(short*)&dx,4,x==((m-first)*2),0,0);
+                bar(217,48+30*(m-first)+15,(short*)&dy,4,x==((m-first)*2+1),0,0);
 
-				Bsprintf(tempbuf,"%3d%%",100*dx/64); gametext(217-49,48+30*(m-first)-8,tempbuf,0,2+8+16);
-				Bsprintf(tempbuf,"%3d%%",100*dy/64); gametext(217-49,48+30*(m-first)-8+15,tempbuf,0,2+8+16);
+                Bsprintf(tempbuf,"%3d%%",100*dx/64); gametext(217-49,48+30*(m-first)-8,tempbuf,0,2+8+16);
+                Bsprintf(tempbuf,"%3d%%",100*dy/64); gametext(217-49,48+30*(m-first)-8+15,tempbuf,0,2+8+16);
 
-				if (dx != odx) JoystickAnalogueDead[m]     = 10000l*dx/64l;
-				if (dy != ody) JoystickAnalogueSaturate[m] = 10000l*dy/64l;
-				if (dx != odx || dy != ody)
-					setjoydeadzone(m,JoystickAnalogueDead[m],JoystickAnalogueSaturate[m]);
-			}
-		//gametext(160,158,"DEAD = DEAD ZONE, SAT. = SATURATION",0,2+8+16);
-		if (joynumaxes>4) {
-			menutext(32,48+30*(last-first),0,0,"NEXT...");
-			sprintf(tempbuf,"Page %d of %d", 1+(current_menu-213), (joynumaxes+3)/4);
-			gametext(320-100,158,tempbuf,0,2+8+16);
-		}
-		break;		
-	}
-	    
+                if (dx != odx) JoystickAnalogueDead[m]     = 10000l*dx/64l;
+                if (dy != ody) JoystickAnalogueSaturate[m] = 10000l*dy/64l;
+                if (dx != odx || dy != ody)
+                    setjoydeadzone(m,JoystickAnalogueDead[m],JoystickAnalogueSaturate[m]);
+            }
+        //gametext(160,158,"DEAD = DEAD ZONE, SAT. = SATURATION",0,2+8+16);
+        if (joynumaxes>4) {
+            menutext(32,48+30*(last-first),0,0,"NEXT...");
+            sprintf(tempbuf,"Page %d of %d", 1+(current_menu-213), (joynumaxes+3)/4);
+            gametext(320-100,158,tempbuf,0,2+8+16);
+        }
+        break;      
+    }
+        
         case 700:
-		case 701:	// JBF 20041220: A hack to stop the game exiting the menu directly to the game if one is running
+        case 701:   // JBF 20041220: A hack to stop the game exiting the menu directly to the game if one is running
             c = (320>>1)-120;
             rotatesprite(320<<15,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,24,0,0,"SOUNDS");
@@ -3660,7 +3647,7 @@ if (PLUTOPAK) {
                     }
 
                     else cmenu(202);
-					probey = 1;
+                    probey = 1;
                     break;
                 case 0:
                     if (FXDevice >= 0)
@@ -3767,7 +3754,6 @@ if (PLUTOPAK) {
             cmenu(351);
             screencapt = 1;
             displayrooms(myconnectindex,65536);
-            //savetemp("duke3d.tmp",waloff[TILE_SAVESHOT],160*100);
             screencapt = 0;
             break;
 
@@ -3793,12 +3779,12 @@ if (PLUTOPAK) {
 
             if(current_menu >= 360 && current_menu <= 369 )
             {
-                sprintf(tempbuf,"PLAYERS: %-2ld                      ",ud.multimode);
+                sprintf(tempbuf,"PLAYERS: %-2d                      ",ud.multimode);
                 gametext(160,156,tempbuf,0,2+8+16);
-                sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+ud.volume_number,1+ud.level_number,ud.player_skill);
+                sprintf(tempbuf,"EPISODE: %-2d / LEVEL: %-2d / SKILL: %-2d",1+ud.volume_number,1+ud.level_number,ud.player_skill);
                 gametext(160,168,tempbuf,0,2+8+16);
-				if (ud.volume_number == 0 && ud.level_number == 7)
-					gametext(160,180,boardfilename,0,2+8+16);
+                if (ud.volume_number == 0 && ud.level_number == 7)
+                    gametext(160,180,boardfilename,0,2+8+16);
 
                 x = strget((320>>1),184,&ud.savegame[current_menu-360][0],19, 999 );
 
@@ -3860,12 +3846,12 @@ if (PLUTOPAK) {
                   }
 
                   rotatesprite(101<<16,97<<16,65536L>>1,512,TILE_LOADSHOT,-32,0,4+10+64,0,0,xdim-1,ydim-1);
-                  sprintf(tempbuf,"PLAYERS: %-2ld                      ",savehead.numplr);
+                  sprintf(tempbuf,"PLAYERS: %-2d                      ",savehead.numplr);
                   gametext(160,156,tempbuf,0,2+8+16);
-                  sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+savehead.volnum,1+savehead.levnum,savehead.plrskl);
+                  sprintf(tempbuf,"EPISODE: %-2d / LEVEL: %-2d / SKILL: %-2d",1+savehead.volnum,1+savehead.levnum,savehead.plrskl);
                   gametext(160,168,tempbuf,0,2+8+16);
-				  if (savehead.volnum == 0 && savehead.levnum == 7)
-					  gametext(160,180,savehead.boardfn,0,2+8+16);
+                  if (savehead.volnum == 0 && savehead.levnum == 7)
+                      gametext(160,180,savehead.boardfn,0,2+8+16);
               }
               else menutext(69,70,0,0,"EMPTY");
           }
@@ -3879,12 +3865,12 @@ if (PLUTOPAK) {
                   rotatesprite(101<<16,97<<16,65536L>>1,512,TILE_LOADSHOT,-32,0,4+10+64,0,0,xdim-1,ydim-1);
               }
               else menutext(69,70,0,0,"EMPTY");
-              sprintf(tempbuf,"PLAYERS: %-2ld                      ",ud.multimode);
+              sprintf(tempbuf,"PLAYERS: %-2d                      ",ud.multimode);
               gametext(160,156,tempbuf,0,2+8+16);
-              sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+ud.volume_number,1+ud.level_number,ud.player_skill);
+              sprintf(tempbuf,"EPISODE: %-2d / LEVEL: %-2d / SKILL: %-2d",1+ud.volume_number,1+ud.level_number,ud.player_skill);
               gametext(160,168,tempbuf,0,2+8+16);
-			  if (ud.volume_number == 0 && ud.level_number == 7)
-				  gametext(160,180,boardfilename,0,2+8+16);
+              if (ud.volume_number == 0 && ud.level_number == 7)
+                  gametext(160,180,boardfilename,0,2+8+16);
           }
 
             switch( x )
@@ -3946,7 +3932,7 @@ if (PLUTOPAK) {
 
         case 400:
         case 401:
-		if (VOLUMEALL) goto VOLUME_ALL_40x;
+        if (VOLUMEALL) goto VOLUME_ALL_40x;
         case 402:
         case 403:
 
@@ -4004,7 +3990,7 @@ if (PLUTOPAK) {
             flushperms();
             rotatesprite(0,0,65536L,0,ORDERING+current_menu-400,0,0,10+16+64,0,0,xdim-1,ydim-1);
 
-		break;
+        break;
 VOLUME_ALL_40x:
 
             c = 320>>1;
@@ -4237,10 +4223,10 @@ VOLUME_ALL_40x:
                 copybufbyte(menuname[probey],boardfilename,x+1);
 
                 for(c=connecthead;c>=0;c=connectpoint2[c])
-				{
-					if (c != myconnectindex) sendpacket(c,tempbuf,x+10);
-					if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
-				}
+                {
+                    if (c != myconnectindex) sendpacket(c,(unsigned char *)tempbuf,x+10);
+                    if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
+                }
 
                 newgame(ud.m_volume_number,ud.m_level_number,ud.m_player_skill+1);
                 if (enterlevel(MODE_GAME)) backtomenu();
@@ -4350,11 +4336,11 @@ if (VOLUMEALL) {
                     {
                         resetweapons(c);
                         resetinventory(c);
-					}
-					for(c=connecthead;c>=0;c=connectpoint2[c])
-					{
-						if (c != myconnectindex) sendpacket(c,tempbuf,11);
-						if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
+                    }
+                    for(c=connecthead;c>=0;c=connectpoint2[c])
+                    {
+                        if (c != myconnectindex) sendpacket(c,(unsigned char *)tempbuf,11);
+                        if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
                     }
 
                     newgame(ud.m_volume_number,ud.m_level_number,ud.m_player_skill+1);
@@ -4389,11 +4375,11 @@ if (VOLUMEALL) {
                     {
                         resetweapons(c);
                         resetinventory(c);
-					}
-					for(c=connecthead;c>=0;c=connectpoint2[c])
-					{
-						if(c != myconnectindex) sendpacket(c,tempbuf,11);
-						if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
+                    }
+                    for(c=connecthead;c>=0;c=connectpoint2[c])
+                    {
+                        if(c != myconnectindex) sendpacket(c,(unsigned char *)tempbuf,11);
+                        if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
                     }
 
                     newgame(ud.m_volume_number,ud.m_level_number,ud.m_player_skill+1);
@@ -4440,14 +4426,14 @@ if (VOLUMEONE) {
             menutext(c,57-9,SHX(-2),PHX(-2),"GAME TYPE");
 
 if (VOLUMEONE) {
-            sprintf(tempbuf,"EPISODE %ld",ud.m_volume_number+1);
+            sprintf(tempbuf,"EPISODE %d",ud.m_volume_number+1);
             menutext(c,57+16-9,SHX(-3),1,tempbuf);
 } else {
-            sprintf(tempbuf,"EPISODE %ld",ud.m_volume_number+1);
+            sprintf(tempbuf,"EPISODE %d",ud.m_volume_number+1);
             menutext(c,57+16-9,SHX(-3),PHX(-3),tempbuf);
 }
 
-            sprintf(tempbuf,"LEVEL %ld",ud.m_level_number+1);
+            sprintf(tempbuf,"LEVEL %d",ud.m_level_number+1);
             menutext(c,57+16+16-9,SHX(-4),PHX(-4),tempbuf);
             menutext(c,57+16+16+16-9,SHX(-5),PHX(-5),"MONSTERS");
 
@@ -4481,41 +4467,27 @@ if (VOLUMEALL) {
     }
 }
 
-void palto(char r,char g,char b,long e)
+void palto(unsigned char r, unsigned char g, unsigned char b,int e)
 {
-    int i;
-    char temparray[768];
-    long tc;
-/*
-    for(i=0;i<768;i+=3)
-    {
-        temparray[i  ] =
-            ps[myconnectindex].palette[i+0]+((((long)r-(long)ps[myconnectindex].palette[i+0])*(long)(e&127))>>6);
-        temparray[i+1] =
-            ps[myconnectindex].palette[i+1]+((((long)g-(long)ps[myconnectindex].palette[i+1])*(long)(e&127))>>6);
-        temparray[i+2] =
-            ps[myconnectindex].palette[i+2]+((((long)b-(long)ps[myconnectindex].palette[i+2])*(long)(e&127))>>6);
-    }
-*/
+    int tc;
 
-    //setbrightness(ud.brightness>>2,temparray);
-	setpalettefade(r,g,b,e&127);
-	if (getrendermode() >= 3) pus = pub = NUMPAGES;	// JBF 20040110: redraw the status bar next time
+    setpalettefade(r,g,b,e&127);
+    if (getrendermode() >= 3) pus = pub = NUMPAGES; // JBF 20040110: redraw the status bar next time
     if ((e&128) == 0) {
-	    nextpage();
-	    for (tc = totalclock; totalclock < tc + 4; handleevents(), getpackets() );
+        nextpage();
+        for (tc = totalclock; totalclock < tc + 4; handleevents(), getpackets() );
     }
 }
 
 
-void drawoverheadmap(long cposx, long cposy, long czoom, short cang)
+void drawoverheadmap(int cposx, int cposy, int czoom, short cang)
 {
-        long i, j, k, l, x1, y1, x2=0, y2=0, x3, y3, x4, y4, ox, oy, xoff, yoff;
-        long dax, day, cosang, sinang, xspan, yspan, sprx, spry;
-        long xrepeat, yrepeat, z1, z2, startwall, endwall, tilenum, daang;
-        long xvect, yvect, xvect2, yvect2;
+        int i, j, k, l, x1, y1, x2=0, y2=0, x3, y3, x4, y4, ox, oy, xoff, yoff;
+        int dax, day, cosang, sinang, xspan, yspan, sprx, spry;
+        int xrepeat, yrepeat, z1, z2, startwall, endwall, tilenum, daang;
+        int xvect, yvect, xvect2, yvect2;
         short p;
-        char col;
+        unsigned char col;
         walltype *wal, *wal2;
         spritetype *spr;
 
@@ -4612,7 +4584,7 @@ void drawoverheadmap(long cposx, long cposy, long czoom, short cang)
                         {
                             x1 = sprx; y1 = spry;
                             tilenum = spr->picnum;
-                            xoff = (long)((signed char)((picanm[tilenum]>>8)&255))+((long)spr->xoffset);
+                            xoff = (int)((signed char)((picanm[tilenum]>>8)&255))+((int)spr->xoffset);
                             if ((spr->cstat&4) > 0) xoff = -xoff;
                             k = spr->ang; l = spr->xrepeat;
                             dax = sintable[k&2047]*l; day = sintable[(k+1536)&2047]*l;
@@ -4637,8 +4609,8 @@ void drawoverheadmap(long cposx, long cposy, long czoom, short cang)
                     case 32:
 
                                                 tilenum = spr->picnum;
-                                                xoff = (long)((signed char)((picanm[tilenum]>>8)&255))+((long)spr->xoffset);
-                                                yoff = (long)((signed char)((picanm[tilenum]>>16)&255))+((long)spr->yoffset);
+                                                xoff = (int)((signed char)((picanm[tilenum]>>8)&255))+((int)spr->xoffset);
+                                                yoff = (int)((signed char)((picanm[tilenum]>>16)&255))+((int)spr->yoffset);
                                                 if ((spr->cstat&4) > 0) xoff = -xoff;
                                                 if ((spr->cstat&8) > 0) yoff = -yoff;
 
@@ -4758,7 +4730,7 @@ void drawoverheadmap(long cposx, long cposy, long czoom, short cang)
 
 
 
-void endanimsounds(long fr)
+void endanimsounds(int fr)
 {
     switch(ud.volume_number)
     {
@@ -4822,7 +4794,7 @@ void endanimsounds(long fr)
     }
 }
 
-void logoanimsounds(long fr)
+void logoanimsounds(int fr)
 {
     switch(fr)
     {
@@ -4835,7 +4807,7 @@ void logoanimsounds(long fr)
     }
 }
 
-void intro4animsounds(long fr)
+void intro4animsounds(int fr)
 {
     switch(fr)
     {
@@ -4852,7 +4824,7 @@ void intro4animsounds(long fr)
     }
 }
 
-void first4animsounds(long fr)
+void first4animsounds(int fr)
 {
     switch(fr)
     {
@@ -4871,7 +4843,7 @@ void first4animsounds(long fr)
     }
 }
 
-void intro42animsounds(long fr)
+void intro42animsounds(int fr)
 {
     switch(fr)
     {
@@ -4884,7 +4856,7 @@ void intro42animsounds(long fr)
 
 
 
-void endanimvol41(long fr)
+void endanimvol41(int fr)
 {
     switch(fr)
     {
@@ -4897,7 +4869,7 @@ void endanimvol41(long fr)
     }
 }
 
-void endanimvol42(long fr)
+void endanimvol42(int fr)
 {
     switch(fr)
     {
@@ -4916,7 +4888,7 @@ void endanimvol42(long fr)
     }
 }
 
-void endanimvol43(long fr)
+void endanimvol43(int fr)
 {
     switch(fr)
     {
@@ -4934,10 +4906,10 @@ void endanimvol43(long fr)
 }
 
 
-void playanm(char *fn,char t)
+void playanm(const char *fn,char t)
 {
-        char *animbuf, *palptr;
-    long i, j, k, length=0, numframes=0;
+    unsigned char *animbuf, *palptr, palbuf[768];
+    int i, j, k, length=0, numframes=0;
     int32 handle=-1;
 
 //    return;
@@ -4951,78 +4923,69 @@ void playanm(char *fn,char t)
         goto ENDOFANIMLOOP;
     }
 
-        handle = kopen4load(fn,0);
-        if(handle == -1) return;
-        length = kfilelength(handle);
+    handle = kopen4load(fn,0);
+    if(handle == -1) return;
+    length = kfilelength(handle);
 
     walock[TILE_ANIM] = 219+t;
 
-        allocache((long *)&animbuf,length,&walock[TILE_ANIM]);
+    allocache((void **)&animbuf,length,&walock[TILE_ANIM]);
 
     tilesizx[TILE_ANIM] = 200;
     tilesizy[TILE_ANIM] = 320;
 
-        kread(handle,animbuf,length);
-        kclose(handle);
+    kread(handle,animbuf,length);
+    kclose(handle);
 
-        ANIM_LoadAnim (animbuf);
-        numframes = ANIM_NumFrames();
+    ANIM_LoadAnim (animbuf);
+    numframes = ANIM_NumFrames();
 
-        palptr = ANIM_GetPalette();
-        for(i=0;i<256;i++)
-        {
-			/*
-                j = (i<<2); k = j-i;
-                tempbuf[j+0] = (palptr[k+2]>>2);
-                tempbuf[j+1] = (palptr[k+1]>>2);
-                tempbuf[j+2] = (palptr[k+0]>>2);
-                tempbuf[j+3] = 0;
-				*/
-			j = i*3;
-                tempbuf[j+0] = (palptr[j+0]>>2);
-                tempbuf[j+1] = (palptr[j+1]>>2);
-                tempbuf[j+2] = (palptr[j+2]>>2);
-        }
+    palptr = ANIM_GetPalette();
+    for(i=0;i<256;i++)
+    {
+        j = i*3;
+        palbuf[j+0] = (palptr[j+0]>>2);
+        palbuf[j+1] = (palptr[j+1]>>2);
+        palbuf[j+2] = (palptr[j+2]>>2);
+    }
 
-        //setpalette(0L,256L,tempbuf);
-		//setbrightness(ud.brightness>>2,tempbuf,2);
-		setgamepalette(&ps[myconnectindex],tempbuf,2);
+    setgamepalette(&ps[myconnectindex],palbuf,2);
 
     ototalclock = totalclock + 10;
 
-        for(i=1;i<numframes;i++)
+    for(i=1;i<numframes;i++)
+    {
+        while(totalclock < ototalclock)
         {
-       while(totalclock < ototalclock)
-       {
-          if( KB_KeyWaiting() )
-              goto ENDOFANIMLOOP;
-		   handleevents(); getpackets();
-       }
-
-       if(t == 10) ototalclock += 14;
-       else if(t == 9) ototalclock += 10;
-       else if(t == 7) ototalclock += 18;
-       else if(t == 6) ototalclock += 14;
-       else if(t == 5) ototalclock += 9;
-       else if(ud.volume_number == 3) ototalclock += 10;
-       else if(ud.volume_number == 2) ototalclock += 10;
-       else if(ud.volume_number == 1) ototalclock += 18;
-       else                           ototalclock += 10;
-
-       waloff[TILE_ANIM] = FP_OFF(ANIM_DrawFrame(i));
-	   invalidatetile(TILE_ANIM, 0, 1<<4);	// JBF 20031228
-       rotatesprite(0<<16,0<<16,65536L,512,TILE_ANIM,0,0,2+4+8+16+64, 0,0,xdim-1,ydim-1);
-       nextpage();
-
-       if(t == 8) endanimvol41(i);
-       else if(t == 10) endanimvol42(i);
-       else if(t == 11) endanimvol43(i);
-       else if(t == 9) intro42animsounds(i);
-       else if(t == 7) intro4animsounds(i);
-       else if(t == 6) first4animsounds(i);
-       else if(t == 5) logoanimsounds(i);
-       else if(t < 4) endanimsounds(i);
+            if( KB_KeyWaiting() )
+                goto ENDOFANIMLOOP;
+            handleevents(); getpackets();
         }
+
+        if(t == 10) ototalclock += 14;
+        else if(t == 9) ototalclock += 10;
+        else if(t == 7) ototalclock += 18;
+        else if(t == 6) ototalclock += 14;
+        else if(t == 5) ototalclock += 9;
+        else if(ud.volume_number == 3) ototalclock += 10;
+        else if(ud.volume_number == 2) ototalclock += 10;
+        else if(ud.volume_number == 1) ototalclock += 18;
+        else                           ototalclock += 10;
+
+        waloff[TILE_ANIM] = (intptr_t)(ANIM_DrawFrame(i));
+        invalidatetile(TILE_ANIM, 0, 1<<4);  // JBF 20031228
+        rotatesprite(0<<16,0<<16,65536L,512,TILE_ANIM,0,0,2+4+8+16+64, 0,0,xdim-1,ydim-1);
+        nextpage();
+
+        if(t == 8) endanimvol41(i);
+        else if(t == 10) endanimvol42(i);
+        else if(t == 11) endanimvol43(i);
+        else if(t == 9) intro42animsounds(i);
+        else if(t == 7) intro4animsounds(i);
+        else if(t == 6) first4animsounds(i);
+        else if(t == 5) logoanimsounds(i);
+        else if(t < 4) endanimsounds(i);
+    }
 
     ENDOFANIMLOOP:
 

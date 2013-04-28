@@ -28,7 +28,7 @@ Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
 #include "duke3d.h"
 #include "osd.h"
 
-extern char pow2char[];
+extern unsigned char pow2char[];
 
 extern char everyothertime;
 static short which_palookup = 9;
@@ -36,24 +36,24 @@ char useprecache = 1;
 
 static void tloadtile(short tilenume, char type)
 {
-	if ((picanm[tilenume]&63) > 0) {
-		int i,j;
+    if ((picanm[tilenume]&63) > 0) {
+        int i,j;
 
-		if ((picanm[tilenume]&192)==192) {
-			i = tilenume - (picanm[tilenume]&63);
-			j = tilenume;
-		} else {
-			i = tilenume;
-			j = tilenume + (picanm[tilenume]&63);
-		}
-		for (;i<=j;i++) {
-			if (useprecache) polymost_precache(tilenume, 0, type);
-			gotpic[i>>3] |= pow2char[i&7];
-		}
-	} else {
-		if (useprecache) polymost_precache(tilenume, 0, type);
-		gotpic[tilenume>>3] |= pow2char[tilenume&7];
-	}
+        if ((picanm[tilenume]&192)==192) {
+            i = tilenume - (picanm[tilenume]&63);
+            j = tilenume;
+        } else {
+            i = tilenume;
+            j = tilenume + (picanm[tilenume]&63);
+        }
+        for (;i<=j;i++) {
+            if (useprecache) polymost_precache(tilenume, 0, type);
+            gotpic[i>>3] |= pow2char[i&7];
+        }
+    } else {
+        if (useprecache) polymost_precache(tilenume, 0, type);
+        gotpic[tilenume>>3] |= pow2char[tilenume&7];
+    }
 }
 
 void cachespritenum(short i)
@@ -71,19 +71,19 @@ void cachespritenum(short i)
             tloadtile(BROKEFIREHYDRENT,1);
             for(j = TOILETWATER; j < (TOILETWATER+4); j++) {
                 tloadtile(j,1);
-	    }
+        }
             break;
         case TOILET:
             tloadtile(TOILETBROKE,1);
             for(j = TOILETWATER; j < (TOILETWATER+4); j++) {
                 tloadtile(j,1);
-	    }
+        }
             break;
         case STALL:
             tloadtile(STALLBROKE,1);
             for(j = TOILETWATER; j < (TOILETWATER+4); j++) {
                 tloadtile(j,1);
-	    }
+        }
             break;
         case RUBBERCAN:
             maxc = 2;
@@ -102,17 +102,17 @@ void cachespritenum(short i)
         case LIZTROOPDUCKING:
             for(j = LIZTROOP; j < (LIZTROOP+72); j++) {
                 tloadtile(j,1);
-	    }
+        }
             for(j=HEADJIB1;j<LEGJIB1+3;j++) {
                 tloadtile(j,1);
-	    }
+        }
             maxc = 0;
             break;
         case WOODENHORSE:
             maxc = 5;
             for(j = HORSEONSIDE; j < (HORSEONSIDE+4); j++) {
                 tloadtile(j,1);
-	    }
+        }
             break;
         case NEWBEAST:
         case NEWBEASTSTAYPUT:
@@ -145,7 +145,7 @@ void cachespritenum(short i)
         case LIZMANJUMP:
             for(j=LIZMANHEAD1;j<LIZMANLEG1+3;j++) {
                 tloadtile(j,1);
-	    }
+        }
             maxc = 80;
             break;
         case APLAYER:
@@ -155,7 +155,7 @@ void cachespritenum(short i)
                 maxc = 5;
                 for(j = 1420;j < 1420+106; j++) {
                     tloadtile(j,1);
-		}
+        }
             }
             break;
         case ATOMICHEALTH:
@@ -173,18 +173,18 @@ void cachespritenum(short i)
         case CAMERA1:
             maxc = 5;
             break;
-	
-		// caching of HUD sprites for weapons that may be in the level
-		case CHAINGUNSPRITE: for (j=CHAINGUN; j<=CHAINGUN+7; j++) tloadtile(j,1); break;
-		case RPGSPRITE: for (j=RPGGUN; j<=RPGGUN+2; j++) tloadtile(j,1); break;
-		case FREEZESPRITE: for (j=FREEZE; j<=FREEZE+5; j++) tloadtile(j,1); break;
-		case GROWSPRITEICON:
-		case SHRINKERSPRITE: for (j=SHRINKER-2; j<=SHRINKER+5; j++) tloadtile(j,1); break;
-		case HBOMBAMMO:
-		case HEAVYHBOMB: for (j=HANDREMOTE; j<=HANDREMOTE+5; j++) tloadtile(j,1); break;
-		case TRIPBOMBSPRITE: for (j=HANDHOLDINGLASER; j<=HANDHOLDINGLASER+4; j++) tloadtile(j,1); break;
-		case SHOTGUNSPRITE: tloadtile(SHOTGUNSHELL,1); for (j=SHOTGUN; j<=SHOTGUN+6; j++) tloadtile(j,1); break;
-		case DEVISTATORSPRITE: for (j=DEVISTATOR; j<=DEVISTATOR+1; j++) tloadtile(j,1); break;
+    
+        // caching of HUD sprites for weapons that may be in the level
+        case CHAINGUNSPRITE: for (j=CHAINGUN; j<=CHAINGUN+7; j++) tloadtile(j,1); break;
+        case RPGSPRITE: for (j=RPGGUN; j<=RPGGUN+2; j++) tloadtile(j,1); break;
+        case FREEZESPRITE: for (j=FREEZE; j<=FREEZE+5; j++) tloadtile(j,1); break;
+        case GROWSPRITEICON:
+        case SHRINKERSPRITE: for (j=SHRINKER-2; j<=SHRINKER+5; j++) tloadtile(j,1); break;
+        case HBOMBAMMO:
+        case HEAVYHBOMB: for (j=HANDREMOTE; j<=HANDREMOTE+5; j++) tloadtile(j,1); break;
+        case TRIPBOMBSPRITE: for (j=HANDHOLDINGLASER; j<=HANDHOLDINGLASER+4; j++) tloadtile(j,1); break;
+        case SHOTGUNSPRITE: tloadtile(SHOTGUNSHELL,1); for (j=SHOTGUN; j<=SHOTGUN+6; j++) tloadtile(j,1); break;
+        case DEVISTATORSPRITE: for (j=DEVISTATOR; j<=DEVISTATOR+1; j++) tloadtile(j,1); break;
     }
 
     for(j = PN; j < (PN+maxc); j++) {
@@ -235,7 +235,7 @@ void cachegoodsprites(void)
 char getsound(unsigned short num)
 {
     short fp;
-    long   l;
+    int   l;
 
     if(num >= NUM_SOUNDS || SoundToggle == 0) return 0;
     if (FXDevice < 0) return 0;
@@ -251,7 +251,7 @@ char getsound(unsigned short num)
         ( l < 12288 ) )
     {
         Sound[num].lock = 199;
-        allocache((long *)&Sound[num].ptr,l,(char *)&Sound[num].lock);
+        allocache((void **)&Sound[num].ptr,l,&Sound[num].lock);
         if(Sound[num].ptr != NULL)
             kread( fp, Sound[num].ptr , l);
     }
@@ -278,15 +278,15 @@ void precachenecessarysounds(void)
 
 void cacheit(void)
 {
-    long i,j,k;
-    long tc;
-	unsigned long starttime, endtime;
-	int done, total, percent;
-	int lastdone = -1, lasttotal = -1, lastpercent = -1, lastclock;
-	
-	starttime = getticks();
-	polymost_precache_begin();
-	
+    int i,j,k;
+    int tc;
+    unsigned int starttime, endtime;
+    int done, total, percent;
+    int lastdone = -1, lasttotal = -1, lastpercent = -1, lastclock;
+    
+    starttime = getticks();
+    polymost_precache_begin();
+    
     precachenecessarysounds();
 
     cachegoodsprites();
@@ -296,8 +296,8 @@ void cacheit(void)
         tloadtile(wall[i].picnum, 0);
 
         if(wall[i].overpicnum >= 0) {
-			tloadtile(wall[i].overpicnum, 0);
-		}
+            tloadtile(wall[i].overpicnum, 0);
+        }
     }
 
     for(i=0;i<numsectors;i++)
@@ -320,51 +320,51 @@ void cacheit(void)
     }
 
     if (useprecache) {
-	int cycles = 0;
-	lastclock = totalclock;
+    int cycles = 0;
+    lastclock = totalclock;
         while (polymost_precache_run(&done, &total)) {
-		if (total == 0) {
-			break;
-		}
-		if (done == lastdone && total == lasttotal && (cycles++ & 1023) > 0) {
-			continue;
-		}
+        if (total == 0) {
+            break;
+        }
+        if (done == lastdone && total == lasttotal && (cycles++ & 1023) > 0) {
+            continue;
+        }
 
-		lastdone = done;
-		lasttotal = total;
-		percent = done * 100 / total;
+        lastdone = done;
+        lasttotal = total;
+        percent = done * 100 / total;
 
-		handleevents();
-		getpackets();
+        handleevents();
+        getpackets();
 
-		if (percent == lastpercent || lastclock - totalclock == 0) {
-			continue;
-		}
+        if (percent == lastpercent || lastclock - totalclock == 0) {
+            continue;
+        }
 
-		lastpercent = percent;
-		lastclock = totalclock;
+        lastpercent = percent;
+        lastclock = totalclock;
 
-		sprintf(tempbuf,"Loading textures ... %d%%\n",percent);
-		dofrontscreens(tempbuf);
-	}
+        sprintf(tempbuf,"Loading textures ... %d%%\n",percent);
+        dofrontscreens(tempbuf);
+    }
     }
 
     j = 0;
     for(i=0;i<MAXTILES;i++) {
-	if(gotpic[i>>3] & pow2char[i&7]) {
-		if (waloff[i] == 0)
-			loadtile((short)i);
+    if(gotpic[i>>3] & pow2char[i&7]) {
+        if (waloff[i] == 0)
+            loadtile((short)i);
 
-		j++;
-	} else continue;
+        j++;
+    } else continue;
 
-	if((j&7) == 0) { handleevents(); getpackets(); }
+    if((j&7) == 0) { handleevents(); getpackets(); }
     }
 
-	clearbufbyte(gotpic,sizeof(gotpic),0L);
+    clearbufbyte(gotpic,sizeof(gotpic),0L);
 
-	endtime = getticks();
-	OSD_Printf("Cache time: %dms\n", endtime-starttime);
+    endtime = getticks();
+    OSD_Printf("Cache time: %dms\n", endtime-starttime);
 }
 
 
@@ -372,34 +372,34 @@ void cacheit(void)
 void xyzmirror(short i,short wn)
 {
     //if (waloff[wn] == 0) loadtile(wn);
-	setviewtotile(wn,tilesizy[wn],tilesizx[wn]);
+    setviewtotile(wn,tilesizy[wn],tilesizx[wn]);
 
-	drawrooms(SX,SY,SZ,SA,100+sprite[i].shade,SECT);
-	display_mirror = 1; animatesprites(SX,SY,SA,65536L); display_mirror = 0;
-	drawmasks();
+    drawrooms(SX,SY,SZ,SA,100+sprite[i].shade,SECT);
+    display_mirror = 1; animatesprites(SX,SY,SA,65536L); display_mirror = 0;
+    drawmasks();
 
-	setviewback();
-	squarerotatetile(wn);
-	invalidatetile(wn,-1,255);
+    setviewback();
+    squarerotatetile(wn);
+    invalidatetile(wn,-1,255);
 }
 
 void vscrn(void)
 {
-     long i, j, ss, x1, x2, y1, y2;
+     int i, j, ss, x1, x2, y1, y2;
 
-	 if(ud.screen_size < 0) ud.screen_size = 0;
-	 else if(ud.screen_size > 63) ud.screen_size = 64;
+     if(ud.screen_size < 0) ud.screen_size = 0;
+     else if(ud.screen_size > 63) ud.screen_size = 64;
 
      if(ud.screen_size == 0) flushperms();
 
-	 ss = max(ud.screen_size-8,0);
+     ss = max(ud.screen_size-8,0);
 
-	 x1 = scale(ss,xdim,160);
-	 x2 = xdim-x1;
+     x1 = scale(ss,xdim,160);
+     x2 = xdim-x1;
 
-	 y1 = ss; y2 = 200;
+     y1 = ss; y2 = 200;
      if ( ud.screen_size > 0 && ud.coop != 1 && ud.multimode > 1)
-	 {
+     {
          j = 0;
          for(i=connecthead;i>=0;i=connectpoint2[i])
              if(i > j) j = i;
@@ -408,14 +408,14 @@ void vscrn(void)
          if (j >= 4) y1 += 8;
          if (j >= 8) y1 += 8;
          if (j >= 12) y1 += 8;
-	 }
+     }
 
-	 if (ud.screen_size >= 8) y2 -= (ss+scale(tilesizy[BOTTOMSTATUSBAR],ud.statusbarscale,100));
+     if (ud.screen_size >= 8) y2 -= (ss+scale(tilesizy[BOTTOMSTATUSBAR],ud.statusbarscale,100));
 
-	 y1 = scale(y1,ydim,200);
-	 y2 = scale(y2,ydim,200);
+     y1 = scale(y1,ydim,200);
+     y2 = scale(y2,ydim,200);
 
-	 setview(x1,y1,x2-1,y2-1);
+     setview(x1,y1,x2-1,y2-1);
 
      pub = NUMPAGES;
      pus = NUMPAGES;
@@ -499,7 +499,7 @@ void resetplayerstats(short snum)
     pus = 1;
     p->on_warping_sector = 0;
     p->spritebridge      = 0;
-    p->palette = (char *) &palette[0];
+    p->palette = &palette[0];
 
     if(p->steroids_amount < 400 )
     {
@@ -513,7 +513,7 @@ void resetplayerstats(short snum)
     p->look_ang          = 512 - ((ud.level_number&1)<<10);
 
     p->rotscrnang        = 0;
-    p->orotscrnang       = 1;	// JBF 20031220
+    p->orotscrnang       = 1;   // JBF 20031220
     p->newowner          =-1;
     p->jumping_counter   = 0;
     p->hard_landing      = 0;
@@ -592,7 +592,7 @@ void resetinventory(short snum)
 }
 
 
-void resetprestat(short snum,char g)
+void resetprestat(short snum,unsigned char g)
 {
     struct player_struct *p;
     short i;
@@ -685,7 +685,7 @@ void setupbackdrop(short sky)
    pskybits=3;
 }
 
-void prelevel(char g)
+void prelevel(unsigned char g)
 {
     short i, nexti, j, startwall, endwall, lotaglist;
     short lotags[65];
@@ -1079,10 +1079,10 @@ void newgame(char vn,char ln,char sk)
 }
 
 
-void resetpspritevars(char g)
+void resetpspritevars(unsigned char g)
 {
     short i, j, nexti,circ;
-    long firstx,firsty;
+    int firstx,firsty;
     spritetype *s;
     char aimmode[MAXPLAYERS],autoaim[MAXPLAYERS],weaponswitch[MAXPLAYERS];
     STATUSBARTYPE tsbar[MAXPLAYERS];
@@ -1094,7 +1094,7 @@ void resetpspritevars(char g)
     {
         aimmode[i] = ps[i].aim_mode;
         autoaim[i] = ps[i].auto_aim;
-		weaponswitch[i] = ps[i].weaponswitch;
+        weaponswitch[i] = ps[i].weaponswitch;
         if(ud.multimode > 1 && ud.coop == 1 && ud.last_level >= 0)
         {
             for(j=0;j<MAX_WEAPONS;j++)
@@ -1126,7 +1126,7 @@ void resetpspritevars(char g)
     {
         ps[i].aim_mode = aimmode[i];
         ps[i].auto_aim = autoaim[i];
-		ps[i].weaponswitch = weaponswitch[i];
+        ps[i].weaponswitch = weaponswitch[i];
         if(ud.multimode > 1 && ud.coop == 1 && ud.last_level >= 0)
         {
             for(j=0;j<MAX_WEAPONS;j++)
@@ -1244,9 +1244,9 @@ void resettimevars(void)
 
 void genspriteremaps(void)
 {
-    long j,fp;
+    int j,fp;
     signed char look_pos;
-    char *lookfn = "lookup.dat";
+    const char *lookfn = "lookup.dat";
     char numl;
 
     fp = kopen4load(lookfn,0);
@@ -1259,7 +1259,7 @@ void genspriteremaps(void)
     {
         kread(fp,(signed char *)&look_pos,1);
         kread(fp,tempbuf,256);
-        makepalookup((long)look_pos,tempbuf,0,0,0,1);
+        makepalookup((int)look_pos,(unsigned char *)tempbuf,0,0,0,1);
     }
 
     kread(fp,&waterpal[0],768);
@@ -1277,49 +1277,48 @@ void genspriteremaps(void)
 
 void waitforeverybody()
 {
-	long i;
+    int i;
 
-	if (numplayers < 2) return;
-	packbuf[0] = 250;
-	for(i=connecthead;i>=0;i=connectpoint2[i])
-	{
-		if (i != myconnectindex) sendpacket(i,packbuf,1);
-		if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
-	}
-	playerreadyflag[myconnectindex]++;
+    if (numplayers < 2) return;
+    packbuf[0] = 250;
+    for(i=connecthead;i>=0;i=connectpoint2[i])
+    {
+        if (i != myconnectindex) sendpacket(i,packbuf,1);
+        if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
+    }
+    playerreadyflag[myconnectindex]++;
 
-	while (1)
-	{
-		handleevents();
+    while (1)
+    {
+        handleevents();
 
-		if (quitevent || keystatus[1]) gameexit("");
+        if (quitevent || keystatus[1]) gameexit("");
 
-		getpackets();
+        getpackets();
 
-		for(i=connecthead;i>=0;i=connectpoint2[i])
-		{
-			if (playerreadyflag[i] < playerreadyflag[myconnectindex]) break;
-			if ((!networkmode) && (myconnectindex != connecthead)) { i = -1; break; } //slaves in M/S mode only wait for master
-		}
-		if (i < 0) return;
-	}
+        for(i=connecthead;i>=0;i=connectpoint2[i])
+        {
+            if (playerreadyflag[i] < playerreadyflag[myconnectindex]) break;
+            if ((!networkmode) && (myconnectindex != connecthead)) { i = -1; break; } //slaves in M/S mode only wait for master
+        }
+        if (i < 0) return;
+    }
 }
 
-void dofrontscreens(char *statustext)
+void dofrontscreens(const char *statustext)
 {
-    long tincs,i=0,j;
+    int tincs,i=0,j;
 
     if(ud.recstat != 2)
     {
-	if (!statustext) {
-		//ps[myconnectindex].palette = palette;
-		setgamepalette(&ps[myconnectindex], palette, 1);	// JBF 20040308
-		fadepal(0,0,0, 0,64,7);
-		i = ud.screen_size;
-		ud.screen_size = 0;
-		vscrn();
-		clearview(0L);
-	}
+        if (!statustext) {
+            setgamepalette(&ps[myconnectindex], palette, 1);    // JBF 20040308
+            fadepal(0,0,0, 0,64,7);
+            i = ud.screen_size;
+            ud.screen_size = 0;
+            vscrn();
+            clearview(0L);
+        }
 
         rotatesprite(320<<15,200<<15,65536L,0,LOADSCREEN,0,0,2+8+64,0,0,xdim-1,ydim-1);
 
@@ -1334,29 +1333,27 @@ void dofrontscreens(char *statustext)
             menutext(160,90+16+8,0,0,level_names[(ud.volume_number*11) + ud.level_number]);
         }
 
-	if (statustext) gametext(160,180,statustext,0,2+8+16);
+        if (statustext) gametext(160,180,statustext,0,2+8+16);
 
         nextpage();
 
-	if (!statustext) {
-		fadepal(0,0,0, 63,0,-7);
+        if (!statustext) {
+            fadepal(0,0,0, 63,0,-7);
 
-        	KB_FlushKeyboardQueue();
-        	ud.screen_size = i;
-	}
+            KB_FlushKeyboardQueue();
+            ud.screen_size = i;
+        }
     }
     else
     {
-	if (!statustext) {
-        	clearview(0L);
-        	//ps[myconnectindex].palette = palette;
-		//palto(0,0,0,0);
-		setgamepalette(&ps[myconnectindex], palette, 0);	// JBF 20040308
-	}
+        if (!statustext) {
+            clearview(0L);
+            setgamepalette(&ps[myconnectindex], palette, 0);    // JBF 20040308
+        }
 
         rotatesprite(320<<15,200<<15,65536L,0,LOADSCREEN,0,0,2+8+64,0,0,xdim-1,ydim-1);
         menutext(160,105,0,0,"LOADING...");
-	if (statustext) gametext(160,180,statustext,0,2+8+16);
+        if (statustext) gametext(160,180,statustext,0,2+8+16);
         nextpage();
     }
 }
@@ -1402,10 +1399,10 @@ void resetmys(void)
       myreturntocenter = ps[myconnectindex].return_to_center;
 }
 
-int enterlevel(char g)
+int enterlevel(unsigned char g)
 {
     short i,j;
-    long l;
+    int l;
     char levname[BMAX_PATH];
 
     if( (g&MODE_DEMO) != MODE_DEMO ) ud.recstat = ud.m_recstat;
@@ -1438,28 +1435,28 @@ if (!VOLUMEONE) {
         {
             initprintf("Map %s not found!\n",boardfilename);
             //gameexit(tempbuf);
-	    return 1;
+            return 1;
         } else {
             char *p;
             strcpy(levname, boardfilename);
-	    p = Bstrrchr(levname,'.');
-	    if (!p) strcat(levname,".mhk");
-	    else { p[1]='m'; p[2]='h'; p[3]='k'; p[4]=0; }
-	    if (!loadmaphack(levname)) initprintf("Loaded map hack file %s\n",levname);
-	}
+            p = Bstrrchr(levname,'.');
+            if (!p) strcat(levname,".mhk");
+            else { strcpy(p, ".mhk"); }
+            if (!loadmaphack(levname)) initprintf("Loaded map hack file %s\n",levname);
+        }
     }
     else if ( loadboard( level_file_names[ (ud.volume_number*11)+ud.level_number],0,&ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum ) == -1)
     {
         initprintf("Map %s not found!\n",level_file_names[(ud.volume_number*11)+ud.level_number]);
         //gameexit(tempbuf);
-	return 1;
+        return 1;
     } else {
         char *p;
         strcpy(levname, level_file_names[ (ud.volume_number*11)+ud.level_number]);
-	p = Bstrrchr(levname,'.');
-	if (!p) strcat(levname,".mhk");
-	else { p[1]='m'; p[2]='h'; p[3]='k'; p[4]=0; }
-	if (!loadmaphack(levname)) initprintf("Loaded map hack file %s\n",levname);
+        p = Bstrrchr(levname,'.');
+        if (!p) strcat(levname,".mhk");
+        else { strcpy(p, ".mhk"); }
+        if (!loadmaphack(levname)) initprintf("Loaded map hack file %s\n",levname);
     }
 
 } else {
@@ -1473,18 +1470,18 @@ if (!VOLUMEONE) {
     {
         initprintf("Map %s not found!\n",level_file_names[(ud.volume_number*11)+ud.level_number]);
         //gameexit(tempbuf);
-	return 1;
+        return 1;
     } else {
         char *p;
-	p = Bstrrchr(levname,'.');
-	if (!p) strcat(levname,".mhk");
-	else { p[1]='m'; p[2]='h'; p[3]='k'; p[4]=0; }
-	if (!loadmaphack(levname)) initprintf("Loaded map hack file %s\n",levname);
+        p = Bstrrchr(levname,'.');
+        if (!p) strcat(levname,".mhk");
+        else { strcpy(p, ".mhk"); }
+        if (!loadmaphack(levname)) initprintf("Loaded map hack file %s\n",levname);
     }
 }
 
     clearbufbyte(gotpic,sizeof(gotpic),0L);
-    //clearbufbyte(hittype,sizeof(hittype),0l);	// JBF 20040531: yes? no?
+    //clearbufbyte(hittype,sizeof(hittype),0l); // JBF 20040531: yes? no?
 
     prelevel(g);
 
@@ -1541,7 +1538,7 @@ if (VOLUMEONE) {
 
      //ps[myconnectindex].palette = palette;
      //palto(0,0,0,0);
-     setgamepalette(&ps[myconnectindex], palette, 0);	// JBF 20040308
+     setgamepalette(&ps[myconnectindex], palette, 0);   // JBF 20040308
 
      setpal(&ps[myconnectindex]);
      flushperms();
@@ -1573,7 +1570,7 @@ if (VOLUMEONE) {
 
      resettimevars();  // Here we go
 
-	return 0;
+    return 0;
 }
 
 /*
