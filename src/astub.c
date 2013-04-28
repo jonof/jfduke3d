@@ -64,7 +64,6 @@ Duke Lookup Table
 ********************************************************
 */
 
-#include "compat.h"
 #include "build.h"
 #include "editor.h"
 #include "pragmas.h"
@@ -89,20 +88,9 @@ char *Myname[1]= {"stryker@metronet.com"};
 
 char *defsfilename = "duke3d.def";
 
-extern char keystatus[];
-extern long posx, posy, posz, horiz;
-extern short ang, cursectnum;
-extern short ceilingheinum, floorheinum;
-extern char names[MAXTILES][25];
+static int ototalclock = 0;
 
-extern long zlock;
-
-extern short editstatus, searchit;
-extern long searchx, searchy;                          //search input
-
-static long ototalclock = 0;
-
-static long clockval[16], clockcnt = 0;
+static int clockval[16], clockcnt = 0;
 
 #define NUMOPTIONS 9
 
@@ -118,14 +106,10 @@ int nextvoxid = 0;
 
 
 
-//extern void __interrupt __far timerhandler(void);
-
-long xoldtimerhandler;
-
 #define COKE 52
 
 #define MAXHELP2D 9
-char *Help2d[MAXHELP2D]=
+const char *Help2d[MAXHELP2D]=
         {
     " ' M = Memory",
     " ' 1 = Captions ",
@@ -143,7 +127,7 @@ char *Help2d[MAXHELP2D]=
         };
 
 #define MAXMODE32D 7
-char *Mode32d[MAXMODE32D]=
+const char *Mode32d[MAXMODE32D]=
         {
     "NONE",
     "SECTORS",
@@ -155,7 +139,7 @@ char *Mode32d[MAXMODE32D]=
     };
 
 #define MAXSKILL 5
-char *SKILLMODE[MAXSKILL]=
+const char *SKILLMODE[MAXSKILL]=
         {
     "BEGINNER",
     "EASY",
@@ -165,7 +149,7 @@ char *SKILLMODE[MAXSKILL]=
     };
 
 #define MAXNOSPRITES 4
-char *ALPHABEASTLOADOMAGA1[MAXNOSPRITES]=
+const char *ALPHABEASTLOADOMAGA1[MAXNOSPRITES]=
         {
     "DISPLAY ALL SPRITES",
     "NO EFFECTORS",
@@ -177,7 +161,7 @@ short MinRate=24, MinD=3;
 // CTW - MODIFICATION
 // Good to know Allen has changed in all these years. ;)
 // CTW END - MODIFICATION
-char *Slow[8]=
+const char *Slow[8]=
         {
         "SALES = 0,000,000  ***********************",
         "100% OF NOTHING IS !! ********************",
@@ -190,7 +174,7 @@ char *Slow[8]=
     };
 
 #define MAXHELP3D 15
-char *Help3d[MAXHELP3D]=
+const char *Help3d[MAXHELP3D]=
         {
     "3D KEYS HELP",
         " ",
@@ -221,24 +205,24 @@ static short curwall=0,wallpicnum=0,curwallnum=0;
 static short cursprite=0,curspritenum=0;
 static short cursector_lotag=0,cursectornum=0;
 static short search_lotag=0,search_hitag=0;
-static char wallsprite=0;
-static char helpon=0;
-static char on2d3d=0;
+static unsigned char wallsprite=0;
+static unsigned char helpon=0;
+static unsigned char on2d3d=0;
 //static char onwater=0;
-static char onnames=4;
-static char usedcount=0;
-long mousxplc,mousyplc;
-long ppointhighlight;
+static unsigned char onnames=4;
+static unsigned char usedcount=0;
+int mousxplc,mousyplc;
+int ppointhighlight;
 static int counter=0;
-char nosprites=0,purpleon=0,skill=4;
-char framerateon=1,tabgraphic=0;
+unsigned char nosprites=0,purpleon=0,skill=4;
+unsigned char framerateon=1,tabgraphic=0;
 
 
-static char sidemode=0;
-extern long vel, svel, hvel, angvel;
-long xvel, yvel, timoff;
+static unsigned char sidemode=0;
+extern int vel, svel, hvel, angvel;
+int xvel, yvel, timoff;
 
-static char once=0;
+static unsigned char once=0;
 
 
 
@@ -252,15 +236,7 @@ void SetBOSS1Palette();
 void SetSLIMEPalette();
 void SetWATERPalette();
 void SetGAMEPalette();
-void kensetpalette(char *vgapal);
-
-/*
-#pragma aux mulscale =\
-        "imul ebx",\
-        "shrd eax, edx, cl",\
-        parm [eax][ebx][ecx]\
-        modify [edx]\
-*/
+void kensetpalette(unsigned char *vgapal);
 
 void ExtPreLoadMap(void)
 {
@@ -268,8 +244,8 @@ void ExtPreLoadMap(void)
 
 void ExtLoadMap(const char *mapname)
 {
-	long i;
-	long sky=0;
+	int i;
+	int sky=0;
 	int j;
 
 	char title[256];
@@ -338,14 +314,14 @@ void ExtLoadMap(const char *mapname)
 	parallaxtype=0;
 }
 
-void overwritesprite (long thex, long they, short tilenum,signed char shade, char stat, char dapalnum)
+void overwritesprite (int thex, int they, short tilenum,signed char shade, unsigned char stat, unsigned char dapalnum)
 {
         rotatesprite(thex<<16,they<<16,65536L,(stat&8)<<7,tilenum,shade,dapalnum,
                 (((stat&1)^1)<<4)+(stat&2)+((stat&4)>>2)+(((stat&16)>>2)^((stat&8)>>1)),
                 windowx1,windowy1,windowx2,windowy2);
 }
 
-void putsprite (long thex, long they, long zoom, short rot, short tilenum, signed char shade, char dapalnum)
+void putsprite (int thex, int they, int zoom, short rot, short tilenum, signed char shade, unsigned char dapalnum)
 {char stat=0;
     rotatesprite(thex<<16,they<<16,65536L-zoom,(rot+(stat&8))<<7,tilenum,shade,dapalnum,
                 (((stat&1)^1)<<4)+(stat&2)+((stat&4)>>2)+(((stat&16)>>2)^((stat&8)>>1)),
@@ -398,7 +374,7 @@ const char *ExtGetSectorCaption(short sectnum)
 
 const char *ExtGetWallCaption(short wallnum)
 {
-    long i=0;
+    int i=0;
 
     if(!(onnames==2 || onnames==4))
     {
@@ -607,7 +583,7 @@ const char *ExtGetSpriteCaption(short spritenum)
 } //end
 
 //printext16 parameters:
-//printext16(long xpos, long ypos, short col, short backcol,
+//printext16(int xpos, int ypos, short col, short backcol,
 //           char name[82], char fontsize)
 //  xpos 0-639   (top left)
 //  ypos 0-479   (top left)
@@ -617,7 +593,7 @@ const char *ExtGetSpriteCaption(short spritenum)
 //  fontsize 0=8*8, 1=3*5
 
 //drawline16 parameters:
-// drawline16(long x1, long y1, long x2, long y2, char col)
+// drawline16(int x1, int y1, int x2, int y2, char col)
 //  x1, x2  0-639
 //  y1, y2  0-143  (status bar is 144 high, origin is top-left of STATUS BAR)
 //  col     0-15
@@ -1169,7 +1145,7 @@ void Show2dText(char *name)
 {
  int i,fp;
  int t;
- char x=0,y=4,xmax=0,xx=0,col=0;
+ unsigned char x=0,y=4,xmax=0,xx=0,col=0;
  clearmidstatbar16();
  if((fp=kopen4load(name,0)) == -1)
  {begindrawing();
@@ -1203,7 +1179,7 @@ void Show2dText(char *name)
 void Show3dText(char *name)
 {
  int i,fp;
- char x=0,y=4,xmax=0,xx=0,col=0;
+ unsigned char x=0,y=4,xmax=0,xx=0,col=0;
  int t;
  if((fp=kopen4load(name,0)) == -1)
  {
@@ -1238,7 +1214,7 @@ void ShowHelpText(char *name)
 {
     BFILE *fp;
     int i,t;
-    char x=0,y=4,xmax=0,xx=0,col=0;
+    unsigned char x=0,y=4,xmax=0,xx=0,col=0;
     if((fp=fopenfrompath("helpdoc.txt","rb")) == NULL)
     {
 	    begindrawing();
@@ -1333,12 +1309,12 @@ void SpriteName(short spritenum, char *lo2)
     Bsprintf(lo2,names[sprite[spritenum].picnum]);
 }// end SpriteName
 
-char GAMEpalette[768];
-char WATERpalette[768];
-char SLIMEpalette[768];
-char TITLEpalette[768];
-char REALMSpalette[768];
-char BOSS1palette[768];
+unsigned char GAMEpalette[768];
+unsigned char WATERpalette[768];
+unsigned char SLIMEpalette[768];
+unsigned char TITLEpalette[768];
+unsigned char REALMSpalette[768];
+unsigned char BOSS1palette[768];
 
 void ReadGamePalette()
 {
@@ -1353,14 +1329,14 @@ void ReadGamePalette()
 void ReadPaletteTable()
 {
  int i,j,fp;
- char num_tables,lookup_num;
+ unsigned char num_tables,lookup_num;
  if((fp=kopen4load("lookup.dat",0)) == -1) return;
  kread(fp,&num_tables,1);
  for(j=0;j<num_tables;j++)
  {
   kread(fp,&lookup_num,1);
   kread(fp,tempbuf,256);
-  makepalookup(lookup_num,tempbuf,0,0,0,1);
+  makepalookup(lookup_num,(unsigned char *)tempbuf,0,0,0,1);
  }
  kread(fp,WATERpalette,768);
  kread(fp,SLIMEpalette,768);
@@ -1373,7 +1349,7 @@ void ReadPaletteTable()
 
 void Keys3d(void)
 {
-	long i,count,rate,nexti;
+	int i,count,rate,nexti;
 	short statnum=0;
 
 //	DoWater(horiz);
@@ -1384,17 +1360,17 @@ void Keys3d(void)
 		rate=(120<<4)/(i-clockval[clockcnt]);
 		if(framerateon)
 		{
-			Bsprintf(tempbuf,"%ld",rate);
+			Bsprintf(tempbuf,"%d",rate);
 #ifdef VULGARITY
 			if(rate<MinRate)
 			{
-				Bsprintf(tempbuf,"%ld WARNING : %s",rate,Slow[rate/MinD]);
+				Bsprintf(tempbuf,"%d WARNING : %s",rate,Slow[rate/MinD]);
 				begindrawing(); printext256(0*8,0*8,255,-1,tempbuf,1); enddrawing();
 			}
 			else
 #endif
 			{
-				Bsprintf(tempbuf,"%ld",rate);
+				Bsprintf(tempbuf,"%d",rate);
 				begindrawing(); printext256(0*8,0*8,15,-1,tempbuf,1); enddrawing();
 			}
 		}
@@ -1903,7 +1879,7 @@ char *startwin_labeltext = "Starting Build Editor for Duke Nukem 3D...";
 
 int ExtInit(void)
 {
-    long fil, rv = 0;
+    int fil, rv = 0;
     char *duke3dgrp = "duke3d.grp";
 
     /*    
@@ -2018,7 +1994,7 @@ void ExtUnInit(void)
 	writesetup("build.cfg");
 }
 
-static char lockbyte4094;
+static unsigned char lockbyte4094;
 void ExtPreCheckKeys(void) // just before drawrooms
 {
         if (qsetmode == 200)    //In 3D mode
@@ -2028,7 +2004,7 @@ void ExtPreCheckKeys(void) // just before drawrooms
                 {
                         lockbyte4094 = 1;
                         if (waloff[4094] == 0)
-                                allocache(&waloff[4094],320L*200L,&lockbyte4094);
+                                allocache((void **)&waloff[4094],320L*200L,&lockbyte4094);
                         setviewtotile(4094,320L,200L);
                         searchx ^= searchy; searchy ^= searchx; searchx ^= searchy;
                         searchx = ydim-1-searchx;
@@ -2038,7 +2014,7 @@ void ExtPreCheckKeys(void) // just before drawrooms
 
 void ExtAnalyzeSprites(void)
 {
-        long i, j, k;
+        int i, j, k;
         spritetype *tspr;
     char frames=0;
 
@@ -2153,7 +2129,7 @@ int intro=0;
 
 void ExtCheckKeys(void)
 {
-	long i,count,nexti;
+	int i,count,nexti;
 	short statnum=0;
 	if (qsetmode == 200)    //In 3D mode
 	{
@@ -2219,12 +2195,12 @@ void ExtCheckKeys(void)
 			printext256(70*8+1,2*8+1,0,-1,tempbuf,1);
 			printext256(70*8,2*8,15,-1,tempbuf,1);
 
-			Bsprintf(tempbuf,"USED = %ld",count);
+			Bsprintf(tempbuf,"USED = %d",count);
 			printext256(70*8+1,3*8+1,0,-1,tempbuf,1);
 			printext256(70*8,3*8,15,-1,tempbuf,1);
 
 			count=ActorMem(temppicnum);
-			Bsprintf(tempbuf,"MEM  = %ld",count);
+			Bsprintf(tempbuf,"MEM  = %d",count);
 			printext256(70*8+1,4*8+1,0,-1,tempbuf,1);
 			printext256(70*8,4*8,15,-1,tempbuf,1);
 			enddrawing();
@@ -2238,8 +2214,8 @@ void ExtCheckKeys(void)
 
 void faketimerhandler(void)
 {
-  long i, j, dax, day, dist;
-        long hiz, hihit, loz, lohit, oposx, oposy;
+  int i, j, dax, day, dist;
+        int hiz, hihit, loz, lohit, oposx, oposy;
         short hitwall, daang;
 
     counter++; if(counter>=5) counter=0;
@@ -2270,8 +2246,8 @@ void faketimerhandler(void)
                 if (yvel > 0) yvel--;
 
                 i = 4-keystatus[buildkeys[4]];
-                xvel += mulscale(vel,(long)sintable[(ang+512)&2047],i);
-                yvel += mulscale(vel,(long)sintable[ang&2047],i);
+                xvel += mulscale(vel,(int)sintable[(ang+512)&2047],i);
+                yvel += mulscale(vel,(int)sintable[ang&2047],i);
 
                 if (((daang-ang)&2047) < 1024)
                         ang = ((ang+((((daang-ang)&2047)+24)>>4))&2047);
@@ -2410,10 +2386,10 @@ void SetGAMEPalette()
  kensetpalette(GAMEpalette);
 }
 
-void kensetpalette(char *vgapal)
+void kensetpalette(unsigned char *vgapal)
 {
-        long i;
-        char vesapal[1024];
+        int i;
+        unsigned char vesapal[1024];
 
         for(i=0;i<256;i++)
         {
@@ -2427,7 +2403,7 @@ void kensetpalette(char *vgapal)
 
 void SearchSectorsForward()
 {
- long ii=0;
+ int ii=0;
  if(cursector_lotag!=0)
  {
      if(cursectornum<MAXSECTORS) cursectornum++;
@@ -2450,7 +2426,7 @@ void SearchSectorsForward()
 
 void SearchSectorsBackward()
 {
- long ii=0;
+ int ii=0;
  if(cursector_lotag!=0)
  {
      if(cursectornum>0) cursectornum--;

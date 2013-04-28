@@ -1,3 +1,4 @@
+#include "compat.h"
 #include "sdlayer.h"
 
 static unsigned int sdlappicon_pixels[] = {

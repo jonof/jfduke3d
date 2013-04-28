@@ -7824,10 +7824,10 @@ if (!NAM && VOLUMEALL) {
     {
         initprintf("Failure setting video mode %dx%dx%d %s! Attempting safer mode...\n",
                 ScreenWidth,ScreenHeight,ScreenBPP,ScreenMode?"fullscreen":"windowed");
-        ScreenMode = 0;     // JBF: was 2
-        ScreenWidth = 320;
-        ScreenHeight = 240; // JBF: was 200
-    ScreenBPP = 8;
+        ScreenMode = 0;
+        ScreenWidth = 640;
+        ScreenHeight = 480;
+        ScreenBPP = 8;
         setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP);
     }
 
