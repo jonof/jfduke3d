@@ -173,10 +173,12 @@ void setgamepalette(struct player_struct *player, unsigned char *pal, int set)
 
     if (pal == palette || pal == waterpal || pal == slimepal) {
         // only reset the palette to normal if the previous one wasn't handled by tinting
+        polymosttexfullbright = 240;
         if (player->palette != palette && player->palette != waterpal && player->palette != slimepal)
             setbrightness(ud.brightness>>2, palette, set);
         else setpalettefade(0,0,0,0);
     } else {
+        polymosttexfullbright = 256;
         setbrightness(ud.brightness>>2, pal, set);
     }
     player->palette = pal;
@@ -7400,8 +7402,6 @@ void Startup(void)
 {
     int i;
 
-    polymosttexfullbright = 240;
-    
     if (initengine()) {
        wm_msgbox("Build Engine Initialisation Error",
                "There was a problem initialising the Build engine: %s", engineerrstr);
