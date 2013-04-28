@@ -357,13 +357,13 @@ int keyword(void)
     i = 0;
     while( isaltok(*temptextptr) )
     {
-        tempbuf[i] = *(temptextptr++);
+        buf[i] = *(temptextptr++);
         i++;
     }
-    tempbuf[i] = 0;
+    buf[i] = 0;
 
     for(i=0;i<NUMKEYWORDS;i++)
-        if( strcmp( tempbuf,keyw[i]) == 0 )
+        if( strcmp( buf,keyw[i]) == 0 )
             return i;
 
     return -1;
@@ -384,14 +384,14 @@ int transword(void) //Returns its code #
     l = 0;
     while( isaltok(*(textptr+l)) )
     {
-        tempbuf[l] = textptr[l];
+        buf[l] = textptr[l];
         l++;
     }
-    tempbuf[l] = 0;
+    buf[l] = 0;
 
     for(i=0;i<NUMKEYWORDS;i++)
     {
-        if( strcmp( tempbuf,keyw[i]) == 0 )
+        if( strcmp( buf,keyw[i]) == 0 )
         {
             *scriptptr = i;
             textptr += l;
@@ -402,17 +402,17 @@ int transword(void) //Returns its code #
 
     textptr += l;
 
-    if( tempbuf[0] == '{' && tempbuf[1] != 0)
-        initprintf("  * ERROR!(L%d %s) Expecting a SPACE or CR between '{' and '%s'.\n",line_number,compilefile,tempbuf+1);
-    else if( tempbuf[0] == '}' && tempbuf[1] != 0)
-        initprintf("  * ERROR!(L%d %s) Expecting a SPACE or CR between '}' and '%s'.\n",line_number,compilefile,tempbuf+1);
-    else if( tempbuf[0] == '/' && tempbuf[1] == '/' && tempbuf[2] != 0 )
-        initprintf("  * ERROR!(L%d %s) Expecting a SPACE between '//' and '%s'.\n",line_number,compilefile,tempbuf+2);
-    else if( tempbuf[0] == '/' && tempbuf[1] == '*' && tempbuf[2] != 0 )
-        initprintf("  * ERROR!(L%d %s) Expecting a SPACE between '/*' and '%s'.\n",line_number,compilefile,tempbuf+2);
-    else if( tempbuf[0] == '*' && tempbuf[1] == '/' && tempbuf[2] != 0 )
-        initprintf("  * ERROR!(L%d %s) Expecting a SPACE between '*/' and '%s'.\n",line_number,compilefile,tempbuf+2);
-    else initprintf("  * ERROR!(L%d %s) Expecting key word, but found '%s'.\n",line_number,compilefile,tempbuf);
+    if( buf[0] == '{' && buf[1] != 0)
+        initprintf("  * ERROR!(L%d %s) Expecting a SPACE or CR between '{' and '%s'.\n",line_number,compilefile,buf+1);
+    else if( buf[0] == '}' && buf[1] != 0)
+        initprintf("  * ERROR!(L%d %s) Expecting a SPACE or CR between '}' and '%s'.\n",line_number,compilefile,buf+1);
+    else if( buf[0] == '/' && buf[1] == '/' && buf[2] != 0 )
+        initprintf("  * ERROR!(L%d %s) Expecting a SPACE between '//' and '%s'.\n",line_number,compilefile,buf+2);
+    else if( buf[0] == '/' && buf[1] == '*' && buf[2] != 0 )
+        initprintf("  * ERROR!(L%d %s) Expecting a SPACE between '/*' and '%s'.\n",line_number,compilefile,buf+2);
+    else if( buf[0] == '*' && buf[1] == '/' && buf[2] != 0 )
+        initprintf("  * ERROR!(L%d %s) Expecting a SPACE between '*/' and '%s'.\n",line_number,compilefile,buf+2);
+    else initprintf("  * ERROR!(L%d %s) Expecting key word, but found '%s'.\n",line_number,compilefile,buf);
 
     error++;
     return -1;
@@ -434,23 +434,23 @@ int transnum(int type)
     l = 0;
     while( isaltok(*(textptr+l)) )
     {
-        tempbuf[l] = textptr[l];
+        buf[l] = textptr[l];
         l++;
     }
-    tempbuf[l] = 0;
+    buf[l] = 0;
 
     for(i=0;i<NUMKEYWORDS;i++)
-        if( strcmp( tempbuf,keyw[i]) == 0 )
+        if( strcmp( buf,keyw[i]) == 0 )
         {
             error++;
-            initprintf("  * ERROR!(L%d %s) Symbol '%s' is a key word.\n",line_number,compilefile,tempbuf);
+            initprintf("  * ERROR!(L%d %s) Symbol '%s' is a key word.\n",line_number,compilefile,buf);
             textptr+=l;
         }
 
 
     for(i=0;i<labelcnt;i++)
     {
-        if( !Bstrcmp(tempbuf,label+(i * MAXLABELLEN)) )
+        if( !Bstrcmp(buf,label+(i * MAXLABELLEN)) )
         {
             char el[64], gl[64];
 
@@ -470,7 +470,7 @@ int transnum(int type)
 
     if( isdigit(*textptr) == 0 && *textptr != '-')
     {
-        initprintf("  * ERROR!(L%d %s) Parameter '%s' is undefined.\n",line_number,compilefile,tempbuf);
+        initprintf("  * ERROR!(L%d %s) Parameter '%s' is undefined.\n",line_number,compilefile,buf);
         error++;
         textptr+=l;
         return -1;  // error!
@@ -514,9 +514,9 @@ char parsecommand(void)
     char done;
 
     if ((unsigned)(scriptptr-script) > MAXSCRIPTSIZE) {
-        Bsprintf(tempbuf,"FATAL ERROR: Compiled size of CON code exceeds maximum size!\n"
+        Bsprintf(buf,"FATAL ERROR: Compiled size of CON code exceeds maximum size!\n"
             "Please notify JonoF so the maximum may be increased in a future release.");
-        gameexit(tempbuf);
+        gameexit(buf);
     }
 
     if( error > 12 || ( *textptr == '\0' ) || ( *(textptr+1) == '\0' ) ) return 1;
@@ -794,10 +794,10 @@ char parsecommand(void)
             j = 0;
             while( isaltok(*textptr) )
             {
-                tempbuf[j] = *(textptr++);
+                buf[j] = *(textptr++);
                 j++;
             }
-            tempbuf[j] = '\0';
+            buf[j] = '\0';
 
             {
                 short temp_line_number;
@@ -806,11 +806,11 @@ char parsecommand(void)
                 char parentcompilefile[255];
                 int fp;
 
-                fp = kopen4load(tempbuf,loadfromgrouponly);
+                fp = kopen4load(buf,loadfromgrouponly);
                 if(fp < 0)
                 {
                     error++;
-                    initprintf("  * ERROR!(L%d %s) Could not find '%s'.\n",line_number,compilefile,tempbuf);
+                    initprintf("  * ERROR!(L%d %s) Could not find '%s'.\n",line_number,compilefile,buf);
                     return 0;
                 }
 
@@ -821,11 +821,11 @@ char parsecommand(void)
                     kclose(fp);
                     error++;
                     initprintf("  * ERROR!(L%d %s) Could not allocate %d bytes to include '%s'.\n",
-                        line_number,compilefile,j,tempbuf);
+                        line_number,compilefile,j,buf);
                     return 0;
                 }
 
-                initprintf("Including: %s (%d bytes)\n",tempbuf, j);
+                initprintf("Including: %s (%d bytes)\n",buf, j);
                 kread(fp, mptr, j);
                 kclose(fp);
                 mptr[j] = 0;
@@ -833,7 +833,7 @@ char parsecommand(void)
                 origtptr = textptr;
 
                 strcpy(parentcompilefile, compilefile);
-                strcpy(compilefile, tempbuf);
+                strcpy(compilefile, buf);
                 temp_line_number = line_number;
                 line_number = 1;
                 temp_ifelse_check = checking_ifelse;
@@ -1643,13 +1643,13 @@ void loadefs(const char *filenam)
         if( loadfromgrouponly == 1 )
             gameexit("\nMissing con file(s).");
         else {
-            sprintf(tempbuf,
+            sprintf(buf,
                 "CON file \"%s\" was not found.\n"
                 "\n"
                 "Check that the \"%s\" file is in the JFDuke3D directory "
                 "and try running the game again.",
                 filenam, defaultduke3dgrp);
-            gameexit(tempbuf);
+            gameexit(buf);
             return;
         }
         
@@ -1663,8 +1663,8 @@ void loadefs(const char *filenam)
 
     mptr = Bmalloc(fs+1);
     if (!mptr) {
-        Bsprintf(tempbuf,"Failed allocating %d byte CON text buffer.", fs+1);
-        gameexit(tempbuf);
+        Bsprintf(buf,"Failed allocating %d byte CON text buffer.", fs+1);
+        gameexit(buf);
     }
     mptr[fs] = 0;
         

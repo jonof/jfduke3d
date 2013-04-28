@@ -94,7 +94,7 @@ static int32 setupread = 0;
 ===================
 */
 
-int32 CONFIG_FunctionNameToNum( char * func )
+int32 CONFIG_FunctionNameToNum( const char * func )
    {
    int32 i;
 
@@ -116,7 +116,7 @@ int32 CONFIG_FunctionNameToNum( char * func )
 ===================
 */
 
-char * CONFIG_FunctionNumToName( int32 func )
+const char * CONFIG_FunctionNumToName( int32 func )
    {
    if ((unsigned)func >= (unsigned)NUMGAMEFUNCTIONS)
       {
@@ -137,7 +137,7 @@ char * CONFIG_FunctionNumToName( int32 func )
 */
 
 
-int32 CONFIG_AnalogNameToNum( char * func )
+int32 CONFIG_AnalogNameToNum( const char * func )
    {
 
    if (!Bstrcasecmp(func,"analog_turning"))
@@ -161,7 +161,7 @@ int32 CONFIG_AnalogNameToNum( char * func )
    }
 
 
-char * CONFIG_AnalogNumToName( int32 func )
+const char * CONFIG_AnalogNumToName( int32 func )
    {
    switch (func) {
     case analog_turning:

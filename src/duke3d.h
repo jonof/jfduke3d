@@ -292,13 +292,13 @@ extern char myname[32];
 
 struct user_defs
 {
-    char god,warp_on,cashman,eog,showallmap;
-    char show_help,scrollmode,clipping;
+    unsigned char god,warp_on,cashman,eog,showallmap;
+    unsigned char show_help,scrollmode,clipping;
     char user_name[MAXPLAYERS][32];
     char ridecule[10][40];
     char savegame[10][22];
     char pwlockout[128],rtsname[128];
-    char overhead_on,last_overhead,showweapons;
+    unsigned char overhead_on,last_overhead,showweapons;
 
     short pause_on,from_bonus;
     short camerasprite,last_camsprite;
@@ -372,28 +372,30 @@ struct player_struct
     int scream_voice;
 
     unsigned char gm;
-    char on_warping_sector,footprintcount;
-    char hbomb_on,jumping_toggle,rapid_fire_hold,on_ground;
-    char name[32],inven_icon,buttonpalette;
+    unsigned char on_warping_sector,footprintcount;
+    unsigned char hbomb_on,jumping_toggle,rapid_fire_hold,on_ground;
+    char name[32];
+    unsigned char inven_icon,buttonpalette;
 
-    char jetpack_on,spritebridge,lastrandomspot;
-    char scuba_on,footprintpal,heat_on;
+    unsigned char jetpack_on,spritebridge,lastrandomspot;
+    unsigned char scuba_on,footprintpal,heat_on;
 
-    char  holster_weapon;
+    unsigned char  holster_weapon;
     unsigned char falling_counter;
-    char  gotweapon[MAX_WEAPONS],refresh_inventory;
+    unsigned char  gotweapon[MAX_WEAPONS],refresh_inventory;
     unsigned char *palette;
 
-    char toggle_key_flag,knuckle_incs; // ,select_dir;
-    char walking_snd_toggle, palookup, hard_landing;
-    char /*fire_flag,*/pals[3];
-    char return_to_center;
+    unsigned char toggle_key_flag,knuckle_incs; // ,select_dir;
+    unsigned char walking_snd_toggle, palookup, hard_landing;
+    unsigned char /*fire_flag,*/pals[3];
+    unsigned char return_to_center;
 
     int max_secret_rooms,secret_rooms,max_actors_killed,actors_killed;
 };
 
-extern char tempbuf[2048];
+extern unsigned char tempbuf[2048];
 extern unsigned char packbuf[576];
+extern char buf[1024];  //use this for string prep
 
 extern int gc,max_player_health,max_armour_amount,max_ammo_amount[MAX_WEAPONS];
 
@@ -407,18 +409,17 @@ extern struct player_orig po[MAXPLAYERS];
 extern struct user_defs ud;
 extern short int global_random;
 extern int scaredfallz;
-extern char buf[1024]; //My own generic input buffer
 
 extern char fta_quotes[NUMOFFIRSTTIMEACTIVE][64];
-extern char scantoasc[128],ready2send;
-extern char scantoascwithshift[128];
+extern unsigned char scantoasc[128],ready2send;
+extern unsigned char scantoascwithshift[128];
 
 //extern fx_device device;
 extern SAMPLE Sound[ NUM_SOUNDS ];
 extern int32 VoiceToggle,AmbienceToggle;
 extern SOUNDOWNER SoundOwner[NUM_SOUNDS][4];
 
-extern char playerreadyflag[MAXPLAYERS],playerquitflag[MAXPLAYERS];
+extern unsigned char playerreadyflag[MAXPLAYERS],playerquitflag[MAXPLAYERS];
 extern char sounds[NUM_SOUNDS][14];
 
 	// JBF 20040531: adding 16 extra to the script so we have some leeway
@@ -426,7 +427,8 @@ extern char sounds[NUM_SOUNDS][14];
 extern int script[MAXSCRIPTSIZE+16],*scriptptr,*insptr;
 extern int *labelcode,labelcnt;
 extern char *label,*labeltype;
-extern char *textptr,error,warning,killit_flag;
+extern char *textptr;
+extern int error,warning,killit_flag;
 extern int *actorscrptr[MAXTILES],*parsing_actor;
 extern char actortype[MAXTILES];
 extern char *music_pointer;
@@ -444,7 +446,7 @@ extern char inspace(short sectnum);
 
 struct weaponhit
 {
-    char cgg;
+    unsigned char cgg;
     short picnum,ang,extra,owner,movflag;
     short tempang,actorstayput,dispicnum;
     short timetosleep;
@@ -465,7 +467,7 @@ extern short screenpeek;
 extern int current_menu;
 extern int tempwallptr,animatecnt;
 extern int lockclock;
-extern char display_mirror,loadfromgrouponly,rtsplaying;
+extern unsigned char display_mirror,loadfromgrouponly,rtsplaying;
 
 extern int movefifoend[MAXPLAYERS], groupfile;
 extern int ototalclock;
@@ -484,9 +486,9 @@ extern short mirrorwall[64], mirrorsector[64], mirrorcnt;
 
 #include "funct.h"
 
-extern char screencapt;
+extern unsigned char screencapt;
 extern short soundps[NUM_SOUNDS],soundpe[NUM_SOUNDS],soundvo[NUM_SOUNDS];
-extern char soundpr[NUM_SOUNDS],soundm[NUM_SOUNDS];
+extern unsigned char soundpr[NUM_SOUNDS],soundm[NUM_SOUNDS];
 extern int soundsiz[NUM_SOUNDS];
 extern char level_names[44][33];
 extern int partime[44],designertime[44];
@@ -496,15 +498,14 @@ extern char level_file_names[44][128];
 
 extern int32 SoundToggle,MusicToggle;
 extern short last_threehundred,lastsavedpos;
-extern char restorepalette;
+extern unsigned char restorepalette;
 
 extern short buttonstat;
 extern int cachecount;
 extern char boardfilename[BMAX_PATH];
 extern unsigned char waterpal[768],slimepal[768],titlepal[768],drealms[768],endingpal[768];
 extern char betaname[80];
-extern char cachedebug,earthquaketime;
-extern char networkmode;
+extern unsigned char cachedebug,earthquaketime;
 extern unsigned char lumplockbyte[11];
 
 extern char defaultduke3dgrp[BMAX_PATH];
@@ -513,7 +514,7 @@ extern char defaultduke3dgrp[BMAX_PATH];
 extern int myx, omyx, myxvel, myy, omyy, myyvel, myz, omyz, myzvel;
 extern short myhoriz, omyhoriz, myhorizoff, omyhorizoff, globalskillsound;
 extern short myang, omyang, mycursectnum, myjumpingcounter;
-extern char myjumpingtoggle, myonground, myhardlanding,myreturntocenter;
+extern unsigned char myjumpingtoggle, myonground, myhardlanding,myreturntocenter;
 extern int fakemovefifoplc;
 extern int myxbak[MOVEFIFOSIZ], myybak[MOVEFIFOSIZ], myzbak[MOVEFIFOSIZ];
 extern int myhorizbak[MOVEFIFOSIZ];
@@ -527,7 +528,7 @@ typedef struct
 {
         short frag[MAXPLAYERS], got_access, last_extra, shield_amount, curr_weapon;
         short ammo_amount[MAX_WEAPONS], holoduke_on;
-        char gotweapon[MAX_WEAPONS], inven_icon, jetpack_on, heat_on;
+        unsigned char gotweapon[MAX_WEAPONS], inven_icon, jetpack_on, heat_on;
         short firstaid_amount, steroids_amount, holoduke_amount, jetpack_amount;
         short heat_amount, scuba_amount, boot_amount;
         short last_weapon, weapon_pos, kickback_pic;
@@ -537,15 +538,15 @@ typedef struct
 extern STATUSBARTYPE sbar;
 extern short frags[MAXPLAYERS][MAXPLAYERS];
 extern int cameradist, cameraclock, dukefriction,show_shareware;
-extern char networkmode, movesperpacket;
-extern char gamequit;
+extern unsigned char networkmode, movesperpacket;
+extern unsigned char gamequit;
 
-extern char pus,pub,camerashitable,freezerhurtowner,lasermode;
-extern char syncstat, syncval[MAXPLAYERS][MOVEFIFOSIZ];
+extern unsigned char pus,pub,camerashitable,freezerhurtowner,lasermode;
+extern unsigned char syncstat, syncval[MAXPLAYERS][MOVEFIFOSIZ];
 extern signed char multiwho, multipos, multiwhat, multiflag;
 extern int syncvalhead[MAXPLAYERS], syncvaltail, syncvaltottail;
 extern int numfreezebounces,rpgblastradius,pipebombblastradius,tripbombblastradius,shrinkerblastradius,morterblastradius,bouncemineblastradius,seenineblastradius;
-extern char stereo,playerswhenstarted,everyothertime;
+extern unsigned char stereo,playerswhenstarted,everyothertime;
 extern int myminlag[MAXPLAYERS], mymaxlag, otherminlag, bufferjitter;
 
 extern int numinterpolations, startofdynamicinterpolations;
@@ -571,7 +572,7 @@ void onvideomodechange(int newmode);
 #define TILE_ANIM     (MAXTILES-4)
 #define TILE_VIEWSCR  (MAXTILES-5)
 
-extern char useprecache;
+extern unsigned char useprecache;
 
 #define NAM_GRENADE_LIFETIME	120
 #define NAM_GRENADE_LIFETIME_VAR	30

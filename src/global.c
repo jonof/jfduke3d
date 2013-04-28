@@ -27,8 +27,7 @@ Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
 
 #include "duke3d.h"
 
-char *mymembuf;
-char MusicPtr[72000*2];
+unsigned char MusicPtr[72000*2];
 
 short global_random;
 short neartagsector, neartagwall, neartagsprite;
@@ -50,10 +49,9 @@ short cyclers[MAXCYCLERS][6],numcyclers;
 
 char fta_quotes[NUMOFFIRSTTIMEACTIVE][64];
 
-char tempbuf[2048];
+unsigned char tempbuf[2048];
 unsigned char packbuf[576];
-
-char buf[1024];
+char buf[1024];     //use this for string prep
 
 short camsprite;
 short mirrorwall[64], mirrorsector[64], mirrorcnt;
@@ -70,7 +68,7 @@ char skill_names[5][33] = { "PIECE OF CAKE", "LET'S ROCK", "COME GET SOME", "DAM
 int soundsiz[NUM_SOUNDS];
 
 short soundps[NUM_SOUNDS],soundpe[NUM_SOUNDS],soundvo[NUM_SOUNDS];
-char soundm[NUM_SOUNDS],soundpr[NUM_SOUNDS];
+unsigned char soundm[NUM_SOUNDS],soundpr[NUM_SOUNDS];
 char sounds[NUM_SOUNDS][14];
 
 short title_zoom;
@@ -80,7 +78,7 @@ short title_zoom;
 SAMPLE Sound[ NUM_SOUNDS ];
 SOUNDOWNER SoundOwner[NUM_SOUNDS][4];
 
-char loadfromgrouponly=0,earthquaketime;
+unsigned char loadfromgrouponly=0,earthquaketime;
 int numplayersprites;
 
 int fricxv,fricyv;
@@ -88,8 +86,8 @@ struct player_orig po[MAXPLAYERS];
 struct player_struct ps[MAXPLAYERS];
 struct user_defs ud;
 
-char pus, pub;
-char syncstat, syncval[MAXPLAYERS][MOVEFIFOSIZ];
+unsigned char pus, pub;
+unsigned char syncstat, syncval[MAXPLAYERS][MOVEFIFOSIZ];
 int syncvalhead[MAXPLAYERS], syncvaltail, syncvaltottail;
 
 input sync[MAXPLAYERS], loc;
@@ -109,27 +107,29 @@ int movefifoend[MAXPLAYERS];
 
     //Game recording variables
 
-char playerreadyflag[MAXPLAYERS],ready2send;
-char playerquitflag[MAXPLAYERS];
+unsigned char playerreadyflag[MAXPLAYERS],ready2send;
+unsigned char playerquitflag[MAXPLAYERS];
 int vel, svel, angvel, horiz, ototalclock, respawnactortime=768, respawnitemtime=768, groupfile;
 
 int script[MAXSCRIPTSIZE+16];
 int *scriptptr,*insptr;
 int *labelcode,labelcnt;
 char *label,*labeltype;
-char *textptr,error,warning,killit_flag;
+char *textptr;
+int error,warning,killit_flag;
 int *actorscrptr[MAXTILES],*parsing_actor;
 char *music_pointer;
 char actortype[MAXTILES];
 
 
-char display_mirror,typebuf[41];
+unsigned char display_mirror;
+char typebuf[41];
 int typebuflen;
 
 char music_fn[4][11][13];
 unsigned char music_select;
 char env_music_fn[4][13];
-char rtsplaying;
+unsigned char rtsplaying;
 
 
 short weaponsandammosprites[15] = {
@@ -157,7 +157,7 @@ int myx, omyx, myxvel, myy, omyy, myyvel, myz, omyz, myzvel;
 short myhoriz, omyhoriz, myhorizoff, omyhorizoff;
 short myang, omyang, mycursectnum, myjumpingcounter,frags[MAXPLAYERS][MAXPLAYERS];
 
-char myjumpingtoggle, myonground, myhardlanding, myreturntocenter;
+unsigned char myjumpingtoggle, myonground, myhardlanding, myreturntocenter;
 signed char multiwho, multipos, multiwhat, multiflag;
 
 int fakemovefifoplc,movefifoplc;
@@ -165,8 +165,9 @@ int myxbak[MOVEFIFOSIZ], myybak[MOVEFIFOSIZ], myzbak[MOVEFIFOSIZ];
 int myhorizbak[MOVEFIFOSIZ],dukefriction = 0xcc00, show_shareware;
 
 short myangbak[MOVEFIFOSIZ];
-char myname[32],camerashitable,freezerhurtowner=0,lasermode=0;
-char networkmode = -1, movesperpacket = 1,gamequit = 0,everyothertime;
+char myname[32];
+unsigned char camerashitable,freezerhurtowner=0,lasermode=0;
+unsigned char networkmode = 255, movesperpacket = 1,gamequit = 0,everyothertime;
 int numfreezebounces=3,rpgblastradius,pipebombblastradius,tripbombblastradius,shrinkerblastradius,morterblastradius,bouncemineblastradius,seenineblastradius;
 STATUSBARTYPE sbar;
 

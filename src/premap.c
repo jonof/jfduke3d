@@ -30,9 +30,8 @@ Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
 
 extern unsigned char pow2char[];
 
-extern char everyothertime;
 static short which_palookup = 9;
-char useprecache = 1;
+unsigned char useprecache = 1;
 
 static void tloadtile(short tilenume, char type)
 {
@@ -344,8 +343,8 @@ void cacheit(void)
         lastpercent = percent;
         lastclock = totalclock;
 
-        sprintf(tempbuf,"Loading textures ... %d%%\n",percent);
-        dofrontscreens(tempbuf);
+        sprintf(buf,"Loading textures ... %d%%\n",percent);
+        dofrontscreens(buf);
     }
     }
 

@@ -48,7 +48,6 @@
 		AB69BD360A73C3EC00F3DCB8 /* game.osxmain.nib in Resources */ = {isa = PBXBuildFile; fileRef = AB69BD330A73C3EC00F3DCB8 /* game.osxmain.nib */; };
 		AB69BD370A73C3EC00F3DCB8 /* startwin.game.nib in Resources */ = {isa = PBXBuildFile; fileRef = AB69BD340A73C3EC00F3DCB8 /* startwin.game.nib */; };
 		AB8C5943101B826E00B42306 /* vorbis.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB8C5941101B826E00B42306 /* vorbis.framework */; };
-		AB8C595E101B838300B42306 /* ogg.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = AB8C5940101B826E00B42306 /* ogg.framework */; };
 		AB8C595F101B838600B42306 /* vorbis.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = AB8C5941101B826E00B42306 /* vorbis.framework */; };
 		ABB4AAD20C64BD9E00F28920 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL.framework */; };
 		ABB4AAD70C64BDC400F28920 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL.framework */; };
@@ -200,7 +199,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				AB8C595F101B838600B42306 /* vorbis.framework in CopyFiles */,
-				AB8C595E101B838300B42306 /* ogg.framework in CopyFiles */,
 				ABB4AAD20C64BD9E00F28920 /* SDL.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -234,7 +232,6 @@
 		AB69BD330A73C3EC00F3DCB8 /* game.osxmain.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = game.osxmain.nib; sourceTree = "<group>"; };
 		AB69BD340A73C3EC00F3DCB8 /* startwin.game.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = startwin.game.nib; sourceTree = "<group>"; };
 		AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = engine.xcodeproj; path = ../jfbuild/xcode/engine.xcodeproj; sourceTree = SOURCE_ROOT; };
-		AB8C5940101B826E00B42306 /* ogg.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ogg.framework; path = "../../jfaudiolib.git/third-party/ogg.framework"; sourceTree = SOURCE_ROOT; };
 		AB8C5941101B826E00B42306 /* vorbis.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vorbis.framework; path = "../jfaudiolib/third-party/vorbis.framework"; sourceTree = SOURCE_ROOT; };
 		ABD768D80A73CB63006C27C1 /* _control.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _control.h; sourceTree = "<group>"; };
 		ABD768D90A73CB63006C27C1 /* _scrplib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _scrplib.h; sourceTree = "<group>"; };
@@ -464,7 +461,6 @@
 		ABD769020A73CBC0006C27C1 /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				AB8C5940101B826E00B42306 /* ogg.framework */,
 				AB8C5941101B826E00B42306 /* vorbis.framework */,
 				AB2EA11F1012195E00DD2F1F /* AudioUnit.framework */,
 				ABD769300A73CE6D006C27C1 /* AppKit.framework */,

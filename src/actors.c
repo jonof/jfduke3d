@@ -5034,8 +5034,8 @@ void moveeffectors(void)   //STATNUM 3
 
                 if(s->owner == -1)
                 {
-                    Bsprintf(tempbuf,"Could not find any locators for SE# 6 and 14 with a hitag of %d.\n",t[3]);
-                    gameexit(tempbuf);
+                    Bsprintf(buf,"Could not find any locators for SE# 6 and 14 with a hitag of %d.\n",t[3]);
+                    gameexit(buf);
                 }
 
                 j = ldist(&sprite[s->owner],s);
@@ -6345,32 +6345,34 @@ void moveeffectors(void)   //STATNUM 3
                 break;
 
             case 21: // Cascading effect
-
+            {
+                int *lp;
                 if( t[0] == 0 ) break;
 
                 if( s->ang == 1536 )
-                    l = (long) &sc->ceilingz;   //XXXXXX
+                    lp = &sc->ceilingz;
                 else
-                    l = (long) &sc->floorz;
+                    lp = &sc->floorz;
 
                 if( t[0] == 1 ) //Decide if the s->sectnum should go up or down
                 {
-                    s->zvel = ksgn(s->z-*(long *)l) * (SP<<4);
+                    s->zvel = ksgn(s->z-(*lp)) * (SP<<4);
                     t[0]++;
                 }
 
                 if( sc->extra == 0 )
                 {
-                    *(long *)l += s->zvel;
+                    *lp += s->zvel;
 
-                    if(klabs(*(long *)l-s->z) < 1024)
+                    if(klabs((*lp)-s->z) < 1024)
                     {
-                        *(long *)l = s->z;
+                        *lp = s->z;
                         KILLIT(i); //All done
                     }
                 }
                 else sc->extra--;
                 break;
+            }
 
             case 22:
 

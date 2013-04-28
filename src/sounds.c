@@ -83,8 +83,8 @@ void SoundStartup( void )
   }
 
    if ( status != FX_Ok ) {
-	  sprintf(tempbuf, "Sound startup error: %s", FX_ErrorString( FX_Error ));
-	  gameexit(tempbuf);
+	  sprintf(buf, "Sound startup error: %s", FX_ErrorString( FX_Error ));
+	  gameexit(buf);
    }
 	
 	FXDevice = 0;
@@ -112,8 +112,8 @@ void SoundShutdown( void )
 
    status = FX_Shutdown();
    if ( status != FX_Ok ) {
-	  sprintf(tempbuf, "Sound shutdown error: %s", FX_ErrorString( FX_Error ));
-      gameexit(tempbuf);
+	  sprintf(buf, "Sound shutdown error: %s", FX_ErrorString( FX_Error ));
+      gameexit(buf);
    }
 }
 

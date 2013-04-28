@@ -2634,9 +2634,8 @@ void processinput(short snum)
 
                 if(myconnectindex == connecthead)
                 {
-                    sprintf(tempbuf,"frag %d killed %d\n",p->frag_ps+1,snum+1);
-                    sendscore(tempbuf);
-//                    printf(tempbuf);
+                    sprintf(buf,"frag %d killed %d\n",p->frag_ps+1,snum+1);
+                    sendscore(buf);
                 }
 
                 p->frag_ps = snum;
