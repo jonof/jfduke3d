@@ -2630,8 +2630,7 @@ void drawbackground(void)
     }
 
     y1 = 0; y2 = ydim;
-    //if( ready2send || ud.recstat == 2 )   // original
-    if ( (ready2send && ps[myconnectindex].gm == MODE_GAME) || ud.recstat == 2 )    // TerminX's solution
+    if ( (ready2send && ps[myconnectindex].gm == MODE_GAME) || ud.recstat == 2 )
     {
         if (ud.screen_size == 8)
             y1 = scale(ydim,200-scale(tilesizy[BOTTOMSTATUSBAR],ud.statusbarscale,100),200);
@@ -2668,21 +2667,20 @@ void drawbackground(void)
             for (x=0; x<xdim; x+=tilesizx[dapicnum])
                 rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,0,windowy2,xdim-1,y2-1);
     }
-     
-    // draw in the bits to the left and right of the non-fullsize status bar
-    if (ud.statusbarscale < 100) {
-        y1 = y2;
-        x2 = (xdim - scale(xdim,ud.statusbarscale,100)) >> 1;
-        x1 = xdim-x2; x1 -= x1%tilesizx[dapicnum];
-        for(y=y1-y1%tilesizy[dapicnum]; y<y2; y+=tilesizy[dapicnum])
-            for(x=0;x<x2 || x1+x<xdim; x+=tilesizx[dapicnum]) {
-                rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,0,y1,x2-1,ydim-1);
-                rotatesprite((x+x1)<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,xdim-x2,y1,xdim-1,ydim-1);
-            }
 
+    // draw in the bits to the left and right of the status bar
+    if (ud.screen_size >= 8) {
+        y1 = y2;
+        y2 = ydim-1;
+        x1 = 0;
+        x2 = xdim-1;
+        for(y=y1-y1%tilesizy[dapicnum]; y<y2; y+=tilesizy[dapicnum])
+            for(x=0;x<x2; x+=tilesizx[dapicnum]) {
+                rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,x1,y1,x2,y2);
+            }
     }
 
-     if(ud.screen_size > 8 && ( ready2send || ud.recstat == 2 ))
+     if(ud.screen_size > 8 && ((ready2send && ps[myconnectindex].gm == MODE_GAME) || ud.recstat == 2))
      {
           y = 0;
           if(ud.coop != 1)
@@ -2893,7 +2891,7 @@ void displayrooms(short snum,int smoothratio)
 
     if(pub > 0 || getrendermode() >= 3) // JBF 20040101: redraw background always
     {
-        if(ud.screen_size > 8 || (ud.screen_size == 8 && ud.statusbarscale<100)) drawbackground();
+        if(ud.screen_size >= 8) drawbackground();
         pub = 0;
     }
 
