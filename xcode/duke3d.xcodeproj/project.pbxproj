@@ -29,8 +29,9 @@
 		AB0FFB8E172B98B500400B2B /* libeditorsupp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB0FFB6E172B981400400B2B /* libeditorsupp.a */; };
 		AB1DE7EF10199F6E00657779 /* GrpFile.game.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1DE7EE10199F6E00657779 /* GrpFile.game.m */; };
 		AB1DE7F610199FD200657779 /* GameListSource.game.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1DE7F510199FD200657779 /* GameListSource.game.m */; };
+		AB23F52017355B2B002B565F /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB23F51F17355B2B002B565F /* AudioToolbox.framework */; };
+		AB23F54517355B72002B565F /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB2EA11F1012195E00DD2F1F /* AudioUnit.framework */; };
 		AB2EA109101215AE00DD2F1F /* sounds.c in Sources */ = {isa = PBXBuildFile; fileRef = AB2EA108101215AE00DD2F1F /* sounds.c */; };
-		AB2EA1201012195E00DD2F1F /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB2EA11F1012195E00DD2F1F /* AudioUnit.framework */; };
 		AB69BD220A73C36100F3DCB8 /* actors.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD120A73C36100F3DCB8 /* actors.c */; };
 		AB69BD230A73C36100F3DCB8 /* config.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD130A73C36100F3DCB8 /* config.c */; };
 		AB69BD240A73C36100F3DCB8 /* game.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD140A73C36100F3DCB8 /* game.c */; };
@@ -210,6 +211,7 @@
 		AB1DE7EE10199F6E00657779 /* GrpFile.game.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GrpFile.game.m; sourceTree = "<group>"; };
 		AB1DE7F410199FD200657779 /* GameListSource.game.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameListSource.game.h; sourceTree = "<group>"; };
 		AB1DE7F510199FD200657779 /* GameListSource.game.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameListSource.game.m; sourceTree = "<group>"; };
+		AB23F51F17355B2B002B565F /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = /System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<absolute>"; };
 		AB2EA0F21012147800DD2F1F /* jfaudiolib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jfaudiolib.xcodeproj; path = ../jfaudiolib/jfaudiolib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		AB2EA108101215AE00DD2F1F /* sounds.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sounds.c; sourceTree = "<group>"; };
 		AB2EA11F1012195E00DD2F1F /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = /System/Library/Frameworks/AudioUnit.framework; sourceTree = "<absolute>"; };
@@ -291,8 +293,9 @@
 				AB0FFB85172B98A400400B2B /* libjfaudiolib.a in Frameworks */,
 				ABD769040A73CBDE006C27C1 /* SDL.framework in Frameworks */,
 				ABD769310A73CE6D006C27C1 /* AppKit.framework in Frameworks */,
-				AB2EA1201012195E00DD2F1F /* AudioUnit.framework in Frameworks */,
 				AB8C5943101B826E00B42306 /* vorbis.framework in Frameworks */,
+				AB23F52017355B2B002B565F /* AudioToolbox.framework in Frameworks */,
+				AB23F54517355B72002B565F /* AudioUnit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -463,6 +466,7 @@
 			children = (
 				AB8C5941101B826E00B42306 /* vorbis.framework */,
 				AB2EA11F1012195E00DD2F1F /* AudioUnit.framework */,
+				AB23F51F17355B2B002B565F /* AudioToolbox.framework */,
 				ABD769300A73CE6D006C27C1 /* AppKit.framework */,
 				ABD769030A73CBDE006C27C1 /* SDL.framework */,
 			);
