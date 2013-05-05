@@ -406,7 +406,7 @@
 		AB69BD000A73C1F700F3DCB8 /* Editor */ = {
 			isa = PBXGroup;
 			children = (
-				ABD7696B0A73D135006C27C1 /* source */,
+				ABD7696B0A73D135006C27C1 /* src */,
 				ABD7696C0A73D13B006C27C1 /* osx */,
 				ABD76A440A73D411006C27C1 /* build_icon.icns */,
 				ABD76A450A73D411006C27C1 /* build.bmp */,
@@ -473,13 +473,13 @@
 			name = "Linked Frameworks";
 			sourceTree = "<group>";
 		};
-		ABD7696B0A73D135006C27C1 /* source */ = {
+		ABD7696B0A73D135006C27C1 /* src */ = {
 			isa = PBXGroup;
 			children = (
 				ABD769740A73D17A006C27C1 /* astub.c */,
 			);
-			name = source;
-			path = ../source;
+			name = src;
+			path = ../src;
 			sourceTree = "<group>";
 		};
 		ABD7696C0A73D13B006C27C1 /* osx */ = {
