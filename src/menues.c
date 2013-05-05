@@ -4974,6 +4974,7 @@ void playanm(const char *fn,char t)
 
         waloff[TILE_ANIM] = (intptr_t)(ANIM_DrawFrame(i));
         invalidatetile(TILE_ANIM, 0, 1<<4);  // JBF 20031228
+        clearview(0);
         rotatesprite(0<<16,0<<16,65536L,512,TILE_ANIM,0,0,2+4+8+16+64, 0,0,xdim-1,ydim-1);
         nextpage();
 

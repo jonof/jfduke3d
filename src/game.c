@@ -9091,12 +9091,12 @@ void dobonus(char bonusonly)
         case 0:
             if(ud.lockout == 0)
             {
-        setgamepalette(&ps[myconnectindex], endingpal, 3);  // JBF 20040308
+                setgamepalette(&ps[myconnectindex], endingpal, 3);
                 clearview(0L);
                 rotatesprite(0,50<<16,65536L,0,VICTORY1,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
                 nextpage();
                 //ps[myconnectindex].palette = endingpal;
-        fadepal(0,0,0, 63,0,-1);
+                fadepal(0,0,0, 63,0,-1);
 
                 KB_FlushKeyboardQueue();
                 totalclock = 0; tinc = 0;
@@ -9140,16 +9140,20 @@ void dobonus(char bonusonly)
                 }
             }
 
-        fadepal(0,0,0, 0,64,1);
+            fadepal(0,0,0, 0,64,1);
 
             KB_FlushKeyboardQueue();
             //ps[myconnectindex].palette = palette;
-        setgamepalette(&ps[myconnectindex], palette, 3);    // JBF 20040308
+            setgamepalette(&ps[myconnectindex], palette, 3);
 
             rotatesprite(0,0,65536L,0,3292,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
-        IFISSOFTMODE fadepal(0,0,0, 63,0,-1); else nextpage();
-        while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
-        fadepal(0,0,0, 0,64,1);
+            IFISSOFTMODE {
+                fadepal(0,0,0, 63,0,-1);
+            } else {
+                nextpage();
+            }
+            while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
+            fadepal(0,0,0, 0,64,1);
             stopmusic();
             FX_StopAllSounds();
             clearsoundlocks();
@@ -9169,15 +9173,21 @@ void dobonus(char bonusonly)
 
             sound(PIPEBOMB_EXPLODE);
 
-        fadepal(0,0,0, 0,64,1);
+            fadepal(0,0,0, 0,64,1);
             setview(0,0,xdim-1,ydim-1);
             KB_FlushKeyboardQueue();
             //ps[myconnectindex].palette = palette;
-        setgamepalette(&ps[myconnectindex], palette, 3);    // JBF 20040308
+            setgamepalette(&ps[myconnectindex], palette, 3);    // JBF 20040308
             rotatesprite(0,0,65536L,0,3293,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
-        IFISSOFTMODE fadepal(0,0,0, 63,0,-1); else nextpage();
+            IFISSOFTMODE {
+                fadepal(0,0,0, 63,0,-1);
+            } else {
+                nextpage();
+            }
             while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
-        IFISSOFTMODE fadepal(0,0,0, 0,64,1);
+            IFISSOFTMODE {
+                fadepal(0,0,0, 0,64,1);
+            }
 
             break;
 
@@ -9209,7 +9219,7 @@ void dobonus(char bonusonly)
             KB_FlushKeyBoardQueue();
 
             //ps[myconnectindex].palette = palette;
-        setgamepalette(&ps[myconnectindex], palette, 3);    // JBF 20040308
+            setgamepalette(&ps[myconnectindex], palette, 3);    // JBF 20040308
             IFISSOFTMODE palto(0,0,0,63);
             clearview(0L);
             menutext(160,60,0,0,"THANKS TO ALL OUR");
@@ -9219,10 +9229,10 @@ void dobonus(char bonusonly)
             menutext(160,70+16+16+16+16,0,0,"SEQUEL SOON.");
             nextpage();
 
-        fadepal(0,0,0, 63,0,-3);
+            fadepal(0,0,0, 63,0,-3);
             KB_FlushKeyboardQueue();
             while(!KB_KeyWaiting()) { handleevents(); getpackets(); }
-        fadepal(0,0,0, 0,64,3);
+            fadepal(0,0,0, 0,64,3);
 
             clearview(0L);
             nextpage();
@@ -9249,7 +9259,7 @@ void dobonus(char bonusonly)
             nextpage();
             if(ud.lockout == 0)
             {
-        fadepal(0,0,0, 63,0,-1);
+                fadepal(0,0,0, 63,0,-1);
                 playanm("cineov3.anm",2);
                 KB_FlushKeyBoardQueue();
                 ototalclock = totalclock+200;
@@ -9335,8 +9345,8 @@ void dobonus(char bonusonly)
 
         rotatesprite(0,0,65536L,0,MENUSCREEN,16,0,2+8+16+64,0,0,xdim-1,ydim-1);
         rotatesprite(160<<16,34<<16,65536L,0,INGAMEDUKETHREEDEE,0,0,10,0,0,xdim-1,ydim-1);
-    if (PLUTOPAK)   // JBF 20030804
-        rotatesprite((260)<<16,36<<16,65536L,0,PLUTOPAKSPRITE+2,0,0,2+8,0,0,xdim-1,ydim-1);
+        if (PLUTOPAK)   // JBF 20030804
+            rotatesprite((260)<<16,36<<16,65536L,0,PLUTOPAKSPRITE+2,0,0,2+8,0,0,xdim-1,ydim-1);
         gametext(160,58+2,"MULTIPLAYER TOTALS",0,2+8+16);
         gametext(160,58+10,level_names[(ud.volume_number*11)+ud.last_level-1],0,2+8+16);
 
@@ -9403,7 +9413,7 @@ void dobonus(char bonusonly)
         minitext(45,96+(8*7),"DEATHS",8,2+8+16+128);
         nextpage();
 
-    fadepal(0,0,0, 63,0,-7);
+        fadepal(0,0,0, 63,0,-7);
 
         KB_FlushKeyboardQueue();
         while(KB_KeyWaiting()==0) { handleevents(); getpackets(); }
@@ -9419,7 +9429,7 @@ void dobonus(char bonusonly)
 
         if(bonusonly || ud.multimode > 1) return;
 
-    fadepal(0,0,0, 0,64,7);
+        fadepal(0,0,0, 0,64,7);
     }
 
     if(bonusonly || ud.multimode > 1) return;
@@ -9434,6 +9444,7 @@ void dobonus(char bonusonly)
             break;
     }
 
+    clearview(0);
     rotatesprite(0,0,65536L,0,BONUSSCREEN+gfx_offset,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
 
     menutext(160,20-6,0,0,lastmapname);
@@ -9480,6 +9491,7 @@ void dobonus(char bonusonly)
         
         if(ps[myconnectindex].gm&MODE_EOL)
         {
+            clearview(0);
             rotatesprite(0,0,65536L,0,BONUSSCREEN+gfx_offset,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
 
             if( totalclock > (1000000000L) && totalclock < (1000000320L) )
@@ -9540,16 +9552,16 @@ void dobonus(char bonusonly)
 
             if( totalclock > (60*3) )
             {
-            yy = zz = 59;
+                yy = zz = 59;
                 gametext(10,yy+9,yourtime,0,2+8+16); yy+=10;
                 gametext(10,yy+9,"Par Time:",0,2+8+16); yy+=10;
-        if (!NAM) { gametext(10,yy+9,"3D Realms' Time:",0,2+8+16); yy+=10; }
-        gametext(10,yy+9,besttime,0,2+8+16); yy += 10;
-        
+                if (!NAM) { gametext(10,yy+9,"3D Realms' Time:",0,2+8+16); yy+=10; }
+                gametext(10,yy+9,besttime,0,2+8+16); yy += 10;
+
                 if(bonuscnt == 0)
                     bonuscnt++;
 
-        yy = zz;
+                yy = zz;
                 if( totalclock > (60*4) )
                 {
                     if(bonuscnt == 1)
@@ -9569,10 +9581,10 @@ void dobonus(char bonusonly)
                     gametext((320>>2)+71,yy+9,buf,0,2+8+16); yy+=10;
 
                     if (!NAM) {
-                    sprintf(buf,"%0*d:%02d",clockpad,
-                        (designertime[ud.volume_number*11+ud.last_level-1]/(26*60)),
-                        (designertime[ud.volume_number*11+ud.last_level-1]/26)%60);
-                    gametext((320>>2)+71,yy+9,buf,0,2+8+16); yy+=10;
+                        sprintf(buf,"%0*d:%02d",clockpad,
+                            (designertime[ud.volume_number*11+ud.last_level-1]/(26*60)),
+                            (designertime[ud.volume_number*11+ud.last_level-1]/26)%60);
+                        gametext((320>>2)+71,yy+9,buf,0,2+8+16); yy+=10;
                     }
 
                     if (playerbest > 0) {
@@ -9587,7 +9599,7 @@ void dobonus(char bonusonly)
                 }
             }
         
-        zz = yy += 5;
+            zz = yy += 5;
             if( totalclock > (60*6) )
             {
                 gametext(10,yy+9,"Enemies Killed:",0,2+8+16); yy += 10;
@@ -9599,7 +9611,7 @@ void dobonus(char bonusonly)
                     sound(FLY_BY);
                 }
 
-        yy = zz;
+                yy = zz;
                 if( totalclock > (60*7) )
                 {
                     if(bonuscnt == 3)
@@ -9624,14 +9636,14 @@ void dobonus(char bonusonly)
                 }
             }
         
-        zz = yy += 5;
+            zz = yy += 5;
             if( totalclock > (60*9) )
             {
                 gametext(10,yy+9,"Secrets Found:",0,2+8+16); yy += 10;
                 gametext(10,yy+9,"Secrets Missed:",0,2+8+16); yy += 10;
                 if(bonuscnt == 4) bonuscnt++;
 
-        yy = zz;
+                yy = zz;
                 if( totalclock > (60*10) )
                 {
                     if(bonuscnt == 5)
@@ -9653,7 +9665,7 @@ void dobonus(char bonusonly)
 
             if( ( (MOUSE_GetButtons()&7) || KB_KeyWaiting() ) && totalclock > (60*2) )  // JBF 20030809
             {
-        MOUSE_ClearButton(7);
+                MOUSE_ClearButton(7);
                 if( KB_KeyPressed( sc_F12 ) )
                 {
                     char *tpl;
