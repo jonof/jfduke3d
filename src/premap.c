@@ -26,7 +26,6 @@ Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
 //-------------------------------------------------------------------------
 
 #include "duke3d.h"
-#include "osd.h"
 
 extern unsigned char pow2char[];
 
@@ -363,7 +362,7 @@ void cacheit(void)
     clearbufbyte(gotpic,sizeof(gotpic),0L);
 
     endtime = getticks();
-    OSD_Printf("Cache time: %dms\n", endtime-starttime);
+    buildprintf("Cache time: %dms\n", endtime-starttime);
 }
 
 
@@ -1432,7 +1431,7 @@ if (!VOLUMEONE) {
     {
         if ( loadboard( boardfilename,0,&ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum ) == -1 )
         {
-            initprintf("Map %s not found!\n",boardfilename);
+            buildprintf("Map %s not found!\n",boardfilename);
             //gameexit(tempbuf);
             return 1;
         } else {
@@ -1441,12 +1440,12 @@ if (!VOLUMEONE) {
             p = Bstrrchr(levname,'.');
             if (!p) strcat(levname,".mhk");
             else { strcpy(p, ".mhk"); }
-            if (!loadmaphack(levname)) initprintf("Loaded map hack file %s\n",levname);
+            if (!loadmaphack(levname)) buildprintf("Loaded map hack file %s\n",levname);
         }
     }
     else if ( loadboard( level_file_names[ (ud.volume_number*11)+ud.level_number],0,&ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum ) == -1)
     {
-        initprintf("Map %s not found!\n",level_file_names[(ud.volume_number*11)+ud.level_number]);
+        buildprintf("Map %s not found!\n",level_file_names[(ud.volume_number*11)+ud.level_number]);
         //gameexit(tempbuf);
         return 1;
     } else {
@@ -1455,7 +1454,7 @@ if (!VOLUMEONE) {
         p = Bstrrchr(levname,'.');
         if (!p) strcat(levname,".mhk");
         else { strcpy(p, ".mhk"); }
-        if (!loadmaphack(levname)) initprintf("Loaded map hack file %s\n",levname);
+        if (!loadmaphack(levname)) buildprintf("Loaded map hack file %s\n",levname);
     }
 
 } else {
@@ -1467,7 +1466,7 @@ if (!VOLUMEONE) {
 
     if ( loadboard( levname,1,&ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum ) == -1)
     {
-        initprintf("Map %s not found!\n",level_file_names[(ud.volume_number*11)+ud.level_number]);
+        buildprintf("Map %s not found!\n",level_file_names[(ud.volume_number*11)+ud.level_number]);
         //gameexit(tempbuf);
         return 1;
     } else {
@@ -1475,7 +1474,7 @@ if (!VOLUMEONE) {
         p = Bstrrchr(levname,'.');
         if (!p) strcat(levname,".mhk");
         else { strcpy(p, ".mhk"); }
-        if (!loadmaphack(levname)) initprintf("Loaded map hack file %s\n",levname);
+        if (!loadmaphack(levname)) buildprintf("Loaded map hack file %s\n",levname);
     }
 }
 

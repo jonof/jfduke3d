@@ -436,7 +436,7 @@ void adduserquote(char *daquote)
         user_quote_time[i] = user_quote_time[i-1];
     }
     strcpy(user_quote[0],daquote);
-    OSD_Printf("%s\n", daquote);
+    buildprintf("%s\n", daquote);
     user_quote_time[0] = 180;
     pub = NUMPAGES;
 }
@@ -740,7 +740,7 @@ void getpackets(void)
                 }
 
                 if (j > packbufleng)
-                    initprintf("INVALID GAME PACKET!!! (%d too many bytes)\n",j-packbufleng);
+                    buildprintf("INVALID GAME PACKET!!! (%d too many bytes)\n",j-packbufleng);
 
                 while (j != packbufleng)
                 {
@@ -2035,7 +2035,7 @@ void FTA(short q,struct player_struct *p)
             p->ftq = q;
             pub = NUMPAGES;
             pus = NUMPAGES;
-            if (p == &ps[screenpeek]) OSD_Printf("%s\n",fta_quotes[q]);
+            if (p == &ps[screenpeek]) buildprintf("%s\n",fta_quotes[q]);
         }
     }
 }
@@ -4140,7 +4140,7 @@ short spawn( short j, short pn )
                 }
             case WATERBUBBLEMAKER:
         if (sp->hitag && sp->picnum == WATERBUBBLEMAKER) {  // JBF 20030913: Pisses off move(), eg. in bobsp2
-            OSD_Printf("WARNING: WATERBUBBLEMAKER %d @ %d,%d with hitag!=0. Applying fixup.\n",
+            buildprintf("WARNING: WATERBUBBLEMAKER %d @ %d,%d with hitag!=0. Applying fixup.\n",
                     i,sp->x,sp->y);
             sp->hitag = 0;
         }
@@ -6894,9 +6894,9 @@ void checkcommandline(int argc, char const * const *argv)
                 if (*c == '-' || *c == '/') {
                     c++;
                     if      (((c[0] == 'n') || (c[0] == 'N')) && (c[1] == '0'))
-                        { networkmode = 0; initprintf("Network mode: master/slave\n"); }
+                        { networkmode = 0; buildprintf("Network mode: master/slave\n"); }
                     else if (((c[0] == 'n') || (c[0] == 'N')) && (c[1] == '1'))
-                        { networkmode = 1; initprintf("Network mode: peer-to-peer\n"); }
+                        { networkmode = 1; buildprintf("Network mode: peer-to-peer\n"); }
                 }
                 netparam[i-firstnet-1] = argv[i];
                 i++;
@@ -6915,7 +6915,7 @@ void checkcommandline(int argc, char const * const *argv)
                     case 'a':
                     case 'A':
                         ud.playerai = 1;
-                        initprintf("Other player AI.\n");
+                        buildprintf("Other player AI.\n");
                         break;
                     case 'c':
                     case 'C':
@@ -6927,13 +6927,13 @@ void checkcommandline(int argc, char const * const *argv)
                         switch(ud.m_coop)
                         {
                             case 0:
-                                initprintf("Dukematch (spawn).\n");
+                                buildprintf("Dukematch (spawn).\n");
                                 break;
                             case 1:
-                                initprintf("Cooperative play.\n");
+                                buildprintf("Cooperative play.\n");
                                 break;
                             case 2:
-                                initprintf("Dukematch (no spawn).\n");
+                                buildprintf("Dukematch (no spawn).\n");
                                 break;
                         }
 
@@ -6944,7 +6944,7 @@ void checkcommandline(int argc, char const * const *argv)
                         strcpy(firstdemofile,c);
                         if( strchr(firstdemofile,'.') == 0)
                             strcat(firstdemofile,".dmo");
-                        initprintf("Play demo %s.\n",firstdemofile);
+                        buildprintf("Play demo %s.\n",firstdemofile);
                         break;
                     case 'f':
                     case 'F':
@@ -6985,7 +6985,7 @@ void checkcommandline(int argc, char const * const *argv)
                         c++;
                         if (*c) {
                             duke3ddef = c;
-                            initprintf("Using DEF file %s.\n",duke3ddef);
+                            buildprintf("Using DEF file %s.\n",duke3ddef);
                         }
                         break;
                     case 'i':
@@ -6993,7 +6993,7 @@ void checkcommandline(int argc, char const * const *argv)
                         c++;
                         if(*c == '0') networkmode = 0;
                         if(*c == '1') networkmode = 1;
-                        initprintf("Network Mode %d\n",networkmode);
+                        buildprintf("Network Mode %d\n",networkmode);
                         break;
                     case 'j':
                     case 'J':
@@ -7024,7 +7024,7 @@ void checkcommandline(int argc, char const * const *argv)
                         {
                             ud.m_monsters_off = 1;
                             ud.m_player_skill = ud.player_skill = 0;
-                            initprintf("Monsters off.\n");
+                            buildprintf("Monsters off.\n");
                         }
                         break;
                     case 'n':
@@ -7033,12 +7033,12 @@ void checkcommandline(int argc, char const * const *argv)
                         if(*c == 's' || *c == 'S')
                         {
                             CommandSoundToggleOff = 2;
-                            initprintf("Sound off.\n");
+                            buildprintf("Sound off.\n");
                         }
                         else if(*c == 'm' || *c == 'M')
                         {
                             CommandMusicToggleOff = 1;
-                            initprintf("Music off.\n");
+                            buildprintf("Music off.\n");
                         }
                         else
                         {
@@ -7048,7 +7048,7 @@ void checkcommandline(int argc, char const * const *argv)
                         break;
                     case 'q':
                     case 'Q':
-                        initprintf("Fake multiplayer mode.\n");
+                        buildprintf("Fake multiplayer mode.\n");
                         if( *(++c) == 0) ud.multimode = 1;
                         else ud.multimode = atol(c)%17;
                         ud.m_coop = ud.coop = 0;
@@ -7061,7 +7061,7 @@ void checkcommandline(int argc, char const * const *argv)
                     case 'r':
                     case 'R':
                         ud.m_recstat = 1;
-                        initprintf("Demo record mode on.\n");
+                        buildprintf("Demo record mode on.\n");
                         break;
                     case 't':
                     case 'T':
@@ -7075,7 +7075,7 @@ void checkcommandline(int argc, char const * const *argv)
                             ud.m_respawn_items = 1;
                             ud.m_respawn_inventory = 1;
                         }
-                        initprintf("Respawn on.\n");
+                        buildprintf("Respawn on.\n");
                         break;
                     case 'w':
                     case 'W':
@@ -7096,7 +7096,7 @@ void checkcommandline(int argc, char const * const *argv)
                         j = 0;
                         if(*c)
                         {
-                            initprintf("Using favorite weapon order(s).\n");
+                            buildprintf("Using favorite weapon order(s).\n");
                             while(*c)
                             {
                                 ud.wchoice[0][j] = *c-'0';
@@ -7115,7 +7115,7 @@ void checkcommandline(int argc, char const * const *argv)
                         }
                         else
                         {
-                            initprintf("Using default weapon orders.\n");
+                            buildprintf("Using default weapon orders.\n");
                             ud.wchoice[0][0] = 3;
                             ud.wchoice[0][1] = 4;
                             ud.wchoice[0][2] = 5;
@@ -7143,10 +7143,10 @@ void checkcommandline(int argc, char const * const *argv)
                             confilename = c;
                             /*if(SafeFileExists(c) == 0)
                             {
-                                initprintf("Could not find con file '%s'.\n",confilename );
+                                buildprintf("Could not find con file '%s'.\n",confilename );
                                 exit(-1);
                             }
-                            else*/ initprintf("Using con file: '%s'\n",confilename);
+                            else*/ buildprintf("Using con file: '%s'\n",confilename);
                         }
                         break;
                     case '0':
@@ -7382,7 +7382,7 @@ void compilecons(void)
     loadefs(confilename);
     if( loadfromgrouponly )
     {
-        initprintf("  * Using default CONs.\n");
+        buildprintf("  * Using default CONs.\n");
         loadefs(confilename);
     }
 
@@ -7417,7 +7417,7 @@ void Startup(void)
     if (CommandName) strcpy(myname,CommandName);
     if (CommandMap) {
        if (VOLUMEONE) {
-           initprintf("The -map option is available in the registered version only!\n");
+           buildprintf("The -map option is available in the registered version only!\n");
            boardfilename[0] = 0;
        } else {
            char *dot, *slash;
@@ -7431,13 +7431,13 @@ void Startup(void)
            if ((!slash && !dot) || (slash && dot < slash))
                Bstrcat(boardfilename,".map");
 
-           initprintf("Using level: '%s'.\n",boardfilename);
+           buildprintf("Using level: '%s'.\n",boardfilename);
        }
     }
 
     if (VOLUMEONE) {
-       initprintf("*** You have run Duke Nukem 3D %d times. ***\n\n",ud.executions);
-       if(ud.executions >= 50) initprintf("IT IS NOW TIME TO UPGRADE TO THE COMPLETE VERSION!!!\n");
+       buildprintf("*** You have run Duke Nukem 3D %d times. ***\n\n",ud.executions);
+       if(ud.executions >= 50) buildprintf("IT IS NOW TIME TO UPGRADE TO THE COMPLETE VERSION!!!\n");
     }
 
     if (CONTROL_Startup( 1, &GetTime, TICRATE )) {
@@ -7457,12 +7457,12 @@ void Startup(void)
 
     inittimer(TICRATE);
 
-    //initprintf("* Hold Esc to Abort. *\n");
-    initprintf("Loading art header.\n");
+    //buildprintf("* Hold Esc to Abort. *\n");
+    buildprintf("Loading art header.\n");
     if (loadpics("tiles000.art",MAXCACHE1DSIZE) < 0)
         gameexit("Failed loading art.");
 
-    initprintf("Loading palette/lookups.\n");
+    buildprintf("Loading palette/lookups.\n");
     genspriteremaps();
     
     readsavenames();
@@ -7473,7 +7473,7 @@ void Startup(void)
 
     //initmultiplayers(netparamcount,netparam, 0,0,0);
     if (initmultiplayersparms(netparamcount,netparam)) {
-        initprintf("Waiting for players...\n");
+        buildprintf("Waiting for players...\n");
         while (initmultiplayerscycle()) {
             handleevents();
             if (quitevent) {
@@ -7486,7 +7486,7 @@ void Startup(void)
     netparam = NULL; netparamcount = 0;
 
     if(numplayers > 1)
-    initprintf("Multiplayer initialized.\n");
+    buildprintf("Multiplayer initialized.\n");
 
     screenpeek = myconnectindex;
     ps[myconnectindex].palette = &palette[0];
@@ -7660,7 +7660,7 @@ int app_main(int argc, char const * const argv[])
         }
     }
 
-    OSD_SetLogFile("duke3d.log");
+    buildsetlogfile("duke3d.log");
 
     wm_setapptitle("Duke Nukem 3D");
     if (preinitengine()) {
@@ -7712,7 +7712,7 @@ int app_main(int argc, char const * const argv[])
         strcpy(defaultconfilename, "nam.con");
     }
 
-    initprintf("GRP file: %s\n", duke3dgrp);
+    buildprintf("GRP file: %s\n", duke3dgrp);
     initgroupfile(duke3dgrp);
     i = kopen4load("DUKESW.BIN",1);
     if (i!=-1) {
@@ -7725,10 +7725,10 @@ int app_main(int argc, char const * const argv[])
         while (CommandGrps) {
             s = CommandGrps->next;
             j = initgroupfile(CommandGrps->str);
-            if( j == -1 ) initprintf("Warning: could not find group file %s.\n",CommandGrps->str);
+            if( j == -1 ) buildprintf("Warning: could not find group file %s.\n",CommandGrps->str);
             else {
                 groupfile = j;
-                initprintf("Using group file %s.\n",CommandGrps->str);
+                buildprintf("Using group file %s.\n",CommandGrps->str);
             }
 
             free(CommandGrps->str);
@@ -7743,14 +7743,14 @@ int app_main(int argc, char const * const argv[])
     if (NAM) {
         if (VOLUMEALL) wm_setapptitle("NAM Full Version v"VERSION);
         else wm_setapptitle("NAM ? Version v"VERSION);
-        initprintf("%s\n",apptitle);
-        initprintf("Copyright (c) 1998 GT Interactive. (c) 1996 3D Realms Entertainment\n");
-        initprintf("NAM modifications by Matt Saettler\n");
+        buildprintf("%s\n",apptitle);
+        buildprintf("Copyright (c) 1998 GT Interactive. (c) 1996 3D Realms Entertainment\n");
+        buildprintf("NAM modifications by Matt Saettler\n");
     } else {
         if (VOLUMEALL) wm_setapptitle(HEAD2);
         else wm_setapptitle(HEAD);
-        initprintf("%s\n",apptitle);
-        initprintf("Copyright (c) 1996 3D Realms Entertainment\n");
+        buildprintf("%s\n",apptitle);
+        buildprintf("Copyright (c) 1996 3D Realms Entertainment\n");
     }
 
     ud.multimode = 1;
@@ -7759,8 +7759,8 @@ int app_main(int argc, char const * const argv[])
     RegisterShutdownFunction( Shutdown );
 
 if (VOLUMEONE) {
-    initprintf("Distribution of shareware Duke Nukem 3D is restricted in certain ways.\n");
-    initprintf("Please read LICENSE.DOC for more details.\n");
+    buildprintf("Distribution of shareware Duke Nukem 3D is restricted in certain ways.\n");
+    buildprintf("Please read LICENSE.DOC for more details.\n");
 }
 
     OSD_SetFunctions(
@@ -7778,7 +7778,7 @@ if (VOLUMEONE) {
     Startup();
     if (quitevent) return 0;
 
-    if (!loaddefinitionsfile(duke3ddef)) initprintf("Definitions file loaded.\n");
+    if (!loaddefinitionsfile(duke3ddef)) buildprintf("Definitions file loaded.\n");
 
     // gotta set the proper title after we compile the CONs if this is the full version
 if (!NAM && VOLUMEALL) {
@@ -7814,13 +7814,13 @@ if (!NAM && VOLUMEALL) {
     ud.last_level = -1;
 
    RTS_Init(ud.rtsname);
-   if(numlumps) initprintf("Using .RTS file:%s\n",ud.rtsname);
+   if(numlumps) buildprintf("Using .RTS file:%s\n",ud.rtsname);
 
-        initprintf("Loading palette/lookups.\n");
+        buildprintf("Loading palette/lookups.\n");
 
     if( setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP) < 0 )
     {
-        initprintf("Failure setting video mode %dx%dx%d %s! Attempting safer mode...\n",
+        buildprintf("Failure setting video mode %dx%dx%d %s! Attempting safer mode...\n",
                 ScreenWidth,ScreenHeight,ScreenBPP,ScreenMode?"fullscreen":"windowed");
         ScreenMode = 0;
         ScreenWidth = 640;
@@ -7829,9 +7829,9 @@ if (!NAM && VOLUMEALL) {
         setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP);
     }
 
-   initprintf("Checking music inits.\n");
+   buildprintf("Checking music inits.\n");
    MusicStartup();
-   initprintf("Checking sound inits.\n");
+   buildprintf("Checking sound inits.\n");
    SoundStartup();
    loadtmb();
 
@@ -8017,10 +8017,10 @@ char opendemoread(char which_demo) // 0 = mine
      if (kread(recfilep,&ver,sizeof(char)) != sizeof(char)) goto corrupt;
      if( (ver != BYTEVERSION) ) // || (ud.reccnt < 512) )
      {
-        if      (ver == BYTEVERSION_JF)   initprintf("Demo %s is for Regular edition.\n", d);
-        else if (ver == BYTEVERSION_JF+1) initprintf("Demo %s is for Atomic edition.\n", d);
-        else if (ver == BYTEVERSION_JF+2) initprintf("Demo %s is for Shareware version.\n", d);
-        else initprintf("Demo %s is of an incompatible version (%d).\n", d, ver);
+        if      (ver == BYTEVERSION_JF)   buildprintf("Demo %s is for Regular edition.\n", d);
+        else if (ver == BYTEVERSION_JF+1) buildprintf("Demo %s is for Atomic edition.\n", d);
+        else if (ver == BYTEVERSION_JF+2) buildprintf("Demo %s is for Shareware version.\n", d);
+        else buildprintf("Demo %s is of an incompatible version (%d).\n", d, ver);
         kclose(recfilep);
         ud.reccnt = 0;
         return 0;
@@ -8059,7 +8059,7 @@ char opendemoread(char which_demo) // 0 = mine
          newgame(ud.volume_number,ud.level_number,ud.player_skill);
          return(1);
 corrupt:
-     OSD_Printf("Demo file %d is corrupt.\n",which_demo);
+     buildprintf("Demo file %d is corrupt.\n",which_demo);
      ud.reccnt = 0;
      kclose(recfilep);
      return 0;
@@ -8210,7 +8210,7 @@ int playback(void)
                 i = 0;
                 l = min(ud.reccnt,RECSYNCBUFSIZ);
                 if (kdfread(recsync,sizeof(input)*ud.multimode,l/ud.multimode,recfilep) != l/ud.multimode) {
-                    OSD_Printf("Demo %d is corrupt.\n", which_demo-1);
+                    buildprintf("Demo %d is corrupt.\n", which_demo-1);
                     foundemo = 0;
                     ud.reccnt = 0;
                     kclose(recfilep);
@@ -8315,7 +8315,7 @@ if (VOLUMEONE) {
         crc32block(&crcv, (unsigned char *)sector, sizeof(sector));
         crc32block(&crcv, (unsigned char *)sprite, sizeof(sprite));
         crc32finish(&crcv);
-        initprintf("Checksum = %08X\n",crcv);
+        buildprintf("Checksum = %08X\n",crcv);
     }
 #endif
     
@@ -9922,7 +9922,7 @@ int GetTime(void)
 
 void CenterCenter(void)
    {
-   initprintf("Center the joystick and press a button\n");
+   buildprintf("Center the joystick and press a button\n");
    }
 
 /*
@@ -9935,7 +9935,7 @@ void CenterCenter(void)
 
 void UpperLeft(void)
    {
-   initprintf("Move joystick to upper-left corner and press a button\n");
+   buildprintf("Move joystick to upper-left corner and press a button\n");
    }
 
 /*
@@ -9948,7 +9948,7 @@ void UpperLeft(void)
 
 void LowerRight(void)
    {
-   initprintf("Move joystick to lower-right corner and press a button\n");
+   buildprintf("Move joystick to lower-right corner and press a button\n");
    }
 
 /*
@@ -9961,7 +9961,7 @@ void LowerRight(void)
 
 void CenterThrottle(void)
    {
-   initprintf("Center the throttle control and press a button\n");
+   buildprintf("Center the throttle control and press a button\n");
    }
 
 /*
@@ -9974,7 +9974,7 @@ void CenterThrottle(void)
 
 void CenterRudder(void)
 {
-   initprintf("Center the rudder control and press a button\n");
+   buildprintf("Center the rudder control and press a button\n");
 }
 
 // Rare Multiplayer, when dead, total screen screwup back again!

@@ -74,18 +74,18 @@ int32 RTS_AddFile (char *filename)
    handle = kopen4load(filename, 0);
    if (handle < 0)
       {
-      initprintf("RTS file %s was not found\n",filename);
+      buildprintf("RTS file %s was not found\n",filename);
       return -1;
       }
 
    startlump = numlumps;
 
    // WAD file
-   initprintf("    Adding %s.\n",filename);
+   buildprintf("    Adding %s.\n",filename);
    kread( handle, &header, sizeof( header ) );
    if (strncmp(header.identification,"IWAD",4))
       {
-      initprintf("RTS file %s doesn't have IWAD id\n",filename);
+      buildprintf("RTS file %s doesn't have IWAD id\n",filename);
       kclose(handle);
       return -1;
       }
@@ -95,7 +95,7 @@ int32 RTS_AddFile (char *filename)
    fileinfo = fileinfoo = (filelump_t*)malloc (length);
    if (!fileinfo)
       {
-      initprintf("RTS file could not allocate header info\n");
+      buildprintf("RTS file could not allocate header info\n");
       kclose(handle);
       return -1;
       }
@@ -149,7 +149,7 @@ void RTS_Init (char *filename)
    numlumps = 0;
    lumpinfo = NULL;   // will be realloced as lumps are added
 
-   initprintf("RTS Manager Started.\n");
+   buildprintf("RTS Manager Started.\n");
    if (RTS_AddFile (filename)) return;
 
    if (!numlumps) return;

@@ -57,7 +57,7 @@ char testcd( char *fn, long testsiz )
 		Bclose(fil);
 
 		if (dalen == testsiz) {
-			initprintf("Copy Protection: Found CDROM in drive %c:\n", driv[0]);
+			buildprintf("Copy Protection: Found CDROM in drive %c:\n", driv[0]);
 			return 0;
 		}
 	}

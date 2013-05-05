@@ -403,16 +403,16 @@ int transword(void) //Returns its code #
     textptr += l;
 
     if( buf[0] == '{' && buf[1] != 0)
-        initprintf("  * ERROR!(L%d %s) Expecting a SPACE or CR between '{' and '%s'.\n",line_number,compilefile,buf+1);
+        buildprintf("  * ERROR!(L%d %s) Expecting a SPACE or CR between '{' and '%s'.\n",line_number,compilefile,buf+1);
     else if( buf[0] == '}' && buf[1] != 0)
-        initprintf("  * ERROR!(L%d %s) Expecting a SPACE or CR between '}' and '%s'.\n",line_number,compilefile,buf+1);
+        buildprintf("  * ERROR!(L%d %s) Expecting a SPACE or CR between '}' and '%s'.\n",line_number,compilefile,buf+1);
     else if( buf[0] == '/' && buf[1] == '/' && buf[2] != 0 )
-        initprintf("  * ERROR!(L%d %s) Expecting a SPACE between '//' and '%s'.\n",line_number,compilefile,buf+2);
+        buildprintf("  * ERROR!(L%d %s) Expecting a SPACE between '//' and '%s'.\n",line_number,compilefile,buf+2);
     else if( buf[0] == '/' && buf[1] == '*' && buf[2] != 0 )
-        initprintf("  * ERROR!(L%d %s) Expecting a SPACE between '/*' and '%s'.\n",line_number,compilefile,buf+2);
+        buildprintf("  * ERROR!(L%d %s) Expecting a SPACE between '/*' and '%s'.\n",line_number,compilefile,buf+2);
     else if( buf[0] == '*' && buf[1] == '/' && buf[2] != 0 )
-        initprintf("  * ERROR!(L%d %s) Expecting a SPACE between '*/' and '%s'.\n",line_number,compilefile,buf+2);
-    else initprintf("  * ERROR!(L%d %s) Expecting key word, but found '%s'.\n",line_number,compilefile,buf);
+        buildprintf("  * ERROR!(L%d %s) Expecting a SPACE between '*/' and '%s'.\n",line_number,compilefile,buf+2);
+    else buildprintf("  * ERROR!(L%d %s) Expecting key word, but found '%s'.\n",line_number,compilefile,buf);
 
     error++;
     return -1;
@@ -443,7 +443,7 @@ int transnum(int type)
         if( strcmp( buf,keyw[i]) == 0 )
         {
             error++;
-            initprintf("  * ERROR!(L%d %s) Symbol '%s' is a key word.\n",line_number,compilefile,buf);
+            buildprintf("  * ERROR!(L%d %s) Symbol '%s' is a key word.\n",line_number,compilefile,buf);
             textptr+=l;
         }
 
@@ -463,14 +463,14 @@ int transnum(int type)
             textptr += l;
             translatelabeltype(type, el);
             translatelabeltype(labeltype[i], gl);
-            initprintf("  * WARNING!(L%d %s) Expected a '%s' label but found a '%s' label instead.\n",line_number,compilefile,el,gl);
+            buildprintf("  * WARNING!(L%d %s) Expected a '%s' label but found a '%s' label instead.\n",line_number,compilefile,el,gl);
             return -1;  // valid label name, but wrong type
         }
     }
 
     if( isdigit(*textptr) == 0 && *textptr != '-')
     {
-        initprintf("  * ERROR!(L%d %s) Parameter '%s' is undefined.\n",line_number,compilefile,buf);
+        buildprintf("  * ERROR!(L%d %s) Parameter '%s' is undefined.\n",line_number,compilefile,buf);
         error++;
         textptr+=l;
         return -1;  // error!
@@ -537,7 +537,7 @@ char parsecommand(void)
                 if(*textptr == 0x0a) line_number++;
                 if( *textptr == 0 )
                 {
-                    initprintf("  * ERROR!(L%d %s) Found '/*' with no '*/'.\n",j,compilefile);
+                    buildprintf("  * ERROR!(L%d %s) Found '/*' with no '*/'.\n",j,compilefile);
                     error++;
                     return 0;
                 }
@@ -565,7 +565,7 @@ char parsecommand(void)
                 if( strcmp( label+(labelcnt * MAXLABELLEN),keyw[i]) == 0 )
                 {
                     error++;
-                    initprintf("  * ERROR!(L%d %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
+                    buildprintf("  * ERROR!(L%d %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                     return 0;
                 }
 
@@ -580,7 +580,7 @@ char parsecommand(void)
                         char gl[64];
 
                         translatelabeltype(labeltype[j], gl);
-                        initprintf("  * WARNING!(L%d %s) Expected a state label, found a %s instead. Neutering.\n",
+                        buildprintf("  * WARNING!(L%d %s) Expected a state label, found a %s instead. Neutering.\n",
                             line_number,compilefile,gl);
                         *(scriptptr-1) = 106;   // nullop
                         return 0;
@@ -590,7 +590,7 @@ char parsecommand(void)
 
             if(j==labelcnt)
             {
-                initprintf("  * ERROR!(L%d %s) State '%s' not found.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
+                buildprintf("  * ERROR!(L%d %s) State '%s' not found.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                 error++;
             }
             scriptptr++;
@@ -607,19 +607,19 @@ char parsecommand(void)
         case 18:    //ends
             if( parsing_state == 0 )
             {
-                initprintf("  * ERROR!(L%d %s) Found 'ends' with no 'state'.\n",line_number,compilefile);
+                buildprintf("  * ERROR!(L%d %s) Found 'ends' with no 'state'.\n",line_number,compilefile);
                 error++;
             }
 //            else
             {
                 if( num_squigilly_brackets > 0 )
                 {
-                    initprintf("  * ERROR!(L%d %s) Found more '{' than '}' before 'ends'.\n",line_number,compilefile);
+                    buildprintf("  * ERROR!(L%d %s) Found more '{' than '}' before 'ends'.\n",line_number,compilefile);
                     error++;
                 }
                 if( num_squigilly_brackets < 0 )
                 {
-                    initprintf("  * ERROR!(L%d %s) Found more '}' than '{' before 'ends'.\n",line_number,compilefile);
+                    buildprintf("  * ERROR!(L%d %s) Found more '}' than '{' before 'ends'.\n",line_number,compilefile);
                     error++;
                 }
                 parsing_state = 0;
@@ -633,7 +633,7 @@ char parsecommand(void)
                 if( strcmp( label+(labelcnt * MAXLABELLEN),keyw[i]) == 0 )
                 {
                     error++;
-                    initprintf("  * ERROR!(L%d %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
+                    buildprintf("  * ERROR!(L%d %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                     return 0;
                 }
 
@@ -642,7 +642,7 @@ char parsecommand(void)
                 if( strcmp(label+(labelcnt * MAXLABELLEN),label+(i * MAXLABELLEN)) == 0 )
                 {
                     warning++;
-                    initprintf("  * WARNING.(L%d %s) Duplicate definition '%s' ignored.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
+                    buildprintf("  * WARNING.(L%d %s) Duplicate definition '%s' ignored.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                     break;
                 }
             }
@@ -697,7 +697,7 @@ char parsecommand(void)
                     if( strcmp( label+(labelcnt * MAXLABELLEN),keyw[i]) == 0 )
                     {
                         error++;
-                        initprintf("  * ERROR!(L%d %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
+                        buildprintf("  * ERROR!(L%d %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                         return 0;
                     }
 
@@ -705,7 +705,7 @@ char parsecommand(void)
                     if( strcmp(label+(labelcnt * MAXLABELLEN),label+(i * MAXLABELLEN)) == 0 )
                     {
                         warning++;
-                        initprintf("  * WARNING.(L%d %s) Duplicate move '%s' ignored.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
+                        buildprintf("  * WARNING.(L%d %s) Duplicate move '%s' ignored.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                         break;
                     }
                 if(i == labelcnt) {
@@ -810,7 +810,7 @@ char parsecommand(void)
                 if(fp < 0)
                 {
                     error++;
-                    initprintf("  * ERROR!(L%d %s) Could not find '%s'.\n",line_number,compilefile,buf);
+                    buildprintf("  * ERROR!(L%d %s) Could not find '%s'.\n",line_number,compilefile,buf);
                     return 0;
                 }
 
@@ -820,12 +820,12 @@ char parsecommand(void)
                 if (!mptr) {
                     kclose(fp);
                     error++;
-                    initprintf("  * ERROR!(L%d %s) Could not allocate %d bytes to include '%s'.\n",
+                    buildprintf("  * ERROR!(L%d %s) Could not allocate %d bytes to include '%s'.\n",
                         line_number,compilefile,j,buf);
                     return 0;
                 }
 
-                initprintf("Including: %s (%d bytes)\n",buf, j);
+                buildprintf("Including: %s (%d bytes)\n",buf, j);
                 kread(fp, mptr, j);
                 kclose(fp);
                 mptr[j] = 0;
@@ -866,7 +866,7 @@ char parsecommand(void)
                     if( strcmp( label+(labelcnt * MAXLABELLEN),keyw[i]) == 0 )
                     {
                         error++;
-                        initprintf("  * ERROR!(L%d %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
+                        buildprintf("  * ERROR!(L%d %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                         return 0;
                     }
 
@@ -874,7 +874,7 @@ char parsecommand(void)
                     if( strcmp(label+(labelcnt * MAXLABELLEN),label+(i * MAXLABELLEN)) == 0 )
                     {
                         warning++;
-                        initprintf("  * WARNING.(L%d %s) Duplicate ai '%s' ignored.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
+                        buildprintf("  * WARNING.(L%d %s) Duplicate ai '%s' ignored.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                         break;
                     }
 
@@ -925,7 +925,7 @@ char parsecommand(void)
                     if( strcmp( label+(labelcnt * MAXLABELLEN),keyw[i]) == 0 )
                     {
                         error++;
-                        initprintf("  * ERROR!(L%d %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
+                        buildprintf("  * ERROR!(L%d %s) Symbol '%s' is a key word.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                         return 0;
                     }
 
@@ -933,7 +933,7 @@ char parsecommand(void)
                     if( strcmp(label+(labelcnt * MAXLABELLEN),label+(i * MAXLABELLEN)) == 0 )
                     {
                         warning++;
-                        initprintf("  * WARNING.(L%d %s) Duplicate action '%s' ignored.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
+                        buildprintf("  * WARNING.(L%d %s) Duplicate action '%s' ignored.\n",line_number,compilefile,label+(labelcnt * MAXLABELLEN));
                         break;
                     }
 
@@ -959,13 +959,13 @@ char parsecommand(void)
         case 1:     //actor
             if( parsing_state )
             {
-                initprintf("  * ERROR!(L%d %s) Found 'actor' within 'state'.\n",line_number,compilefile);
+                buildprintf("  * ERROR!(L%d %s) Found 'actor' within 'state'.\n",line_number,compilefile);
                 error++;
             }
 
             if( parsing_actor )
             {
-                initprintf("  * ERROR!(L%d %s) Found 'actor' within 'actor'.\n",line_number,compilefile);
+                buildprintf("  * ERROR!(L%d %s) Found 'actor' within 'actor'.\n",line_number,compilefile);
                 error++;
             }
 
@@ -1018,13 +1018,13 @@ char parsecommand(void)
 
             if( parsing_state )
             {
-                initprintf("  * ERROR!(L%d %s) Found 'useritem' within 'state'.\n",line_number,compilefile);
+                buildprintf("  * ERROR!(L%d %s) Found 'useritem' within 'state'.\n",line_number,compilefile);
                 error++;
             }
 
             if( parsing_actor )
             {
-                initprintf("  * ERROR!(L%d %s) Found 'useritem' within 'actor'.\n",line_number,compilefile);
+                buildprintf("  * ERROR!(L%d %s) Found 'useritem' within 'actor'.\n",line_number,compilefile);
                 error++;
             }
 
@@ -1130,7 +1130,7 @@ char parsecommand(void)
             {
                 scriptptr--;
                 error++;
-                initprintf("  * ERROR!(L%d %s) Found 'else' with no 'if'.\n",line_number,compilefile);
+                buildprintf("  * ERROR!(L%d %s) Found 'else' with no 'if'.\n",line_number,compilefile);
             }
 
             return 0;
@@ -1223,7 +1223,7 @@ char parsecommand(void)
             num_squigilly_brackets--;
             if( num_squigilly_brackets < 0 )
             {
-                initprintf("  * ERROR!(L%d %s) Found more '}' than '{'.\n",line_number,compilefile);
+                buildprintf("  * ERROR!(L%d %s) Found more '}' than '{'.\n",line_number,compilefile);
                 error++;
             }
             return 1;
@@ -1254,7 +1254,7 @@ char parsecommand(void)
 
             if (j < 0 || j >= 4)
             {
-                initprintf("  * ERROR!(L%d %s) Volume number exceeds maximum volume count.\n",line_number,compilefile);
+                buildprintf("  * ERROR!(L%d %s) Volume number exceeds maximum volume count.\n",line_number,compilefile);
                 error++;
                 while( *textptr != 0x0a && *textptr != 0 ) textptr++;
                 break;
@@ -1268,7 +1268,7 @@ char parsecommand(void)
                 textptr++,i++;
                 if(i >= 32)
                 {
-                    initprintf("  * ERROR!(L%d %s) Volume name exceeds character size limit of 32.\n",line_number,compilefile);
+                    buildprintf("  * ERROR!(L%d %s) Volume name exceeds character size limit of 32.\n",line_number,compilefile);
                     error++;
                     while( *textptr != 0x0a && *textptr != 0 ) textptr++;       // JBF 20040127: end of file checked
                     break;
@@ -1285,7 +1285,7 @@ char parsecommand(void)
 
             if (j < 0 || j >= 5)
             {
-                initprintf("  * ERROR!(L%d %s) Skill number exceeds maximum skill count.\n",line_number,compilefile);
+                buildprintf("  * ERROR!(L%d %s) Skill number exceeds maximum skill count.\n",line_number,compilefile);
                 error++;
                 while( *textptr != 0x0a && *textptr != 0 ) textptr++;
                 break;
@@ -1299,7 +1299,7 @@ char parsecommand(void)
                 textptr++,i++;
                 if(i >= 32)
                 {
-                    initprintf("  * ERROR!(L%d %s) Skill name exceeds character size limit of 32.\n",line_number,compilefile);
+                    buildprintf("  * ERROR!(L%d %s) Skill name exceeds character size limit of 32.\n",line_number,compilefile);
                     error++;
                     while( *textptr != 0x0a && *textptr != 0 ) textptr++;       // JBF 20040127: end of file checked
                     break;
@@ -1320,14 +1320,14 @@ char parsecommand(void)
 
             if (j < 0 || j >= 4)
             {
-                initprintf("  * WARNING!(L%d %s) Volume number exceeds maximum volume count.\n",line_number,compilefile);
+                buildprintf("  * WARNING!(L%d %s) Volume number exceeds maximum volume count.\n",line_number,compilefile);
                 warning++;
                 while( *textptr != 0x0a && *textptr != 0 ) textptr++;
                 break;
             }
             if (k < 0 || k >= 11)
             {
-                initprintf("  * WARNING!(L%d %s) Level number exceeds maximum levels-per-episode count.\n",
+                buildprintf("  * WARNING!(L%d %s) Level number exceeds maximum levels-per-episode count.\n",
                 line_number,compilefile);
                 warning++;
                 while( *textptr != 0x0a && *textptr != 0 ) textptr++;
@@ -1341,7 +1341,7 @@ char parsecommand(void)
                 textptr++,i++;
                 if(i > 127)
                 {
-                    initprintf("  * ERROR!(L%d %s) Level file name exceeds character size limit of 128.\n",line_number,compilefile);
+                    buildprintf("  * ERROR!(L%d %s) Level file name exceeds character size limit of 128.\n",line_number,compilefile);
                     error++;
                     while( *textptr != ' ' && *textptr != 0) textptr++;     // JBF 20040127: end of file checked
                     break;
@@ -1373,7 +1373,7 @@ char parsecommand(void)
                 textptr++,i++;
                 if(i >= 32)
                 {
-                    initprintf("  * ERROR!(L%d %s) Level name exceeds character size limit of 32.\n",line_number,compilefile);
+                    buildprintf("  * ERROR!(L%d %s) Level name exceeds character size limit of 32.\n",line_number,compilefile);
                     error++;
                     while( *textptr != 0x0a && *textptr != 0 ) textptr++;       // JBF 20040127: end of file checked
                     break;
@@ -1388,7 +1388,7 @@ char parsecommand(void)
             k = *(scriptptr-1);
             if(k >= NUMOFFIRSTTIMEACTIVE)
             {
-                initprintf("  * ERROR!(L%d %s) Quote amount exceeds limit of %d characters.\n",line_number,compilefile,NUMOFFIRSTTIMEACTIVE);
+                buildprintf("  * ERROR!(L%d %s) Quote amount exceeds limit of %d characters.\n",line_number,compilefile,NUMOFFIRSTTIMEACTIVE);
                 error++;
             }
             scriptptr--;
@@ -1402,7 +1402,7 @@ char parsecommand(void)
                 textptr++,i++;
                 if(i >= 64)
                 {
-                    initprintf("  * ERROR!(L%d %s) Quote exceeds character size limit of 64.\n",line_number,compilefile);
+                    buildprintf("  * ERROR!(L%d %s) Quote exceeds character size limit of 64.\n",line_number,compilefile);
                     error++;
                     while( *textptr != 0x0a && *textptr != 0 ) textptr++;       // JBF 20040127: end of file checked
                     break;
@@ -1416,7 +1416,7 @@ char parsecommand(void)
             k = *(scriptptr-1);
             if(k >= NUM_SOUNDS)
             {
-                initprintf("  * ERROR!(L%d %s) Exceeded sound limit of %d.\n",line_number,compilefile,NUM_SOUNDS);
+                buildprintf("  * ERROR!(L%d %s) Exceeded sound limit of %d.\n",line_number,compilefile,NUM_SOUNDS);
                 error++;
             }
             scriptptr--;
@@ -1430,8 +1430,8 @@ char parsecommand(void)
                 textptr++,i++;
                 if(i >= 13)
                 {
-                    initprintf("%s\n",sounds[k]);
-                    initprintf("  * ERROR!(L%d %s) Sound filename exceeded limit of 13 characters.\n",line_number,compilefile);
+                    buildprintf("%s\n",sounds[k]);
+                    buildprintf("  * ERROR!(L%d %s) Sound filename exceeded limit of 13 characters.\n",line_number,compilefile);
                     error++;
                     while( *textptr != ' ' && *textptr != 0 ) textptr++;        // JBF 20040127: end of file checked
                     break;
@@ -1459,14 +1459,14 @@ char parsecommand(void)
         case 4:     //enda
             if( parsing_actor == 0 )
             {
-                initprintf("  * ERROR!(L%d %s) Found 'enda' without defining 'actor'.\n",line_number,compilefile);
+                buildprintf("  * ERROR!(L%d %s) Found 'enda' without defining 'actor'.\n",line_number,compilefile);
                 error++;
             }
 //            else
             {
                 if( num_squigilly_brackets > 0 )
                 {
-                    initprintf("  * ERROR!(L%d %s) Found more '{' than '}' before 'enda'.\n",line_number,compilefile);
+                    buildprintf("  * ERROR!(L%d %s) Found more '{' than '}' before 'enda'.\n",line_number,compilefile);
                     error++;
                 }
                 parsing_actor = 0;
@@ -1504,11 +1504,11 @@ char parsecommand(void)
                     if (j != 25) continue;
 
                     if (keyword() != -1) {
-                        initprintf("Looks like Standard CON files.\n");
+                        buildprintf("Looks like Standard CON files.\n");
                         break;
                     } else {
                         conversion = 14;
-                        initprintf("Looks like Atomic Edition CON files.\n");
+                        buildprintf("Looks like Atomic Edition CON files.\n");
                     }
                 }
                 
@@ -1594,7 +1594,7 @@ void passone(void)
     while( parsecommand() == 0 );
 
     if( (error+warning) > 12)
-        initprintf(  "  * ERROR! Too many warnings or errors.\n");
+        buildprintf(  "  * ERROR! Too many warnings or errors.\n");
 
 }
 
@@ -1659,7 +1659,7 @@ void loadefs(const char *filenam)
     
     fs = kfilelength(fp);
 
-    initprintf("Compiling: %s (%d bytes)\n",filenam,fs);
+    buildprintf("Compiling: %s (%d bytes)\n",filenam,fs);
 
     mptr = Bmalloc(fs+1);
     if (!mptr) {
@@ -1693,19 +1693,19 @@ void loadefs(const char *filenam)
     Bfree(mptr);
 
     if(warning|error)
-        initprintf("Found %d warning(s), %d error(s).\n",warning,error);
+        buildprintf("Found %d warning(s), %d error(s).\n",warning,error);
 
     if( error == 0 && warning != 0)
     {
         if( groupfile != -1 && loadfromgrouponly == 0 )
         {
-            //initprintf("Warnings found when compiling CON files. Use default CONs instead? (Y/N)\n");
+            //buildprintf("Warnings found when compiling CON files. Use default CONs instead? (Y/N)\n");
         i=wm_ynbox("CON File Compilation Warning", "Warnings found when compiling CON files. Use default CONs instead?");
         if (i) i = 'y';
         if(i == 'y' || i == 'Y' )
             {
                 loadfromgrouponly = 1;
-                initprintf(" Yes\n");
+                buildprintf(" Yes\n");
                 return;
             }
         }
@@ -1722,12 +1722,12 @@ void loadefs(const char *filenam)
         {
             if( groupfile != -1 && loadfromgrouponly == 0 )
             {
-                //initprintf("Errors found when compiling CON files.  Use default CONs instead? (Y/N)\n");
+                //buildprintf("Errors found when compiling CON files.  Use default CONs instead? (Y/N)\n");
                 i=wm_ynbox("CON File Compilation Error", "Errors found when compiling CON files. Use default CONs instead?");
                 if (i) i = 'y';
                 if( i == 'y' || i == 'Y' )
                 {
-                    initprintf(" Yes\n");
+                    buildprintf(" Yes\n");
                     loadfromgrouponly = 1;
                     return;
                 }
@@ -1738,7 +1738,7 @@ void loadefs(const char *filenam)
     else
     {
         total_lines += line_number;
-        initprintf("Code Size: %d bytes (%d labels).\n",(int)((scriptptr-script)<<2)-4,labelcnt);
+        buildprintf("Code Size: %d bytes (%d labels).\n",(int)((scriptptr-script)<<2)-4,labelcnt);
     }
 }
 

@@ -1949,7 +1949,7 @@ int ExtInit(void)
     // JBF 20031220: Because it's annoying renaming GRP files whenever I want to test different game data
     if (getenv("DUKE3DGRP")) {
 	    duke3dgrp = getenv("DUKE3DGRP");
-	    initprintf("Using %s as main GRP file\n", duke3dgrp);
+	    buildprintf("Using %s as main GRP file\n", duke3dgrp);
     }
     initgroupfile(duke3dgrp);
 
@@ -1963,7 +1963,7 @@ int ExtInit(void)
                 }
 	*/
     bpp = 8;
-	if (loadsetup("build.cfg") < 0) initprintf("Configuration file not found, using defaults.\n"), rv = 1;
+	if (loadsetup("build.cfg") < 0) buildputs("Configuration file not found, using defaults.\n"), rv = 1;
 	memcpy((void *)buildkeys,(void *)keys,NUMBUILDKEYS);   //Trick to make build use setup.dat keys
 
 	polymosttexfullbright = 240;

@@ -29,10 +29,10 @@ int osdcmd_echo(const osdfuncparm_t *parm)
 {
     int i;
     for (i = 0; i < parm->numparms; i++) {
-        if (i > 0) OSD_Printf(" ");
-        OSD_Printf("%s", parm->parms[i]);
+        if (i > 0) buildprintf(" ");
+        buildprintf("%s", parm->parms[i]);
     }
-    OSD_Printf("\n");
+    buildprintf("\n");
     
     return OSDCMD_OK;
 }
@@ -62,12 +62,12 @@ int osdcmd_changelevel(const osdfuncparm_t *parm)
     if (!VOLUMEONE) {
         if (PLUTOPAK) {
             if (volume > 3) {
-                OSD_Printf("changelevel: invalid volume number (range 1-4)\n");
+                buildprintf("changelevel: invalid volume number (range 1-4)\n");
                 return OSDCMD_OK;
             }
         } else {
             if (volume > 2) {
-                OSD_Printf("changelevel: invalid volume number (range 1-3)\n");
+                buildprintf("changelevel: invalid volume number (range 1-3)\n");
                 return OSDCMD_OK;
             }
         }
@@ -75,12 +75,12 @@ int osdcmd_changelevel(const osdfuncparm_t *parm)
 
     if (volume == 0) {
         if (level > 5) {
-            OSD_Printf("changelevel: invalid volume 1 level number (range 1-6)\n");
+            buildprintf("changelevel: invalid volume 1 level number (range 1-6)\n");
             return OSDCMD_OK;
         }
     } else {
         if (level > 10) {
-            OSD_Printf("changelevel: invalid volume 2+ level number (range 1-11)\n");
+            buildprintf("changelevel: invalid volume 2+ level number (range 1-11)\n");
             return OSDCMD_SHOWHELP;
         }
     }
@@ -123,7 +123,7 @@ int osdcmd_map(const osdfuncparm_t *parm)
             strcat(filename,".map");
 
     if ((i = kopen4load(filename,0)) < 0) {
-        OSD_Printf("map: file \"%s\" does not exist.\n", filename);
+        buildprintf("map: file \"%s\" does not exist.\n", filename);
         return OSDCMD_OK;
     }
     kclose(i);
@@ -162,7 +162,7 @@ int osdcmd_god(const osdfuncparm_t *parm)
     if (numplayers == 1 && ps[myconnectindex].gm & MODE_GAME) {
         osdcmd_cheatsinfo_stat.cheatnum = 0;
     } else {
-        OSD_Printf("god: Not in a single-player game.\n");
+        buildprintf("god: Not in a single-player game.\n");
     }
     
     return OSDCMD_OK;
@@ -174,7 +174,7 @@ int osdcmd_noclip(const osdfuncparm_t *parm)
     if (numplayers == 1 && ps[myconnectindex].gm & MODE_GAME) {
         osdcmd_cheatsinfo_stat.cheatnum = 20;
     } else {
-        OSD_Printf("noclip: Not in a single-player game.\n");
+        buildprintf("noclip: Not in a single-player game.\n");
     }
     
     return OSDCMD_OK;
@@ -189,7 +189,7 @@ int osdcmd_fileinfo(const osdfuncparm_t *parm)
     if (parm->numparms != 1) return OSDCMD_SHOWHELP;
     
     if ((i = kopen4load(parm->parms[0],0)) < 0) {
-        OSD_Printf("fileinfo: File \"%s\" does not exist.\n", parm->parms[0]);
+        buildprintf("fileinfo: File \"%s\" does not exist.\n", parm->parms[0]);
         return OSDCMD_OK;
     }
 
@@ -204,7 +204,7 @@ int osdcmd_fileinfo(const osdfuncparm_t *parm)
     
     kclose(i);
 
-    OSD_Printf("fileinfo: %s\n"
+    buildprintf("fileinfo: %s\n"
                "  File size: %d\n"
            "  CRC-32:    %08X\n",
            parm->parms[0], length, crc);
@@ -250,7 +250,7 @@ static int osdcmd_vidmode(const osdfuncparm_t *parm)
     }
 
     if (setgamemode(newfs,newwidth,newheight,newbpp)) {
-        initprintf("vidmode: Mode change failed!\n");
+        buildprintf("vidmode: Mode change failed!\n");
         if (setgamemode(ScreenMode, ScreenWidth, ScreenHeight, ScreenBPP))
             gameexit("vidmode: Reset failed!\n");
     }
@@ -264,12 +264,12 @@ static int osdcmd_vidmode(const osdfuncparm_t *parm)
 static int osdcmd_setstatusbarscale(const osdfuncparm_t *parm)
 {
     if (parm->numparms == 0) {
-        OSD_Printf("setstatusbarscale: scale is %d%%\n", ud.statusbarscale);
+        buildprintf("setstatusbarscale: scale is %d%%\n", ud.statusbarscale);
         return OSDCMD_OK;
     } else if (parm->numparms != 1) return OSDCMD_SHOWHELP;
 
     setstatusbarscale(Batol(parm->parms[0]));
-    OSD_Printf("setstatusbarscale: new scale is %d%%\n", ud.statusbarscale);
+    buildprintf("setstatusbarscale: new scale is %d%%\n", ud.statusbarscale);
     return OSDCMD_OK;
 }
 
@@ -282,7 +282,7 @@ static int osdcmd_spawn(const osdfuncparm_t *parm)
     short set=0, idx;
 
     if (numplayers > 1 || !(ps[myconnectindex].gm & MODE_GAME)) {
-        OSD_Printf("spawn: Can't spawn sprites in multiplayer games or demos\n");
+        buildprintf("spawn: Can't spawn sprites in multiplayer games or demos\n");
         return OSDCMD_OK;
     }
     
@@ -316,13 +316,13 @@ static int osdcmd_spawn(const osdfuncparm_t *parm)
                     if (i<labelcnt) break;
                 }
                 if (i==labelcnt) {
-                    OSD_Printf("spawn: Invalid tile label given\n");
+                    buildprintf("spawn: Invalid tile label given\n");
                     return OSDCMD_OK;
                 }
             }
             
             if (picnum >= MAXTILES) {
-                OSD_Printf("spawn: Invalid tile number\n");
+                buildprintf("spawn: Invalid tile number\n");
                 return OSDCMD_OK;
             }
             break;
@@ -336,7 +336,7 @@ static int osdcmd_spawn(const osdfuncparm_t *parm)
     if (set & 4) sprite[idx].ang = ang;
     if (set & 8) {
         if (setsprite(idx, x,y,z) < 0) {
-            OSD_Printf("spawn: Sprite can't be spawned into null space\n");
+            buildprintf("spawn: Sprite can't be spawned into null space\n");
             deletesprite(idx);
         }
     }
@@ -349,7 +349,7 @@ static int osdcmd_vars(const osdfuncparm_t *parm)
     int showval = (parm->numparms < 1);
     
     if (!Bstrcasecmp(parm->name, "myname")) {
-        if (showval) { OSD_Printf("Your name is \"%s\"\n", myname); }
+        if (showval) { buildprintf("Your name is \"%s\"\n", myname); }
         else {
             Bstrncpy(myname, parm->parms[0], sizeof(myname)-1);
             myname[sizeof(myname)-1] = 0;
@@ -358,17 +358,17 @@ static int osdcmd_vars(const osdfuncparm_t *parm)
         return OSDCMD_OK;
     }
     else if (!Bstrcasecmp(parm->name, "showfps")) {
-        if (showval) { OSD_Printf("showfps is %d\n", ud.tickrate); }
+        if (showval) { buildprintf("showfps is %d\n", ud.tickrate); }
         else ud.tickrate = (atoi(parm->parms[0]) != 0);
         return OSDCMD_OK;
     }
     else if (!Bstrcasecmp(parm->name, "showcoords")) {
-        if (showval) { OSD_Printf("showcoords is %d\n", ud.coords); }
+        if (showval) { buildprintf("showcoords is %d\n", ud.coords); }
         else ud.coords = (atoi(parm->parms[0]) != 0);
         return OSDCMD_OK;
     }
     else if (!Bstrcasecmp(parm->name, "useprecache")) {
-        if (showval) { OSD_Printf("useprecache is %d\n", useprecache); }
+        if (showval) { buildprintf("useprecache is %d\n", useprecache); }
         else useprecache = (atoi(parm->parms[0]) != 0);
         return OSDCMD_OK;
     }
@@ -398,7 +398,7 @@ int osdcmd_usemousejoy(const osdfuncparm_t *parm)
 {
     int showval = (parm->numparms < 1);
     if (!Bstrcasecmp(parm->name, "usemouse")) {
-        if (showval) { OSD_Printf("usemouse is %d\n", UseMouse); }
+        if (showval) { buildprintf("usemouse is %d\n", UseMouse); }
         else {
             UseMouse = (atoi(parm->parms[0]) != 0);
             CONTROL_MouseEnabled = (UseMouse && CONTROL_MousePresent);
@@ -406,7 +406,7 @@ int osdcmd_usemousejoy(const osdfuncparm_t *parm)
         return OSDCMD_OK;
     }
     else if (!Bstrcasecmp(parm->name, "usejoystick")) {
-        if (showval) { OSD_Printf("usejoystick is %d\n", UseJoystick); }
+        if (showval) { buildprintf("usejoystick is %d\n", UseJoystick); }
         else {
             UseJoystick = (atoi(parm->parms[0]) != 0);
             CONTROL_JoystickEnabled = (UseJoystick && CONTROL_JoyPresent);

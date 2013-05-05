@@ -2687,7 +2687,7 @@ if (PLUTOPAK) {
                     if (newvidmode >= validmodecnt) newvidmode = 0;
                 }
             } while ((validmode[newvidmode].fs&1) != ((vidsets[newvidset]>>16)&1) || validmode[newvidmode].bpp != (vidsets[newvidset] & 0x0ffff));
-            //OSD_Printf("New mode is %dx%dx%d-%d %d\n",validmode[newvidmode].xdim,validmode[newvidmode].ydim,validmode[newvidmode].bpp,validmode[newvidmode].fs,newvidmode);
+            //buildprintf("New mode is %dx%dx%d-%d %d\n",validmode[newvidmode].xdim,validmode[newvidmode].ydim,validmode[newvidmode].bpp,validmode[newvidmode].fs,newvidmode);
             if ((curvidmode == 0x7fffffffl && newvidmode == validmodecnt) || curvidmode == newvidmode)
                 changesmade &= ~1;
             else
@@ -2725,11 +2725,11 @@ if (PLUTOPAK) {
                             safevidmode = newvidmode;
                     } while (1);
                     if (safevidmode == -1) {
-                        //OSD_Printf("No best fit!\n");
+                        //buildputs("No best fit!\n");
                         newvidmode = lastvidmode;
                         newvidset = lastvidset;
                     } else {
-                        //OSD_Printf("Best fit is %dx%dx%d-%d %d\n",validmode[safevidmode].xdim,validmode[safevidmode].ydim,validmode[safevidmode].bpp,validmode[safevidmode].fs,safevidmode);
+                        //buildprintf("Best fit is %dx%dx%d-%d %d\n",validmode[safevidmode].xdim,validmode[safevidmode].ydim,validmode[safevidmode].bpp,validmode[safevidmode].fs,safevidmode);
                         newvidmode = safevidmode;
                     }
                 }
@@ -2780,12 +2780,12 @@ if (PLUTOPAK) {
                         safevidmode = newvidmode;
                 } while (1);
                 if (safevidmode == -1) {
-                    //OSD_Printf("No best fit!\n");
+                    //buildputs("No best fit!\n");
                     newvidmode = lastvidmode;
                     newvidset = lastvidset;
                     newfullscreen = !newfullscreen;
                 } else {
-                    //OSD_Printf("Best fit is %dx%dx%d-%d %d\n",validmode[safevidmode].xdim,validmode[safevidmode].ydim,validmode[safevidmode].bpp,validmode[safevidmode].fs,safevidmode);
+                    //buildprintf("Best fit is %dx%dx%d-%d %d\n",validmode[safevidmode].xdim,validmode[safevidmode].ydim,validmode[safevidmode].bpp,validmode[safevidmode].fs,safevidmode);
                     newvidmode = safevidmode;
                 }
                 if (newvidset != curvidset) changesmade |= 4; else changesmade &= ~4;

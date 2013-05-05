@@ -27,8 +27,6 @@ Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
 
 #include "duke3d.h"
 
-#include "osd.h"
-
 // PRIMITIVE
 
 
@@ -886,7 +884,7 @@ void operatesectors(short sn,short ii)
                 }
                 i = nextspritestat[i];
             }
-            if (i<0) { OSD_Printf("WARNING: SE23 i<0!\n"); return; }    // JBF
+            if (i<0) { buildprintf("WARNING: SE23 i<0!\n"); return; }    // JBF
 
             l = sector[SECT].lotag&0x8000;
 

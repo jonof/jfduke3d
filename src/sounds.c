@@ -147,7 +147,7 @@ void MusicStartup( void )
       }
    else
    {
-      initprintf("Couldn't find selected sound card, or, error w/ sound card itself.\n");
+      buildprintf("Couldn't find selected sound card, or, error w/ sound card itself.\n");
 
       SoundShutdown();
       uninittimer();

@@ -79,7 +79,7 @@ int ScanGroups(void)
     char *fn;
     struct Bstat st;
 
-    initprintf("Scanning for GRP files...\n");
+    buildprintf("Scanning for GRP files...\n");
     
     LoadGroupsCache();
 
@@ -122,7 +122,7 @@ int ScanGroups(void)
             if (fh < 0) continue;
             if (fstat(fh, &st)) continue;
 
-            initprintf(" Checksumming %s...", sidx->name);
+            buildprintf(" Checksumming %s...", sidx->name);
             crc32init(&crcval);         
             do {
                 b = read(fh, buf, sizeof(buf));
@@ -130,7 +130,7 @@ int ScanGroups(void)
             } while (b == sizeof(buf));
             crc32finish(&crcval);
             close(fh);
-            initprintf(" Done\n");
+            buildprintf(" Done\n");
         
             grp = (struct grpfile *)calloc(1, sizeof(struct grpfile));
             grp->name = strdup(sidx->name);
