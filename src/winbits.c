@@ -31,6 +31,7 @@ Windows-specific hooks for JonoF's Duke3D port.
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "build.h"
 #include "winlayer.h"
 
 

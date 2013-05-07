@@ -3,11 +3,8 @@
 #endif
 
 #include "duke3d.h"
-#include "sounds.h"
 
-#include "build.h"
 #include "winlayer.h"
-#include "compat.h"
 
 #include "grpscan.h"
 
@@ -95,7 +92,7 @@ static void PopulateForm(int pgs)
 			if (validmode[i].fs != settings.fullscreen) continue;
 
 			// all modes get added to the 3D mode list
-			Bsprintf(buf, "%ld x %ld %dbpp", validmode[i].xdim, validmode[i].ydim, validmode[i].bpp);
+			Bsprintf(buf, "%d x %d %dbpp", validmode[i].xdim, validmode[i].ydim, validmode[i].bpp);
 			j = ComboBox_AddString(hwnd, buf);
 			ComboBox_SetItemData(hwnd, j, i);
 			if (i == mode) ComboBox_SetCurSel(hwnd, j);

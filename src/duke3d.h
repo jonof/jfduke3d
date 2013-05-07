@@ -36,7 +36,6 @@ extern "C" {
 
 #include "baselayer.h"
 
-#include "function.h"
 
 extern int conversion,shareware,gametype;
 

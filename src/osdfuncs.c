@@ -1,6 +1,4 @@
 #include "duke3d.h"
-#include "build.h"
-#include "names.h"
 
 void GAME_drawosdchar(int x, int y, char ch, int shade, int pal)
 {

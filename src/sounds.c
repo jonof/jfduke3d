@@ -28,11 +28,7 @@ Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
 //#include <conio.h>
 #include <stdio.h>
 #include <string.h>
-#include "types.h"
-#include "fx_man.h"
-#include "music.h"
 #include "duke3d.h"
-#include "util_lib.h"
 
 
 #define LOUDESTVOLUME 150

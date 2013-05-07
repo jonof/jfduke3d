@@ -69,7 +69,6 @@ Duke Lookup Table
 #include "pragmas.h"
 #include "baselayer.h"
 #include "names.h"
-#include "osd.h"
 #include "cache1d.h"
 
 #define TICSPERFRAME 3

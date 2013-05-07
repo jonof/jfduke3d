@@ -14,7 +14,7 @@
 RELEASE ?= 1
 
 # DirectX SDK location
-DXROOT ?= $(HOME)/sdks/directx/dx81
+DXROOT ?= $(USERPROFILE)/sdks/directx/dx81
 
 # Engine source code path
 EROOT ?= jfbuild

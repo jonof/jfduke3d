@@ -25,26 +25,15 @@ Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
 */
 //-------------------------------------------------------------------------
 
-#include "build.h"
-#include "types.h"
-#include "develop.h"
+#include "duke3d.h"
+
 #include "scriplib.h"
-#include "file_lib.h"
 #include "mathutil.h"
-#include "gamedefs.h"
-#include "keyboard.h"
 #include "mouse.h"
-#include "function.h"
-#include "control.h"
-#include "fx_man.h"
-#include "sounds.h"
-#include "config.h"
 
 #include "osd.h"
 #include "osdcmds.h"
 //#include "crc32.h"
-
-#include "duke3d.h"
 
 #include "util_lib.h"
 

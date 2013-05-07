@@ -1,22 +1,22 @@
-duke3d_h=$(EINC)/build.h $(EINC)/pragmas.h $(EINC)/compat.h $(EINC)/cache1d.h $(EINC)/baselayer.h $(MACTROOT)/types.h $(MACTROOT)/file_lib.h $(MACTROOT)/util_lib.h $(MACTROOT)/keyboard.h $(MACTROOT)/control.h $(INC)/develop.h $(INC)/gamedefs.h $(INC)/function.h $(INC)/config.h $(INC)/sounds.h $(INC)/rts.h $(INC)/_rts.h $(INC)/soundefs.h $(AUDIOLIBROOT)/include/fx_man.h $(AUDIOLIBROOT)/include/music.h $(INC)/names.h $(INC)/funct.h $(INC)/duke3d.h $(EINC)/mmulti.h
+duke3d_h=$(INC)/duke3d.h $(EINC)/build.h $(EINC)/compat.h $(EINC)/cache1d.h $(EINC)/pragmas.h $(EINC)/mmulti.h $(EINC)/baselayer.h $(MACTROOT)/types.h $(MACTROOT)/file_lib.h $(MACTROOT)/util_lib.h $(MACTROOT)/keyboard.h $(MACTROOT)/control.h $(INC)/develop.h $(INC)/gamedefs.h $(INC)/function.h $(INC)/config.h $(INC)/sounds.h $(INC)/rts.h $(INC)/_rts.h $(INC)/soundefs.h $(AUDIOLIBROOT)/include/fx_man.h $(AUDIOLIBROOT)/include/music.h $(INC)/names.h $(INC)/funct.h
 
-$(SRC)/game.$o: $(SRC)/game.c $(MACTROOT)/scriplib.h $(duke3d_h) $(INC)/osdfuncs.h $(INC)/osdcmds.h $(INC)/grpscan.h
+$(SRC)/game.$o: $(SRC)/game.c $(MACTROOT)/scriplib.h $(duke3d_h) $(EINC)/osd.h $(INC)/osdfuncs.h $(INC)/osdcmds.h $(INC)/grpscan.h
 $(SRC)/actors.$o: $(SRC)/actors.c $(duke3d_h)
 $(SRC)/gamedef.$o: $(SRC)/gamedef.c $(duke3d_h)
 $(SRC)/global.$o: $(SRC)/global.c $(duke3d_h)
-$(SRC)/menues.$o: $(SRC)/menues.c $(duke3d_h) $(MACTROOT)/mouse.h $(MACTROOT)/animlib.h
+$(SRC)/menues.$o: $(SRC)/menues.c $(duke3d_h) $(MACTROOT)/mouse.h $(MACTROOT)/animlib.h $(EINC)/osd.h
 $(SRC)/player.$o: $(SRC)/player.c $(duke3d_h)
-$(SRC)/premap.$o: $(SRC)/premap.c $(duke3d_h) $(EINC)/osd.h
+$(SRC)/premap.$o: $(SRC)/premap.c $(duke3d_h)
 $(SRC)/sector.$o: $(SRC)/sector.c $(duke3d_h)
 $(SRC)/sounds.$o: $(SRC)/sounds.c $(duke3d_h)
 $(SRC)/rts.$o: $(SRC)/rts.c $(duke3d_h)
-$(SRC)/config.$o: $(SRC)/config.c $(duke3d_h) $(MACTROOT)/scriplib.h $(INC)/_functio.h
-$(SRC)/testcd.$o: $(SRC)/testcd.c
-$(SRC)/winbits.$o: $(SRC)/winbits.c
-$(SRC)/osdfuncs.$o: $(SRC)/names.h $(EINC)/build.h
-$(SRC)/osdcmds.$o: $(SRC)/osdcmds.c $(INC)/osdcmds.h $(EINC)/osd.h $(duke3d_h)
+$(SRC)/config.$o: $(SRC)/config.c $(duke3d_h) $(MACTROOT)/scriplib.h $(INC)/_functio.h $(EINC)/osd.h
+$(SRC)/testcd.$o: $(SRC)/testcd.c $(EINC)/build.h $(EINC)/compat.h
+$(SRC)/winbits.$o: $(SRC)/winbits.c $(EINC)/build.h $(EINC)/compat.h $(EINC)/winlayer.h
+$(SRC)/osdfuncs.$o: $(SRC)/osdfuncs.c $(duke3d_h)
+$(SRC)/osdcmds.$o: $(SRC)/osdcmds.c $(INC)/osdcmds.h $(EINC)/osd.h $(duke3d_h) $(EINC)/crc32.h
 
-$(SRC)/astub.$o: $(SRC)/astub.c $(EINC)/build.h $(EINC)/pragmas.h $(EINC)/compat.h $(EINC)/editor.h
+$(SRC)/astub.$o: $(SRC)/astub.c $(EINC)/build.h $(EINC)/compat.h $(EINC)/editor.h $(EINC)/pragmas.h $(EINC)/baselayer.h $(EINC)/cache1d.h $(INC)/names.h
 
 $(SRC)/game_icon.$o: $(RSRC)/game_icon.c
 $(SRC)/build_icon.$o: $(RSRC)/build_icon.c
@@ -29,14 +29,11 @@ $(SRC)/startgtk.game.$o: $(SRC)/startgtk.game.c $(duke3d_h) $(EINC)/dynamicgtk.h
 
 # jMACT objects
 $(MACTROOT)/animlib.$o: $(MACTROOT)/animlib.c $(MACTROOT)/types.h $(MACTROOT)/develop.h $(MACTROOT)/util_lib.h $(MACTROOT)/animlib.h $(EINC)/compat.h
-$(MACTROOT)/util_lib.$o: $(MACTROOT)/util_lib.c $(MACTROOT)/util_lib.h $(MACTROOT)/types.h $(EINC)/compat.h
-$(MACTROOT)/file_lib.$o: $(MACTROOT)/file_lib.c $(MACTROOT)/file_lib.h $(MACTROOT)/types.h
-$(MACTROOT)/control.$o: $(MACTROOT)/control.c $(MACTROOT)/types.h $(MACTROOT)/control.h $(MACTROOT)/keyboard.h $(MACTROOT)/mouse.h $(EINC)/baselayer.h
-$(MACTROOT)/keyboard.$o: $(MACTROOT)/keyboard.c $(MACTROOT)/types.h $(MACTROOT)/keyboard.h $(EINC)/compat.h $(EINC)/baselayer.h
-$(MACTROOT)/mouse.$o: $(MACTROOT)/mouse.c $(MACTROOT)/types.h $(MACTROOT)/mouse.h $(EINC)/baselayer.h
+$(MACTROOT)/util_lib.$o: $(MACTROOT)/util_lib.c $(MACTROOT)/util_lib.h $(MACTROOT)/types.h $(EINC)/compat.h $(EINC)/baselayer.h
+$(MACTROOT)/file_lib.$o: $(MACTROOT)/file_lib.c $(MACTROOT)/file_lib.h $(MACTROOT)/types.h $(MACTROOT)/util_lib.h $(EINC)/compat.h $(EINC)/cache1d.h
+$(MACTROOT)/control.$o: $(MACTROOT)/control.c $(MACTROOT)/types.h $(MACTROOT)/control.h $(MACTROOT)/_control.h $(MACTROOT)/keyboard.h $(MACTROOT)/mouse.h $(MACTROOT)/util_lib.h $(EINC)/build.h $(EINC)/compat.h $(EINC)/baselayer.h $(EINC)/pragmas.h
+$(MACTROOT)/keyboard.$o: $(MACTROOT)/keyboard.c $(MACTROOT)/types.h $(MACTROOT)/keyboard.h $(MACTROOT)/control.h $(EINC)/compat.h
+$(MACTROOT)/mouse.$o: $(MACTROOT)/mouse.c $(MACTROOT)/types.h $(MACTROOT)/mouse.h $(MACTROOT)/control.h $(EINC)/compat.h
 $(MACTROOT)/mathutil.$o: $(MACTROOT)/mathutil.c $(MACTROOT)/types.h
-$(MACTROOT)/scriplib.$o: $(MACTROOT)/scriplib.c $(MACTROOT)/scriplib.h $(MACTROOT)/util_lib.h $(MACTROOT)/_scrplib.h $(MACTROOT)/types.h $(EINC)/compat.h
-
-# jAudioLib objects
-$(SRC)/audiolib_musicstub.$o: $(SRC)/audiolib_musicstub.c $(AUDIOLIBROOT)/include/music.h
+$(MACTROOT)/scriplib.$o: $(MACTROOT)/scriplib.c $(MACTROOT)/scriplib.h $(MACTROOT)/file_lib.h $(MACTROOT)/util_lib.h $(MACTROOT)/_scrplib.h $(MACTROOT)/types.h $(EINC)/compat.h
 

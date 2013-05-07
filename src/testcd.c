@@ -28,8 +28,7 @@ Replacement cd-auth routine by Jonathon Fowler.
 #include <windows.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include "compat.h"
-#include "baselayer.h"
+#include "build.h"
 
 /*
  * Why even bother doing this? Because I can. Because it proves the futility
