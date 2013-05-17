@@ -20,6 +20,7 @@ static struct {
     char selectedgrp[BMAX_PATH+1];
     int game;
     int samplerate, bitspersample, channels;
+    int usemouse, usejoystick;
 } settings;
 
 static struct soundQuality_t {
@@ -36,6 +37,8 @@ static struct soundQuality_t {
     
     IBOutlet NSButton *alwaysShowButton;
     IBOutlet NSButton *fullscreenButton;
+    IBOutlet NSButton *useMouseButton;
+    IBOutlet NSButton *useJoystickButton;
     IBOutlet NSTextView *messagesView;
     IBOutlet NSTabView *tabView;
     IBOutlet NSPopUpButton *videoMode3DPUButton;
@@ -215,6 +218,8 @@ static struct soundQuality_t {
         }
     }
     
+    settings.usemouse = [useMouseButton state] == NSOnState;
+    settings.usejoystick = [useJoystickButton state] == NSOnState;
     settings.forcesetup = [alwaysShowButton state] == NSOnState;
     
     [NSApp stopModal];
@@ -226,6 +231,8 @@ static struct soundQuality_t {
     
     [fullscreenButton setState: (settings.fullscreen ? NSOnState : NSOffState)];
     [alwaysShowButton setState: (settings.forcesetup ? NSOnState : NSOffState)];
+    [useMouseButton setState: (settings.usemouse ? NSOnState : NSOffState)];
+    [useJoystickButton setState: (settings.usejoystick ? NSOnState : NSOffState)];
     [self populateVideoModes:YES];
     [self populateSoundQuality:YES];
     
@@ -406,6 +413,8 @@ int startwin_run(void)
     settings.samplerate = MixRate;
     settings.bitspersample = NumBits;
     settings.channels = NumChannels;
+    settings.usemouse = UseMouse;
+    settings.usejoystick = UseJoystick;
     settings.forcesetup = ForceSetup;
     settings.game = gametype;
     strncpy(settings.selectedgrp, duke3dgrp, BMAX_PATH);
@@ -427,7 +436,9 @@ int startwin_run(void)
         ScreenBPP = settings.bpp3d;
         MixRate = settings.samplerate;
         NumBits = settings.bitspersample;
-        NumChannels = settings.channels;        
+        NumChannels = settings.channels;
+        UseMouse = settings.usemouse;
+        UseJoystick = settings.usejoystick;
         ForceSetup = settings.forcesetup;
         duke3dgrp = settings.selectedgrp;
         gametype = settings.game;
