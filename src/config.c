@@ -285,9 +285,11 @@ void CONFIG_SetDefaults( void )
     memset(JoystickDigitalFunctions, -1, sizeof(JoystickDigitalFunctions));
     for (i=0; i<MAXJOYAXES; i++) {
         JoystickAnalogueScale[i] = 65536;
-        JoystickAnalogueDead[i] = 1000;
-        JoystickAnalogueSaturate[i] = 9500;
+        JoystickAnalogueDead[i] = 1024;
+        JoystickAnalogueSaturate[i] = 32767-1024;
         CONTROL_SetAnalogAxisScale( i, JoystickAnalogueScale[i], controldevice_joystick );
+        CONTROL_SetJoyAxisDead(i, JoystickAnalogueDead[i]);
+        CONTROL_SetJoyAxisSaturate(i, JoystickAnalogueSaturate[i]);
 
         JoystickDigitalFunctions[i][0] = CONFIG_FunctionNameToNum( joystickdigitaldefaults[i*2] );
         JoystickDigitalFunctions[i][1] = CONFIG_FunctionNameToNum( joystickdigitaldefaults[i*2+1] );
@@ -496,6 +498,8 @@ void CONFIG_SetupJoystick( void )
          CONTROL_MapDigitalAxis( i, JoystickDigitalFunctions[i][0], 0, controldevice_joystick );
          CONTROL_MapDigitalAxis( i, JoystickDigitalFunctions[i][1], 1, controldevice_joystick );
          CONTROL_SetAnalogAxisScale( i, JoystickAnalogueScale[i], controldevice_joystick );
+         CONTROL_SetJoyAxisDead( i, JoystickAnalogueDead[i] );
+         CONTROL_SetJoyAxisSaturate( i, JoystickAnalogueSaturate[i] );
       }
    }
 

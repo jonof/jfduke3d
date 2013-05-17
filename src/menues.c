@@ -3602,8 +3602,8 @@ if (PLUTOPAK) {
                 gametext(128,48+30*(m-first)-8,"DEAD",0,2+8+16);
                 gametext(128,48+30*(m-first)-8+15,"SATU",0,2+8+16);
                 
-                dx = odx = min(64,64l*JoystickAnalogueDead[m]/10000l);
-                dy = ody = min(64,64l*JoystickAnalogueSaturate[m]/10000l);
+                dx = odx = min(64,64l*JoystickAnalogueDead[m]/32767l);
+                dy = ody = min(64,64l*JoystickAnalogueSaturate[m]/32767l);
 
                 bar(217,48+30*(m-first),(short*)&dx,4,x==((m-first)*2),0,0);
                 bar(217,48+30*(m-first)+15,(short*)&dy,4,x==((m-first)*2+1),0,0);
@@ -3611,10 +3611,12 @@ if (PLUTOPAK) {
                 Bsprintf(buf,"%3d%%",100*dx/64); gametext(217-49,48+30*(m-first)-8,buf,0,2+8+16);
                 Bsprintf(buf,"%3d%%",100*dy/64); gametext(217-49,48+30*(m-first)-8+15,buf,0,2+8+16);
 
-                if (dx != odx) JoystickAnalogueDead[m]     = 10000l*dx/64l;
-                if (dy != ody) JoystickAnalogueSaturate[m] = 10000l*dy/64l;
-                if (dx != odx || dy != ody)
-                    setjoydeadzone(m,JoystickAnalogueDead[m],JoystickAnalogueSaturate[m]);
+                if (dx != odx) JoystickAnalogueDead[m]     = 32767l*dx/64l;
+                if (dy != ody) JoystickAnalogueSaturate[m] = 32767l*dy/64l;
+                if (dx != odx || dy != ody) {
+                    CONTROL_SetJoyAxisDead(m, JoystickAnalogueDead[m]);
+                    CONTROL_SetJoyAxisSaturate(m, JoystickAnalogueSaturate[m]);
+                }
             }
         //gametext(160,158,"DEAD = DEAD ZONE, SAT. = SATURATION",0,2+8+16);
         if (joynumaxes>4) {

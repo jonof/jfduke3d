@@ -1999,29 +1999,26 @@ if (!VOLUMEONE) {
     loc.bits |=   KB_KeyPressed(sc_Escape)<<31;
 
     // JBF: Run key behaviour is selectable
-    if (ud.runkey_mode)
+    if (ud.runkey_mode) {
 	running = BUTTON(gamefunc_Run)|ud.auto_run;	// classic
-    else
+    } else {
 	running = ud.auto_run ^ BUTTON(gamefunc_Run);	// modern
+    }
     svel = vel = angvel = horiz = 0;
 
 	if( BUTTON(gamefunc_Strafe) ) {
-		lastinfo.dyaw = info.dyaw % 8;
-		svel = -info.dyaw/8;
+		svel = -info.dyaw;
     } else {
-		lastinfo.dyaw = info.dyaw % 64;
-		angvel = info.dyaw/64;
+		angvel = info.dyaw;
 	}
 
-	lastinfo.dpitch = info.dpitch % (314-128);
 	if (ud.mouseflip)
-		horiz -= info.dpitch / (314-128);
+		horiz -= info.dpitch;
 	else
-		horiz += info.dpitch / (314-128);
+		horiz += info.dpitch;
 
     svel -= info.dx;
-	lastinfo.dz = info.dz % (1<<6);
-    vel = -info.dz>>6;
+    vel = -info.dz;
 
     if (running)
     {
