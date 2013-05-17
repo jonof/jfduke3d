@@ -2462,13 +2462,14 @@ void displayrest(int smoothratio)
     coolgaugetext(screenpeek);
     operatefta();
 
-    if( KB_KeyPressed(sc_Escape) && ud.overhead_on == 0
+    if( (KB_KeyPressed(sc_Escape) || BUTTON(gamefunc_Show_Menu)) && ud.overhead_on == 0
         && ud.show_help == 0
         && ps[myconnectindex].newowner == -1)
     {
         if( (ps[myconnectindex].gm&MODE_MENU) == MODE_MENU && current_menu < 51)
         {
             KB_ClearKeyDown(sc_Escape);
+            CONTROL_ClearButton(gamefunc_Show_Menu);
             ps[myconnectindex].gm &= ~MODE_MENU;
             if(ud.multimode < 2 && ud.recstat != 2)
             {
@@ -2485,6 +2486,7 @@ void displayrest(int smoothratio)
             (ps[myconnectindex].gm&MODE_TYPE) != MODE_TYPE)
         {
             KB_ClearKeyDown(sc_Escape);
+            CONTROL_ClearButton(gamefunc_Show_Menu);
             FX_StopAllSounds();
             clearsoundlocks();
 
@@ -8232,9 +8234,10 @@ int playback(void)
         if( (ps[myconnectindex].gm&MODE_MENU) && (ps[myconnectindex].gm&MODE_EOL) )
             goto RECHECK;
 
-        if (KB_KeyPressed(sc_Escape))
+        if (KB_KeyPressed(sc_Escape) || BUTTON(gamefunc_Show_Menu))
         {
             KB_ClearKeyDown(sc_Escape);
+            CONTROL_ClearButton(gamefunc_Show_Menu);
             FX_StopAllSounds();
             clearsoundlocks();
             ps[myconnectindex].gm |= MODE_MENU;

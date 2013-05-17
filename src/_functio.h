@@ -92,7 +92,8 @@ char * gamefunctions[] =
    "Quick_Kick",
    "Next_Weapon",
    "Previous_Weapon",
-   "Show_Console"
+   "Show_Menu",
+   "Show_Console",
    };
 #ifdef __SETUP__
 
