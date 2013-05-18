@@ -443,12 +443,6 @@ void getpackets(void)
     // only dispatch commands here when not in a game
     if( !(ps[myconnectindex].gm&MODE_GAME) ) { OSD_DispatchQueued(); }
 
-    if(qe == 0 && KB_KeyPressed(sc_LeftControl) && KB_KeyPressed(sc_LeftAlt) && KB_KeyPressed(sc_Delete))
-    {
-        qe = 1;
-        gameexit("Quick Exit.");
-    }
-
     if (numplayers < 2) return;
     while ((packbufleng = getpacket(&other,packbuf)) > 0)
     {
@@ -757,12 +751,6 @@ void faketimerhandler()
     int i, j, k, l;
 //    short who;
     input *osyn, *nsyn;
-
-    if(qe == 0 && KB_KeyPressed(sc_LeftControl) && KB_KeyPressed(sc_LeftAlt) && KB_KeyPressed(sc_Delete))
-    {
-        qe = 1;
-        gameexit("Quick Exit.");
-    }
 
     sampletimer();
     if ((totalclock < ototalclock+TICSPERFRAME) || (ready2send == 0)) return;
@@ -2032,6 +2020,7 @@ void FTA(short q,struct player_struct *p)
 void showtwoscreens(void)
 {
     short i;
+    UserInput uinfo;
 
     if (!VOLUMEALL) {
         setview(0,0,xdim-1,ydim-1);
@@ -2042,13 +2031,23 @@ void showtwoscreens(void)
         KB_FlushKeyboardQueue();
         rotatesprite(0,0,65536L,0,3291,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
         IFISSOFTMODE fadepal(0,0,0, 63,0,-7); else nextpage();
-        while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
+        do {
+            handleevents();
+            getpackets();
+            CONTROL_GetUserInput(&uinfo);
+            CONTROL_ClearUserInput(&uinfo);
+        } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
 
         fadepal(0,0,0, 0,64,7);
         KB_FlushKeyboardQueue();
         rotatesprite(0,0,65536L,0,3290,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
         IFISSOFTMODE fadepal(0,0,0, 63,0,-7); else nextpage();
-        while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
+        do {
+            handleevents();
+            getpackets();
+            CONTROL_GetUserInput(&uinfo);
+            CONTROL_ClearUserInput(&uinfo);
+        } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
     }
 }
 
@@ -2344,6 +2343,8 @@ void displayrest(int smoothratio)
 
     if(ud.show_help)
     {
+        UserInput uinfo;
+
         switch(ud.show_help)
         {
             case 1:
@@ -2354,9 +2355,10 @@ void displayrest(int smoothratio)
                 break;
         }
 
-        if ( KB_KeyPressed(sc_Escape ) )
+        CONTROL_GetUserInput(&uinfo);
+        CONTROL_ClearUserInput(&uinfo);
+        if (uinfo.button0 || uinfo.button1)
         {
-            KB_ClearKeyDown(sc_Escape);
             ud.show_help = 0;
             if(ud.multimode < 2 && ud.recstat != 2)
             {
@@ -7176,6 +7178,7 @@ void cacheicon(void)
 void Logo(void)
 {
     short i,j,soundanm;
+    UserInput uinfo;
 
     soundanm = 0;
 
@@ -7220,10 +7223,12 @@ if (VOLUMEALL) {
         nextpage();
         fadepal(0,0,0, 63,0,-7);
         totalclock = 0;
-        while( totalclock < (120*7) && !KB_KeyWaiting() ) {
+        do {
             handleevents();
             getpackets();
-        }
+            CONTROL_GetUserInput(&uinfo);
+            CONTROL_ClearUserInput(&uinfo);
+        } while (totalclock < (120*7) && !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
 
         KB_ClearKeysDown(); // JBF
     }
@@ -7240,8 +7245,7 @@ if (VOLUMEALL) {
     fadepal(0,0,0, 63,0,-7);
     totalclock = 0;
 
-    while(totalclock < (860+120) && !KB_KeyWaiting())
-    {
+    do {
         clearview(0);
         rotatesprite(0,0,65536L,0,BETASCREEN,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
 
@@ -7294,8 +7298,10 @@ if (VOLUMEALL) {
 
         handleevents();
         getpackets();
+        CONTROL_GetUserInput(&uinfo);
+        CONTROL_ClearUserInput(&uinfo);
         nextpage();
-    }
+    } while(totalclock < (860+120) && !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1);
     KB_ClearKeysDown(); // JBF
 
     if(ud.multimode > 1)
@@ -8996,6 +9002,7 @@ char domovethings(void)
 void doorders(void)
 {
     short i;
+    UserInput uinfo;
 
     setview(0,0,xdim-1,ydim-1);
 
@@ -9005,25 +9012,45 @@ void doorders(void)
     KB_FlushKeyboardQueue();
     rotatesprite(0,0,65536L,0,ORDERING,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
     fadepal(0,0,0, 63,0,-7);
-    while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
+    do {
+        handleevents();
+        getpackets();
+        CONTROL_GetUserInput(&uinfo);
+        CONTROL_ClearUserInput(&uinfo);
+    } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
 
     fadepal(0,0,0, 0,63,7);
     KB_FlushKeyboardQueue();
     rotatesprite(0,0,65536L,0,ORDERING+1,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
     fadepal(0,0,0, 63,0,-7);
-    while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
+    do {
+        handleevents();
+        getpackets();
+        CONTROL_GetUserInput(&uinfo);
+        CONTROL_ClearUserInput(&uinfo);
+    } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
 
     fadepal(0,0,0, 0,63,7);
     KB_FlushKeyboardQueue();
     rotatesprite(0,0,65536L,0,ORDERING+2,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
     fadepal(0,0,0, 63,0,-7);
-    while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
+    do {
+        handleevents();
+        getpackets();
+        CONTROL_GetUserInput(&uinfo);
+        CONTROL_ClearUserInput(&uinfo);
+    } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
 
     fadepal(0,0,0, 0,63,7);
     KB_FlushKeyboardQueue();
     rotatesprite(0,0,65536L,0,ORDERING+3,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
     fadepal(0,0,0, 63,0,-7);
-    while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
+    do {
+        handleevents();
+        getpackets();
+        CONTROL_GetUserInput(&uinfo);
+        CONTROL_ClearUserInput(&uinfo);
+    } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
 }
 
 void dobonus(char bonusonly)
@@ -9035,6 +9062,7 @@ void dobonus(char bonusonly)
     char *lastmapname;
     int32 playerbest = -1;
     char *yourtime = "Your Time:", *besttime = "Your Best Time:";
+    UserInput uinfo;
 
     int breathe[] =
     {
@@ -9124,8 +9152,10 @@ void dobonus(char bonusonly)
 
                     handleevents();
                     getpackets();
+                    CONTROL_GetUserInput(&uinfo);
+                    CONTROL_ClearUserInput(&uinfo);
                     nextpage();
-                    if( KB_KeyWaiting() ) break;
+                    if( KB_KeyWaiting() || uinfo.button0 || uinfo.button1 ) break;
                 }
             }
 
@@ -9141,7 +9171,12 @@ void dobonus(char bonusonly)
             } else {
                 nextpage();
             }
-            while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
+            do {
+                handleevents();
+                getpackets();
+                CONTROL_GetUserInput(&uinfo);
+                CONTROL_ClearUserInput(&uinfo);
+            } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
             fadepal(0,0,0, 0,64,1);
             stopmusic();
             FX_StopAllSounds();
@@ -9173,7 +9208,12 @@ void dobonus(char bonusonly)
             } else {
                 nextpage();
             }
-            while( !KB_KeyWaiting() ) { handleevents(); getpackets(); }
+            do {
+                handleevents();
+                getpackets();
+                CONTROL_GetUserInput(&uinfo);
+                CONTROL_ClearUserInput(&uinfo);
+            } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
             IFISSOFTMODE {
                 fadepal(0,0,0, 0,64,1);
             }
@@ -9220,7 +9260,12 @@ void dobonus(char bonusonly)
 
             fadepal(0,0,0, 63,0,-3);
             KB_FlushKeyboardQueue();
-            while(!KB_KeyWaiting()) { handleevents(); getpackets(); }
+            do {
+                handleevents();
+                getpackets();
+                CONTROL_GetUserInput(&uinfo);
+                CONTROL_ClearUserInput(&uinfo);
+            } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
             fadepal(0,0,0, 0,64,3);
 
             clearview(0L);
@@ -9229,7 +9274,12 @@ void dobonus(char bonusonly)
             playanm("DUKETEAM.ANM",4);
 
             KB_FlushKeyBoardQueue();
-            while(!KB_KeyWaiting()) { handleevents(); getpackets(); }
+            do {
+                handleevents();
+                getpackets();
+                CONTROL_GetUserInput(&uinfo);
+                CONTROL_ClearUserInput(&uinfo);
+            } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
 
             clearview(0L);
             nextpage();
@@ -9282,11 +9332,13 @@ void dobonus(char bonusonly)
 
             KB_FlushKeyBoardQueue();
             totalclock = 0;
-            if (PLUTOPAK) {
-                while(!KB_KeyWaiting() && totalclock < 120) { handleevents(); getpackets(); }
-            } else {
-                while(!KB_KeyWaiting()) { handleevents(); getpackets(); }
-            }
+            do {
+                handleevents();
+                getpackets();
+                CONTROL_GetUserInput(&uinfo);
+                CONTROL_ClearUserInput(&uinfo);
+                if (PLUTOPAK && totalclock >= 120) break;
+            } while (!KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1);
 
             ENDANM:
 
@@ -9301,7 +9353,12 @@ void dobonus(char bonusonly)
                 playanm("DUKETEAM.ANM",4);
 
                 KB_FlushKeyboardQueue();
-                while(!KB_KeyWaiting()) { handleevents(); getpackets(); }
+                do {
+                    handleevents();
+                    getpackets();
+                    CONTROL_GetUserInput(&uinfo);
+                    CONTROL_ClearUserInput(&uinfo);
+                } while (!KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1);
             }
 
             FX_StopAllSounds();
@@ -9405,7 +9462,12 @@ void dobonus(char bonusonly)
         fadepal(0,0,0, 63,0,-7);
 
         KB_FlushKeyboardQueue();
-        while(KB_KeyWaiting()==0) { handleevents(); getpackets(); }
+        do {
+            handleevents();
+            getpackets();
+            CONTROL_GetUserInput(&uinfo);
+            CONTROL_ClearUserInput(&uinfo);
+        } while (!KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1);
 
         if( KB_KeyPressed( sc_F12 ) )
         {

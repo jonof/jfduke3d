@@ -43,7 +43,7 @@ extern short inputloc;
 extern int recfilep;
 //extern char vgacompatible;
 short probey=0,lastprobey=0,last_menu,globalskillsound=-1;
-short sh,onbar,buttonstat,deletespot;
+short sh,onbar,deletespot;
 short last_zero,last_fifty,last_threehundred = 0;
 
 static char fileselect = 1, menunamecnt, menuname[256][64], curpath[80], menupath[80];
@@ -612,54 +612,26 @@ int saveplayer(signed char spot)
     return(0);
 }
 
-#define LMB (buttonstat&1)
-#define RMB (buttonstat&2)
-
-ControlInfo minfo;
-
-int mi;
+UserInput uinfo;
 
 static int probe_(int type,int x,int y,int i,int n)
 {
-    short centre, s;
-
-    s = 1+(CONTROL_GetMouseSensitivity()>>4);
-
-    {
-        CONTROL_GetInput( &minfo );
-        mi += minfo.dz;
-    }
+    short centre;
 
     if( x == (320>>1) )
         centre = 320>>2;
     else centre = 0;
 
-    if(!buttonstat)
+    if (uinfo.dir == dir_North)
     {
-        if( KB_KeyPressed( sc_UpArrow ) || KB_KeyPressed( sc_PgUp ) || KB_KeyPressed( sc_kpad_8 ) ||
-            mi < -8192 )
-        {
-            mi = 0;
-            KB_ClearKeyDown( sc_UpArrow );
-            KB_ClearKeyDown( sc_kpad_8 );
-            KB_ClearKeyDown( sc_PgUp );
-            sound(KICK_HIT);
-
-            probey--;
-            if(probey < 0) probey = n-1;
-            minfo.dz = 0;
-        }
-        if( KB_KeyPressed( sc_DownArrow ) || KB_KeyPressed( sc_PgDn ) || KB_KeyPressed( sc_kpad_2 )
-            || mi > 8192 )
-        {
-            mi = 0;
-            KB_ClearKeyDown( sc_DownArrow );
-            KB_ClearKeyDown( sc_kpad_2 );
-            KB_ClearKeyDown( sc_PgDn );
-            sound(KICK_HIT);
-            probey++;
-            minfo.dz = 0;
-        }
+        sound(KICK_HIT);
+        probey--;
+        if(probey < 0) probey = n-1;
+    }
+    else if (uinfo.dir == dir_South)
+    {
+        sound(KICK_HIT);
+        probey++;
     }
 
     if(probey >= n)
@@ -667,37 +639,30 @@ static int probe_(int type,int x,int y,int i,int n)
 
     if(centre)
     {
-//        rotatesprite(((320>>1)+(centre)+54)<<16,(y+(probey*i)-4)<<16,65536L,0,SPINNINGNUKEICON+6-((6+(totalclock>>3))%7),sh,0,10,0,0,xdim-1,ydim-1);
-//        rotatesprite(((320>>1)-(centre)-54)<<16,(y+(probey*i)-4)<<16,65536L,0,SPINNINGNUKEICON+((totalclock>>3)%7),sh,0,10,0,0,xdim-1,ydim-1);
-
         rotatesprite(((320>>1)+(centre>>1)+70)<<16,(y+(probey*i)-4)<<16,65536L>>type,0,SPINNINGNUKEICON+6-((6+(totalclock>>3))%7),sh,0,10,0,0,xdim-1,ydim-1);
         rotatesprite(((320>>1)-(centre>>1)-70)<<16,(y+(probey*i)-4)<<16,65536L>>type,0,SPINNINGNUKEICON+((totalclock>>3)%7),sh,0,10,0,0,xdim-1,ydim-1);
     }
     else
         rotatesprite((x<<16)-((tilesizx[BIGFNTCURSOR]-4)<<(16-type)),(y+(probey*i)-(4>>type))<<16,65536L>>type,0,SPINNINGNUKEICON+(((totalclock>>3))%7),sh,0,10,0,0,xdim-1,ydim-1);
 
-    if( KB_KeyPressed(sc_Space) || KB_KeyPressed( sc_kpad_Enter ) || KB_KeyPressed( sc_Enter ) || (LMB && !onbar) )
+    if (uinfo.button0)
     {
         if(current_menu != 110)
             sound(PISTOL_BODYHIT);
-        KB_ClearKeyDown( sc_Enter );
-        KB_ClearKeyDown( sc_Space );
-        KB_ClearKeyDown( sc_kpad_Enter );
         return(probey);
     }
-    else if( KB_KeyPressed( sc_Escape ) || (RMB) )
+    else if(uinfo.button1)
     {
         onbar = 0;
-        KB_ClearKeyDown( sc_Escape );
         sound(EXITMENUSOUND);
         return(-1);
     }
     else
     {
         if(onbar == 0) return(-probey-2);
-        if ( KB_KeyPressed( sc_LeftArrow ) || KB_KeyPressed( sc_kpad_4 ) || ((buttonstat&1) && minfo.dyaw < -128 ) )
+        if (uinfo.dir == dir_West)
             return(probey);
-        else if ( KB_KeyPressed( sc_RightArrow ) || KB_KeyPressed( sc_kpad_6 ) || ((buttonstat&1) && minfo.dyaw > 128 ) )
+        else if (uinfo.dir == dir_East)
             return(probey);
         else return(-probey-2);
     }
@@ -936,21 +901,15 @@ static void bar_(int type, int x,int y,short *p,short dainc,char damodify,short 
     {
         if(rev == 0)
         {
-            if( KB_KeyPressed( sc_LeftArrow ) || KB_KeyPressed( sc_kpad_4 ) || ((buttonstat&1) && minfo.dyaw < -256 ) ) // && onbar) )
+            if (uinfo.dir == dir_West)
             {
-                KB_ClearKeyDown( sc_LeftArrow );
-                KB_ClearKeyDown( sc_kpad_4 );
-
                 *p -= dainc;
                 if(*p < 0)
                     *p = 0;
                 sound(KICK_HIT);
             }
-            if( KB_KeyPressed( sc_RightArrow ) || KB_KeyPressed( sc_kpad_6 ) || ((buttonstat&1) && minfo.dyaw > 256 ) )//&& onbar) )
+            else if (uinfo.dir == dir_East)
             {
-                KB_ClearKeyDown( sc_RightArrow );
-                KB_ClearKeyDown( sc_kpad_6 );
-
                 *p += dainc;
                 if(*p > 63)
                     *p = 63;
@@ -959,24 +918,18 @@ static void bar_(int type, int x,int y,short *p,short dainc,char damodify,short 
         }
         else
         {
-            if( KB_KeyPressed( sc_RightArrow ) || KB_KeyPressed( sc_kpad_6 ) || ((buttonstat&1) && minfo.dyaw > 256 ))//&& onbar ))
+            if (uinfo.dir == dir_West)
             {
-                KB_ClearKeyDown( sc_RightArrow );
-                KB_ClearKeyDown( sc_kpad_6 );
-
-                *p -= dainc;
-                if(*p < 0)
-                    *p = 0;
-                sound(KICK_HIT);
-            }
-            if( KB_KeyPressed( sc_LeftArrow ) || KB_KeyPressed( sc_kpad_4 ) || ((buttonstat&1) && minfo.dyaw < -256 ))// && onbar) )
-            {
-                KB_ClearKeyDown( sc_LeftArrow );
-                KB_ClearKeyDown( sc_kpad_4 );
-
                 *p += dainc;
                 if(*p > 64)
                     *p = 64;
+                sound(KICK_HIT);
+            }
+            else if (uinfo.dir == dir_East)
+            {
+                *p -= dainc;
+                if(*p < 0)
+                    *p = 0;
                 sound(KICK_HIT);
             }
         }
@@ -1070,16 +1023,8 @@ void menus(void)
 
     getpackets();
 
-    {
-        if(buttonstat != 0 && !onbar)
-        {
-            x = MOUSE_GetButtons()<<3;
-            if( x ) buttonstat = x<<3;
-            else buttonstat = 0;
-        }
-        else
-            buttonstat = MOUSE_GetButtons();
-    }
+    CONTROL_GetUserInput(&uinfo);
+    CONTROL_ClearUserInput(&uinfo);
 
     if( (ps[myconnectindex].gm&MODE_MENU) == 0 )
     {
@@ -1453,16 +1398,15 @@ if (VOLUMEALL) {
 
             gametext(160,99+9,"(Y/N)",0,2+8+16);
 
-            if( KB_KeyPressed(sc_Escape) || KB_KeyPressed(sc_N) || RMB)
+            if (uinfo.button1 || KB_KeyPressed(sc_N))
             {
+                KB_ClearKeyDown(sc_N);
+
                 if(sprite[ps[myconnectindex].i].extra <= 0)
                 {
                     if (enterlevel(MODE_GAME)) backtomenu();
                     return;
                 }
-
-                KB_ClearKeyDown(sc_N);
-                KB_ClearKeyDown(sc_Escape);
 
                 ps[myconnectindex].gm &= ~MODE_MENU;
                 if(ud.multimode < 2 && ud.recstat != 2)
@@ -1472,7 +1416,7 @@ if (VOLUMEALL) {
                 }
             }
 
-            if(  KB_KeyPressed(sc_Space) || KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Y) || LMB )
+            if (uinfo.button0 || KB_KeyPressed(sc_Y))
             {
                 KB_FlushKeyboardQueue();
                 KB_ClearKeysDown();
@@ -1624,7 +1568,7 @@ if (VOLUMEALL) {
             gametext(160,99,buf,0,2+8+16);
             gametext(160,99+9,"(Y/N)",0,2+8+16);
 
-            if( KB_KeyPressed(sc_Space) || KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Y) || LMB )
+            if (uinfo.button0 || KB_KeyPressed(sc_Y))
             {
                 lastsavedpos = current_menu-1000;
 
@@ -1669,10 +1613,9 @@ if (VOLUMEALL) {
 
                 break;
             }
-            if( KB_KeyPressed(sc_N) || KB_KeyPressed(sc_Escape) || RMB)
+            if (uinfo.button1 || KB_KeyPressed(sc_N))
             {
                 KB_ClearKeyDown(sc_N);
-                KB_ClearKeyDown(sc_Escape);
                 sound(EXITMENUSOUND);
                 if(ps[myconnectindex].gm&MODE_DEMO) cmenu(300);
                 else
@@ -1692,15 +1635,14 @@ if (VOLUMEALL) {
 
         case 1500:
 
-            if( KB_KeyPressed(sc_Space) || KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Y) || LMB )
+            if (uinfo.button0 || KB_KeyPressed(sc_Y))
             {
                 KB_FlushKeyboardQueue();
                 cmenu(100);
             }
-            if( KB_KeyPressed(sc_N) || KB_KeyPressed(sc_Escape) || RMB)
+            if (uinfo.button1 || KB_KeyPressed(sc_N))
             {
                 KB_ClearKeyDown(sc_N);
-                KB_ClearKeyDown(sc_Escape);
                 if(ud.multimode < 2 && ud.recstat != 2)
                 {
                     ready2send = 1;
@@ -1746,19 +1688,18 @@ if (VOLUMEALL) {
             gametext(160,90,"OVERWRITE previous SAVED game?",0,2+8+16);
             gametext(160,90+9,"(Y/N)",0,2+8+16);
 
-            if( KB_KeyPressed(sc_Space) || KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Y) || LMB )
+            if(uinfo.button0 || KB_KeyPressed(sc_Y))
             {
-        inputloc = strlen(&ud.savegame[current_menu-2000][0]);
+                inputloc = strlen(&ud.savegame[current_menu-2000][0]);
 
                 cmenu(current_menu-2000+360);
 
                 KB_FlushKeyboardQueue();
                 break;
             }
-            if( KB_KeyPressed(sc_N) || KB_KeyPressed(sc_Escape) || RMB)
+            if(uinfo.button1 || KB_KeyPressed(sc_N))
             {
                 KB_ClearKeyDown(sc_N);
-                KB_ClearKeyDown(sc_Escape);
                 cmenu(351);
                 sound(EXITMENUSOUND);
             }
@@ -1787,44 +1728,24 @@ if (VOLUMEALL) {
                 l = 3;
             }
 
-            if(KB_KeyPressed(sc_Escape)) { cmenu(0); break; }
-
-            if( KB_KeyPressed( sc_LeftArrow ) ||
-                KB_KeyPressed( sc_kpad_4 ) ||
-                KB_KeyPressed( sc_UpArrow ) ||
-                KB_KeyPressed( sc_PgUp ) ||
-                KB_KeyPressed( sc_kpad_8 ) )
+            if(uinfo.button1)
             {
-                KB_ClearKeyDown(sc_LeftArrow);
-                KB_ClearKeyDown(sc_kpad_4);
-                KB_ClearKeyDown(sc_UpArrow);
+                cmenu(0);
+                break;
+            }
+
+            if(uinfo.dir == dir_West || uinfo.dir == dir_North || KB_KeyPressed( sc_PgUp ))
+            {
                 KB_ClearKeyDown(sc_PgUp);
-                KB_ClearKeyDown(sc_kpad_8);
 
                 sound(KICK_HIT);
                 current_menu--;
                 if(current_menu < 990) current_menu = 990+l;
             }
-            else if(
-                KB_KeyPressed( sc_PgDn ) ||
-                KB_KeyPressed( sc_Enter ) ||
-                KB_KeyPressed( sc_Space ) ||
-                KB_KeyPressed( sc_kpad_Enter ) ||
-                KB_KeyPressed( sc_RightArrow ) ||
-                KB_KeyPressed( sc_DownArrow ) ||
-                KB_KeyPressed( sc_kpad_2 ) ||
-                KB_KeyPressed( sc_kpad_9 ) ||
-                KB_KeyPressed( sc_kpad_6 ) )
+            else if(uinfo.dir == dir_East || uinfo.dir == dir_South || KB_KeyPressed( sc_PgDn ))
             {
                 KB_ClearKeyDown(sc_PgDn);
-                KB_ClearKeyDown(sc_Enter);
-                KB_ClearKeyDown(sc_RightArrow);
-                KB_ClearKeyDown(sc_kpad_Enter);
-                KB_ClearKeyDown(sc_kpad_6);
-                KB_ClearKeyDown(sc_kpad_9);
-                KB_ClearKeyDown(sc_kpad_2);
-                KB_ClearKeyDown(sc_DownArrow);
-                KB_ClearKeyDown(sc_Space);
+
                 sound(KICK_HIT);
                 current_menu++;
                 if(current_menu > 990+l) current_menu = 990;
@@ -2337,18 +2258,12 @@ if (PLUTOPAK) {
             }
         }
 
-            if( KB_KeyPressed( sc_LeftArrow ) || KB_KeyPressed( sc_kpad_4 ) || ((buttonstat&1) && minfo.dyaw < -256 ) ||
-                KB_KeyPressed( sc_RightArrow ) || KB_KeyPressed( sc_kpad_6 ) || ((buttonstat&1) && minfo.dyaw > 256 ) ||
-        KB_KeyPressed( sc_Tab ) )
-            {
-                KB_ClearKeyDown( sc_LeftArrow );
-                KB_ClearKeyDown( sc_kpad_4 );
-                KB_ClearKeyDown( sc_RightArrow );
-                KB_ClearKeyDown( sc_kpad_6 );
-        KB_ClearKeyDown( sc_Tab );
-                currentlist = 1-currentlist;
-                sound(KICK_HIT);
-            }
+        if (uinfo.dir == dir_West || uinfo.dir == dir_East || KB_KeyPressed(sc_Tab))
+        {
+            KB_ClearKeyDown( sc_Tab );
+            currentlist = 1-currentlist;
+            sound(KICK_HIT);
+        }
         
         onbar = 0;
         probey = 2;
@@ -2667,7 +2582,7 @@ if (PLUTOPAK) {
         else
             x = probe(c+6,50+62-16-16-16,16,x);
 
-        if (probey==0 && (KB_KeyPressed(sc_LeftArrow) || KB_KeyPressed(sc_RightArrow))) {
+        if (probey==0 && (uinfo.dir == dir_West || uinfo.dir == dir_East)) {
             sound(PISTOL_BODYHIT);
             x=0;
         }
@@ -2679,7 +2594,7 @@ if (PLUTOPAK) {
 
         case 0:
             do {
-                if (KB_KeyPressed(sc_LeftArrow)) {
+                if (uinfo.dir == dir_West) {
                     newvidmode--;
                     if (newvidmode < 0) newvidmode = validmodecnt-1;
                 } else {
@@ -2692,8 +2607,6 @@ if (PLUTOPAK) {
                 changesmade &= ~1;
             else
                 changesmade |= 1;
-            KB_ClearKeyDown(sc_LeftArrow);
-            KB_ClearKeyDown(sc_RightArrow);
             break;
 
         case 1:
@@ -2919,14 +2832,8 @@ if (PLUTOPAK) {
         else if (m + 13 >= NUMGAMEFUNCTIONS) m = NUMGAMEFUNCTIONS-13;
         
         if (probey == gamefunc_Show_Console) currentlist = 0;
-        else if (KB_KeyPressed( sc_LeftArrow ) || KB_KeyPressed( sc_kpad_4 ) ||
-             KB_KeyPressed( sc_RightArrow ) || KB_KeyPressed( sc_kpad_6 ) ||
-             KB_KeyPressed( sc_Tab )) {
+        else if (uinfo.dir == dir_West || uinfo.dir == dir_East || KB_KeyPressed( sc_Tab )) {
             currentlist ^= 1;
-            KB_ClearKeyDown( sc_LeftArrow );
-            KB_ClearKeyDown( sc_RightArrow );
-            KB_ClearKeyDown( sc_kpad_4 );
-            KB_ClearKeyDown( sc_kpad_6 );
             KB_ClearKeyDown( sc_Tab );
             sound(KICK_HIT);
         } else if (KB_KeyPressed( sc_Delete )) {
@@ -3940,48 +3847,23 @@ if (PLUTOPAK) {
 
             c = 320>>1;
 
-            if( KB_KeyPressed( sc_LeftArrow ) ||
-                KB_KeyPressed( sc_kpad_4 ) ||
-                KB_KeyPressed( sc_UpArrow ) ||
-                KB_KeyPressed( sc_PgUp ) ||
-                KB_KeyPressed( sc_kpad_8 ) )
+            if(uinfo.dir == dir_West || uinfo.dir == dir_North || KB_KeyPressed( sc_PgUp ))
             {
-                KB_ClearKeyDown(sc_LeftArrow);
-                KB_ClearKeyDown(sc_kpad_4);
-                KB_ClearKeyDown(sc_UpArrow);
                 KB_ClearKeyDown(sc_PgUp);
-                KB_ClearKeyDown(sc_kpad_8);
 
                 sound(KICK_HIT);
                 current_menu--;
                 if(current_menu < 400) current_menu = 403;
             }
-            else if(
-                KB_KeyPressed( sc_PgDn ) ||
-                KB_KeyPressed( sc_Enter ) ||
-                KB_KeyPressed( sc_kpad_Enter ) ||
-                KB_KeyPressed( sc_RightArrow ) ||
-                KB_KeyPressed( sc_DownArrow ) ||
-                KB_KeyPressed( sc_kpad_2 ) ||
-                KB_KeyPressed( sc_kpad_9 ) ||
-                KB_KeyPressed( sc_Space ) ||
-                KB_KeyPressed( sc_kpad_6 ) )
+            else if(uinfo.dir == dir_East || uinfo.dir == dir_South || KB_KeyPressed( sc_PgDn ))
             {
                 KB_ClearKeyDown(sc_PgDn);
-                KB_ClearKeyDown(sc_Enter);
-                KB_ClearKeyDown(sc_RightArrow);
-                KB_ClearKeyDown(sc_kpad_Enter);
-                KB_ClearKeyDown(sc_kpad_6);
-                KB_ClearKeyDown(sc_kpad_9);
-                KB_ClearKeyDown(sc_kpad_2);
-                KB_ClearKeyDown(sc_DownArrow);
-                KB_ClearKeyDown(sc_Space);
                 sound(KICK_HIT);
                 current_menu++;
                 if(current_menu > 403) current_menu = 400;
             }
 
-            if( KB_KeyPressed(sc_Escape) )
+            if(uinfo.button1)
             {
                 if(ps[myconnectindex].gm&MODE_GAME)
                     cmenu(50);
@@ -3997,48 +3879,24 @@ VOLUME_ALL_40x:
 
             c = 320>>1;
 
-            if( KB_KeyPressed( sc_LeftArrow ) ||
-                KB_KeyPressed( sc_kpad_4 ) ||
-                KB_KeyPressed( sc_UpArrow ) ||
-                KB_KeyPressed( sc_PgUp ) ||
-                KB_KeyPressed( sc_kpad_8 ) )
+            if(uinfo.dir == dir_West || uinfo.dir == dir_North || KB_KeyPressed( sc_PgUp ))
             {
-                KB_ClearKeyDown(sc_LeftArrow);
-                KB_ClearKeyDown(sc_kpad_4);
-                KB_ClearKeyDown(sc_UpArrow);
                 KB_ClearKeyDown(sc_PgUp);
-                KB_ClearKeyDown(sc_kpad_8);
 
                 sound(KICK_HIT);
                 current_menu--;
                 if(current_menu < 400) current_menu = 401;
             }
-            else if(
-                KB_KeyPressed( sc_PgDn ) ||
-                KB_KeyPressed( sc_Enter ) ||
-                KB_KeyPressed( sc_kpad_Enter ) ||
-                KB_KeyPressed( sc_RightArrow ) ||
-                KB_KeyPressed( sc_DownArrow ) ||
-                KB_KeyPressed( sc_kpad_2 ) ||
-                KB_KeyPressed( sc_kpad_9 ) ||
-                KB_KeyPressed( sc_Space ) ||
-                KB_KeyPressed( sc_kpad_6 ) )
+            else if(uinfo.dir == dir_East || uinfo.dir == dir_South || KB_KeyPressed( sc_PgDn ))
             {
                 KB_ClearKeyDown(sc_PgDn);
-                KB_ClearKeyDown(sc_Enter);
-                KB_ClearKeyDown(sc_RightArrow);
-                KB_ClearKeyDown(sc_kpad_Enter);
-                KB_ClearKeyDown(sc_kpad_6);
-                KB_ClearKeyDown(sc_kpad_9);
-                KB_ClearKeyDown(sc_kpad_2);
-                KB_ClearKeyDown(sc_DownArrow);
-                KB_ClearKeyDown(sc_Space);
+
                 sound(KICK_HIT);
                 current_menu++;
                 if(current_menu > 401) current_menu = 400;
             }
 
-            if( KB_KeyPressed(sc_Escape) )
+            if(uinfo.button1)
             {
                 if(ps[myconnectindex].gm&MODE_GAME)
                     cmenu(50);
@@ -4065,7 +3923,7 @@ VOLUME_ALL_40x:
             gametext(c,90,"Are you sure you want to quit?",0,2+8+16);
             gametext(c,99,"(Y/N)",0,2+8+16);
 
-            if( KB_KeyPressed(sc_Space) || KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Y) || LMB )
+            if(uinfo.button0 || KB_KeyPressed(sc_Y))
             {
                 KB_FlushKeyboardQueue();
 
@@ -4090,7 +3948,7 @@ VOLUME_ALL_40x:
             }
 
             x = probe(186,124,0,0);
-            if(x == -1 || KB_KeyPressed(sc_N) || RMB)
+            if(x == -1 || KB_KeyPressed(sc_N))
             {
                 KB_ClearKeyDown(sc_N);
                 quittimer = 0;
@@ -4113,7 +3971,7 @@ VOLUME_ALL_40x:
             gametext(c,90,"Quit to Title?",0,2+8+16);
             gametext(c,99,"(Y/N)",0,2+8+16);
 
-            if( KB_KeyPressed(sc_Space) || KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) || KB_KeyPressed(sc_Y) || LMB )
+            if(uinfo.button0 || KB_KeyPressed(sc_Y))
             {
                 KB_FlushKeyboardQueue();
                 ps[myconnectindex].gm = MODE_DEMO;
@@ -4124,7 +3982,7 @@ VOLUME_ALL_40x:
 
             x = probe(186,124,0,0);
 
-            if(x == -1 || KB_KeyPressed(sc_N) || RMB)
+            if(x == -1 || KB_KeyPressed(sc_N))
             {
                 ps[myconnectindex].gm &= ~MODE_MENU;
                 if(ud.multimode < 2  && ud.recstat != 2)
@@ -4145,9 +4003,8 @@ VOLUME_ALL_40x:
             gametext(160,50,buf,0,2+8+16);
             gametext(160,59,"to select level",0,2+8+16);
 
-            if( KB_KeyPressed(sc_Escape) )
+            if(uinfo.button1)
             {
-                KB_ClearKeyDown(sc_Escape);
                 sound(EXITMENUSOUND);
                 cmenu(0);
             }
@@ -4174,18 +4031,11 @@ VOLUME_ALL_40x:
             }
 
             fileselect = probey;
-            if( KB_KeyPressed( sc_LeftArrow ) || KB_KeyPressed( sc_kpad_4 ) || ((buttonstat&1) && minfo.dyaw < -256 ) )
-            {
-                KB_ClearKeyDown( sc_LeftArrow );
-                KB_ClearKeyDown( sc_kpad_4 );
+            if (uinfo.dir == dir_West) {
                 probey -= 15;
                 if(probey < 0) probey += 15;
                 else sound(KICK_HIT);
-            }
-            if( KB_KeyPressed( sc_RightArrow ) || KB_KeyPressed( sc_kpad_6 ) || ((buttonstat&1) && minfo.dyaw > 256 ) )
-            {
-                KB_ClearKeyDown( sc_RightArrow );
-                KB_ClearKeyDown( sc_kpad_6 );
+            } else if (uinfo.dir == dir_East) {
                 probey += 15;
                 if(probey >= menunamecnt)
                     probey -= 15;
@@ -4913,6 +4763,7 @@ void playanm(const char *fn,char t)
     unsigned char *animbuf, *palptr, palbuf[768];
     int i, j, k, length=0, numframes=0;
     int32 handle=-1;
+    UserInput uinfo;
 
 //    return;
 
@@ -4959,9 +4810,12 @@ void playanm(const char *fn,char t)
     {
         while(totalclock < ototalclock)
         {
-            if( KB_KeyWaiting() )
+            handleevents();
+            getpackets();
+            CONTROL_GetUserInput(&uinfo);
+            CONTROL_ClearUserInput(&uinfo);
+            if( KB_KeyWaiting() || uinfo.button0 || uinfo.button1 )
                 goto ENDOFANIMLOOP;
-            handleevents(); getpackets();
         }
 
         if(t == 10) ototalclock += 14;
