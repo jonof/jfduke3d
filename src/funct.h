@@ -307,6 +307,7 @@ extern void moveexplosions(void );
 
 // game.c
 extern void setstatusbarscale(int sc);
+extern void userack(void);
 
 extern void setgamepalette(struct player_struct *player, unsigned char *pal, int set);
 extern void fadepal(int r, int g, int b, int start, int end, int step);

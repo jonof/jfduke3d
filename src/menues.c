@@ -45,6 +45,7 @@ extern int recfilep;
 short probey=0,lastprobey=0,last_menu,globalskillsound=-1;
 short sh,onbar,deletespot;
 short last_zero,last_fifty,last_threehundred = 0;
+UserInput uinfo;
 
 static char fileselect = 1, menunamecnt, menuname[256][64], curpath[80], menupath[80];
 
@@ -76,6 +77,9 @@ void cmenu(short cm)
         probey = 1;
     else probey = 0;
     lastprobey = -1;
+
+    uinfo.dir = dir_None;
+    uinfo.button0 = uinfo.button1 = FALSE;
 }
 
 void getangplayers(short snum)
@@ -612,8 +616,6 @@ int saveplayer(signed char spot)
     return(0);
 }
 
-UserInput uinfo;
-
 static int probe_(int type,int x,int y,int i,int n)
 {
     short centre;
@@ -621,6 +623,8 @@ static int probe_(int type,int x,int y,int i,int n)
     if( x == (320>>1) )
         centre = 320>>2;
     else centre = 0;
+
+    CONTROL_ClearUserInput(&uinfo);
 
     if (uinfo.dir == dir_North)
     {
@@ -1023,14 +1027,13 @@ void menus(void)
 
     getpackets();
 
-    CONTROL_GetUserInput(&uinfo);
-    CONTROL_ClearUserInput(&uinfo);
-
     if( (ps[myconnectindex].gm&MODE_MENU) == 0 )
     {
         walock[TILE_LOADSHOT] = 1;
         return;
     }
+
+    CONTROL_GetUserInput(&uinfo);
 
     ps[myconnectindex].gm &= (0xff-MODE_TYPE);
     ps[myconnectindex].fta = 0;
@@ -4770,12 +4773,9 @@ void playanm(const char *fn,char t)
     if(t != 7 && t != 9 && t != 10 && t != 11)
         KB_FlushKeyboardQueue();
 
-    if( KB_KeyWaiting() )
-    {
-        FX_StopAllSounds();
-        goto ENDOFANIMLOOP;
-    }
-
+    uinfo.dir = dir_None;
+    uinfo.button0 = uinfo.button1 = FALSE;
+    
     handle = kopen4load(fn,0);
     if(handle == -1) return;
     length = kfilelength(handle);
@@ -4813,7 +4813,6 @@ void playanm(const char *fn,char t)
             handleevents();
             getpackets();
             CONTROL_GetUserInput(&uinfo);
-            CONTROL_ClearUserInput(&uinfo);
             if( KB_KeyWaiting() || uinfo.button0 || uinfo.button1 )
                 goto ENDOFANIMLOOP;
         }
@@ -4846,6 +4845,7 @@ void playanm(const char *fn,char t)
 
     ENDOFANIMLOOP:
 
+    CONTROL_ClearUserInput(&uinfo);
     ANIM_FreeAnim ();
     walock[TILE_ANIM] = 1;
 }

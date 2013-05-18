@@ -385,27 +385,27 @@ void gamenumber(int x,int y,int n,char s)
 char recbuf[80];
 void allowtimetocorrecterrorswhenquitting(void)
 {
-     int i, j, oldtotalclock;
+    int i, j, oldtotalclock;
 
-     ready2send = 0;
+    ready2send = 0;
 
-     for(j=0;j<8;j++)
-     {
-          oldtotalclock = totalclock;
+    for(j=0;j<8;j++)
+    {
+        oldtotalclock = totalclock;
 
-         while (totalclock < oldtotalclock+TICSPERFRAME) {
-             handleevents();
-              getpackets();
-         }
+        while (totalclock < oldtotalclock+TICSPERFRAME) {
+            handleevents();
+            getpackets();
+        }
 
-          if(KB_KeyPressed(sc_Escape)) return;
+        if(KB_KeyPressed(sc_Escape)) return;
 
-          packbuf[0] = 127;
-          for(i=connecthead;i>=0;i=connectpoint2[i])
-             {
-                     if (i != myconnectindex) sendpacket(i,packbuf,1);
-                     if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
-             }
+        packbuf[0] = 127;
+        for(i=connecthead;i>=0;i=connectpoint2[i])
+        {
+            if (i != myconnectindex) sendpacket(i,packbuf,1);
+            if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
+        }
      }
 }
 
@@ -2027,27 +2027,18 @@ void showtwoscreens(void)
         flushperms();
         //ps[myconnectindex].palette = palette;
         setgamepalette(&ps[myconnectindex], palette, 1);
+        
         fadepal(0,0,0, 0,64,7);
-        KB_FlushKeyboardQueue();
         rotatesprite(0,0,65536L,0,3291,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
         IFISSOFTMODE fadepal(0,0,0, 63,0,-7); else nextpage();
-        do {
-            handleevents();
-            getpackets();
-            CONTROL_GetUserInput(&uinfo);
-            CONTROL_ClearUserInput(&uinfo);
-        } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
+
+        userack();
 
         fadepal(0,0,0, 0,64,7);
-        KB_FlushKeyboardQueue();
         rotatesprite(0,0,65536L,0,3290,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
         IFISSOFTMODE fadepal(0,0,0, 63,0,-7); else nextpage();
-        do {
-            handleevents();
-            getpackets();
-            CONTROL_GetUserInput(&uinfo);
-            CONTROL_ClearUserInput(&uinfo);
-        } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
+
+        userack();
     }
 }
 
@@ -2343,8 +2334,6 @@ void displayrest(int smoothratio)
 
     if(ud.show_help)
     {
-        UserInput uinfo;
-
         switch(ud.show_help)
         {
             case 1:
@@ -2353,19 +2342,6 @@ void displayrest(int smoothratio)
             case 2:
                 rotatesprite(0,0,65536L,0,F1HELP,0,0,10+16+64, 0,0,xdim-1,ydim-1);
                 break;
-        }
-
-        CONTROL_GetUserInput(&uinfo);
-        CONTROL_ClearUserInput(&uinfo);
-        if (uinfo.button0 || uinfo.button1)
-        {
-            ud.show_help = 0;
-            if(ud.multimode < 2 && ud.recstat != 2)
-            {
-                ready2send = 1;
-                totalclock = ototalclock;
-            }
-            vscrn();
         }
         if (tintf > 0 || dotint) palto(tintr,tintg,tintb,tintf|128);
         return;
@@ -7223,12 +7199,16 @@ if (VOLUMEALL) {
         nextpage();
         fadepal(0,0,0, 63,0,-7);
         totalclock = 0;
+
+        uinfo.dir = dir_None;
+        uinfo.button0 = uinfo.button1 = FALSE;
+        KB_FlushKeyboardQueue();
         do {
             handleevents();
             getpackets();
             CONTROL_GetUserInput(&uinfo);
-            CONTROL_ClearUserInput(&uinfo);
         } while (totalclock < (120*7) && !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
+        CONTROL_ClearUserInput(&uinfo);
 
         KB_ClearKeysDown(); // JBF
     }
@@ -7241,10 +7221,12 @@ if (VOLUMEALL) {
     setgamepalette(&ps[myconnectindex], titlepal, 3);   // JBF 20040308
     flushperms();
     rotatesprite(0,0,65536L,0,BETASCREEN,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
-    KB_FlushKeyboardQueue();
     fadepal(0,0,0, 63,0,-7);
     totalclock = 0;
 
+    uinfo.dir = dir_None;
+    uinfo.button0 = uinfo.button1 = FALSE;
+    KB_FlushKeyboardQueue();
     do {
         clearview(0);
         rotatesprite(0,0,65536L,0,BETASCREEN,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
@@ -7296,12 +7278,12 @@ if (VOLUMEALL) {
             }
         }
 
+        nextpage();
         handleevents();
         getpackets();
         CONTROL_GetUserInput(&uinfo);
-        CONTROL_ClearUserInput(&uinfo);
-        nextpage();
     } while(totalclock < (860+120) && !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1);
+    CONTROL_ClearUserInput(&uinfo);
     KB_ClearKeysDown(); // JBF
 
     if(ud.multimode > 1)
@@ -7310,8 +7292,8 @@ if (VOLUMEALL) {
 
         rotatesprite(160<<16,(104)<<16,60<<10,0,DUKENUKEM,0,0,2+8,0,0,xdim-1,ydim-1);
         rotatesprite(160<<16,(129)<<16,30<<11,0,THREEDEE,0,0,2+8,0,0,xdim-1,ydim-1);
-    if (PLUTOPAK)   // JBF 20030804
-        rotatesprite(160<<16,(151)<<16,30<<11,0,PLUTOPAKSPRITE+1,0,0,2+8,0,0,xdim-1,ydim-1);
+        if (PLUTOPAK)   // JBF 20030804
+            rotatesprite(160<<16,(151)<<16,30<<11,0,PLUTOPAKSPRITE+1,0,0,2+8,0,0,xdim-1,ydim-1);
 
         gametext(160,190,"WAITING FOR PLAYERS",14,2);
         nextpage();
@@ -8283,10 +8265,10 @@ int playback(void)
             ud.camera_time = totalclock+(TICRATE*2);
         }
 
-if (VOLUMEONE) {
-        if( ud.show_help == 0 && (ps[myconnectindex].gm&MODE_MENU) == 0 )
-            rotatesprite((320-50)<<16,9<<16,65536L,0,BETAVERSION,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
-}
+        if (VOLUMEONE)
+            if( ud.show_help == 0 && (ps[myconnectindex].gm&MODE_MENU) == 0 )
+                rotatesprite((320-50)<<16,9<<16,65536L,0,BETAVERSION,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
+
         handleevents();
         getpackets();
         nextpage();
@@ -9009,48 +8991,29 @@ void doorders(void)
     fadepal(0,0,0, 0,63,7);
     //ps[myconnectindex].palette = palette;
     setgamepalette(&ps[myconnectindex], palette, 1);    // JBF 20040308
-    KB_FlushKeyboardQueue();
+
     rotatesprite(0,0,65536L,0,ORDERING,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
     fadepal(0,0,0, 63,0,-7);
-    do {
-        handleevents();
-        getpackets();
-        CONTROL_GetUserInput(&uinfo);
-        CONTROL_ClearUserInput(&uinfo);
-    } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
+
+    userack();
 
     fadepal(0,0,0, 0,63,7);
-    KB_FlushKeyboardQueue();
     rotatesprite(0,0,65536L,0,ORDERING+1,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
     fadepal(0,0,0, 63,0,-7);
-    do {
-        handleevents();
-        getpackets();
-        CONTROL_GetUserInput(&uinfo);
-        CONTROL_ClearUserInput(&uinfo);
-    } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
+
+    userack();
 
     fadepal(0,0,0, 0,63,7);
-    KB_FlushKeyboardQueue();
     rotatesprite(0,0,65536L,0,ORDERING+2,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
     fadepal(0,0,0, 63,0,-7);
-    do {
-        handleevents();
-        getpackets();
-        CONTROL_GetUserInput(&uinfo);
-        CONTROL_ClearUserInput(&uinfo);
-    } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
+
+    userack();
 
     fadepal(0,0,0, 0,63,7);
-    KB_FlushKeyboardQueue();
     rotatesprite(0,0,65536L,0,ORDERING+3,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
     fadepal(0,0,0, 63,0,-7);
-    do {
-        handleevents();
-        getpackets();
-        CONTROL_GetUserInput(&uinfo);
-        CONTROL_ClearUserInput(&uinfo);
-    } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
+
+    userack();
 }
 
 void dobonus(char bonusonly)
@@ -9115,6 +9078,8 @@ void dobonus(char bonusonly)
                 //ps[myconnectindex].palette = endingpal;
                 fadepal(0,0,0, 63,0,-1);
 
+                uinfo.dir = dir_None;
+                uinfo.button0 = uinfo.button1 = FALSE;
                 KB_FlushKeyboardQueue();
                 totalclock = 0; tinc = 0;
                 while( 1 )
@@ -9150,18 +9115,19 @@ void dobonus(char bonusonly)
                         }
                     }
 
+                    nextpage();
                     handleevents();
                     getpackets();
                     CONTROL_GetUserInput(&uinfo);
-                    CONTROL_ClearUserInput(&uinfo);
-                    nextpage();
-                    if( KB_KeyWaiting() || uinfo.button0 || uinfo.button1 ) break;
+                    if( KB_KeyWaiting() || uinfo.button0 || uinfo.button1 ) {
+                        CONTROL_ClearUserInput(&uinfo);
+                        break;
+                    }
                 }
             }
 
             fadepal(0,0,0, 0,64,1);
 
-            KB_FlushKeyboardQueue();
             //ps[myconnectindex].palette = palette;
             setgamepalette(&ps[myconnectindex], palette, 3);
 
@@ -9171,12 +9137,9 @@ void dobonus(char bonusonly)
             } else {
                 nextpage();
             }
-            do {
-                handleevents();
-                getpackets();
-                CONTROL_GetUserInput(&uinfo);
-                CONTROL_ClearUserInput(&uinfo);
-            } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
+
+            userack();
+
             fadepal(0,0,0, 0,64,1);
             stopmusic();
             FX_StopAllSounds();
@@ -9199,7 +9162,6 @@ void dobonus(char bonusonly)
 
             fadepal(0,0,0, 0,64,1);
             setview(0,0,xdim-1,ydim-1);
-            KB_FlushKeyboardQueue();
             //ps[myconnectindex].palette = palette;
             setgamepalette(&ps[myconnectindex], palette, 3);    // JBF 20040308
             rotatesprite(0,0,65536L,0,3293,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
@@ -9208,12 +9170,9 @@ void dobonus(char bonusonly)
             } else {
                 nextpage();
             }
-            do {
-                handleevents();
-                getpackets();
-                CONTROL_GetUserInput(&uinfo);
-                CONTROL_ClearUserInput(&uinfo);
-            } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
+
+            userack();
+
             IFISSOFTMODE {
                 fadepal(0,0,0, 0,64,1);
             }
@@ -9259,13 +9218,9 @@ void dobonus(char bonusonly)
             nextpage();
 
             fadepal(0,0,0, 63,0,-3);
-            KB_FlushKeyboardQueue();
-            do {
-                handleevents();
-                getpackets();
-                CONTROL_GetUserInput(&uinfo);
-                CONTROL_ClearUserInput(&uinfo);
-            } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
+
+            userack();
+
             fadepal(0,0,0, 0,64,3);
 
             clearview(0L);
@@ -9273,13 +9228,7 @@ void dobonus(char bonusonly)
 
             playanm("DUKETEAM.ANM",4);
 
-            KB_FlushKeyBoardQueue();
-            do {
-                handleevents();
-                getpackets();
-                CONTROL_GetUserInput(&uinfo);
-                CONTROL_ClearUserInput(&uinfo);
-            } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
+            userack();
 
             clearview(0L);
             nextpage();
@@ -9331,14 +9280,16 @@ void dobonus(char bonusonly)
             }
 
             KB_FlushKeyBoardQueue();
+            uinfo.dir = dir_None;
+            uinfo.button0 = uinfo.button1 = FALSE;
             totalclock = 0;
             do {
                 handleevents();
                 getpackets();
                 CONTROL_GetUserInput(&uinfo);
-                CONTROL_ClearUserInput(&uinfo);
                 if (PLUTOPAK && totalclock >= 120) break;
             } while (!KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1);
+            CONTROL_ClearUserInput(&uinfo);
 
             ENDANM:
 
@@ -9352,13 +9303,7 @@ void dobonus(char bonusonly)
 
                 playanm("DUKETEAM.ANM",4);
 
-                KB_FlushKeyboardQueue();
-                do {
-                    handleevents();
-                    getpackets();
-                    CONTROL_GetUserInput(&uinfo);
-                    CONTROL_ClearUserInput(&uinfo);
-                } while (!KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1);
+                userack();
             }
 
             FX_StopAllSounds();
@@ -9377,6 +9322,8 @@ void dobonus(char bonusonly)
     setgamepalette(&ps[myconnectindex], palette, 3);    // JBF 20040308
     IFISSOFTMODE palto(0,0,0,63);   // JBF 20031228
     KB_FlushKeyboardQueue();
+    uinfo.dir = dir_None;
+    uinfo.button0 = uinfo.button1 = FALSE;
     totalclock = 0; tinc = 0;
     bonuscnt = 0;
 
@@ -9461,13 +9408,7 @@ void dobonus(char bonusonly)
 
         fadepal(0,0,0, 63,0,-7);
 
-        KB_FlushKeyboardQueue();
-        do {
-            handleevents();
-            getpackets();
-            CONTROL_GetUserInput(&uinfo);
-            CONTROL_ClearUserInput(&uinfo);
-        } while (!KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1);
+        userack();
 
         if( KB_KeyPressed( sc_F12 ) )
         {
@@ -9507,7 +9448,6 @@ void dobonus(char bonusonly)
         sound(BONUSMUSIC);
 
     nextpage();
-    KB_FlushKeyboardQueue();
     fadepal(0,0,0, 63,0,-1);
     bonuscnt = 0;
     totalclock = 0; tinc = 0;
@@ -9534,11 +9474,15 @@ void dobonus(char bonusonly)
             clockpad = max(clockpad,ij);
     }
     
+    uinfo.dir = dir_None;
+    uinfo.button0 = uinfo.button1 = FALSE;
+    KB_FlushKeyboardQueue();
     while( 1 )
     {
         int yy, zz;
 
         handleevents();
+        CONTROL_GetUserInput(&uinfo);
         
         if(ps[myconnectindex].gm&MODE_EOL)
         {
@@ -9714,9 +9658,8 @@ void dobonus(char bonusonly)
             if(totalclock > 10240 && totalclock < 10240+10240)
                 totalclock = 1024;
 
-            if( ( (MOUSE_GetButtons()&7) || KB_KeyWaiting() ) && totalclock > (60*2) )  // JBF 20030809
+            if( ( KB_KeyWaiting() || uinfo.button0 || uinfo.button1 ) && totalclock > (60*2) )  // JBF 20030809
             {
-                MOUSE_ClearButton(7);
                 if( KB_KeyPressed( sc_F12 ) )
                 {
                     char *tpl;
@@ -9736,6 +9679,9 @@ void dobonus(char bonusonly)
             }
         }
         else break;
+
+        CONTROL_ClearUserInput(&uinfo);
+        
         nextpage();
     }
 }
@@ -9903,6 +9849,19 @@ void lotsofcolourglass(short i,short wallnum,short n)
           k = EGS(SECT,x1,y1,z,GLASSPIECES+(j%3),-32,36,36,a,32+(TRAND&63),-(TRAND&2047),i,5);
           sprite[k].pal = TRAND&7;
          }
+}
+
+void userack(void)
+{
+    UserInput uinfo = { FALSE, FALSE, dir_None };
+
+    KB_FlushKeyboardQueue();
+    do {
+        handleevents();
+        getpackets();
+        CONTROL_GetUserInput(&uinfo);
+    } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
+    CONTROL_ClearUserInput(&uinfo);
 }
 
 void SetupGameButtons( void )
