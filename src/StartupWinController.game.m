@@ -1,4 +1,25 @@
-// Objective-C programmers shall recoil in fear at this mess
+//-------------------------------------------------------------------------
+/*
+ Copyright (C) 2013 Jonathon Fowler <jf@jonof.id.au>
+ 
+ This file is part of JFDuke3D
+ 
+ Shadow Warrior is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ 
+ See the GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+//-------------------------------------------------------------------------
 
 #import <Cocoa/Cocoa.h>
 
@@ -239,20 +260,16 @@ static struct soundQuality_t {
     // enable all the controls on the Configuration page
     NSEnumerator *enumerator = [[[[tabView tabViewItemAtIndex:0] view] subviews] objectEnumerator];
     NSControl *control;
-    while (control = [enumerator nextObject]) [control setEnabled:true];
+    while ((control = [enumerator nextObject])) [control setEnabled:true];
     
     gamelistsrc = [[GameListSource alloc] init];
     [[gameList documentView] setDataSource:gamelistsrc];
     [[gameList documentView] deselectAll:nil];
     
-    int row = [gamelistsrc findIndexForGrpname:[NSString stringWithCString:settings.selectedgrp]];
+    int row = [gamelistsrc findIndexForGrpname:[NSString stringWithUTF8String:settings.selectedgrp]];
     if (row >= 0) {
         [[gameList documentView] scrollRowToVisible:row];
-#if defined(MAC_OS_X_VERSION_10_3) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_3)
         [[gameList documentView] selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
-#else
-        [[gameList documentView] selectRow:row byExtendingSelection:NO];
-#endif
     }
     
     [cancelButton setEnabled:true];
@@ -270,7 +287,7 @@ static struct soundQuality_t {
     // user can enable it if they want to while waiting for something else to happen
     NSEnumerator *enumerator = [[[[tabView tabViewItemAtIndex:0] view] subviews] objectEnumerator];
     NSControl *control;
-    while (control = [enumerator nextObject]) {
+    while ((control = [enumerator nextObject])) {
         if (control == alwaysShowButton) continue;
         [control setEnabled:false];
     }
@@ -318,10 +335,10 @@ int startwin_open(void)
     if (startwin == nil) return -1;
     
     {
-        static int soundQualityFrequencies[] = { 44100, 22050, 11025 };
-        static int soundQualitySampleSizes[] = { 16, 8 };
-        static int soundQualityChannels[]    = { 2, 1 };
-        int f, b, c, i;
+        static unsigned soundQualityFrequencies[] = { 44100, 22050, 11025 };
+        static unsigned soundQualitySampleSizes[] = { 16, 8 };
+        static unsigned soundQualityChannels[]    = { 2, 1 };
+        unsigned f, b, c, i;
         
         i = sizeof(soundQualityFrequencies) *
             sizeof(soundQualitySampleSizes) *
@@ -392,7 +409,7 @@ int startwin_settitle(const char *s)
     return 0;
 }
 
-int startwin_idle(void *v)
+int startwin_idle(void *UNUSED(v))
 {
     if (startwin) [[startwin window] displayIfNeeded];
     return 0;
