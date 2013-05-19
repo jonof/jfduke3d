@@ -7201,7 +7201,7 @@ if (VOLUMEALL) {
         playanm("logo.anm",5);
         IFISSOFTMODE palto(0,0,0,63);
         KB_FlushKeyboardQueue();
-    KB_ClearKeysDown(); // JBF
+        KB_ClearKeysDown(); // JBF
     }
 
     clearview(0L);
@@ -7210,20 +7210,20 @@ if (VOLUMEALL) {
 
     playmusic(&env_music_fn[0][0]);
     if (!NAM) {
-    fadepal(0,0,0, 0,64,7);
-    //ps[myconnectindex].palette = drealms;
-    //palto(0,0,0,63);
-    setgamepalette(&ps[myconnectindex], drealms, 3);    // JBF 20040308
-    rotatesprite(0,0,65536L,0,DREALMS,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
-    nextpage();
-    fadepal(0,0,0, 63,0,-7);
-    totalclock = 0;
-    while( totalclock < (120*7) && !KB_KeyWaiting() ) {
-        handleevents();
-        getpackets();
-    }
+        fadepal(0,0,0, 0,64,7);
+        //ps[myconnectindex].palette = drealms;
+        //palto(0,0,0,63);
+        setgamepalette(&ps[myconnectindex], drealms, 3);    // JBF 20040308
+        rotatesprite(0,0,65536L,0,DREALMS,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+        nextpage();
+        fadepal(0,0,0, 63,0,-7);
+        totalclock = 0;
+        while( totalclock < (120*7) && !KB_KeyWaiting() ) {
+            handleevents();
+            getpackets();
+        }
 
-    KB_ClearKeysDown(); // JBF
+        KB_ClearKeysDown(); // JBF
     }
 
     fadepal(0,0,0, 0,64,7);
@@ -7240,6 +7240,7 @@ if (VOLUMEALL) {
 
     while(totalclock < (860+120) && !KB_KeyWaiting())
     {
+        clearview(0);
         rotatesprite(0,0,65536L,0,BETASCREEN,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
 
         if( totalclock > 120 && totalclock < (120+60) )
@@ -7268,26 +7269,26 @@ if (VOLUMEALL) {
         else if( totalclock >= (220+30) )
             rotatesprite(160<<16,(129)<<16,30<<11,0,THREEDEE,0,0,2+8,0,0,xdim-1,ydim-1);
 
-if (PLUTOPAK) { // JBF 20030804
-        if( totalclock >= 280 && totalclock < 395 )
-        {
-            rotatesprite(160<<16,(151)<<16,(410-totalclock)<<12,0,PLUTOPAKSPRITE+1,0,0,2+8,0,0,xdim-1,ydim-1);
-            if(soundanm == 2)
+        if (PLUTOPAK) { // JBF 20030804
+            if( totalclock >= 280 && totalclock < 395 )
             {
-                soundanm = 3;
-                sound(FLY_BY);
+                rotatesprite(160<<16,(151)<<16,(410-totalclock)<<12,0,PLUTOPAKSPRITE+1,0,0,2+8,0,0,xdim-1,ydim-1);
+                if(soundanm == 2)
+                {
+                    soundanm = 3;
+                    sound(FLY_BY);
+                }
+            }
+            else if( totalclock >= 395 )
+            {
+                if(soundanm == 3)
+                {
+                    soundanm = 4;
+                    sound(PIPEBOMB_EXPLODE);
+                }
+                rotatesprite(160<<16,(151)<<16,30<<11,0,PLUTOPAKSPRITE+1,0,0,2+8,0,0,xdim-1,ydim-1);
             }
         }
-        else if( totalclock >= 395 )
-        {
-            if(soundanm == 3)
-            {
-                soundanm = 4;
-                sound(PIPEBOMB_EXPLODE);
-            }
-            rotatesprite(160<<16,(151)<<16,30<<11,0,PLUTOPAKSPRITE+1,0,0,2+8,0,0,xdim-1,ydim-1);
-        }
-}
 
         handleevents();
         getpackets();

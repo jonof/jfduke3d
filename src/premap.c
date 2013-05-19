@@ -1315,9 +1315,9 @@ void dofrontscreens(const char *statustext)
             i = ud.screen_size;
             ud.screen_size = 0;
             vscrn();
-            clearview(0L);
         }
 
+        clearview(0L);
         rotatesprite(320<<15,200<<15,65536L,0,LOADSCREEN,0,0,2+8+64,0,0,xdim-1,ydim-1);
 
         if( boardfilename[0] != 0 && ud.level_number == 7 && ud.volume_number == 0 )
