@@ -7589,10 +7589,27 @@ int app_main(int argc, char const * const argv[])
 #if defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
     addsearchpath("/usr/share/games/jfduke3d");
     addsearchpath("/usr/local/share/games/jfduke3d");
-#elif defined(__APPLE__)
-    addsearchpath("/Library/Application Support/JFDuke3D");
 #endif
 
+    {
+        char *supportdir = Bgetsupportdir(TRUE);
+        char *appdir = Bgetappdir();
+        char dirpath[BMAX_PATH+1];
+
+        // the OSX app bundle, or on Windows the directory where the EXE was launched
+        if (appdir) {
+            addsearchpath(appdir);
+            free(appdir);
+        }
+        
+        // the global support files directory
+        if (supportdir) {
+            Bsnprintf(dirpath, sizeof(dirpath), "%s/JFDuke3D", supportdir);
+            addsearchpath(dirpath);
+            free(supportdir);
+        }
+    }
+    
     checkcommandline(argc,argv);
 
     {
@@ -7607,32 +7624,39 @@ int app_main(int argc, char const * const argv[])
         }
     }
 
-    // default behaviour is to write to the user profile directory, but
-    // creating a 'user_profiles_disabled' file makes the installation "portable"
-    if (access("user_profiles_disabled", F_OK) != 0) {
-        char cwd[BMAX_PATH];
-        char *homedir;
+    // creating a 'user_profiles_disabled' file in the current working
+    // directory where the game was launched makes the installation
+    // "portable" by writing into the working directory
+    if (access("user_profiles_disabled", F_OK) == 0) {
+        char cwd[BMAX_PATH+1];
+        if (getcwd(cwd, sizeof(cwd))) {
+            addsearchpath(cwd);
+        }
+    } else {
+        char *supportdir;
+        char dirpath[BMAX_PATH+1];
         int asperr;
 
-        if (getcwd(cwd,BMAX_PATH)) addsearchpath(cwd);
-        if ((homedir = Bgethomedir())) {
-            Bsnprintf(cwd,sizeof(cwd),"%s/"
-#if defined(_WIN32)
+        if ((supportdir = Bgetsupportdir(FALSE))) {
+            Bsnprintf(dirpath, sizeof(dirpath), "%s/"
+#if defined(_WIN32) || defined(__APPLE__)
                 "JFDuke3D"
-#elif defined(__APPLE__)
-                "Library/Application Support/JFDuke3D"
 #else
                 ".jfduke3d"
 #endif
-            ,homedir);
-            asperr = addsearchpath(cwd);
+            , supportdir);
+            asperr = addsearchpath(dirpath);
             if (asperr == -2) {
-                if (Bmkdir(cwd,S_IRWXU) == 0) asperr = addsearchpath(cwd);
-                else asperr = -1;
+                if (Bmkdir(dirpath, S_IRWXU) == 0) {
+                    asperr = addsearchpath(dirpath);
+                } else {
+                    asperr = -1;
+                }
             }
-            if (asperr == 0)
-                chdir(cwd);
-            free(homedir);
+            if (asperr == 0) {
+                chdir(dirpath);
+            }
+            free(supportdir);
         }
     }
 
