@@ -7586,9 +7586,13 @@ int app_main(int argc, char const * const argv[])
     }
 #endif
 
-#if defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
-    addsearchpath("/usr/share/games/jfduke3d");
-    addsearchpath("/usr/local/share/games/jfduke3d");
+#if defined(PREFIX)
+    {
+        const char *prefixdir = PREFIX;
+        if (prefixdir && prefixdir[0]) {
+            addsearchpath(prefixdir);
+        }
+    }
 #endif
 
     {

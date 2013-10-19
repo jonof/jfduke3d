@@ -13,6 +13,9 @@
 # Debugging options
 RELEASE ?= 1
 
+# Base path of app installation
+PREFIX ?= /usr/local/share/games/jfduke3d
+
 # DirectX SDK location
 DXROOT ?= $(USERPROFILE)/sdks/directx/dx81
 
@@ -128,6 +131,10 @@ ifeq ($(RENDERTYPE),SDL)
 endif
 
 OURCFLAGS+= $(BUILDCFLAGS)
+
+ifneq ($(PLATFORM),WINDOWS)
+	OURCFLAGS+= -DPREFIX=\"$(PREFIX)\"
+endif
 
 .PHONY: clean all engine $(ELIB)/$(ENGINELIB) $(ELIB)/$(EDITORLIB) $(AUDIOLIBROOT)/$(JFAUDIOLIB)
 
