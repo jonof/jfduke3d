@@ -51,6 +51,7 @@ int32 NumChannels;
 int32 NumBits;
 int32 MixRate;
 int32 ReverseStereo;
+char MusicParams[BMAX_PATH] = {0};
 
 int32 UseJoystick = 0, UseMouse = 1;
 int32 RunMode;
@@ -204,6 +205,7 @@ void CONFIG_SetDefaults( void )
     FXVolume = 220;
     MusicVolume = 200;
     ReverseStereo = 0;
+    MusicParams[0] = 0;
     myaimmode = ps[0].aim_mode = 0;
     ud.mouseaiming = 0;
     ud.weaponswitch = 3;    // new+empty
@@ -608,6 +610,7 @@ int32 CONFIG_ReadSetup( void )
     SCRIPT_GetNumber( scripthandle, "Sound Setup", "NumBits",&NumBits);
     SCRIPT_GetNumber( scripthandle, "Sound Setup", "MixRate",&MixRate);
     SCRIPT_GetNumber( scripthandle, "Sound Setup", "ReverseStereo",&ReverseStereo);
+    SCRIPT_GetString( scripthandle, "Sound Setup", "MusicParams", MusicParams, sizeof(MusicParams));
 
     SCRIPT_GetNumber( scripthandle, "Controls","UseJoystick",&UseJoystick);
     SCRIPT_GetNumber( scripthandle, "Controls","UseMouse",&UseMouse);

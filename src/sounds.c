@@ -135,7 +135,7 @@ void MusicStartup( void )
       musicdevicetype = MusicDevice - 1;
    }
    
-   status = MUSIC_Init( musicdevicetype, 0 );
+   status = MUSIC_Init( musicdevicetype, MusicParams );
 
    if ( status == MUSIC_Ok )
       {
