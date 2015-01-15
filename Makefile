@@ -61,8 +61,10 @@ endif
 
 include $(AUDIOLIBROOT)/Makefile.shared
 
-CC=gcc
-CXX=g++
+CC?=gcc
+CXX?=g++
+NASM?=nasm
+RC?=windres
 OURCFLAGS=$(debug) -W -Wall -Wimplicit -Wno-unused \
 	-fno-pic -fno-strict-aliasing -DNO_GCC_BUILTINS -DNOCOPYPROTECT \
 	-I$(INC) -I$(EINC) -I$(MACTROOT) -I$(AUDIOLIBROOT)/include
@@ -176,7 +178,7 @@ $(AUDIOLIBROOT)/$(JFAUDIOLIB):
 
 # RULES
 $(SRC)/%.$o: $(SRC)/%.nasm
-	nasm $(NASMFLAGS) $< -o $@
+	$(NASM) $(NASMFLAGS) $< -o $@
 
 $(SRC)/%.$o: $(SRC)/%.c
 	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
@@ -186,7 +188,7 @@ $(MACTROOT)/%.$o: $(MACTROOT)/%.c
 	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
 
 $(SRC)/%.$o: $(SRC)/misc/%.rc
-	windres -i $< -o $@ --include-dir=$(EINC) --include-dir=$(SRC)
+	$(RC) -i $< -o $@ --include-dir=$(EINC) --include-dir=$(SRC)
 
 $(SRC)/%.$o: $(SRC)/util/%.c
 	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
