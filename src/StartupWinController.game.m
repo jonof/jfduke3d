@@ -388,7 +388,7 @@ int startwin_puts(const char *s)
     if (!s) return -1;
     if (startwin == nil) return 1;
     
-    ns = [[NSString alloc] initWithCString:s];
+    ns = [[NSString alloc] initWithUTF8String:s];
     [startwin putsMessage:ns];
     [ns release];
     
@@ -402,7 +402,7 @@ int startwin_settitle(const char *s)
     if (!s) return -1;
     if (startwin == nil) return 1;
     
-    ns = [[NSString alloc] initWithCString:s];
+    ns = [[NSString alloc] initWithUTF8String:s];
     [startwin setTitle:ns];
     [ns release];
     

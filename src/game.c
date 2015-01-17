@@ -7447,7 +7447,7 @@ void Startup(void)
 
     for(i=0;i<MAXPLAYERS;i++) playerreadyflag[i] = 0;
 
-    //initmultiplayers(netparamcount,netparam, 0,0,0);
+    //initmultiplayers(netparamcount,netparam);
     if (initmultiplayersparms(netparamcount,netparam)) {
         buildprintf("Waiting for players...\n");
         while (initmultiplayerscycle()) {

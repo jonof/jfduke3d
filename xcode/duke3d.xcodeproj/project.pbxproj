@@ -3,18 +3,18 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 44;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		ABD769760A73D186006C27C1 /* all */ = {
+		AB98B2D61A69FD42009E8749 /* all */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = ABD76A270A73D216006C27C1 /* Build configuration list for PBXAggregateTarget "all" */;
+			buildConfigurationList = AB98B2D71A69FD42009E8749 /* Build configuration list for PBXAggregateTarget "all" */;
 			buildPhases = (
 			);
 			dependencies = (
-				ABD769780A73D18A006C27C1 /* PBXTargetDependency */,
-				ABD7697A0A73D18A006C27C1 /* PBXTargetDependency */,
+				AB98B2DB1A69FD68009E8749 /* PBXTargetDependency */,
+				AB98B2DD1A69FD68009E8749 /* PBXTargetDependency */,
 			);
 			name = all;
 			productName = all;
@@ -166,19 +166,26 @@
 			remoteGlobalIDString = AB3FE44A0C04336F00D5DBDC;
 			remoteInfo = editorsupp;
 		};
-		ABD769770A73D18A006C27C1 /* PBXContainerItemProxy */ = {
+		AB98B2D31A69FC60009E8749 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = ABD03E211A5189E00012B9D1;
+			remoteInfo = transpal;
+		};
+		AB98B2DA1A69FD68009E8749 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BCF50A73C1A800F3DCB8 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = AB69BD040A73C21E00F3DCB8;
 			remoteInfo = JFDuke3D;
 		};
-		ABD769790A73D18A006C27C1 /* PBXContainerItemProxy */ = {
+		AB98B2DC1A69FD68009E8749 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BCF50A73C1A800F3DCB8 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = ABD7695D0A73D116006C27C1;
-			remoteInfo = "Build Editor";
+			remoteInfo = "Build Editor for JFDuke3D";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -332,6 +339,7 @@
 				AB0FFB70172B981400400B2B /* arttool */,
 				AB0FFB72172B981400400B2B /* kextract */,
 				AB0FFB74172B981400400B2B /* kgroup */,
+				AB98B2D41A69FC60009E8749 /* transpal */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -541,8 +549,16 @@
 /* Begin PBXProject section */
 		AB69BCF50A73C1A800F3DCB8 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				TargetAttributes = {
+					AB98B2D61A69FD42009E8749 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
+			};
 			buildConfigurationList = AB69BCF60A73C1A800F3DCB8 /* Build configuration list for PBXProject "duke3d" */;
-			compatibilityVersion = "Xcode 3.0";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -566,7 +582,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				ABD769760A73D186006C27C1 /* all */,
+				AB98B2D61A69FD42009E8749 /* all */,
 				AB69BD040A73C21E00F3DCB8 /* JFDuke3D */,
 				ABD7695D0A73D116006C27C1 /* Build Editor for JFDuke3D */,
 			);
@@ -628,6 +644,13 @@
 			fileType = "compiled.mach-o.executable";
 			path = kgroup;
 			remoteRef = AB0FFB73172B981400400B2B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		AB98B2D41A69FC60009E8749 /* transpal */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = transpal;
+			remoteRef = AB98B2D31A69FC60009E8749 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -727,15 +750,15 @@
 			name = editorsupp;
 			targetProxy = AB0FFB8A172B98AD00400B2B /* PBXContainerItemProxy */;
 		};
-		ABD769780A73D18A006C27C1 /* PBXTargetDependency */ = {
+		AB98B2DB1A69FD68009E8749 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = AB69BD040A73C21E00F3DCB8 /* JFDuke3D */;
-			targetProxy = ABD769770A73D18A006C27C1 /* PBXContainerItemProxy */;
+			targetProxy = AB98B2DA1A69FD68009E8749 /* PBXContainerItemProxy */;
 		};
-		ABD7697A0A73D18A006C27C1 /* PBXTargetDependency */ = {
+		AB98B2DD1A69FD68009E8749 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = ABD7695D0A73D116006C27C1 /* Build Editor for JFDuke3D */;
-			targetProxy = ABD769790A73D18A006C27C1 /* PBXContainerItemProxy */;
+			targetProxy = AB98B2DC1A69FD68009E8749 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -743,11 +766,7 @@
 		AB69BCF70A73C1A800F3DCB8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					x86_64,
-					i386,
-					ppc,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"../jfaudiolib/third-party",
@@ -766,13 +785,12 @@
 					NOASM,
 					RENDERTYPESDL,
 				);
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
 					../src,
 					../jfbuild/include,
 					../jfaudiolib/include,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				WARNING_CFLAGS = (
 					"-W",
 					"-Wall",
@@ -784,11 +802,7 @@
 		AB69BCF80A73C1A800F3DCB8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					x86_64,
-					i386,
-					ppc,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"../jfaudiolib/third-party",
@@ -806,13 +820,12 @@
 					NOASM,
 					RENDERTYPESDL,
 				);
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
 					../src,
 					../jfbuild/include,
 					../jfaudiolib/include,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				WARNING_CFLAGS = (
 					"-W",
 					"-Wall",
@@ -824,10 +837,10 @@
 		AB69BD0D0A73C30600F3DCB8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = "JFDuke3D-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				OTHER_LDFLAGS = "-lstdc++";
-				PREBINDING = NO;
 				PRODUCT_NAME = JFDuke3D;
 				WRAPPER_EXTENSION = app;
 			};
@@ -836,18 +849,33 @@
 		AB69BD0E0A73C30600F3DCB8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = "JFDuke3D-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				OTHER_LDFLAGS = "-lstdc++";
-				PREBINDING = NO;
 				PRODUCT_NAME = JFDuke3D;
 				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		AB98B2D81A69FD42009E8749 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		AB98B2D91A69FD42009E8749 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};
 		ABD769620A73D117006C27C1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = "Build Editor-Info.plist";
 				OTHER_LDFLAGS = "-lstdc++";
 				PRODUCT_NAME = "Build Editor for JFDuke3D";
@@ -858,32 +886,11 @@
 		ABD769630A73D117006C27C1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = "Build Editor-Info.plist";
 				OTHER_LDFLAGS = "-lstdc++";
 				PRODUCT_NAME = "Build Editor for JFDuke3D";
 				WRAPPER_EXTENSION = app;
-			};
-			name = Release;
-		};
-		ABD76A280A73D216006C27C1 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				PRODUCT_NAME = all;
-			};
-			name = Debug;
-		};
-		ABD76A290A73D216006C27C1 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				PRODUCT_NAME = all;
-				ZERO_LINK = NO;
 			};
 			name = Release;
 		};
@@ -908,20 +915,19 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		AB98B2D71A69FD42009E8749 /* Build configuration list for PBXAggregateTarget "all" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AB98B2D81A69FD42009E8749 /* Debug */,
+				AB98B2D91A69FD42009E8749 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		ABD769610A73D117006C27C1 /* Build configuration list for PBXNativeTarget "Build Editor for JFDuke3D" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				ABD769620A73D117006C27C1 /* Debug */,
 				ABD769630A73D117006C27C1 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		ABD76A270A73D216006C27C1 /* Build configuration list for PBXAggregateTarget "all" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				ABD76A280A73D216006C27C1 /* Debug */,
-				ABD76A290A73D216006C27C1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
