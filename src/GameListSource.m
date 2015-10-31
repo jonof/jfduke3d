@@ -23,8 +23,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "GrpFile.game.h"
-#import "GameListSource.game.h"
+#import "GrpFile.h"
+#import "GameListSource.h"
 
 @implementation GameListSource
 - (id)init

@@ -537,7 +537,7 @@ typedef struct
 extern STATUSBARTYPE sbar;
 extern short frags[MAXPLAYERS][MAXPLAYERS];
 extern int cameradist, cameraclock, dukefriction,show_shareware;
-extern unsigned char networkmode, movesperpacket;
+extern unsigned char movesperpacket;
 extern unsigned char gamequit;
 
 extern unsigned char pus,pub,camerashitable,freezerhurtowner,lasermode;

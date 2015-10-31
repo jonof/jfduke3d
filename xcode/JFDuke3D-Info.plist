@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSHighResolutionCapable</key>
+	<true/>
 	<key>LSMinimumSystemVersionByArchitecture</key>
 	<dict>
 		<key>x86_64</key>
@@ -11,8 +13,6 @@
 	<string>English</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIconFile</key>
-	<string>game_icon</string>
 	<key>CFBundleIdentifier</key>
 	<string>au.id.jonof.jfduke3d</string>
 	<key>CFBundleInfoDictionaryVersion</key>

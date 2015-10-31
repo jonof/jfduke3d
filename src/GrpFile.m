@@ -21,7 +21,7 @@
  */
 //-------------------------------------------------------------------------
 
-#include "GrpFile.game.h"
+#include "GrpFile.h"
 
 @implementation GrpFile
 - (id)initWithGrpfile:(struct grpfile *)grpfile andName:(NSString*)aName

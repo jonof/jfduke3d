@@ -1,20 +1,20 @@
 //-------------------------------------------------------------------------
 /*
  Copyright (C) 2013 Jonathon Fowler <jf@jonof.id.au>
- 
+
  This file is part of JFDuke3D
- 
+
  Shadow Warrior is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
  as published by the Free Software Foundation; either version 2
  of the License, or (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- 
+
  See the GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -30,9 +30,10 @@
 #include "compat.h"
 #include "baselayer.h"
 #include "grpscan.h"
+#include "mmulti.h"
 
-#import "GrpFile.game.h"
-#import "GameListSource.game.h"
+#import "GrpFile.h"
+#import "GameListSource.h"
 
 static struct {
     int fullscreen;
@@ -42,52 +43,85 @@ static struct {
     int game;
     int samplerate, bitspersample, channels;
     int usemouse, usejoystick;
+
+    int multiargc;
+    char const * *multiargv;
+    char *multiargstr;
 } settings;
 
 static struct soundQuality_t {
     int frequency;
     int samplesize;
     int channels;
-} * soundQualities = 0;
+} soundQualities[] = {
+    { 44100, 16, 2 },
+    { 22050, 16, 2 },
+    { 11025, 16, 2 },
+    { 0, 0, 0 },    // May be overwritten by custom sound settings.
+    { 0, 0, 0 },
+};
 
 
-@interface StartupWinController : NSWindowController
+@interface StartupWinController : NSWindowController <NSWindowDelegate>
 {
+    BOOL quiteventonclose;
     NSMutableArray *modeslist3d;
     GameListSource *gamelistsrc;
-    
+
     IBOutlet NSButton *alwaysShowButton;
     IBOutlet NSButton *fullscreenButton;
     IBOutlet NSButton *useMouseButton;
     IBOutlet NSButton *useJoystickButton;
     IBOutlet NSTextView *messagesView;
     IBOutlet NSTabView *tabView;
+    IBOutlet NSTabViewItem *tabConfig;
+    IBOutlet NSTabViewItem *tabGame;
+    IBOutlet NSTabViewItem *tabMessages;
     IBOutlet NSPopUpButton *videoMode3DPUButton;
     IBOutlet NSPopUpButton *soundQualityPUButton;
+
+    IBOutlet NSButton *singlePlayerButton;
+    IBOutlet NSButton *multiPlayerButton;
+    IBOutlet NSTextField *numPlayersField;
+    IBOutlet NSStepper *numPlayersStepper;
+    IBOutlet NSTextField *playerHostsLabel;
+    IBOutlet NSTextField *playerHostsField;
+    IBOutlet NSButton *peerToPeerButton;
+
     IBOutlet NSScrollView *gameList;
-    
+
     IBOutlet NSButton *cancelButton;
     IBOutlet NSButton *startButton;
 }
 
 - (void)dealloc;
+- (void)closeQuietly;
 - (void)populateVideoModes:(BOOL)firstTime;
 - (void)populateSoundQuality:(BOOL)firstTime;
 
 - (IBAction)alwaysShowClicked:(id)sender;
 - (IBAction)fullscreenClicked:(id)sender;
 
+- (IBAction)multiPlayerModeClicked:(id)sender;
+- (IBAction)peerToPeerModeClicked:(id)sender;
+
 - (IBAction)cancel:(id)sender;
 - (IBAction)start:(id)sender;
 
 - (void)setupRunMode;
-- (void)setupMessagesMode;
+- (void)setupMessagesMode:(BOOL)allowCancel;
 - (void)putsMessage:(NSString *)str;
 - (void)setTitle:(NSString *)str;
 
+- (void)setupPlayerHostsField;
 @end
 
 @implementation StartupWinController
+
+- (void)windowDidLoad
+{
+    quiteventonclose = TRUE;
+}
 
 - (void)dealloc
 {
@@ -96,12 +130,20 @@ static struct soundQuality_t {
     [super dealloc];
 }
 
+// Close the window, but don't cause the quitevent flag to be set
+// as though this is a cancel operation.
+- (void)closeQuietly
+{
+    quiteventonclose = FALSE;
+    [self close];
+}
+
 - (void)populateVideoModes:(BOOL)firstTime
 {
     int i, mode3d, fullscreen = ([fullscreenButton state] == NSOnState);
     int idx3d = -1;
-    int xdim, ydim, bpp;
-    
+    int xdim, ydim, bpp = 8;
+
     if (firstTime) {
         xdim = settings.xdim3d;
         ydim = settings.ydim3d;
@@ -113,7 +155,7 @@ static struct soundQuality_t {
             ydim = validmode[mode3d].ydim;
             bpp = validmode[mode3d].bpp;
         }
-        
+
     }
     mode3d = checkvideomode(&xdim, &ydim, bpp, fullscreen, 1);
     if (mode3d < 0) {
@@ -125,12 +167,12 @@ static struct soundQuality_t {
             break;
         }
     }
-    
+
     [modeslist3d release];
     [videoMode3DPUButton removeAllItems];
-    
+
     modeslist3d = [[NSMutableArray alloc] init];
-    
+
     for (i = 0; i < validmodecnt; i++) {
         if (fullscreen == validmode[i].fs) {
             if (i == mode3d) idx3d = [modeslist3d count];
@@ -139,31 +181,24 @@ static struct soundQuality_t {
                                                    validmode[i].xdim, 0xd7, validmode[i].ydim, validmode[i].bpp]];
         }
     }
-    
+
     if (idx3d >= 0) [videoMode3DPUButton selectItemAtIndex:idx3d];
 }
 
 - (void)populateSoundQuality:(BOOL)firstTime
 {
     int i, curidx = -1;
-    
+
     [soundQualityPUButton removeAllItems];
-    
+
     for (i = 0; soundQualities[i].frequency > 0; i++) {
-        const char *ch;
-        switch (soundQualities[i].channels) {
-            case 1: ch = "Mono"; break;
-            case 2: ch = "Stereo"; break;
-            default: ch = "?"; break;
-        }
-                
         NSString *s = [NSString stringWithFormat:@"%dkHz, %d-bit, %s",
                             soundQualities[i].frequency / 1000,
                             soundQualities[i].samplesize,
-                            ch
+                            soundQualities[i].channels == 1 ? "Mono" : "Stereo"
                      ];
         [soundQualityPUButton addItemWithTitle:s];
-        
+
         if (firstTime &&
             soundQualities[i].frequency == settings.samplerate &&
             soundQualities[i].samplesize == settings.bitspersample &&
@@ -171,29 +206,22 @@ static struct soundQuality_t {
             curidx = i;
         }
     }
-    
+
     if (firstTime && curidx < 0) {
         soundQualities[i].frequency = settings.samplerate;
         soundQualities[i].samplesize = settings.bitspersample;
         soundQualities[i].channels = settings.channels;
-        
-        const char *ch;
-        switch (soundQualities[i].channels) {
-            case 1: ch = "Mono"; break;
-            case 2: ch = "Stereo"; break;
-            default: ch = "?"; break;
-        }
+
         NSString *s = [NSString stringWithFormat:@"%dkHz, %d-bit, %s",
                        soundQualities[i].frequency / 1000,
                        soundQualities[i].samplesize,
-                       ch
+                       soundQualities[i].channels == 1 ? "Mono" : "Stereo"
                        ];
         [soundQualityPUButton addItemWithTitle:s];
-        
-        curidx = i++;
-        soundQualities[i].frequency = -1;
+
+        curidx = i;
     }
-    
+
     if (curidx >= 0) {
         [soundQualityPUButton selectItemAtIndex:curidx];
     }
@@ -208,13 +236,54 @@ static struct soundQuality_t {
     [self populateVideoModes:NO];
 }
 
+- (IBAction)multiPlayerModeClicked:(id)sender
+{
+    [singlePlayerButton setState:(sender == singlePlayerButton ? NSOnState : NSOffState)];
+    [multiPlayerButton setState:(sender == multiPlayerButton ? NSOnState : NSOffState)];
+
+    [peerToPeerButton setEnabled:(sender == multiPlayerButton)];
+    [playerHostsField setEnabled:(sender == multiPlayerButton)];
+    [self setupPlayerHostsField];
+
+    BOOL enableNumPlayers = (sender == multiPlayerButton) && ([peerToPeerButton state] == NSOffState);
+    [numPlayersField setEnabled:enableNumPlayers];
+    [numPlayersStepper setEnabled:enableNumPlayers];
+}
+
+- (IBAction)peerToPeerModeClicked:(id)sender
+{
+    BOOL enableNumPlayers = ([peerToPeerButton state] == NSOffState);
+    [numPlayersField setEnabled:enableNumPlayers];
+    [numPlayersStepper setEnabled:enableNumPlayers];
+    [self setupPlayerHostsField];
+}
+
+- (void)setupPlayerHostsField
+{
+    if ([peerToPeerButton state] == NSOffState) {
+        [playerHostsLabel setStringValue:@"Host address:"];
+        [playerHostsField setPlaceholderString:@"Leave empty to host the game."];
+    } else {
+        [playerHostsLabel setStringValue:@"Player addresses:"];
+        [playerHostsField setPlaceholderString:@"List each address in order. Use * to indicate this machine's position."];
+    }
+}
+
+- (void)windowWillClose:(NSNotification *)notification
+{
+    [NSApp stopModalWithCode:STARTWIN_CANCEL];
+    quitevent = quitevent || quiteventonclose;
+}
+
 - (IBAction)cancel:(id)sender
 {
-    [NSApp abortModal];
+    [NSApp stopModalWithCode:STARTWIN_CANCEL];
+    quitevent = quitevent || quiteventonclose;
 }
 
 - (IBAction)start:(id)sender
 {
+    int retval;
     int mode = [[modeslist3d objectAtIndex:[videoMode3DPUButton indexOfSelectedItem]] intValue];
     if (mode >= 0) {
         settings.xdim3d = validmode[mode].xdim;
@@ -222,14 +291,17 @@ static struct soundQuality_t {
         settings.bpp3d = validmode[mode].bpp;
         settings.fullscreen = validmode[mode].fs;
     }
-    
+
     int quality = [soundQualityPUButton indexOfSelectedItem];
     if (quality >= 0) {
         settings.samplerate = soundQualities[quality].frequency;
         settings.bitspersample = soundQualities[quality].samplesize;
         settings.channels = soundQualities[quality].channels;
     }
-    
+
+    settings.usemouse = [useMouseButton state] == NSOnState;
+    settings.usejoystick = [useJoystickButton state] == NSOnState;
+
     int row = [[gameList documentView] selectedRow];
     if (row >= 0) {
         struct grpfile *p = [[gamelistsrc grpAtIndex:row] entryptr];
@@ -238,61 +310,124 @@ static struct soundQuality_t {
             settings.game = p->game;
         }
     }
-    
-    settings.usemouse = [useMouseButton state] == NSOnState;
-    settings.usejoystick = [useJoystickButton state] == NSOnState;
+
+    if ([multiPlayerButton state] == NSOnState) {
+        @autoreleasepool {
+            NSMutableArray *args = [[[NSMutableArray alloc] init] autorelease];
+            NSString *str;
+            int argstrlen = 0, i;
+            char *argstrptr;
+
+            // The game type parameter.
+            if ([peerToPeerButton state] == NSOnState) {
+                str = [[NSString alloc] initWithString:@"-n1"];
+            } else {
+                str = [[NSString alloc] initWithFormat:@"-n0:%d", [numPlayersField intValue]];
+            }
+            [str autorelease];
+            [args addObject:str];
+            argstrlen += [str lengthOfBytesUsingEncoding:NSUTF8StringEncoding] + 1;
+
+            // The peer list.
+            NSCharacterSet *split = [NSCharacterSet characterSetWithCharactersInString:@" ,\n\t"];
+            NSArray *parts = [[playerHostsField stringValue] componentsSeparatedByCharactersInSet:split];
+            NSEnumerator *iterparts = [parts objectEnumerator];
+
+            while (str = (NSString *)[iterparts nextObject]) {
+                if ([str length] == 0) continue;
+                [args addObject:str];
+                argstrlen += [str lengthOfBytesUsingEncoding:NSUTF8StringEncoding] + 1;
+            }
+
+            settings.multiargc = [args count];
+            settings.multiargv = (char const * *)malloc(settings.multiargc * sizeof(char *));
+            settings.multiargstr = (char *)malloc(argstrlen);
+
+            argstrptr = settings.multiargstr;
+            for (i = 0; i < settings.multiargc; i++) {
+                str = (NSString *)[args objectAtIndex:i];
+
+                strcpy(argstrptr, [str cStringUsingEncoding:NSUTF8StringEncoding]);
+                settings.multiargv[i] = argstrptr;
+                argstrptr += strlen(argstrptr) + 1;
+            }
+        }
+
+        retval = STARTWIN_RUN_MULTI;
+    } else {
+        settings.multiargc = 0;
+        settings.multiargv = NULL;
+        settings.multiargstr = NULL;
+
+        retval = STARTWIN_RUN;
+    }
+
     settings.forcesetup = [alwaysShowButton state] == NSOnState;
-    
-    [NSApp stopModal];
+
+    [NSApp stopModalWithCode:retval];
 }
 
 - (void)setupRunMode
 {
-    getvalidmodes();
-    
-    [fullscreenButton setState: (settings.fullscreen ? NSOnState : NSOffState)];
     [alwaysShowButton setState: (settings.forcesetup ? NSOnState : NSOffState)];
-    [useMouseButton setState: (settings.usemouse ? NSOnState : NSOffState)];
-    [useJoystickButton setState: (settings.usejoystick ? NSOnState : NSOffState)];
+    [alwaysShowButton setEnabled:YES];
+
+    getvalidmodes();
+    [videoMode3DPUButton setEnabled:YES];
     [self populateVideoModes:YES];
+    [fullscreenButton setEnabled:YES];
+    [fullscreenButton setState: (settings.fullscreen ? NSOnState : NSOffState)];
+
+    [soundQualityPUButton setEnabled:YES];
     [self populateSoundQuality:YES];
-    
-    // enable all the controls on the Configuration page
-    NSEnumerator *enumerator = [[[[tabView tabViewItemAtIndex:0] view] subviews] objectEnumerator];
-    NSControl *control;
-    while ((control = [enumerator nextObject])) [control setEnabled:true];
-    
+    [useMouseButton setState: (settings.usemouse ? NSOnState : NSOffState)];
+    [useMouseButton setEnabled:YES];
+    [useJoystickButton setState: (settings.usejoystick ? NSOnState : NSOffState)];
+    [useJoystickButton setEnabled:YES];
+
+    [singlePlayerButton setEnabled:YES];
+    [singlePlayerButton setState:NSOnState];
+    [multiPlayerButton setEnabled:YES];
+    [multiPlayerButton setState:NSOffState];
+    [numPlayersField setEnabled:NO];
+    [numPlayersField setIntValue:2];
+    [numPlayersStepper setEnabled:NO];
+    [numPlayersStepper setMaxValue:MAXPLAYERS];
+    [peerToPeerButton setEnabled:NO];
+    [playerHostsField setEnabled:NO];
+    [self setupPlayerHostsField];
+
     gamelistsrc = [[GameListSource alloc] init];
     [[gameList documentView] setDataSource:gamelistsrc];
     [[gameList documentView] deselectAll:nil];
-    
+
     int row = [gamelistsrc findIndexForGrpname:[NSString stringWithUTF8String:settings.selectedgrp]];
     if (row >= 0) {
         [[gameList documentView] scrollRowToVisible:row];
         [[gameList documentView] selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
     }
-    
-    [cancelButton setEnabled:true];
-    [startButton setEnabled:true];
-    
-    [tabView selectTabViewItemAtIndex:0];
-    [NSCursor unhide];	// Why should I need to do this?
+
+    [cancelButton setEnabled:YES];
+    [startButton setEnabled:YES];
+
+    [tabView selectTabViewItem:tabConfig];
+    [NSCursor unhide];  // Why should I need to do this?
 }
 
-- (void)setupMessagesMode
+- (void)setupMessagesMode:(BOOL)allowCancel
 {
-    [tabView selectTabViewItemAtIndex:2];
-    
-    // disable all the controls on the Configuration page except "always show", so the
-    // user can enable it if they want to while waiting for something else to happen
-    NSEnumerator *enumerator = [[[[tabView tabViewItemAtIndex:0] view] subviews] objectEnumerator];
+    [tabView selectTabViewItem:tabMessages];
+
+    // disable all the controls on the Configuration page
+    NSEnumerator *enumerator = [[[tabConfig view] subviews] objectEnumerator];
     NSControl *control;
-    while ((control = [enumerator nextObject])) {
-        if (control == alwaysShowButton) continue;
+    while (control = [enumerator nextObject]) {
         [control setEnabled:false];
     }
-    
-    [cancelButton setEnabled:false];
+
+    [alwaysShowButton setEnabled:NO];
+
+    [cancelButton setEnabled:allowCancel];
     [startButton setEnabled:false];
 }
 
@@ -301,16 +436,16 @@ static struct soundQuality_t {
     NSRange end;
     NSTextStorage *text = [messagesView textStorage];
     BOOL shouldAutoScroll;
-    
+
     shouldAutoScroll = ((int)NSMaxY([messagesView bounds]) == (int)NSMaxY([messagesView visibleRect]));
-    
+
     end.location = [text length];
     end.length = 0;
-    
+
     [text beginEditing];
     [messagesView replaceCharactersInRange:end withString:str];
     [text endEditing];
-    
+
     if (shouldAutoScroll) {
         end.location = [text length];
         end.length = 0;
@@ -330,88 +465,58 @@ static StartupWinController *startwin = nil;
 int startwin_open(void)
 {
     if (startwin != nil) return 1;
-    
+
     startwin = [[StartupWinController alloc] initWithWindowNibName:@"startwin.game"];
     if (startwin == nil) return -1;
-    
-    {
-        static unsigned soundQualityFrequencies[] = { 44100, 22050, 11025 };
-        static unsigned soundQualitySampleSizes[] = { 16, 8 };
-        static unsigned soundQualityChannels[]    = { 2, 1 };
-        unsigned f, b, c, i;
-        
-        i = sizeof(soundQualityFrequencies) *
-            sizeof(soundQualitySampleSizes) *
-            sizeof(soundQualityChannels) /
-            sizeof(int) + 2;    // one for the terminator, one for a custom setting
-        soundQualities = (struct soundQuality_t *) malloc(i * sizeof(struct soundQuality_t));
-        
-        i = 0;
-        for (c = 0; c < sizeof(soundQualityChannels) / sizeof(int); c++) {
-            for (b = 0; b < sizeof(soundQualitySampleSizes) / sizeof(int); b++) {
-                for (f = 0; f < sizeof(soundQualityFrequencies) / sizeof(int); f++) {
-                    soundQualities[i].frequency = soundQualityFrequencies[f];
-                    soundQualities[i].samplesize = soundQualitySampleSizes[b];
-                    soundQualities[i].channels = soundQualityChannels[c];
-                    
-                    i++;
-                }
-            }
-        }
-        
-        soundQualities[i].frequency = -1;
-    }
-    
-    [startwin setupMessagesMode];
+
+    [startwin window];  // Forces the window controls on the controller to be initialised.
+    [startwin setupMessagesMode:YES];
     [startwin showWindow:nil];
-    
+
     return 0;
 }
 
 int startwin_close(void)
 {
     if (startwin == nil) return 1;
-    
-    [startwin close];
+
+    [startwin closeQuietly];
     [startwin release];
     startwin = nil;
-    
-    free(soundQualities);
-    
+
     return 0;
 }
 
 int startwin_puts(const char *s)
 {
     NSString *ns;
-    
+
     if (!s) return -1;
     if (startwin == nil) return 1;
-    
+
     ns = [[NSString alloc] initWithUTF8String:s];
     [startwin putsMessage:ns];
     [ns release];
-    
+
     return 0;
 }
 
 int startwin_settitle(const char *s)
 {
     NSString *ns;
-    
+
     if (!s) return -1;
     if (startwin == nil) return 1;
-    
+
     ns = [[NSString alloc] initWithUTF8String:s];
     [startwin setTitle:ns];
     [ns release];
-    
+
     return 0;
 }
 
-int startwin_idle(void *UNUSED(v))
+int startwin_idle(void *v)
 {
-    if (startwin) [[startwin window] displayIfNeeded];
     return 0;
 }
 
@@ -420,9 +525,9 @@ extern char *duke3dgrp;
 int startwin_run(void)
 {
     int retval;
-    
+
     if (startwin == nil) return 0;
-    
+
     settings.fullscreen = ScreenMode;
     settings.xdim3d = ScreenWidth;
     settings.ydim3d = ScreenHeight;
@@ -435,17 +540,18 @@ int startwin_run(void)
     settings.forcesetup = ForceSetup;
     settings.game = gametype;
     strncpy(settings.selectedgrp, duke3dgrp, BMAX_PATH);
-    
+
     [startwin setupRunMode];
-    
+
     switch ([NSApp runModalForWindow:[startwin window]]) {
-        case NSRunStoppedResponse: retval = 1; break;
-        case NSRunAbortedResponse: retval = 0; break;
+        case STARTWIN_RUN_MULTI: retval = STARTWIN_RUN_MULTI; break;
+        case STARTWIN_RUN: retval = STARTWIN_RUN; break;
+        case STARTWIN_CANCEL: retval = STARTWIN_CANCEL; break;
         default: retval = -1;
     }
-    
-    [startwin setupMessagesMode];
-    
+
+    [startwin setupMessagesMode:(retval == STARTWIN_RUN_MULTI)];
+
     if (retval) {
         ScreenMode = settings.fullscreen;
         ScreenWidth = settings.xdim3d;
@@ -459,7 +565,15 @@ int startwin_run(void)
         ForceSetup = settings.forcesetup;
         duke3dgrp = settings.selectedgrp;
         gametype = settings.game;
+
+        if (retval == STARTWIN_RUN_MULTI) {
+            if (!initmultiplayersparms(settings.multiargc, settings.multiargv)) {
+                retval = STARTWIN_RUN;
+            }
+            free(settings.multiargv);
+            free(settings.multiargstr);
+        }
     }
-    
+
     return retval;
 }

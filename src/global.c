@@ -167,7 +167,7 @@ int myhorizbak[MOVEFIFOSIZ],dukefriction = 0xcc00, show_shareware;
 short myangbak[MOVEFIFOSIZ];
 char myname[32];
 unsigned char camerashitable,freezerhurtowner=0,lasermode=0;
-unsigned char networkmode = 255, movesperpacket = 1,gamequit = 0,everyothertime;
+unsigned char movesperpacket = 1,gamequit = 0,everyothertime;
 int numfreezebounces=3,rpgblastradius,pipebombblastradius,tripbombblastradius,shrinkerblastradius,morterblastradius,bouncemineblastradius,seenineblastradius;
 STATUSBARTYPE sbar;
 
