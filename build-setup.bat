@@ -1,1 +1,0 @@
-@start build.exe -setup

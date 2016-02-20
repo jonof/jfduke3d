@@ -616,11 +616,17 @@ int startwin_open(void)
     if (!gtkenabled) return 0;
     if (startwin) return 1;
 
+    if (!gtk_init_check(NULL, NULL)) {
+        gtkenabled = 0;
+        return -1;
+    }
+
     startwin = create_window();
     if (startwin) {
         SetPage(TAB_MESSAGES);
         gtk_widget_show(startwin);
-        gtk_main_iteration_do(FALSE);
+        while (gtk_events_pending())
+            gtk_main_iteration();
         return 0;
     }
     return -1;
@@ -698,7 +704,8 @@ int startwin_idle(void *s)
 {
     if (!gtkenabled) return 0;
     //if (!startwin) return 1;
-    gtk_main_iteration_do (FALSE);
+    while (gtk_events_pending())
+        gtk_main_iteration();
     return 0;
 }
 
