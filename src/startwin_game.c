@@ -3,7 +3,7 @@
 #endif
 
 #define WIN32_LEAN_AND_MEAN
-#define _WIN32_WINNT 0x0501
+#define _WIN32_WINNT 0x0600
 #define _WIN32_IE 0x0600
 
 #include "compat.h"
@@ -136,27 +136,31 @@ static void populate_sound_quality(BOOL firstTime)
 static void populate_game_list(BOOL firstTime)
 {
     struct grpfile *fg;
-    int i, j, tabstop;
-    TCHAR grpstr[128 + 1 + BMAX_PATH + 1];
+    int i;
+    LVITEM lvi;
     HWND hwnd;
+
+    ZeroMemory(&lvi, sizeof(lvi));
 
     if (firstTime) {
         hwnd = GetDlgItem(pages[TAB_GAME], IDC_GAMELIST);
-        ListBox_ResetContent(hwnd);
 
-        for (fg = foundgrps; fg; fg = fg->next) {
+        for (fg = foundgrps, i = 0; fg; fg = fg->next, i++) {
             if (!fg->ref) continue;
-            StringCbPrintf(grpstr, sizeof(grpstr), TEXT("%s\t%s"),
-                fg->ref->name, fg->name);
-            j = ListBox_AddString(hwnd, grpstr);
-            ListBox_SetItemData(hwnd, j, (LPARAM)fg);
+
+            lvi.mask = LVIF_PARAM | LVIF_TEXT;
+            lvi.iItem = i;
+            lvi.iSubItem = 0;
+            lvi.pszText = (LPTSTR)fg->ref->name;
+            lvi.lParam = (LPARAM)fg;
+            ListView_InsertItem(hwnd, &lvi);
+
+            ListView_SetItemText(hwnd, i, 1, (LPTSTR)fg->name);
+        
             if (fg == settings->selectedgrp) {
-                ListBox_SetCurSel(hwnd, j);
+                ListView_SetItemState(hwnd, i, LVIS_SELECTED, LVIS_SELECTED);
             }
         }
-
-        tabstop = 4*40;
-        ListBox_SetTabStops(hwnd, 1, &tabstop);
     }
 }
 
@@ -268,6 +272,7 @@ static void startbutton_clicked(void)
 {
     int i;
     HWND hwnd;
+    LVITEM lvi;
 
     hwnd = GetDlgItem(pages[TAB_CONFIG], IDC_VMODE3D);
     i = ComboBox_GetCurSel(hwnd);
@@ -317,8 +322,18 @@ static void startbutton_clicked(void)
 
     // Get the chosen game entry.
     hwnd = GetDlgItem(pages[TAB_GAME], IDC_GAMELIST);
-    i = ListBox_GetCurSel(hwnd);
-    settings->selectedgrp = (struct grpfile *)ListBox_GetItemData(hwnd, i);
+    ZeroMemory(&lvi, sizeof(lvi));
+    lvi.mask = LVIF_STATE | LVIF_PARAM;
+    lvi.stateMask = LVIS_SELECTED;
+    for (i = ListView_GetItemCount(hwnd) - 1; i >= 0; i--) {
+        lvi.iItem = i;
+        if (ListView_GetItem(hwnd, &lvi)) {
+            if (lvi.state & LVIS_SELECTED) {
+                settings->selectedgrp = (struct grpfile *)lvi.lParam;
+                break;
+            }
+        }
+    }
 
     settings->forcesetup = IsDlgButtonChecked(startupdlg, IDC_ALWAYSSHOW) == BST_CHECKED;
  
@@ -355,6 +370,32 @@ static INT_PTR CALLBACK ConfigPageProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, L
 
 static INT_PTR CALLBACK GamePageProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+    switch (uMsg) {
+        case WM_INITDIALOG: {
+            LVCOLUMN lvc;
+            HWND hwnd;
+
+            hwnd = GetDlgItem(hwndDlg, IDC_GAMELIST);
+            ListView_SetExtendedListViewStyle(hwnd, LVS_EX_FULLROWSELECT);
+
+            ZeroMemory(&lvc, sizeof(lvc));
+            lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
+            lvc.fmt = LVCFMT_LEFT;
+
+            lvc.iSubItem = 0;
+            lvc.pszText = TEXT("Game name");
+            lvc.cx = 220;
+            ListView_InsertColumn(hwnd, 0, &lvc);
+
+            lvc.iSubItem = 1;
+            lvc.pszText = TEXT("File name");
+            lvc.cx = 150;
+            ListView_InsertColumn(hwnd, 1, &lvc);
+
+            return TRUE;
+        }
+        default: break;
+    }
     return FALSE;
 }
 
@@ -484,7 +525,7 @@ int startwin_open(void)
     if (startupdlg) return 1;
 
     icc.dwSize = sizeof(icc);
-    icc.dwICC = ICC_TAB_CLASSES | ICC_UPDOWN_CLASS;
+    icc.dwICC = ICC_TAB_CLASSES | ICC_UPDOWN_CLASS | ICC_LISTVIEW_CLASSES;
     InitCommonControlsEx(&icc);
     startupdlg = CreateDialog((HINSTANCE)win_gethinstance(), MAKEINTRESOURCE(IDD_STARTWIN), NULL, startup_dlgproc);
     if (!startupdlg) {
