@@ -1643,13 +1643,13 @@ void loadefs(const char *filenam)
         if( loadfromgrouponly == 1 )
             gameexit("\nMissing con file(s).");
         else {
-            sprintf(buf,
-                "CON file \"%s\" was not found.\n"
-                "\n"
+            const char *msgfmt = "CON file \"%s\" was not found.\n\n"
                 "Check that the \"%s\" file is in the JFDuke3D directory "
-                "and try running the game again.",
-                filenam, defaultduke3dgrp);
-            gameexit(buf);
+                "and try running the game again.";
+            int bufsz = strlen(msgfmt) + strlen(filenam) + strlen(duke3dgrp);
+            char *msg = Balloca(bufsz+1);
+            sprintf(msg, msgfmt, filenam, duke3dgrp);
+            gameexit(msg);
             return;
         }
         
@@ -1663,8 +1663,8 @@ void loadefs(const char *filenam)
 
     mptr = Bmalloc(fs+1);
     if (!mptr) {
-        Bsprintf(buf,"Failed allocating %d byte CON text buffer.", fs+1);
-        gameexit(buf);
+        buildprintf("Failed allocating %d byte CON text buffer.\n", fs+1);
+        gameexit("Failed allocating memory for CON file.");
     }
     mptr[fs] = 0;
         
@@ -1715,8 +1715,7 @@ void loadefs(const char *filenam)
     {
         if( loadfromgrouponly )
         {
-            sprintf(buf,"\nError compiling CON files.");
-            gameexit(buf);
+            gameexit("Error compiling CON files.");
         }
         else
         {

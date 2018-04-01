@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
-        <deployment version="1060" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9059"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14109"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="EditorStartupWinController">
@@ -23,17 +24,32 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <window title="Startup" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" visibleAtLaunch="NO" animationBehavior="default" id="nqk-V1-LCq" userLabel="StartupWin">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" unifiedTitleAndToolbar="YES"/>
-            <rect key="contentRect" x="469" y="258" width="494" height="352"/>
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
+            <rect key="contentRect" x="469" y="258" width="595" height="360"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
             <view key="contentView" id="aXV-kw-vNt">
-                <rect key="frame" x="0.0" y="0.0" width="494" height="352"/>
+                <rect key="frame" x="0.0" y="0.0" width="595" height="360"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <button verticalHuggingPriority="750" id="lVe-rZ-tKb">
-                        <rect key="frame" x="395" y="13" width="85" height="32"/>
+                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" id="Oon-AD-UH5">
+                        <rect key="frame" x="20" y="212" width="128" height="128"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSApplicationIcon" id="XvI-zZ-CYU"/>
+                    </imageView>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="3Uc-n7-fnC">
+                        <rect key="frame" x="18" y="166" width="132" height="38"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" id="VpB-P1-8DD">
+                            <font key="font" metaFont="systemBold"/>
+                            <string key="title">BUILD Editor
+for JFDuke3D</string>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <button verticalHuggingPriority="750" misplaced="YES" id="lVe-rZ-tKb">
+                        <rect key="frame" x="496" y="13" width="85" height="32"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
                         <buttonCell key="cell" type="push" title="Start" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="yvA-Cj-lzh">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -45,10 +61,9 @@ DQ
                             <action selector="start:" target="-2" id="oZw-vf-FBD"/>
                         </connections>
                     </button>
-                    <button verticalHuggingPriority="750" id="1Rr-a3-Ovt">
-                        <rect key="frame" x="310" y="13" width="85" height="32"/>
+                    <button verticalHuggingPriority="750" misplaced="YES" id="1Rr-a3-Ovt">
+                        <rect key="frame" x="411" y="13" width="85" height="32"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
                         <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="Mf4-tq-AoL">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -60,73 +75,31 @@ Gw
                             <action selector="cancel:" target="-2" id="WRT-DC-oDD"/>
                         </connections>
                     </button>
-                    <button id="VkR-qr-Xv2">
-                        <rect key="frame" x="17" y="17" width="212" height="18"/>
+                    <tabView misplaced="YES" initialItem="wYq-5E-IaK" id="MbR-hz-7Hp">
+                        <rect key="frame" x="158" y="46" width="424" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
-                        <buttonCell key="cell" type="check" title="Always show configuration on start" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="FNh-Ts-AKm">
-                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                            <font key="font" metaFont="smallSystem"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="alwaysShowClicked:" target="-2" id="xO3-i5-pqx"/>
-                        </connections>
-                    </button>
-                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="Oon-AD-UH5">
-                        <rect key="frame" x="15" y="284" width="70" height="48"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <animations/>
-                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSApplicationIcon" id="XvI-zZ-CYU"/>
-                    </imageView>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="3Uc-n7-fnC">
-                        <rect key="frame" x="9" y="259" width="83" height="17"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <animations/>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Build Editor" id="VpB-P1-8DD">
-                            <font key="font" metaFont="systemBold"/>
-                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
-                    <tabView controlSize="small" initialItem="wYq-5E-IaK" id="MbR-hz-7Hp">
-                        <rect key="frame" x="91" y="51" width="390" height="295"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
+                        <font key="font" metaFont="system"/>
                         <tabViewItems>
                             <tabViewItem label="Configuration" identifier="" id="wYq-5E-IaK">
                                 <view key="view" id="UKf-Is-SRN">
-                                    <rect key="frame" x="10" y="25" width="370" height="257"/>
+                                    <rect key="frame" x="10" y="33" width="404" height="254"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <button id="vcP-CZ-XN5">
-                                            <rect key="frame" x="274" y="216" width="81" height="21"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <animations/>
-                                            <buttonCell key="cell" type="check" title="Fullscreen" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="rwG-0f-JsF">
-                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                <font key="font" metaFont="smallSystem"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="fullscreenClicked:" target="-2" id="cfd-e7-pYp"/>
-                                            </connections>
-                                        </button>
                                         <textField verticalHuggingPriority="750" id="X3Q-5l-jWv">
-                                            <rect key="frame" x="17" y="221" width="93" height="14"/>
+                                            <rect key="frame" x="15" y="218" width="111" height="17"/>
                                             <autoresizingMask key="autoresizingMask"/>
-                                            <animations/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="2D Video mode:" id="3v9-Pa-utI">
-                                                <font key="font" metaFont="smallSystem"/>
+                                                <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
                                         <popUpButton verticalHuggingPriority="750" id="7YV-qf-uVZ">
-                                            <rect key="frame" x="113" y="216" width="159" height="22"/>
+                                            <rect key="frame" x="132" y="212" width="249" height="26"/>
                                             <autoresizingMask key="autoresizingMask"/>
-                                            <animations/>
-                                            <popUpButtonCell key="cell" type="push" title="XXX x YYY" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="jPk-IJ-igv" id="9aS-yl-F7q">
+                                            <popUpButtonCell key="cell" type="push" title="XXX x YYY" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="jPk-IJ-igv" id="9aS-yl-F7q">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="smallSystem"/>
+                                                <font key="font" metaFont="menu"/>
                                                 <menu key="menu" title="OtherViews" id="cGL-Kt-PhU">
                                                     <items>
                                                         <menuItem title="XXX x YYY" state="on" id="jPk-IJ-igv"/>
@@ -135,22 +108,20 @@ Gw
                                             </popUpButtonCell>
                                         </popUpButton>
                                         <textField verticalHuggingPriority="750" id="snn-pR-nfh">
-                                            <rect key="frame" x="17" y="197" width="93" height="14"/>
+                                            <rect key="frame" x="15" y="192" width="102" height="17"/>
                                             <autoresizingMask key="autoresizingMask"/>
-                                            <animations/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="3D Video mode:" id="4yz-bN-JvB">
-                                                <font key="font" metaFont="smallSystem"/>
+                                                <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
                                         <popUpButton verticalHuggingPriority="750" id="OoU-E2-12L">
-                                            <rect key="frame" x="113" y="192" width="159" height="22"/>
+                                            <rect key="frame" x="132" y="186" width="249" height="26"/>
                                             <autoresizingMask key="autoresizingMask"/>
-                                            <animations/>
-                                            <popUpButtonCell key="cell" type="push" title="XXX x YYY Z-bpp" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="t8s-Yn-r4a" id="fne-BR-tal">
+                                            <popUpButtonCell key="cell" type="push" title="XXX x YYY Z-bpp" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="t8s-Yn-r4a" id="fne-BR-tal">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="smallSystem"/>
+                                                <font key="font" metaFont="menu"/>
                                                 <menu key="menu" title="OtherViews" id="LFX-6W-bhw">
                                                     <items>
                                                         <menuItem title="XXX x YYY Z-bpp" state="on" id="t8s-Yn-r4a"/>
@@ -158,73 +129,72 @@ Gw
                                                 </menu>
                                             </popUpButtonCell>
                                         </popUpButton>
+                                        <button id="vcP-CZ-XN5">
+                                            <rect key="frame" x="132" y="165" width="85" height="19"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <buttonCell key="cell" type="check" title="Fullscreen" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="rwG-0f-JsF">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="fullscreenClicked:" target="-2" id="cfd-e7-pYp"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
-                                    <animations/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Messages" identifier="" id="7Oi-Ni-62U">
                                 <view key="view" id="JF0-1i-g4g">
-                                    <rect key="frame" x="10" y="25" width="370" height="257"/>
+                                    <rect key="frame" x="10" y="33" width="404" height="254"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="BFT-wj-c1p">
-                                            <rect key="frame" x="0.0" y="0.0" width="370" height="257"/>
+                                        <scrollView misplaced="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="BFT-wj-c1p">
+                                            <rect key="frame" x="4" y="3" width="396" height="248"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <clipView key="contentView" id="A1S-b5-3J8">
-                                                <rect key="frame" x="1" y="1" width="357" height="255"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <rect key="frame" x="1" y="1" width="394" height="246"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
-                                                    <textView editable="NO" selectable="NO" importsGraphics="NO" richText="NO" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" spellingCorrection="YES" smartInsertDelete="YES" id="Xlp-cm-pzd">
-                                                        <rect key="frame" x="0.0" y="0.0" width="350" height="255"/>
+                                                    <textView editable="NO" selectable="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" usesFontPanel="YES" usesRuler="YES" spellingCorrection="YES" smartInsertDelete="YES" id="Xlp-cm-pzd">
+                                                        <rect key="frame" x="0.0" y="0.0" width="387" height="246"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                        <animations/>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                        <size key="minSize" width="353" height="255"/>
-                                                        <size key="maxSize" width="374" height="10000000"/>
+                                                        <size key="minSize" width="387" height="246"/>
+                                                        <size key="maxSize" width="401" height="10000000"/>
                                                         <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                        <size key="minSize" width="353" height="255"/>
-                                                        <size key="maxSize" width="374" height="10000000"/>
                                                     </textView>
                                                 </subviews>
-                                                <animations/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             </clipView>
-                                            <animations/>
                                             <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="8wR-yY-8Y3">
                                                 <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <animations/>
                                             </scroller>
                                             <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="NO" id="EJ1-E0-ser">
-                                                <rect key="frame" x="358" y="1" width="11" height="255"/>
+                                                <rect key="frame" x="381" y="1" width="14" height="246"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <animations/>
                                             </scroller>
                                         </scrollView>
                                     </subviews>
-                                    <animations/>
                                 </view>
                             </tabViewItem>
                         </tabViewItems>
                     </tabView>
-                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="iQV-ET-FkX">
-                        <rect key="frame" x="9" y="237" width="83" height="14"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <animations/>
-                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="center" title="for JFDuke3D" id="99H-Bi-okX">
-                            <font key="font" metaFont="smallSystem"/>
-                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
+                    <button misplaced="YES" id="VkR-qr-Xv2">
+                        <rect key="frame" x="18" y="22" width="234" height="18"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="check" title="Always show configuration on start" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="FNh-Ts-AKm">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                    </button>
                 </subviews>
-                <animations/>
             </view>
             <connections>
                 <outlet property="delegate" destination="-2" id="9ai-mC-rwK"/>
                 <outlet property="initialFirstResponder" destination="lVe-rZ-tKb" id="uHy-oK-TwJ"/>
             </connections>
-            <point key="canvasLocation" x="345" y="287"/>
+            <point key="canvasLocation" x="344.5" y="287"/>
         </window>
     </objects>
     <resources>

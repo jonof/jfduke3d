@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
-        <deployment version="1060" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9059"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14109"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="StartupWinController">
@@ -10,23 +11,22 @@
                 <outlet property="alwaysShowButton" destination="37" id="59"/>
                 <outlet property="cancelButton" destination="22" id="65"/>
                 <outlet property="fullscreenButton" destination="14" id="58"/>
-                <outlet property="gameList" destination="RKK-r9-hGs" id="Duq-mU-UZh"/>
+                <outlet property="gameList" destination="6nK-mY-mqb" id="XIw-PF-jeD"/>
+                <outlet property="hostField" destination="kLw-xj-ksb" id="ihx-Zq-c5p"/>
+                <outlet property="hostMultiButton" destination="ykL-7f-xxy" id="zyx-WT-QKQ"/>
+                <outlet property="joinMultiButton" destination="Mc6-lv-e5A" id="m7F-e1-XR4"/>
                 <outlet property="messagesView" destination="63" id="64"/>
-                <outlet property="multiPlayerButton" destination="Mc6-lv-e5A" id="pj7-qH-qRL"/>
-                <outlet property="numPlayersField" destination="iBf-Wa-KU1" id="Qqx-S9-zf9"/>
-                <outlet property="numPlayersStepper" destination="AJL-iO-wca" id="pUd-Wf-179"/>
-                <outlet property="peerToPeerButton" destination="5e3-21-Aqi" id="vuF-v9-6Ht"/>
-                <outlet property="playerHostsField" destination="kLw-xj-ksb" id="1u0-gG-lga"/>
-                <outlet property="playerHostsLabel" destination="tAz-23-xz5" id="j4b-bq-bAd"/>
-                <outlet property="singlePlayerButton" destination="IgV-Vy-3rB" id="2Cu-el-Kqq"/>
-                <outlet property="soundQualityPUButton" destination="QRs-Ao-zoR" id="BDY-MC-xCY"/>
+                <outlet property="numPlayersField" destination="iBf-Wa-KU1" id="Xtr-sq-4rz"/>
+                <outlet property="numPlayersStepper" destination="AJL-iO-wca" id="Oxg-C4-T7A"/>
+                <outlet property="singlePlayerButton" destination="IgV-Vy-3rB" id="DaN-J7-iLR"/>
+                <outlet property="soundQualityPUButton" destination="Q8z-7T-rue" id="BFg-EP-yws"/>
                 <outlet property="startButton" destination="15" id="66"/>
-                <outlet property="tabConfig" destination="13" id="qac-y9-dlx"/>
-                <outlet property="tabGame" destination="Bju-sy-Ufg" id="Ace-V2-uVc"/>
-                <outlet property="tabMessages" destination="32" id="bN3-g2-snR"/>
+                <outlet property="tabConfig" destination="13" id="mas-w5-hHT"/>
+                <outlet property="tabGame" destination="Yy6-aY-TP7" id="wXC-9b-tfh"/>
+                <outlet property="tabMessages" destination="32" id="KOw-Zz-h80"/>
                 <outlet property="tabView" destination="8" id="bmZ-nd-4ds"/>
-                <outlet property="useJoystickButton" destination="UeG-2G-hap" id="Wgq-QD-6Fu"/>
-                <outlet property="useMouseButton" destination="yat-u3-tKZ" id="dPk-5m-SpG"/>
+                <outlet property="useJoystickButton" destination="uyv-SE-7D1" id="eVT-7R-XEt"/>
+                <outlet property="useMouseButton" destination="FBS-R8-SLf" id="dRm-Qn-VbA"/>
                 <outlet property="videoMode3DPUButton" destination="67" id="73"/>
                 <outlet property="window" destination="23" id="uz4-c0-hfd"/>
             </connections>
@@ -34,141 +34,94 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <window title="Startup" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" visibleAtLaunch="NO" animationBehavior="default" id="23" userLabel="StartupWin">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" unifiedTitleAndToolbar="YES"/>
-            <rect key="contentRect" x="469" y="258" width="494" height="352"/>
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
+            <rect key="contentRect" x="469" y="258" width="595" height="390"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
-            <view key="contentView" id="10">
-                <rect key="frame" x="0.0" y="0.0" width="494" height="352"/>
+            <view key="contentView" misplaced="YES" id="10">
+                <rect key="frame" x="0.0" y="0.0" width="595" height="390"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <tabView controlSize="small" initialItem="13" id="8">
-                        <rect key="frame" x="91" y="51" width="390" height="295"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
+                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" id="awm-3T-NPx">
+                        <rect key="frame" x="20" y="242" width="128" height="128"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSApplicationIcon" id="MNB-fS-spA"/>
+                    </imageView>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="HS8-c0-6kS">
+                        <rect key="frame" x="18" y="217" width="132" height="17"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="JFDuke3D" id="9RX-bI-QAi">
+                            <font key="font" metaFont="systemBold"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <tabView misplaced="YES" initialItem="13" id="8">
+                        <rect key="frame" x="158" y="50" width="428" height="326"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
+                        <font key="font" metaFont="system"/>
                         <tabViewItems>
                             <tabViewItem label="Configuration" identifier="" id="13">
                                 <view key="view" id="35">
-                                    <rect key="frame" x="10" y="25" width="370" height="257"/>
+                                    <rect key="frame" x="10" y="33" width="408" height="280"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <button id="14">
-                                            <rect key="frame" x="274" y="216" width="81" height="21"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <animations/>
-                                            <buttonCell key="cell" type="check" title="Fullscreen" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="76">
+                                        <button misplaced="YES" id="IgV-Vy-3rB">
+                                            <rect key="frame" x="16" y="110" width="145" height="18"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="radio" title="Single player game" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="QSU-Ad-Imh">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                <font key="font" metaFont="smallSystem"/>
+                                                <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
-                                                <action selector="fullscreenClicked:" target="-2" id="60"/>
+                                                <action selector="multiPlayerModeClicked:" target="-2" id="qiP-GJ-luS"/>
                                             </connections>
                                         </button>
-                                        <textField verticalHuggingPriority="750" id="11">
-                                            <rect key="frame" x="17" y="221" width="85" height="14"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <animations/>
-                                            <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Video mode:" id="75">
-                                                <font key="font" metaFont="smallSystem"/>
-                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                        <popUpButton verticalHuggingPriority="750" id="67">
-                                            <rect key="frame" x="105" y="216" width="167" height="22"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <animations/>
-                                            <popUpButtonCell key="cell" type="push" title="XXX x YYY Z-bpp" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="69" id="78">
-                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="smallSystem"/>
-                                                <menu key="menu" title="OtherViews" id="68">
-                                                    <items>
-                                                        <menuItem title="XXX x YYY Z-bpp" state="on" id="69"/>
-                                                    </items>
-                                                </menu>
-                                            </popUpButtonCell>
-                                        </popUpButton>
-                                        <button id="IgV-Vy-3rB">
-                                            <rect key="frame" x="15" y="91" width="145" height="20"/>
+                                        <button misplaced="YES" id="Mc6-lv-e5A">
+                                            <rect key="frame" x="16" y="88" width="161" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <animations/>
-                                            <buttonCell key="cell" type="radio" title="Single player game" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" state="on" inset="2" id="QSU-Ad-Imh">
+                                            <buttonCell key="cell" type="radio" title="Join multi-player game" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="bpk-oL-kpp">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                <font key="font" metaFont="smallSystem"/>
+                                                <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
-                                                <action selector="multiPlayerModeClicked:" target="-2" id="UMS-Kf-9Nm"/>
+                                                <action selector="multiPlayerModeClicked:" target="-2" id="9bn-vc-kor"/>
                                             </connections>
                                         </button>
-                                        <button id="Mc6-lv-e5A">
-                                            <rect key="frame" x="15" y="67" width="145" height="20"/>
+                                        <button misplaced="YES" id="ykL-7f-xxy">
+                                            <rect key="frame" x="16" y="38" width="164" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <animations/>
-                                            <buttonCell key="cell" type="radio" title="Multi-player game" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="bpk-oL-kpp">
+                                            <buttonCell key="cell" type="radio" title="Host multi-player game" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="22T-z0-cuH">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                <font key="font" metaFont="smallSystem"/>
+                                                <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
-                                                <action selector="multiPlayerModeClicked:" target="-2" id="cu5-HN-64u"/>
+                                                <action selector="multiPlayerModeClicked:" target="-2" id="FUa-Cl-PHt"/>
                                             </connections>
                                         </button>
-                                        <button id="5e3-21-Aqi">
-                                            <rect key="frame" x="28" y="14" width="133" height="20"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="tAz-23-xz5">
+                                            <rect key="frame" x="44" y="64" width="89" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <animations/>
-                                            <buttonCell key="cell" type="check" title="Peer-to-peer mode" bezelStyle="regularSquare" imagePosition="left" controlSize="small" inset="2" id="bby-fT-kXK">
-                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                <font key="font" metaFont="smallSystem"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="peerToPeerModeClicked:" target="-2" id="7e8-Ut-YHm"/>
-                                            </connections>
-                                        </button>
-                                        <textField verticalHuggingPriority="750" id="kLw-xj-ksb">
-                                            <rect key="frame" x="167" y="17" width="186" height="54"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <animations/>
-                                            <textFieldCell key="cell" controlSize="small" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="" drawsBackground="YES" id="4RM-f5-AUW">
-                                                <font key="font" metaFont="smallSystem"/>
-                                                <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="tAz-23-xz5">
-                                            <rect key="frame" x="165" y="73" width="133" height="14"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <animations/>
-                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Player addresses:" id="LF2-rU-Opj">
-                                                <font key="font" metaFont="smallSystem"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Host address:" id="LF2-rU-Opj">
+                                                <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" id="AJL-iO-wca">
-                                            <rect key="frame" x="143" y="36" width="19" height="27"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="UXY-RF-pEb">
+                                            <rect key="frame" x="44" y="14" width="66" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <animations/>
-                                            <stepperCell key="cell" continuous="YES" alignment="left" minValue="2" maxValue="16" doubleValue="2" id="94O-qj-xGh"/>
-                                            <connections>
-                                                <action selector="takeIntValueFrom:" target="iBf-Wa-KU1" id="h7i-NB-pLs"/>
-                                            </connections>
-                                        </stepper>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="UXY-RF-pEb">
-                                            <rect key="frame" x="29" y="43" width="66" height="14"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <animations/>
-                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Players:" id="1CQ-ko-1Zk">
-                                                <font key="font" metaFont="smallSystem"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Players:" id="1CQ-ko-1Zk">
+                                                <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField verticalHuggingPriority="750" id="iBf-Wa-KU1">
-                                            <rect key="frame" x="97" y="40" width="41" height="19"/>
+                                        <textField verticalHuggingPriority="750" misplaced="YES" id="iBf-Wa-KU1">
+                                            <rect key="frame" x="139" y="11" width="50" height="22"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <animations/>
-                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" drawsBackground="YES" id="g0y-Da-6ZS">
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" drawsBackground="YES" id="g0y-Da-6ZS">
                                                 <numberFormatter key="formatter" formatterBehavior="default10_4" numberStyle="decimal" minimumIntegerDigits="1" maximumIntegerDigits="2000000000" maximumFractionDigits="3" id="Ise-f1-Yc2"/>
-                                                <font key="font" metaFont="smallSystem"/>
+                                                <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -176,114 +129,160 @@
                                                 <action selector="takeIntegerValueFrom:" target="AJL-iO-wca" id="jcP-VD-6kx"/>
                                             </connections>
                                         </textField>
-                                        <popUpButton verticalHuggingPriority="750" id="QRs-Ao-zoR">
-                                            <rect key="frame" x="105" y="190" width="167" height="22"/>
+                                        <textField verticalHuggingPriority="750" misplaced="YES" id="kLw-xj-ksb">
+                                            <rect key="frame" x="139" y="61" width="180" height="22"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <animations/>
-                                            <popUpButtonCell key="cell" type="push" title="XX.XkHz, Y-bit" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="xct-w2-g56" id="3EZ-Vv-h5E">
+                                            <textFieldCell key="cell" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="" drawsBackground="YES" id="4RM-f5-AUW">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField verticalHuggingPriority="750" misplaced="YES" id="11">
+                                            <rect key="frame" x="15" y="259" width="111" height="17"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Video mode:" id="75">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <button misplaced="YES" id="14">
+                                            <rect key="frame" x="132" y="234" width="85" height="19"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="check" title="Fullscreen" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="76">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="fullscreenClicked:" target="-2" id="60"/>
+                                            </connections>
+                                        </button>
+                                        <popUpButton verticalHuggingPriority="750" misplaced="YES" id="67">
+                                            <rect key="frame" x="132" y="253" width="249" height="26"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="XXX x YYY Z-bpp" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="69" id="78">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="smallSystem"/>
-                                                <menu key="menu" id="msb-2W-bEB">
+                                                <font key="font" metaFont="menu"/>
+                                                <menu key="menu" title="OtherViews" id="68">
                                                     <items>
-                                                        <menuItem title="XX.XkHz, Y-bit" state="on" id="xct-w2-g56"/>
-                                                        <menuItem title="Item 2" id="MD9-nW-lVT"/>
-                                                        <menuItem title="Item 3" id="4Yf-Hf-zHs"/>
+                                                        <menuItem title="XXX x YYY Z-bpp" state="on" id="69"/>
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
                                         </popUpButton>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Eyb-ja-XYx">
-                                            <rect key="frame" x="17" y="195" width="85" height="14"/>
+                                        <popUpButton verticalHuggingPriority="750" misplaced="YES" id="Q8z-7T-rue">
+                                            <rect key="frame" x="132" y="192" width="249" height="26"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <animations/>
-                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Sound quality:" id="AnL-e7-2DQ">
-                                                <font key="font" metaFont="smallSystem"/>
+                                            <popUpButtonCell key="cell" type="push" title="XX kHz Y-bit, Mono" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="iEk-PZ-RSa" id="B6c-FT-r3V">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="menu"/>
+                                                <menu key="menu" id="YHS-6a-LH4">
+                                                    <items>
+                                                        <menuItem title="XX kHz Y-bit, Mono" state="on" id="iEk-PZ-RSa"/>
+                                                        <menuItem title="Item 2" id="ckA-cc-Rg2"/>
+                                                        <menuItem title="Item 3" id="jW8-Pp-d7Z"/>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                        </popUpButton>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="8KI-D9-dwr">
+                                            <rect key="frame" x="15" y="197" width="91" height="17"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Sound quality:" id="Kbb-6q-ffz">
+                                                <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <button id="yat-u3-tKZ">
-                                            <rect key="frame" x="105" y="168" width="70" height="20"/>
+                                        <button verticalHuggingPriority="750" misplaced="YES" id="FBS-R8-SLf">
+                                            <rect key="frame" x="132" y="156" width="63" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <animations/>
-                                            <buttonCell key="cell" type="check" title="Mouse" bezelStyle="regularSquare" imagePosition="left" controlSize="small" state="on" inset="2" id="HsQ-nJ-PLp">
+                                            <buttonCell key="cell" type="check" title="Mouse" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Gtr-SQ-J5M">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                <font key="font" metaFont="smallSystem"/>
+                                                <font key="font" metaFont="system"/>
                                             </buttonCell>
                                         </button>
-                                        <button id="UeG-2G-hap">
-                                            <rect key="frame" x="178" y="168" width="77" height="20"/>
+                                        <button verticalHuggingPriority="750" misplaced="YES" id="uyv-SE-7D1">
+                                            <rect key="frame" x="220" y="156" width="72" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <animations/>
-                                            <buttonCell key="cell" type="check" title="Joystick" bezelStyle="regularSquare" imagePosition="left" controlSize="small" state="on" inset="2" id="A74-iy-A1M">
+                                            <buttonCell key="cell" type="check" title="Joystick" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="8dv-z0-RfS">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                <font key="font" metaFont="smallSystem"/>
+                                                <font key="font" metaFont="system"/>
                                             </buttonCell>
                                         </button>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="CdP-Hu-JwB">
-                                            <rect key="frame" x="17" y="170" width="85" height="14"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="Itz-Ag-oh2">
+                                            <rect key="frame" x="15" y="156" width="89" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <animations/>
-                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Input devices:" id="quK-Cf-vxW">
-                                                <font key="font" metaFont="smallSystem"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Input devices:" id="TkT-kN-bV2">
+                                                <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
+                                        <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" id="AJL-iO-wca">
+                                            <rect key="frame" x="187" y="9" width="19" height="27"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <stepperCell key="cell" continuous="YES" alignment="left" minValue="2" maxValue="16" doubleValue="2" id="94O-qj-xGh"/>
+                                            <connections>
+                                                <action selector="takeIntValueFrom:" target="iBf-Wa-KU1" id="h7i-NB-pLs"/>
+                                            </connections>
+                                        </stepper>
                                     </subviews>
-                                    <animations/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Game" identifier="" id="Bju-sy-Ufg">
-                                <view key="view" id="dSp-OG-jvD">
-                                    <rect key="frame" x="10" y="25" width="370" height="257"/>
+                            <tabViewItem label="Game" identifier="" id="Yy6-aY-TP7">
+                                <view key="view" id="V7u-WO-B7Z">
+                                    <rect key="frame" x="10" y="33" width="408" height="280"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="HeR-gj-t4Q">
-                                            <rect key="frame" x="15" y="237" width="125" height="14"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <animations/>
-                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Game or addon:" id="rTy-3z-5uM">
-                                                <font key="font" metaFont="smallSystem"/>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                        <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="RKK-r9-hGs">
-                                            <rect key="frame" x="17" y="15" width="336" height="214"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <clipView key="contentView" id="pY4-pJ-dsm">
-                                                <rect key="frame" x="1" y="0.0" width="334" height="213"/>
+                                        <scrollView misplaced="YES" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="6nK-mY-mqb">
+                                            <rect key="frame" x="4" y="5" width="400" height="271"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <clipView key="contentView" id="QHR-S6-00F">
+                                                <rect key="frame" x="1" y="0.0" width="398" height="270"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" headerView="6bC-X8-6lE" id="eNk-eo-Ngc">
-                                                        <rect key="frame" x="0.0" y="0.0" width="334" height="190"/>
+                                                    <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="none" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" headerView="Cet-5s-bvd" id="8gf-gU-B7r">
+                                                        <rect key="frame" x="0.0" y="0.0" width="398" height="247"/>
                                                         <autoresizingMask key="autoresizingMask"/>
-                                                        <animations/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                         <tableColumns>
-                                                            <tableColumn identifier="0" width="210" minWidth="40" maxWidth="1000" id="u8m-A6-mBS">
-                                                                <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Name">
+                                                            <tableColumn identifier="0" width="225" minWidth="40" maxWidth="1000" id="0RQ-kM-3cz">
+                                                                <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Game name">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
-                                                                    <color key="backgroundColor" white="0.33333299" alpha="1" colorSpace="calibratedWhite"/>
+                                                                    <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                 </tableHeaderCell>
-                                                                <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" id="n8f-kT-pLQ">
+                                                                <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="PmT-K9-ep3">
                                                                     <font key="font" metaFont="system"/>
                                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                 </textFieldCell>
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                             </tableColumn>
-                                                            <tableColumn identifier="1" width="117.8505859375" minWidth="40" maxWidth="1000" id="KqJ-eo-Lbz">
-                                                                <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="GRP File">
+                                                            <tableColumn identifier="1" width="167" minWidth="40" maxWidth="1000" id="aYX-b8-gvt">
+                                                                <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="File name">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
-                                                                    <color key="backgroundColor" white="0.33333299" alpha="1" colorSpace="calibratedWhite"/>
+                                                                    <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                 </tableHeaderCell>
-                                                                <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" id="7lt-hm-jeS">
+                                                                <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="9aG-8g-jam">
+                                                                    <font key="font" metaFont="system"/>
+                                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                    <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                </textFieldCell>
+                                                                <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                            </tableColumn>
+                                                            <tableColumn identifier="2" width="64" minWidth="10" maxWidth="3.4028234663852886e+38" hidden="YES" id="3Vt-uA-hWW">
+                                                                <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Internal">
+                                                                    <font key="font" metaFont="smallSystem"/>
+                                                                    <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                </tableHeaderCell>
+                                                                <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="kNz-ct-GFo">
                                                                     <font key="font" metaFont="system"/>
                                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -293,79 +292,63 @@
                                                         </tableColumns>
                                                     </tableView>
                                                 </subviews>
-                                                <animations/>
-                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </clipView>
-                                            <animations/>
-                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" controlSize="small" horizontal="YES" id="3aD-IL-QTa">
-                                                <rect key="frame" x="-100" y="-100" width="313" height="15"/>
+                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="AVx-L1-hJG">
+                                                <rect key="frame" x="-100" y="-100" width="223" height="15"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <animations/>
                                             </scroller>
-                                            <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" controlSize="small" horizontal="NO" id="aUl-1i-qgr">
-                                                <rect key="frame" x="-22" y="17" width="11" height="150"/>
+                                            <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="hPh-pY-dF8">
+                                                <rect key="frame" x="-100" y="-100" width="15" height="102"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <animations/>
                                             </scroller>
-                                            <tableHeaderView key="headerView" id="6bC-X8-6lE">
-                                                <rect key="frame" x="0.0" y="0.0" width="334" height="23"/>
+                                            <tableHeaderView key="headerView" id="Cet-5s-bvd">
+                                                <rect key="frame" x="0.0" y="0.0" width="398" height="23"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <animations/>
                                             </tableHeaderView>
                                         </scrollView>
                                     </subviews>
-                                    <animations/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Messages" identifier="" id="32">
                                 <view key="view" id="6">
-                                    <rect key="frame" x="10" y="25" width="370" height="257"/>
+                                    <rect key="frame" x="10" y="33" width="408" height="280"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="62">
-                                            <rect key="frame" x="0.0" y="0.0" width="370" height="257"/>
+                                        <scrollView misplaced="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="62">
+                                            <rect key="frame" x="4" y="3" width="400" height="316"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <clipView key="contentView" id="vRG-Qb-rJ5">
-                                                <rect key="frame" x="1" y="1" width="368" height="255"/>
+                                                <rect key="frame" x="1" y="1" width="398" height="314"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <textView editable="NO" selectable="NO" importsGraphics="NO" richText="NO" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" spellingCorrection="YES" smartInsertDelete="YES" id="63">
-                                                        <rect key="frame" x="0.0" y="0.0" width="361" height="255"/>
+                                                    <textView editable="NO" selectable="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" usesFontPanel="YES" usesRuler="YES" spellingCorrection="YES" smartInsertDelete="YES" id="63">
+                                                        <rect key="frame" x="0.0" y="0.0" width="391" height="314"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                        <animations/>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                        <size key="minSize" width="361" height="255"/>
-                                                        <size key="maxSize" width="374" height="10000000"/>
+                                                        <size key="minSize" width="398" height="314"/>
+                                                        <size key="maxSize" width="400" height="10000000"/>
                                                         <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                        <size key="minSize" width="361" height="255"/>
-                                                        <size key="maxSize" width="374" height="10000000"/>
                                                     </textView>
                                                 </subviews>
-                                                <animations/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             </clipView>
-                                            <animations/>
                                             <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="82">
                                                 <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <animations/>
                                             </scroller>
                                             <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="NO" id="83">
-                                                <rect key="frame" x="355" y="1" width="14" height="255"/>
+                                                <rect key="frame" x="385" y="1" width="14" height="314"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <animations/>
                                             </scroller>
                                         </scrollView>
                                     </subviews>
-                                    <animations/>
                                 </view>
                             </tabViewItem>
                         </tabViewItems>
                     </tabView>
-                    <button verticalHuggingPriority="750" id="15">
-                        <rect key="frame" x="395" y="13" width="85" height="32"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
+                    <button verticalHuggingPriority="750" misplaced="YES" id="15">
+                        <rect key="frame" x="500" y="10" width="85" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                         <buttonCell key="cell" type="push" title="Start" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="80">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -377,10 +360,9 @@ DQ
                             <action selector="start:" target="-2" id="51"/>
                         </connections>
                     </button>
-                    <button verticalHuggingPriority="750" id="22">
-                        <rect key="frame" x="310" y="13" width="85" height="32"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
+                    <button verticalHuggingPriority="750" misplaced="YES" id="22">
+                        <rect key="frame" x="415" y="10" width="85" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                         <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="81">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -392,42 +374,21 @@ Gw
                             <action selector="cancel:" target="-2" id="50"/>
                         </connections>
                     </button>
-                    <button id="37">
-                        <rect key="frame" x="17" y="17" width="212" height="18"/>
+                    <button misplaced="YES" id="37">
+                        <rect key="frame" x="18" y="19" width="234" height="18"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
-                        <buttonCell key="cell" type="check" title="Always show configuration on start" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="77">
+                        <buttonCell key="cell" type="check" title="Always show configuration on start" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="77">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                            <font key="font" metaFont="smallSystem"/>
+                            <font key="font" metaFont="system"/>
                         </buttonCell>
-                        <connections>
-                            <action selector="alwaysShowClicked:" target="-2" id="61"/>
-                        </connections>
                     </button>
-                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="awm-3T-NPx">
-                        <rect key="frame" x="15" y="284" width="70" height="48"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <animations/>
-                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSApplicationIcon" id="MNB-fS-spA"/>
-                    </imageView>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="HS8-c0-6kS">
-                        <rect key="frame" x="13" y="259" width="75" height="17"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <animations/>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="JFDuke3D" id="9RX-bI-QAi">
-                            <font key="font" metaFont="systemBold"/>
-                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
                 </subviews>
-                <animations/>
             </view>
             <connections>
                 <outlet property="delegate" destination="-2" id="cFd-7L-ToE"/>
                 <outlet property="initialFirstResponder" destination="15" id="55"/>
             </connections>
-            <point key="canvasLocation" x="345" y="287"/>
+            <point key="canvasLocation" x="395.5" y="306"/>
         </window>
     </objects>
     <resources>

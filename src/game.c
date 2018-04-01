@@ -69,17 +69,18 @@ static struct strllist {
     struct strllist *next;
     char *str;
 } *CommandPaths = NULL, *CommandGrps = NULL;
+static int CommandFakeMulti = 0;
 
-char defaultduke3dgrp[BMAX_PATH] = "duke3d.grp";
+char duke3dgrp[BMAX_PATH+1] = "duke3d.grp";
 char defaultconfilename[BMAX_PATH] = "game.con";
-char const *confilename = defaultconfilename, *duke3dgrp = defaultduke3dgrp;
+char const *confilename = defaultconfilename;
 
 char boardfilename[BMAX_PATH] = {0};
 unsigned char waterpal[768], slimepal[768], titlepal[768], drealms[768], endingpal[768];
 char firstdemofile[80] = { '\0' };
 
-static int netparamcount = 0;
-static char const * *netparam = NULL;
+static int netparam = 0;    // Index into argv of the first -net argument
+static int netsuccess = 0;  // Outcome of calling initmultiplayersparms().
 
 #if 0
 #define patchstatusbar(x1,y1,x2,y2)                                        \
@@ -357,7 +358,7 @@ int minitextshade(int x,int y,const char *t,char s,unsigned char p,short sb)
 
     cmode = (sb&256)!=0;
     sb &= 255;
-    
+
     while(*t)
     {
         ch = Btoupper(*t);
@@ -573,7 +574,7 @@ void getpackets(void)
                       break;
                    }
                 }
-                
+
                 strcpy(recbuf,(char*)packbuf+2);   //XXXX unsafe
                 recbuf[packbufleng-2] = 0;
 
@@ -638,7 +639,7 @@ void getpackets(void)
                 ps[other].aim_mode = packbuf[i++];
                 ps[other].auto_aim = packbuf[i++];
                 ps[other].weaponswitch = packbuf[i++];
-                     
+
                 break;
             case 7:
                          //slaves in M/S mode only send to master
@@ -1989,7 +1990,7 @@ void operatefta(void)
      j = ps[screenpeek].fta;
      if (j > 4)
           gametext(320>>1,k,fta_quotes[ps[screenpeek].ftq],0,2+8+16);
-     else 
+     else
          if (NAM && ps[screenpeek].ftq == 99) gametext(320>>1,k,"Matt Saettler.  matts@saettler.com",0,2+8+16+1);
      else
          if (j > 2) gametext(320>>1,k,fta_quotes[ps[screenpeek].ftq],0,2+8+16+1);
@@ -2027,7 +2028,7 @@ void showtwoscreens(void)
         flushperms();
         //ps[myconnectindex].palette = palette;
         setgamepalette(&ps[myconnectindex], palette, 1);
-        
+
         fadepal(0,0,0, 0,64,7);
         rotatesprite(0,0,65536L,0,3291,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
         IFISSOFTMODE fadepal(0,0,0, 63,0,-7); else nextpage();
@@ -2079,7 +2080,7 @@ void gameexit(const char *t)
             wm_msgbox("Duke Nukem 3D", t);
         }
     }
-    
+
     uninitgroupfile();
 
     exit(0);
@@ -2499,7 +2500,7 @@ void displayrest(int smoothratio)
     // JBF 20040124: display level stats in screen corner
     if(ud.levelstats && (ps[myconnectindex].gm&MODE_MENU) == 0) {
         i = (ud.screen_size <= 4)?0:scale(tilesizy[BOTTOMSTATUSBAR],ud.statusbarscale,100);
-        
+
         sprintf(buf,"Time: %d:%02d",
             (ps[myconnectindex].player_par/(26*60)),
             (ps[myconnectindex].player_par/26)%60);
@@ -5340,7 +5341,7 @@ void animatesprites(int x,int y,short a,int smoothratio)
                     t->cstat &= ~4;
                     break;
                 }
-                
+
                  k = getangle(s->x-x,s->y-y);
                  k = (((s->ang+3072+128-k)&2047)/170);
                  if(k > 6)
@@ -5668,7 +5669,7 @@ void animatesprites(int x,int y,short a,int smoothratio)
                             //1024:tell MD2SPRITE.C to use Z-buffer hacks to hide overdraw issues
                         tsprite[spritesortcnt].cstat |= (512+1024);
                     }
-            
+
                     spritesortcnt++;
                 }
             }
@@ -5780,7 +5781,7 @@ void animatesprites(int x,int y,short a,int smoothratio)
                     t->cstat &= ~4;
                     break;
                 }
-                
+
                 k = (((t->ang+3072+128-a)&2047)>>8)&7;
                 if(k>4)
                 {
@@ -5847,7 +5848,7 @@ void cheats(void)
       osdcmd_cheatsinfo_stat.cheatnum = -1;
       consolecheat = 1;
     }
-    
+
     if( (ps[myconnectindex].gm&MODE_TYPE) || (ps[myconnectindex].gm&MODE_MENU))
         return;
 
@@ -5863,7 +5864,7 @@ void cheats(void)
 
     if (consolecheat && numplayers < 2 && ud.recstat == 0)
       goto FOUNDCHEAT;
-    
+
     if ( ps[myconnectindex].cheat_phase == 1)
     {
        while (KB_KeyWaiting())
@@ -6109,7 +6110,7 @@ if (VOLUMEONE) {
               } else {  // JBF 20030914
                 ud.m_volume_number = ud.volume_number = osdcmd_cheatsinfo_stat.volume;
                             ud.m_level_number = ud.level_number = osdcmd_cheatsinfo_stat.level;
-              } 
+              }
 
                         }
                         else ud.m_player_skill = ud.player_skill =
@@ -6166,7 +6167,7 @@ if (VOLUMEONE) {
 
                     case 6:
                 if (VOLUMEONE) return;
-            
+
                         for(i=numsectors-1;i>=0;i--) //Unlock
                         {
                             j = sector[i].lotag;
@@ -6434,7 +6435,7 @@ if (VOLUMEALL) {
                     if (ch != myconnectindex) sendpacket(ch,tempbuf,i);
                     if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
                 }
-    
+
                 pus = NUMPAGES;
                 pub = NUMPAGES;
 
@@ -6757,35 +6758,39 @@ if (VOLUMEALL) {
 
 
 
+#ifdef _WIN32
+#  define ARGCHAR "/"
+#else
+#  define ARGCHAR "-"
+#endif
 void comlinehelp(void)
 {
     char *s = "Command line help.\n"
-        "?, /?\t\tThis help message\n"
-        "/l##\t\tLevel (1-11)\n"
-        "/v#\t\tVolume (1-4)\n"
-        "/s#\t\tSkill (1-4)\n"
-        "/r\t\tRecord demo\n"
-        "/dFILE\t\tStart to play demo FILE\n"
-        "/m\t\tNo monsters\n"
-        "/ns\t\tNo sound\n"
-        "/nm\t\tNo music\n"
-        "/t#\t\tRespawn, 1 = Monsters, 2 = Items, 3 = Inventory, x = All\n"
-        "/c#\t\tMP mode, 1 = DukeMatch(spawn), 2 = Coop, 3 = Dukematch(no spawn)\n"
-        "/q#\t\tFake multiplayer (2-8 players)\n"
-        "/a\t\tUse player AI (fake multiplayer only)\n"
-        "/i#\t\tNetwork mode (1/0) (multiplayer only) (default == 1)\n"
-        "/f#\t\tSend fewer packets (1, 2, 4) (multiplayer only)\n"
-        "/gFILE\t\tUse multiple group files\n"
-        "/jDIRECTORY\t\tAdd a directory to the file path stack\n"
-        "/hFILE\t\tUse FILE instead of DUKE3D.DEF\n"
-        "/xFILE\t\tCompile FILE (default GAME.CON)\n"
-        "/u#########\tUser's favorite weapon order (default: 3425689071)\n"
-        "/#\t\tLoad and run a game (slot 0-9)\n"
-        "-map FILE\tUse a map FILE\n"
-        "-name NAME\tFoward NAME\n"
-        "-net\t\tNet mode game\n"
-        "-nam\t\tActivates NAM compatibility mode (sets CON to NAM.CON and GRP to NAM.GRP)\n"
-        "-setup\t\ttDisplays the configuration dialogue box\n"
+        ARGCHAR "?\t\tThis help message\n"
+        ARGCHAR "l##\t\tLevel (1-11)\n"
+        ARGCHAR "v#\t\tVolume (1-4)\n"
+        ARGCHAR "s#\t\tSkill (1-4)\n"
+        ARGCHAR "r\t\tRecord demo\n"
+        ARGCHAR "dFILE\t\tStart to play demo FILE\n"
+        ARGCHAR "m\t\tNo monsters\n"
+        ARGCHAR "ns\t\tNo sound\n"
+        ARGCHAR "nm\t\tNo music\n"
+        ARGCHAR "t#\t\tRespawn, 1 = Monsters, 2 = Items, 3 = Inventory, x = All\n"
+        ARGCHAR "c#\t\tMP mode, 1 = DukeMatch(spawn), 2 = Coop, 3 = Dukematch(no spawn)\n"
+        ARGCHAR "q#\t\tFake multiplayer (2-8 players)\n"
+        ARGCHAR "a\t\tUse player AI (fake multiplayer only)\n"
+        ARGCHAR "f#\t\tSend fewer packets (1, 2, 4) (multiplayer only)\n"
+        ARGCHAR "gFILE\t\tUse multiple group files\n"
+        ARGCHAR "jDIRECTORY\t\tAdd a directory to the file path stack\n"
+        ARGCHAR "hFILE\t\tUse FILE instead of DUKE3D.DEF\n"
+        ARGCHAR "xFILE\t\tCompile FILE (default GAME.CON)\n"
+        ARGCHAR "u#########\tUser's favorite weapon order (default: 3425689071)\n"
+        ARGCHAR "#\t\tLoad and run a game (slot 0-9)\n"
+        ARGCHAR "map FILE\tUse a map FILE\n"
+        ARGCHAR "name NAME\tFoward NAME\n"
+        ARGCHAR "nam\t\tActivates NAM compatibility mode (sets CON to NAM.CON and GRP to NAM.GRP)\n"
+        ARGCHAR "setup\t\tDisplays the configuration dialogue box\n"
+        ARGCHAR "net\t\tNet mode game (all arguments that follow are parameters for networking)\n"
         ;
     wm_msgbox(apptitle,s);
 }
@@ -6794,7 +6799,6 @@ void checkcommandline(int argc, char const * const *argv)
 {
     short i, j;
     char const *c;
-    int firstnet = 0;
 
     i = 1;
 
@@ -6822,16 +6826,19 @@ void checkcommandline(int argc, char const * const *argv)
         while(i < argc)
         {
             c = argv[i];
-            if (((*c == '/') || (*c == '-')) && (!firstnet))
+#ifdef _WIN32
+            if ((*c == '/') || (*c == '-'))
+#else
+            if (*c == '-')
+#endif
             {
-                if (!Bstrcasecmp(c+1,"net")) {
-                    firstnet = i;
-                    netparamcount = argc - i - 1;
-                    netparam = calloc(netparamcount, sizeof(char**));
-                    i++;
-                    continue;
+                c++;
+
+                if (!Bstrcasecmp(c,"net")) {
+                    netparam = i+1;
+                    break;  // All further args go to mmulti.
                 }
-                if (!Bstrcasecmp(c+1,"name")) {
+                if (!Bstrcasecmp(c,"name")) {
                     if (argc > i+1) {
                         CommandName = argv[i+1];
                         i++;
@@ -6839,7 +6846,7 @@ void checkcommandline(int argc, char const * const *argv)
                     i++;
                     continue;
                 }
-                if (!Bstrcasecmp(c+1,"map")) {
+                if (!Bstrcasecmp(c,"map")) {
                     if (argc > i+1) {
                         CommandMap = argv[i+1];
                         i++;
@@ -6847,34 +6854,17 @@ void checkcommandline(int argc, char const * const *argv)
                     i++;
                     continue;
                 }
-                if (!Bstrcasecmp(c+1,"setup")) {
+                if (!Bstrcasecmp(c,"setup")) {
                     CommandSetup = TRUE;
                     i++;
                     continue;
                 }
-                if (!Bstrcasecmp(c+1,"nam")) {
-                    strcpy(defaultduke3dgrp, "nam.grp");
+                if (!Bstrcasecmp(c,"nam")) {
+                    strcpy(duke3dgrp, "nam.grp");
                     i++;
                     continue;
                 }
-            }
 
-            if (firstnet > 0) {
-                if (*c == '-' || *c == '/') {
-                    c++;
-                    if      (((c[0] == 'n') || (c[0] == 'N')) && (c[1] == '0'))
-                        { networkmode = 0; buildprintf("Network mode: master/slave\n"); }
-                    else if (((c[0] == 'n') || (c[0] == 'N')) && (c[1] == '1'))
-                        { networkmode = 1; buildprintf("Network mode: peer-to-peer\n"); }
-                }
-                netparam[i-firstnet-1] = argv[i];
-                i++;
-                continue;
-            }
-
-            if((*c == '/') || (*c == '-'))
-            {
-                c++;
                 switch(*c)
                 {
                     case '?':
@@ -6960,9 +6950,8 @@ void checkcommandline(int argc, char const * const *argv)
                     case 'i':
                     case 'I':
                         c++;
-                        if(*c == '0') networkmode = 0;
-                        if(*c == '1') networkmode = 1;
-                        buildprintf("Network Mode %d\n",networkmode);
+                        buildprintf("Warning: legacy network mode argument ignored. Use \"-net -n%c\" instead.\n",
+                            c[0]);
                         break;
                     case 'j':
                     case 'J':
@@ -7018,8 +7007,8 @@ void checkcommandline(int argc, char const * const *argv)
                     case 'q':
                     case 'Q':
                         buildprintf("Fake multiplayer mode.\n");
-                        if( *(++c) == 0) ud.multimode = 1;
-                        else ud.multimode = atol(c)%17;
+                        if( *(++c) == 0) CommandFakeMulti = 1;
+                        else CommandFakeMulti = min(MAXPLAYERS, atol(c));
                         ud.m_coop = ud.coop = 0;
                         ud.m_marker = ud.marker = 1;
                         ud.m_respawn_monsters = ud.respawn_monsters = 1;
@@ -7060,7 +7049,7 @@ void checkcommandline(int argc, char const * const *argv)
                         break;
                     case 'u':
                     case 'U':
-                CommandWeaponChoice = 1;
+                        CommandWeaponChoice = 1;
                         c++;
                         j = 0;
                         if(*c)
@@ -7110,12 +7099,7 @@ void checkcommandline(int argc, char const * const *argv)
                         if(*c)
                         {
                             confilename = c;
-                            /*if(SafeFileExists(c) == 0)
-                            {
-                                buildprintf("Could not find con file '%s'.\n",confilename );
-                                exit(-1);
-                            }
-                            else*/ buildprintf("Using con file: '%s'\n",confilename);
+                            buildprintf("Using con file: '%s'\n",confilename);
                         }
                         break;
                     case '0':
@@ -7374,8 +7358,6 @@ void compilecons(void)
     labeltype = NULL;
 }
 
-extern int startwin_run(void);
-
 void Startup(void)
 {
     int i;
@@ -7407,7 +7389,7 @@ void Startup(void)
            dot = Bstrrchr(boardfilename,'.');
            slash = Bstrrchr(boardfilename,'/');
            if (!slash) slash = Bstrrchr(boardfilename,'\\');
-           
+
            if ((!slash && !dot) || (slash && dot < slash))
                Bstrcat(boardfilename,".map");
 
@@ -7440,15 +7422,14 @@ void Startup(void)
 
     buildprintf("Loading palette/lookups.\n");
     genspriteremaps();
-    
+
     readsavenames();
 
     tilesizx[MIRROR] = tilesizy[MIRROR] = 0;
 
     for(i=0;i<MAXPLAYERS;i++) playerreadyflag[i] = 0;
 
-    //initmultiplayers(netparamcount,netparam);
-    if (initmultiplayersparms(netparamcount,netparam)) {
+    if (netsuccess) {
         buildprintf("Waiting for players...\n");
         while (initmultiplayerscycle()) {
             handleevents();
@@ -7457,19 +7438,13 @@ void Startup(void)
                 return;
             }
         }
+    } else {
+        initsingleplayers();
     }
-    if (netparam) free(netparam);
-    netparam = NULL; netparamcount = 0;
-
-    if(numplayers > 1)
-    buildprintf("Multiplayer initialized.\n");
 
     screenpeek = myconnectindex;
     ps[myconnectindex].palette = &palette[0];
 
-    if(networkmode == 255)
-       networkmode = 1;
-    
     getnames();
 }
 
@@ -7577,6 +7552,8 @@ int gametype = 0;
 int app_main(int argc, char const * const argv[])
 {
     int i, j, k, l;
+    int configloaded;
+    struct grpfile *gamegrp = NULL;
 
 #ifdef RENDERTYPEWIN
     if (win_checkinstance()) {
@@ -7605,7 +7582,7 @@ int app_main(int argc, char const * const argv[])
             addsearchpath(appdir);
             free(appdir);
         }
-        
+
         // the global support files directory
         if (supportdir) {
             Bsnprintf(dirpath, sizeof(dirpath), "%s/JFDuke3D", supportdir);
@@ -7613,7 +7590,7 @@ int app_main(int argc, char const * const argv[])
             free(supportdir);
         }
     }
-    
+
     checkcommandline(argc,argv);
 
     {
@@ -7673,48 +7650,103 @@ int app_main(int argc, char const * const argv[])
        exit(1);
     }
 
-    i = CONFIG_ReadSetup();
-    if (getenv("DUKE3DGRP")) duke3dgrp = getenv("DUKE3DGRP");
+    configloaded = CONFIG_ReadSetup();
+    if (getenv("DUKE3DGRP")) {
+        strncpy(duke3dgrp, getenv("DUKE3DGRP"), BMAX_PATH);
+    }
 
     ScanGroups();
-    {   // try and identify the 'defaultduke3dgrp' in the set of GRPs.
-        // if it is found, set up the environment accordingly for the game it represents.
-        // if it is not found, choose the first GRP from the list of 
-        struct grpfile *fg, *first = NULL;
-        int i;
-        for (fg = foundgrps; fg; fg=fg->next) {
-            for (i = 0; i<numgrpfiles; i++) if (fg->crcval == grpfiles[i].crcval) break;
-            if (i == numgrpfiles) continue; // unrecognised grp file
-            fg->game = grpfiles[i].game;
-            if (!first) first = fg;
-            if (!Bstrcasecmp(fg->name, defaultduke3dgrp)) {
-                gametype = grpfiles[i].game;
+    {
+        // Try and identify duke3dgrp in the set of GRPs.
+        struct grpfile *first = NULL;
+        for (gamegrp = foundgrps; gamegrp; gamegrp = gamegrp->next) {
+            if (!gamegrp->ref) continue;     // Not a recognised game file.
+            if (!first) first = gamegrp;
+            if (!Bstrcasecmp(gamegrp->name, duke3dgrp)) {
+                // Found it.
                 break;
             }
         }
-        if (!fg && first) {
-            Bstrcpy(defaultduke3dgrp, first->name);
-            gametype = first->game;
+        if (!gamegrp && first) {
+            // It wasn't found, so use the first recognised one scanned.
+            gamegrp = first;
         }
     }
 
-#if defined RENDERTYPEWIN || (defined RENDERTYPESDL && (defined __APPLE__ || defined HAVE_GTK2))
-    if (i < 0 || ForceSetup || CommandSetup) {
-        if (quitevent || !startwin_run()) {
-            uninitengine();
-            exit(0);
+    if (netparam) { // -net parameter on command line.
+        netsuccess = initmultiplayersparms(argc - netparam, &argv[netparam]);
+    }
+
+#if defined RENDERTYPEWIN || (defined RENDERTYPESDL && (defined __APPLE__ || defined HAVE_GTK))
+    {
+        struct startwin_settings settings;
+
+        memset(&settings, 0, sizeof(settings));
+        settings.fullscreen = ScreenMode;
+        settings.xdim3d = ScreenWidth;
+        settings.ydim3d = ScreenHeight;
+        settings.bpp3d = ScreenBPP;
+        settings.forcesetup = ForceSetup;
+        settings.usemouse = UseMouse;
+        settings.usejoy = UseJoystick;
+        settings.samplerate = MixRate;
+        settings.bitspersample = NumBits;
+        settings.channels = NumChannels;
+        settings.selectedgrp = gamegrp;
+
+        if (configloaded < 0 || ForceSetup || CommandSetup) {
+            if (startwin_run(&settings) == STARTWIN_CANCEL) {
+                uninitengine();
+                exit(0);
+            }
+        }
+
+        ScreenMode = settings.fullscreen;
+        ScreenWidth = settings.xdim3d;
+        ScreenHeight = settings.ydim3d;
+        ScreenBPP = settings.bpp3d;
+        ForceSetup = settings.forcesetup;
+        UseMouse = settings.usemouse;
+        UseJoystick = settings.usejoy;
+        MixRate = settings.samplerate;
+        NumBits = settings.bitspersample;
+        NumChannels = settings.channels;
+        gamegrp = settings.selectedgrp;
+
+        if (!netparam) {
+            char modeparm[8];
+            const char *parmarr[3] = { modeparm, NULL, NULL };
+            int parmc = 0;
+
+            if (settings.joinhost) {
+                strcpy(modeparm, "-nm");
+                parmarr[1] = settings.joinhost;
+                parmc = 2;
+            } else if (settings.numplayers > 1 && settings.numplayers <= MAXPLAYERS) {
+                sprintf(modeparm, "-nm:%d", settings.numplayers);
+                parmc = 1;
+            }
+
+            if (parmc > 0) {
+                netsuccess = initmultiplayersparms(parmc, parmarr);
+            }
+
+            if (settings.joinhost) {
+                free(settings.joinhost);
+            }
         }
     }
 #endif
 
-    FreeGroups();
-
-    if (NAM) {
-        // overwrite the default GRP and CON so that if the user chooses
-        // something different, they get what they asked for
-        strcpy(defaultduke3dgrp,"nam.grp");
+    if (gamegrp) {
+        Bstrcpy(duke3dgrp, gamegrp->name);
+        gametype = gamegrp->game;
+    }
+    if (gametype == GAMENAM) {
         strcpy(defaultconfilename, "nam.con");
     }
+
+    FreeGroups();
 
     buildprintf("GRP file: %s\n", duke3dgrp);
     initgroupfile(duke3dgrp);
@@ -7757,15 +7789,12 @@ int app_main(int argc, char const * const argv[])
         buildprintf("Copyright (c) 1996 3D Realms Entertainment\n");
     }
 
-    ud.multimode = 1;
-    if (netparamcount > 0) _buildargc = (argc -= netparamcount+1);  // crop off the net parameters
+    if (VOLUMEONE) {
+        buildprintf("Distribution of shareware Duke Nukem 3D is restricted in certain ways.\n");
+        buildprintf("Please read LICENSE.DOC for more details.\n");
+    }
 
     RegisterShutdownFunction( Shutdown );
-
-if (VOLUMEONE) {
-    buildprintf("Distribution of shareware Duke Nukem 3D is restricted in certain ways.\n");
-    buildprintf("Please read LICENSE.DOC for more details.\n");
-}
 
     OSD_SetFunctions(
         GAME_drawosdchar,
@@ -7779,20 +7808,24 @@ if (VOLUMEONE) {
     );
     OSD_SetParameters(0,2, 0,0, 4,0);
     registerosdcommands();
+
     Startup();
     if (quitevent) return 0;
 
     if (!loaddefinitionsfile(duke3ddef)) buildprintf("Definitions file loaded.\n");
 
     // gotta set the proper title after we compile the CONs if this is the full version
-if (!NAM && VOLUMEALL) {
-    if (PLUTOPAK)
+    if (!NAM && VOLUMEALL) {
+        if (PLUTOPAK)
             wm_setapptitle(HEAD2P);
-    else
-        wm_setapptitle(HEAD2S);
-}
-    
-    if(numplayers > 1)
+        else
+            wm_setapptitle(HEAD2S);
+    }
+
+    if (!netsuccess && numplayers == 1 && CommandFakeMulti) {
+        ud.multimode = CommandFakeMulti;
+    }
+    else if(numplayers >= 2)
     {
         ud.multimode = numplayers;
         sendlogon();
@@ -7906,7 +7939,7 @@ if (VOLUMEONE) {
         }
 
         OSD_DispatchQueued();
-        
+
         if( ud.recstat == 2 || ud.multimode > 1 || ( ud.show_help == 0 && (ps[myconnectindex].gm&MODE_MENU) != MODE_MENU ) )
             if( ps[myconnectindex].gm&MODE_GAME )
                 if( moveloop() ) continue;
@@ -8323,7 +8356,7 @@ int playback(void)
         buildprintf("Checksum = %08X\n",crcv);
     }
 #endif
-    
+
     if(ps[myconnectindex].gm&MODE_MENU) goto RECHECK;
     return 1;
 }
@@ -9078,7 +9111,7 @@ void dobonus(char bonusonly)
         if (!lastmapname) lastmapname = Bstrrchr(boardfilename,'/');
         if (!lastmapname) lastmapname = boardfilename;
     } else lastmapname = level_names[(ud.volume_number*11)+ud.last_level-1];
-    
+
     bonuscnt = 0;
 
     fadepal(0,0,0, 0,64,7);
@@ -9488,7 +9521,7 @@ void dobonus(char bonusonly)
             besttime = "Previous Best:";
         }
     }
-    
+
     {
         int ii, ij;
 
@@ -9501,7 +9534,7 @@ void dobonus(char bonusonly)
         if (playerbest > 0) for (ii=playerbest/(26*60), ij=1; ii>9; ii/=10, ij++) ;
             clockpad = max(clockpad,ij);
     }
-    
+
     uinfo.dir = dir_None;
     uinfo.button0 = uinfo.button1 = FALSE;
     KB_FlushKeyboardQueue();
@@ -9511,7 +9544,7 @@ void dobonus(char bonusonly)
 
         handleevents();
         CONTROL_GetUserInput(&uinfo);
-        
+
         if(ps[myconnectindex].gm&MODE_EOL)
         {
             clearview(0);
@@ -9592,7 +9625,7 @@ void dobonus(char bonusonly)
                         bonuscnt++;
                         sound(PIPEBOMB_EXPLODE);
                     }
-                    
+
                     sprintf(buf,"%0*d:%02d",clockpad,
                         (ps[myconnectindex].player_par/(26*60)),
                         (ps[myconnectindex].player_par/26)%60);
@@ -9621,7 +9654,7 @@ void dobonus(char bonusonly)
 
                 }
             }
-        
+
             zz = yy += 5;
             if( totalclock > (60*6) )
             {
@@ -9658,7 +9691,7 @@ void dobonus(char bonusonly)
                     }
                 }
             }
-        
+
             zz = yy += 5;
             if( totalclock > (60*9) )
             {
@@ -9709,7 +9742,7 @@ void dobonus(char bonusonly)
         else break;
 
         CONTROL_ClearUserInput(&uinfo);
-        
+
         nextpage();
     }
 }

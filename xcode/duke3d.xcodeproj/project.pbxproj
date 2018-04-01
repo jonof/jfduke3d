@@ -27,7 +27,6 @@
 		AB0FFB8C172B98B500400B2B /* libengine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB0FFB6A172B981400400B2B /* libengine.a */; };
 		AB0FFB8D172B98B500400B2B /* libeditor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB0FFB6C172B981400400B2B /* libeditor.a */; };
 		AB0FFB8E172B98B500400B2B /* libeditorsupp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB0FFB6E172B981400400B2B /* libeditorsupp.a */; };
-		AB1DE7EF10199F6E00657779 /* GrpFile.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1DE7EE10199F6E00657779 /* GrpFile.m */; };
 		AB1DE7F610199FD200657779 /* GameListSource.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1DE7F510199FD200657779 /* GameListSource.m */; };
 		AB23F52017355B2B002B565F /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB23F51F17355B2B002B565F /* AudioToolbox.framework */; };
 		AB23F54517355B72002B565F /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB2EA11F1012195E00DD2F1F /* AudioUnit.framework */; };
@@ -47,11 +46,8 @@
 		AB69BD2E0A73C36100F3DCB8 /* rts.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD1E0A73C36100F3DCB8 /* rts.c */; };
 		AB69BD2F0A73C36100F3DCB8 /* sector.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD1F0A73C36100F3DCB8 /* sector.c */; };
 		AB69BD310A73C36100F3DCB8 /* testcd.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD210A73C36100F3DCB8 /* testcd.c */; };
-		AB69BD360A73C3EC00F3DCB8 /* game.osxmain.nib in Resources */ = {isa = PBXBuildFile; fileRef = AB69BD330A73C3EC00F3DCB8 /* game.osxmain.nib */; };
 		AB69BD370A73C3EC00F3DCB8 /* startwin.game.nib in Resources */ = {isa = PBXBuildFile; fileRef = AB69BD340A73C3EC00F3DCB8 /* startwin.game.nib */; };
 		AB7AF6151BE46EDC00935B15 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB7AF6141BE46EDC00935B15 /* Images.xcassets */; };
-		AB8C5943101B826E00B42306 /* vorbis.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB8C5941101B826E00B42306 /* vorbis.framework */; };
-		AB8C595F101B838600B42306 /* vorbis.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = AB8C5941101B826E00B42306 /* vorbis.framework */; };
 		ABB4AAD20C64BD9E00F28920 /* SDL2.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL2.framework */; };
 		ABB4AAD70C64BDC400F28920 /* SDL2.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL2.framework */; };
 		ABD768EC0A73CB63006C27C1 /* animlib.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD768DA0A73CB63006C27C1 /* animlib.c */; };
@@ -65,7 +61,6 @@
 		ABD769040A73CBDE006C27C1 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL2.framework */; };
 		ABD769180A73CDF6006C27C1 /* StartupWinController.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD769170A73CDF6006C27C1 /* StartupWinController.m */; };
 		ABD769310A73CE6D006C27C1 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABD769300A73CE6D006C27C1 /* AppKit.framework */; };
-		ABD769720A73D164006C27C1 /* build.osxmain.nib in Resources */ = {isa = PBXBuildFile; fileRef = ABD7696F0A73D164006C27C1 /* build.osxmain.nib */; };
 		ABD769730A73D164006C27C1 /* startwin.editor.nib in Resources */ = {isa = PBXBuildFile; fileRef = ABD769700A73D164006C27C1 /* startwin.editor.nib */; };
 		ABD769750A73D17A006C27C1 /* astub.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD769740A73D17A006C27C1 /* astub.c */; };
 		ABD76A1F0A73D1A5006C27C1 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABD769300A73CE6D006C27C1 /* AppKit.framework */; };
@@ -204,7 +199,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				AB8C595F101B838600B42306 /* vorbis.framework in CopyFiles */,
 				ABB4AAD20C64BD9E00F28920 /* SDL2.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -212,8 +206,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		AB1DE7ED10199F6E00657779 /* GrpFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GrpFile.h; sourceTree = "<group>"; };
-		AB1DE7EE10199F6E00657779 /* GrpFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GrpFile.m; sourceTree = "<group>"; };
 		AB1DE7F410199FD200657779 /* GameListSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameListSource.h; sourceTree = "<group>"; };
 		AB1DE7F510199FD200657779 /* GameListSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameListSource.m; sourceTree = "<group>"; };
 		AB23F51F17355B2B002B565F /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = /System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<absolute>"; };
@@ -236,11 +228,9 @@
 		AB69BD1E0A73C36100F3DCB8 /* rts.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rts.c; sourceTree = "<group>"; };
 		AB69BD1F0A73C36100F3DCB8 /* sector.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sector.c; sourceTree = "<group>"; };
 		AB69BD210A73C36100F3DCB8 /* testcd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = testcd.c; sourceTree = "<group>"; };
-		AB69BD330A73C3EC00F3DCB8 /* game.osxmain.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = game.osxmain.nib; sourceTree = "<group>"; };
 		AB69BD340A73C3EC00F3DCB8 /* startwin.game.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = startwin.game.nib; sourceTree = "<group>"; };
 		AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = engine.xcodeproj; path = ../jfbuild/xcode/engine.xcodeproj; sourceTree = SOURCE_ROOT; };
 		AB7AF6141BE46EDC00935B15 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		AB8C5941101B826E00B42306 /* vorbis.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vorbis.framework; path = "../jfaudiolib/third-party/vorbis.framework"; sourceTree = SOURCE_ROOT; };
 		ABD768D80A73CB63006C27C1 /* _control.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _control.h; sourceTree = "<group>"; };
 		ABD768D90A73CB63006C27C1 /* _scrplib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _scrplib.h; sourceTree = "<group>"; };
 		ABD768DA0A73CB63006C27C1 /* animlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = animlib.c; sourceTree = "<group>"; };
@@ -266,7 +256,6 @@
 		ABD769300A73CE6D006C27C1 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		ABD7695E0A73D116006C27C1 /* Build Editor for JFDuke3D.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Build Editor for JFDuke3D.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABD769600A73D116006C27C1 /* Build Editor-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Build Editor-Info.plist"; sourceTree = "<group>"; };
-		ABD7696F0A73D164006C27C1 /* build.osxmain.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = build.osxmain.nib; sourceTree = "<group>"; };
 		ABD769700A73D164006C27C1 /* startwin.editor.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = startwin.editor.nib; sourceTree = "<group>"; };
 		ABD769740A73D17A006C27C1 /* astub.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = astub.c; sourceTree = "<group>"; };
 		ABF3C30E10188C8C00233700 /* _functio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _functio.h; sourceTree = "<group>"; };
@@ -295,7 +284,6 @@
 				AB0FFB85172B98A400400B2B /* libjfaudiolib.a in Frameworks */,
 				ABD769040A73CBDE006C27C1 /* SDL2.framework in Frameworks */,
 				ABD769310A73CE6D006C27C1 /* AppKit.framework in Frameworks */,
-				AB8C5943101B826E00B42306 /* vorbis.framework in Frameworks */,
 				AB23F52017355B2B002B565F /* AudioToolbox.framework in Frameworks */,
 				AB23F54517355B72002B565F /* AudioUnit.framework in Frameworks */,
 			);
@@ -386,8 +374,6 @@
 				AB69BD210A73C36100F3DCB8 /* testcd.c */,
 				AB1DE7F410199FD200657779 /* GameListSource.h */,
 				AB1DE7F510199FD200657779 /* GameListSource.m */,
-				AB1DE7ED10199F6E00657779 /* GrpFile.h */,
-				AB1DE7EE10199F6E00657779 /* GrpFile.m */,
 				ABD769170A73CDF6006C27C1 /* StartupWinController.m */,
 			);
 			name = src;
@@ -408,7 +394,7 @@
 			isa = PBXGroup;
 			children = (
 				ABD7696B0A73D135006C27C1 /* src */,
-				ABD7696C0A73D13B006C27C1 /* osx */,
+				ABD7696C0A73D13B006C27C1 /* xcode */,
 			);
 			name = Editor;
 			sourceTree = "<group>";
@@ -426,7 +412,6 @@
 			isa = PBXGroup;
 			children = (
 				AB69BD080A73C21E00F3DCB8 /* JFDuke3D-Info.plist */,
-				AB69BD330A73C3EC00F3DCB8 /* game.osxmain.nib */,
 				AB69BD340A73C3EC00F3DCB8 /* startwin.game.nib */,
 				AB7AF6141BE46EDC00935B15 /* Images.xcassets */,
 			);
@@ -464,7 +449,6 @@
 		ABD769020A73CBC0006C27C1 /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				AB8C5941101B826E00B42306 /* vorbis.framework */,
 				AB2EA11F1012195E00DD2F1F /* AudioUnit.framework */,
 				AB23F51F17355B2B002B565F /* AudioToolbox.framework */,
 				ABD769300A73CE6D006C27C1 /* AppKit.framework */,
@@ -482,14 +466,13 @@
 			path = ../src;
 			sourceTree = "<group>";
 		};
-		ABD7696C0A73D13B006C27C1 /* osx */ = {
+		ABD7696C0A73D13B006C27C1 /* xcode */ = {
 			isa = PBXGroup;
 			children = (
 				ABD769600A73D116006C27C1 /* Build Editor-Info.plist */,
-				ABD7696F0A73D164006C27C1 /* build.osxmain.nib */,
 				ABD769700A73D164006C27C1 /* startwin.editor.nib */,
 			);
-			name = osx;
+			name = xcode;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -544,8 +527,15 @@
 			attributes = {
 				LastUpgradeCheck = 0610;
 				TargetAttributes = {
+					AB69BD040A73C21E00F3DCB8 = {
+						DevelopmentTeam = S7U4E54CHC;
+					};
 					AB98B2D61A69FD42009E8749 = {
 						CreatedOnToolsVersion = 6.1.1;
+						DevelopmentTeam = S7U4E54CHC;
+					};
+					ABD7695D0A73D116006C27C1 = {
+						DevelopmentTeam = S7U4E54CHC;
 					};
 				};
 			};
@@ -652,7 +642,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AB69BD360A73C3EC00F3DCB8 /* game.osxmain.nib in Resources */,
 				AB7AF6151BE46EDC00935B15 /* Images.xcassets in Resources */,
 				AB69BD370A73C3EC00F3DCB8 /* startwin.game.nib in Resources */,
 			);
@@ -663,7 +652,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				AB30FFF81BE47EBF00FACA0E /* Images.xcassets in Resources */,
-				ABD769720A73D164006C27C1 /* build.osxmain.nib in Resources */,
 				ABD769730A73D164006C27C1 /* startwin.editor.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -699,7 +687,6 @@
 				ABD768F30A73CB63006C27C1 /* util_lib.c in Sources */,
 				ABD769180A73CDF6006C27C1 /* StartupWinController.m in Sources */,
 				AB2EA109101215AE00DD2F1F /* sounds.c in Sources */,
-				AB1DE7EF10199F6E00657779 /* GrpFile.m in Sources */,
 				AB1DE7F610199FD200657779 /* GameListSource.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -756,9 +743,10 @@
 		AB69BCF70A73C1A800F3DCB8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = S7U4E54CHC;
 				FRAMEWORK_SEARCH_PATHS = (
 					"../jfaudiolib/third-party",
 					"$(HOME)/Library/Frameworks",
@@ -781,8 +769,7 @@
 					../jfbuild/include,
 					../jfaudiolib/include,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				OTHER_CODE_SIGN_FLAGS = "--deep";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				WARNING_CFLAGS = (
 					"-W",
 					"-Wall",
@@ -794,9 +781,10 @@
 		AB69BCF80A73C1A800F3DCB8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = YES;
+				DEVELOPMENT_TEAM = S7U4E54CHC;
 				FRAMEWORK_SEARCH_PATHS = (
 					"../jfaudiolib/third-party",
 					"$(HOME)/Library/Frameworks",
@@ -818,8 +806,7 @@
 					../jfbuild/include,
 					../jfaudiolib/include,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				OTHER_CODE_SIGN_FLAGS = "--deep";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				WARNING_CFLAGS = (
 					"-W",
 					"-Wall",

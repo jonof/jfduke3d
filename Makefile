@@ -34,7 +34,6 @@ POLYMOST ?= 1
 USE_OPENGL ?= 1
 DYNAMIC_OPENGL ?= 1
 NOASM ?= 0
-LINKED_GTK ?= 0
 
 
 ##
@@ -56,7 +55,7 @@ ifneq (0,$(RELEASE))
   debug=-fomit-frame-pointer -O1
 else
   # debugging enabled
-  debug=-ggdb -O0 -Werror
+  debug=-ggdb -Og #-Werror
 endif
 
 include $(AUDIOLIBROOT)/Makefile.shared
@@ -66,7 +65,7 @@ CXX?=g++
 NASM?=nasm
 RC?=windres
 OURCFLAGS=$(debug) -W -Wall -Wimplicit -Wno-unused \
-	-fno-pic -fno-strict-aliasing -DNO_GCC_BUILTINS -DNOCOPYPROTECT \
+	-fno-strict-aliasing -DNO_GCC_BUILTINS -DNOCOPYPROTECT \
 	-I$(INC) -I$(EINC) -I$(MACTROOT) -I$(AUDIOLIBROOT)/include
 OURCXXFLAGS=-fno-exceptions -fno-rtti
 LIBS=-lm
@@ -111,7 +110,7 @@ endif
 ifeq ($(PLATFORM),WINDOWS)
 	OURCFLAGS+= -I$(DXROOT)/include
 	NASMFLAGS+= -f win32 --prefix _
-	GAMEOBJS+= $(SRC)/gameres.$o $(SRC)/winbits.$o $(SRC)/startwin.game.$o
+	GAMEOBJS+= $(SRC)/gameres.$o $(SRC)/winbits.$o $(SRC)/startwin_game.$o
 	EDITOROBJS+= $(SRC)/buildres.$o
 	GAMELIBS+= -ldsound \
 	       $(AUDIOLIBROOT)/third-party/mingw32/lib/libvorbisfile.a \
@@ -120,16 +119,18 @@ ifeq ($(PLATFORM),WINDOWS)
 endif
 
 ifeq ($(RENDERTYPE),SDL)
-	OURCFLAGS+= $(subst -Dmain=SDL_main,,$(shell sdl-config --cflags))
+	OURCFLAGS+= $(SDLCONFIG_CFLAGS)
+	LIBS+= $(SDLCONFIG_LIBS)
 
-	ifeq (1,$(HAVE_GTK2))
-		OURCFLAGS+= -DHAVE_GTK2 $(shell pkg-config --cflags gtk+-2.0)
-		GAMEOBJS+= $(SRC)/game_banner.$o $(SRC)/startgtk.game.$o
-		EDITOROBJS+= $(SRC)/editor_banner.$o
+	ifeq (1,$(HAVE_GTK))
+		OURCFLAGS+= $(GTKCONFIG_CFLAGS)
+		LIBS+= $(GTKCONFIG_LIBS)
+		GAMEOBJS+= $(SRC)/startgtk_game.$o $(RSRC)/startgtk_game_gresource.$o
+		EDITOROBJS+= $(RSRC)/startgtk_build_gresource.$o
 	endif
 
-	GAMEOBJS+= $(SRC)/game_icon.$o
-	EDITOROBJS+= $(SRC)/build_icon.$o
+	GAMEOBJS+= $(RSRC)/sdlappicon_game.$o
+	EDITOROBJS+= $(RSRC)/sdlappicon_build.$o
 endif
 
 OURCFLAGS+= $(BUILDCFLAGS)
@@ -158,7 +159,7 @@ all: duke3d$(EXESUFFIX) build$(EXESUFFIX)
 
 duke3d$(EXESUFFIX): $(GAMEOBJS) $(ELIB)/$(ENGINELIB) $(AUDIOLIBROOT)/$(JFAUDIOLIB)
 	$(CXX) $(CXXFLAGS) $(OURCXXFLAGS) $(OURCFLAGS) -o $@ $^ $(LIBS) $(GAMELIBS) -Wl,-Map=$@.map
-	
+
 build$(EXESUFFIX): $(EDITOROBJS) $(ELIB)/$(EDITORLIB) $(ELIB)/$(ENGINELIB)
 	$(CXX) $(CXXFLAGS) $(OURCXXFLAGS) $(OURCFLAGS) -o $@ $^ $(LIBS) -Wl,-Map=$@.map
 
@@ -170,7 +171,9 @@ enginelib editorlib:
 		SUPERBUILD=$(SUPERBUILD) POLYMOST=$(POLYMOST) \
 		USE_OPENGL=$(USE_OPENGL) DYNAMIC_OPENGL=$(DYNAMIC_OPENGL) \
 		NOASM=$(NOASM) RELEASE=$(RELEASE) $@
-	
+$(EROOT)/generatesdlappicon$(EXESUFFIX):
+	$(MAKE) -C $(EROOT) generatesdlappicon$(EXESUFFIX)
+
 $(ELIB)/$(ENGINELIB): enginelib
 $(ELIB)/$(EDITORLIB): editorlib
 $(AUDIOLIBROOT)/$(JFAUDIOLIB):
@@ -187,25 +190,23 @@ $(SRC)/%.$o: $(SRC)/%.cpp
 $(MACTROOT)/%.$o: $(MACTROOT)/%.c
 	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
 
-$(SRC)/%.$o: $(SRC)/misc/%.rc
+$(SRC)/%.$o: $(SRC)/%.rc
 	$(RC) -i $< -o $@ --include-dir=$(EINC) --include-dir=$(SRC)
 
 $(SRC)/%.$o: $(SRC)/util/%.c
 	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
 
-$(SRC)/%.$o: $(RSRC)/%.c
+$(RSRC)/%.$o: $(RSRC)/%.c
 	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
 
-$(SRC)/game_banner.$o: $(RSRC)/game_banner.c
-$(SRC)/editor_banner.$o: $(RSRC)/editor_banner.c
-$(RSRC)/game_banner.c: $(RSRC)/game.bmp
-	echo "#include <gdk-pixbuf/gdk-pixdata.h>" > $@
-	gdk-pixbuf-csource --extern --struct --rle --name=startbanner_pixdata $^ | sed '/pixel_data:/ a (guint8*)' >> $@
-$(RSRC)/editor_banner.c: $(RSRC)/build.bmp
-	echo "#include <gdk-pixbuf/gdk-pixdata.h>" > $@
-	gdk-pixbuf-csource --extern --struct --rle --name=startbanner_pixdata $^ | sed '/pixel_data:/ a (guint8*)' >> $@
+$(RSRC)/%_gresource.c: $(RSRC)/%.gresource.xml
+	glib-compile-resources --generate --manual-register --c-name=startgtk --target=$@ --sourcedir=$(RSRC) $<
+$(RSRC)/%_gresource.h: $(RSRC)/%.gresource.xml
+	glib-compile-resources --generate --manual-register --c-name=startgtk --target=$@ --sourcedir=$(RSRC) $<
+$(RSRC)/sdlappicon_%.c: $(RSRC)/%.png $(EROOT)/generatesdlappicon$(EXESUFFIX)
+	$(EROOT)/generatesdlappicon$(EXESUFFIX) $< > $@
 
-# PHONIES	
+# PHONIES
 clean:
 ifeq ($(PLATFORM),DARWIN)
 	cd osx && xcodebuild -target All clean
@@ -214,7 +215,7 @@ else
 	$(MAKE) -C $(EROOT) clean
 	$(MAKE) -C $(AUDIOLIBROOT) clean
 endif
-	
+
 veryclean: clean
 ifeq ($(PLATFORM),DARWIN)
 else

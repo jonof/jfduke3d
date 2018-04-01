@@ -641,13 +641,15 @@ static int probe_(int type,int x,int y,int i,int n)
     if(probey >= n)
         probey = 0;
 
-    if(centre)
-    {
-        rotatesprite(((320>>1)+(centre>>1)+70)<<16,(y+(probey*i)-4)<<16,65536L>>type,0,SPINNINGNUKEICON+6-((6+(totalclock>>3))%7),sh,0,10,0,0,xdim-1,ydim-1);
-        rotatesprite(((320>>1)-(centre>>1)-70)<<16,(y+(probey*i)-4)<<16,65536L>>type,0,SPINNINGNUKEICON+((totalclock>>3)%7),sh,0,10,0,0,xdim-1,ydim-1);
+    if (x|y) {
+        if(centre)
+        {
+            rotatesprite(((320>>1)+(centre>>1)+70)<<16,(y+(probey*i)-4)<<16,65536L>>type,0,SPINNINGNUKEICON+6-((6+(totalclock>>3))%7),sh,0,10,0,0,xdim-1,ydim-1);
+            rotatesprite(((320>>1)-(centre>>1)-70)<<16,(y+(probey*i)-4)<<16,65536L>>type,0,SPINNINGNUKEICON+((totalclock>>3)%7),sh,0,10,0,0,xdim-1,ydim-1);
+        }
+        else
+            rotatesprite((x<<16)-((tilesizx[BIGFNTCURSOR]-4)<<(16-type)),(y+(probey*i)-(4>>type))<<16,65536L>>type,0,SPINNINGNUKEICON+(((totalclock>>3))%7),sh,0,10,0,0,xdim-1,ydim-1);
     }
-    else
-        rotatesprite((x<<16)-((tilesizx[BIGFNTCURSOR]-4)<<(16-type)),(y+(probey*i)-(4>>type))<<16,65536L>>type,0,SPINNINGNUKEICON+(((totalclock>>3))%7),sh,0,10,0,0,xdim-1,ydim-1);
 
     if (uinfo.button0)
     {
@@ -1730,6 +1732,8 @@ if (VOLUMEALL) {
             } else {
                 l = 3;
             }
+
+            probe(0,0,0,0);
 
             if(uinfo.button1)
             {
@@ -3850,6 +3854,8 @@ if (PLUTOPAK) {
 
             c = 320>>1;
 
+            probe(0,0,0,0);
+
             if(uinfo.dir == dir_West || uinfo.dir == dir_North || KB_KeyPressed( sc_PgUp ))
             {
                 KB_ClearKeyDown(sc_PgUp);
@@ -3881,6 +3887,8 @@ if (PLUTOPAK) {
 VOLUME_ALL_40x:
 
             c = 320>>1;
+
+            probe(0,0,0,0);
 
             if(uinfo.dir == dir_West || uinfo.dir == dir_North || KB_KeyPressed( sc_PgUp ))
             {

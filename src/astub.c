@@ -11,7 +11,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -341,7 +341,7 @@ void ExtSaveMap(const char *mapname)
 #endif
 			 "%s", mapname);
 	wm_setapptitle(title);
-	
+
 	saveboard("backup.map",&posx,&posy,&posz,&ang,&cursectnum);
 }
 
@@ -721,7 +721,7 @@ void TotalMem()
     PrintStatus("Total Memory  = ",(tottiles+totsprites+totactors),2,10,11);
 
     PrintStatus("Total W/Duke  = ",(tottiles+totsprites+totactors+ActorMem(APLAYER)),2,12,11);
-        
+
 }
 
 void ExtShowSectorData(short sectnum)   //F5
@@ -1170,7 +1170,7 @@ void Show2dText(char *name)
   if(y>18) {col++; y=6; xx+=xmax; xmax=0;}
  }
  enddrawing();
- 
+
  kclose(fp);
 
 }// end Show2dText
@@ -1374,7 +1374,7 @@ void Keys3d(void)
 			}
 		}
 	}
-	clockval[clockcnt] = i; 
+	clockval[clockcnt] = i;
 	clockcnt = ((clockcnt+1)&15);
 
 	if(helpon==1)
@@ -1749,15 +1749,15 @@ void Keys2d(void)
         {
                 wall[i].x >>= 1;
                 wall[i].y >>= 1;
-                wall[i].yrepeat = min(wall[i].yrepeat<<1,255); 
+                wall[i].yrepeat = min(wall[i].yrepeat<<1,255);
         }
         for(i=0;i<MAXSPRITES;i++)
         {
                 sprite[i].x >>= 1;
                 sprite[i].y >>= 1;
                 sprite[i].z >>= 1;
-                sprite[i].xrepeat = max(sprite[i].xrepeat>>1,1); 
-                sprite[i].yrepeat = max(sprite[i].yrepeat>>1,1); 
+                sprite[i].xrepeat = max(sprite[i].xrepeat>>1,1);
+                sprite[i].yrepeat = max(sprite[i].yrepeat>>1,1);
         }
  }
 
@@ -1775,15 +1775,15 @@ void Keys2d(void)
         {
                 wall[i].x >>= 1;
                 wall[i].y >>= 1;
-                wall[i].yrepeat = min(wall[i].yrepeat<<1,255); 
+                wall[i].yrepeat = min(wall[i].yrepeat<<1,255);
         }
         for(i=0;i<MAXSPRITES;i++)
         {
                 sprite[i].x >>= 1;
                 sprite[i].y >>= 1;
                 sprite[i].z >>= 1;
-                sprite[i].xrepeat = max(sprite[i].xrepeat>>1,1); 
-                sprite[i].yrepeat = max(sprite[i].yrepeat>>1,1); 
+                sprite[i].xrepeat = max(sprite[i].xrepeat>>1,1);
+                sprite[i].yrepeat = max(sprite[i].yrepeat>>1,1);
         }
  }
 */
@@ -1876,12 +1876,15 @@ void Keys2d(void)
 
 char *startwin_labeltext = "Starting Build Editor for Duke Nukem 3D...";
 
+#define TRUE (1)
+#define FALSE (0)
+
 int ExtInit(void)
 {
     int fil, rv = 0;
     char *duke3dgrp = "duke3d.grp";
 
-    /*    
+    /*
     char *msg =
     	//"------------------------------------------------------------------------------\n"
     	"BUILD.EXE Copyright (c) 1993 - 1996 Ken Silverman, 3D Realms Entertainment.\n"
@@ -1906,45 +1909,73 @@ int ExtInit(void)
 	;
     wm_msgbox("Build Editor for Duke Nukem 3D", msg);
     */
-    
+
 	wm_setapptitle("BUILD Editor for JFDuke3D");
 
-#ifdef _WIN32
-	if (!access("user_profiles_enabled", F_OK))
+#if defined(PREFIX)
+    {
+        const char *prefixdir = PREFIX;
+        if (prefixdir && prefixdir[0]) {
+            addsearchpath(prefixdir);
+        }
+    }
 #endif
-	{
-		char cwd[BMAX_PATH];
-		char *homedir;
-		int asperr;
 
-#if defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
-		addsearchpath("/usr/share/games/jfduke3d");
-		addsearchpath("/usr/local/share/games/jfduke3d");
-#elif defined(__APPLE__)
-		addsearchpath("/Library/Application Support/JFDuke3D");
-#endif
-		if (getcwd(cwd,BMAX_PATH)) addsearchpath(cwd);
-		if ((homedir = Bgethomedir())) {
-			Bsnprintf(cwd,sizeof(cwd),"%s/"
-#if defined(_WIN32)
-				"JFDuke3D"
-#elif defined(__APPLE__)
-				"Library/Application Support/JFDuke3D"
+    {
+        char *supportdir = Bgetsupportdir(TRUE);
+        char *appdir = Bgetappdir();
+        char dirpath[BMAX_PATH+1];
+
+        // the OSX app bundle, or on Windows the directory where the EXE was launched
+        if (appdir) {
+            addsearchpath(appdir);
+            free(appdir);
+        }
+
+        // the global support files directory
+        if (supportdir) {
+            Bsnprintf(dirpath, sizeof(dirpath), "%s/JFDuke3D", supportdir);
+            addsearchpath(dirpath);
+            free(supportdir);
+        }
+    }
+
+    // creating a 'user_profiles_disabled' file in the current working
+    // directory where the game was launched makes the installation
+    // "portable" by writing into the working directory
+    if (access("user_profiles_disabled", F_OK) == 0) {
+        char cwd[BMAX_PATH+1];
+        if (getcwd(cwd, sizeof(cwd))) {
+            addsearchpath(cwd);
+        }
+    } else {
+        char *supportdir;
+        char dirpath[BMAX_PATH+1];
+        int asperr;
+
+        if ((supportdir = Bgetsupportdir(FALSE))) {
+            Bsnprintf(dirpath, sizeof(dirpath), "%s/"
+#if defined(_WIN32) || defined(__APPLE__)
+                "JFDuke3D"
 #else
-				".jfduke3d"
+                ".jfduke3d"
 #endif
-			,homedir);
-			asperr = addsearchpath(cwd);
-			if (asperr == -2) {
-				if (Bmkdir(cwd,S_IRWXU) == 0) asperr = addsearchpath(cwd);
-				else asperr = -1;
-			}
-			if (asperr == 0)
-				chdir(cwd);
-			free(homedir);
-		}
-	}
-	
+            , supportdir);
+            asperr = addsearchpath(dirpath);
+            if (asperr == -2) {
+                if (Bmkdir(dirpath, S_IRWXU) == 0) {
+                    asperr = addsearchpath(dirpath);
+                } else {
+                    asperr = -1;
+                }
+            }
+            if (asperr == 0) {
+                chdir(dirpath);
+            }
+            free(supportdir);
+        }
+    }
+
     // JBF 20031220: Because it's annoying renaming GRP files whenever I want to test different game data
     if (getenv("DUKE3DGRP")) {
 	    duke3dgrp = getenv("DUKE3DGRP");
@@ -2081,7 +2112,7 @@ void ExtAnalyzeSprites(void)
                 }
             case APLAYER :
 
-                if(nosprites==2||nosprites==3) 
+                if(nosprites==2||nosprites==3)
                 { tspr->xrepeat=0;
 //                  tspr->cstat|=32768;
                 }
@@ -2122,7 +2153,7 @@ void ExtAnalyzeSprites(void)
 }
 
 
-    
+
 
 int intro=0;
 
