@@ -4,6 +4,7 @@
 #define IDC_STARTWIN_BITMAP         1002
 #define IDC_ALWAYSSHOW              1003
 #define IDC_STARTWIN_APPTITLE       1004
+#define IDC_STARTWIN_APPLINK        1005
 
 #define IDD_PAGE_CONFIG             1100
 #define IDC_FULLSCREEN              1101

@@ -36,6 +36,7 @@ extern "C" {
 
 #include "baselayer.h"
 
+#include "version.h"
 #include "grpscan.h"
 
 extern int conversion,shareware,gametype;

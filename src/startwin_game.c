@@ -17,6 +17,7 @@
 #include <strsafe.h>
 #include <commctrl.h>
 #include <uxtheme.h>
+#include <shellapi.h>
 #include <stdio.h>
 
 #include "gameres.h"
@@ -420,7 +421,7 @@ static INT_PTR CALLBACK startup_dlgproc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
 
             {
                 TCITEM tab;
-                
+
                 hwnd = GetDlgItem(hwndDlg, IDC_STARTWIN_TABCTL);
 
                 // Add tabs to the tab control
@@ -468,19 +469,29 @@ static INT_PTR CALLBACK startup_dlgproc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
 
         case WM_NOTIFY: {
             LPNMHDR nmhdr = (LPNMHDR)lParam;
-            int cur;
-            if (nmhdr->idFrom != IDC_STARTWIN_TABCTL) break;
-            cur = (int)SendMessage(nmhdr->hwndFrom, TCM_GETCURSEL,0,0);
-            switch (nmhdr->code) {
-                case TCN_SELCHANGING: {
-                    if (cur < 0 || !pages[cur]) break;
-                    ShowWindow(pages[cur],SW_HIDE);
-                    return TRUE;
+            if (nmhdr->idFrom == IDC_STARTWIN_TABCTL) {
+                int cur = (int)SendMessage(nmhdr->hwndFrom, TCM_GETCURSEL,0,0);
+                switch (nmhdr->code) {
+                    case TCN_SELCHANGING: {
+                        if (cur < 0 || !pages[cur]) break;
+                        ShowWindow(pages[cur],SW_HIDE);
+                        return TRUE;
+                    }
+                    case TCN_SELCHANGE: {
+                        if (cur < 0 || !pages[cur]) break;
+                        ShowWindow(pages[cur],SW_SHOW);
+                        return TRUE;
+                    }
                 }
-                case TCN_SELCHANGE: {
-                    if (cur < 0 || !pages[cur]) break;
-                    ShowWindow(pages[cur],SW_SHOW);
-                    return TRUE;
+            }
+            if (nmhdr->idFrom == IDC_STARTWIN_APPLINK) {
+                PNMLINK pNMLink = (PNMLINK)lParam;
+
+                if (nmhdr->code != NM_CLICK && nmhdr->code != NM_RETURN) {
+                    break;
+                }
+                if (pNMLink->item.iLink == 0) {
+                    ShellExecuteW(hwndDlg, L"open", pNMLink->item.szUrl, NULL, NULL, SW_SHOW);
                 }
             }
             break;
@@ -544,7 +555,7 @@ int startwin_open(void)
     if (startupdlg) return 1;
 
     icc.dwSize = sizeof(icc);
-    icc.dwICC = ICC_TAB_CLASSES | ICC_UPDOWN_CLASS | ICC_LISTVIEW_CLASSES;
+    icc.dwICC = ICC_TAB_CLASSES | ICC_UPDOWN_CLASS | ICC_LISTVIEW_CLASSES | ICC_LINK_CLASS;
     InitCommonControlsEx(&icc);
     startupdlg = CreateDialog((HINSTANCE)win_gethinstance(), MAKEINTRESOURCE(IDD_STARTWIN), NULL, startup_dlgproc);
     if (!startupdlg) {

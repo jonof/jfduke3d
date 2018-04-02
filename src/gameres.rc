@@ -6,7 +6,7 @@
 #include <commctrl.h>
 #include <richedit.h>
 #include "gameres.h"
-
+#include "version.h"
 
 
 
@@ -33,6 +33,8 @@ FONT 8, "MS Shell Dlg", 0, 0, 1
     AUTOCHECKBOX    "&Always show configuration on start", IDC_ALWAYSSHOW, 12, 202, 140, 8, WS_TABSTOP, WS_EX_LEFT
     CONTROL         IDB_BMP, IDC_STATIC, WC_STATIC, SS_BITMAP, 22, 7, 43, 39, WS_EX_LEFT
     CTEXT           "JFDuke3D", IDC_STARTWIN_APPTITLE, 12, 52, 65, 15, SS_CENTER, WS_EX_LEFT
+    LTEXT           "Version " VERSION_STRING, IDC_STARTWIN_APPTITLE, 12, 175-10, 65, 15, 0, WS_EX_LEFT
+    CONTROL         "<A HREF=""http://www.jonof.id.au/jfduke3d"">Website</A>", IDC_STARTWIN_APPLINK, WC_LINK, WS_TABSTOP, 12, 175, 65, 15, WS_EX_LEFT
 }
 
 
@@ -115,7 +117,7 @@ FILESUBTYPE VFT2_UNKNOWN
             VALUE "InternalName", "duke3d.exe"
             VALUE "OriginalFilename", "duke3d.exe"
             VALUE "ProductName", "JFDuke3D"
-            VALUE "ProductVersion", __DATE__ " " __TIME__
+            VALUE "ProductVersion", VERSION_STRING
             VALUE "LegalCopyright", "See GPL.TXT for terms"
         }
     }

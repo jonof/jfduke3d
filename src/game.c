@@ -37,21 +37,6 @@ Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
 
 #include "util_lib.h"
 
-#define VERSION "20080524"
-
-#define HEAD   "Duke Nukem 3D Unregistered Shareware v"VERSION" "
-
-#define HEAD2P "Duke Nukem 3D v"VERSION" - Atomic Edition"
-#define HEAD2S "Duke Nukem 3D Full Version v"VERSION
-#define HEAD2  "Duke Nukem 3D v"VERSION
-
-#define HEADA  "Duke Nukem 3D AUSSIE Unregistered Shareware v"VERSION
-#define HEAD2A "Duke Nukem 3D AUSSIE Full Version v"VERSION
-
-// for Atomic edition "copy protection"
-#define IDFSIZE 479985668
-#define IDFILENAME "DUKE3D.IDF"
-
 
 #define TIMERUPDATESIZ 32
 
@@ -2077,7 +2062,7 @@ void gameexit(const char *t)
     if(*t != 0)
     {
         if (!(t[0] == ' ' && t[1] == 0)) {
-            wm_msgbox("Duke Nukem 3D", t);
+            wm_msgbox("JFDuke3D", t);
         }
     }
 
@@ -6792,7 +6777,7 @@ void comlinehelp(void)
         ARGCHAR "setup\t\tDisplays the configuration dialogue box\n"
         ARGCHAR "net\t\tNet mode game (all arguments that follow are parameters for networking)\n"
         ;
-    wm_msgbox(apptitle,s);
+    wm_msgbox("JFDuke3D",s);
 }
 
 void checkcommandline(int argc, char const * const *argv)
@@ -7554,10 +7539,11 @@ int app_main(int argc, char const * const argv[])
     int i, j, k, l;
     int configloaded;
     struct grpfile *gamegrp = NULL;
+    const char *gamegrptitle = NULL;
 
 #ifdef RENDERTYPEWIN
     if (win_checkinstance()) {
-        if (!wm_ynbox("Duke Nukem 3D","Another Build game is currently running. "
+        if (!wm_ynbox("JFDuke3D","Another Build game is currently running. "
                     "Do you wish to continue starting this copy?"))
             return 0;
     }
@@ -7643,7 +7629,11 @@ int app_main(int argc, char const * const argv[])
 
     buildsetlogfile("duke3d.log");
 
-    wm_setapptitle("Duke Nukem 3D");
+    wm_setapptitle("JFDuke3D");
+    buildprintf("\nJFDuke3D v" VERSION_STRING "\n");
+    buildprintf("Built " __DATE__ " " __TIME__ "\n");
+    buildprintf("See GPL.TXT for license terms.\n");
+
     if (preinitengine()) {
        wm_msgbox("Build Engine Initialisation Error",
                "There was a problem initialising the Build engine: %s", engineerrstr);
@@ -7741,6 +7731,7 @@ int app_main(int argc, char const * const argv[])
     if (gamegrp) {
         Bstrcpy(duke3dgrp, gamegrp->name);
         gametype = gamegrp->game;
+        gamegrptitle = gamegrp->ref->name;  // Points to static data, so won't be lost in FreeGroups().
     }
     if (gametype == GAMENAM) {
         strcpy(defaultconfilename, "nam.con");
@@ -7776,22 +7767,9 @@ int app_main(int argc, char const * const argv[])
     copyprotect();
     if (cp) return 1;
 
-    if (NAM) {
-        if (VOLUMEALL) wm_setapptitle("NAM Full Version v"VERSION);
-        else wm_setapptitle("NAM ? Version v"VERSION);
-        buildprintf("%s\n",apptitle);
-        buildprintf("Copyright (c) 1998 GT Interactive. (c) 1996 3D Realms Entertainment\n");
-        buildprintf("NAM modifications by Matt Saettler\n");
-    } else {
-        if (VOLUMEALL) wm_setapptitle(HEAD2);
-        else wm_setapptitle(HEAD);
-        buildprintf("%s\n",apptitle);
-        buildprintf("Copyright (c) 1996 3D Realms Entertainment\n");
-    }
-
-    if (VOLUMEONE) {
-        buildprintf("Distribution of shareware Duke Nukem 3D is restricted in certain ways.\n");
-        buildprintf("Please read LICENSE.DOC for more details.\n");
+    if (gamegrptitle) {
+        sprintf(buf, "JFDuke3D: %s", gamegrptitle);
+        wm_setapptitle(buf);
     }
 
     RegisterShutdownFunction( Shutdown );
@@ -7812,15 +7790,30 @@ int app_main(int argc, char const * const argv[])
     Startup();
     if (quitevent) return 0;
 
-    if (!loaddefinitionsfile(duke3ddef)) buildprintf("Definitions file loaded.\n");
-
-    // gotta set the proper title after we compile the CONs if this is the full version
-    if (!NAM && VOLUMEALL) {
-        if (PLUTOPAK)
-            wm_setapptitle(HEAD2P);
-        else
-            wm_setapptitle(HEAD2S);
+    buildputs("\n");
+    if (NAM) {
+        buildputs("NAM\n");
+        buildputs("Copyright (c) 1998 GT Interactive. (c) 1996 3D Realms Entertainment\n");
+        buildputs("NAM modifications by Matt Saettler\n");
+    } else {
+        if (VOLUMEALL && PLUTOPAK) {
+            buildputs("Duke Nukem 3D (Atomic Edition)\n");
+        } else if (VOLUMEALL) {
+            buildputs("Duke Nukem 3D (Full Version)\n");
+        } else if (VOLUMEONE) {
+            buildputs("Duke Nukem 3D (Unregistered Shareware)\n");
+        } else {
+            buildputs("Duke Nukem 3D\n");
+        }
+        buildputs("Copyright (c) 1996 3D Realms Entertainment\n");
     }
+    if (VOLUMEONE) {
+        buildputs("\nDistribution of shareware Duke Nukem 3D is restricted in certain ways.\n");
+        buildputs("Please read LICENSE.DOC for more details.\n");
+    }
+    buildputs("\n");
+
+    if (!loaddefinitionsfile(duke3ddef)) buildprintf("Definitions file loaded.\n");
 
     if (!netsuccess && numplayers == 1 && CommandFakeMulti) {
         ud.multimode = CommandFakeMulti;
@@ -7852,8 +7845,6 @@ int app_main(int argc, char const * const argv[])
 
    RTS_Init(ud.rtsname);
    if(numlumps) buildprintf("Using .RTS file:%s\n",ud.rtsname);
-
-        buildprintf("Loading palette/lookups.\n");
 
     if( setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP) < 0 )
     {
