@@ -65,7 +65,7 @@ CXX?=g++
 NASM?=nasm
 RC?=windres
 OURCFLAGS=$(debug) -W -Wall -Wimplicit -Wno-unused \
-	-fno-strict-aliasing -DNO_GCC_BUILTINS -DNOCOPYPROTECT \
+	-fno-strict-aliasing -DNO_GCC_BUILTINS \
 	-I$(INC) -I$(EINC) -I$(MACTROOT) -I$(AUDIOLIBROOT)/include
 OURCXXFLAGS=-fno-exceptions -fno-rtti
 LIBS=-lm
@@ -92,7 +92,6 @@ GAMEOBJS=$(SRC)/game.$o \
 	$(SRC)/sector.$o \
 	$(SRC)/rts.$o \
 	$(SRC)/config.$o \
-	$(SRC)/testcd.$o \
 	$(SRC)/osdfuncs.$o \
 	$(SRC)/osdcmds.$o \
 	$(SRC)/grpscan.$o \

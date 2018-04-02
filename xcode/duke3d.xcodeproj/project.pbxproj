@@ -45,7 +45,6 @@
 		AB69BD2D0A73C36100F3DCB8 /* premap.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD1D0A73C36100F3DCB8 /* premap.c */; };
 		AB69BD2E0A73C36100F3DCB8 /* rts.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD1E0A73C36100F3DCB8 /* rts.c */; };
 		AB69BD2F0A73C36100F3DCB8 /* sector.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD1F0A73C36100F3DCB8 /* sector.c */; };
-		AB69BD310A73C36100F3DCB8 /* testcd.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD210A73C36100F3DCB8 /* testcd.c */; };
 		AB69BD370A73C3EC00F3DCB8 /* startwin.game.nib in Resources */ = {isa = PBXBuildFile; fileRef = AB69BD340A73C3EC00F3DCB8 /* startwin.game.nib */; };
 		AB7AF6151BE46EDC00935B15 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB7AF6141BE46EDC00935B15 /* Images.xcassets */; };
 		ABB4AAD20C64BD9E00F28920 /* SDL2.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL2.framework */; };
@@ -227,7 +226,6 @@
 		AB69BD1D0A73C36100F3DCB8 /* premap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = premap.c; sourceTree = "<group>"; };
 		AB69BD1E0A73C36100F3DCB8 /* rts.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rts.c; sourceTree = "<group>"; };
 		AB69BD1F0A73C36100F3DCB8 /* sector.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sector.c; sourceTree = "<group>"; };
-		AB69BD210A73C36100F3DCB8 /* testcd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = testcd.c; sourceTree = "<group>"; };
 		AB69BD340A73C3EC00F3DCB8 /* startwin.game.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = startwin.game.nib; sourceTree = "<group>"; };
 		AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = engine.xcodeproj; path = ../jfbuild/xcode/engine.xcodeproj; sourceTree = SOURCE_ROOT; };
 		AB7AF6141BE46EDC00935B15 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -371,7 +369,6 @@
 				ABF3C31B10188CA300233700 /* soundefs.h */,
 				AB2EA108101215AE00DD2F1F /* sounds.c */,
 				ABF3C31C10188CA300233700 /* sounds.h */,
-				AB69BD210A73C36100F3DCB8 /* testcd.c */,
 				AB1DE7F410199FD200657779 /* GameListSource.h */,
 				AB1DE7F510199FD200657779 /* GameListSource.m */,
 				ABD769170A73CDF6006C27C1 /* StartupWinController.m */,
@@ -676,7 +673,6 @@
 				AB69BD2D0A73C36100F3DCB8 /* premap.c in Sources */,
 				AB69BD2E0A73C36100F3DCB8 /* rts.c in Sources */,
 				AB69BD2F0A73C36100F3DCB8 /* sector.c in Sources */,
-				AB69BD310A73C36100F3DCB8 /* testcd.c in Sources */,
 				ABD768EC0A73CB63006C27C1 /* animlib.c in Sources */,
 				ABD768ED0A73CB63006C27C1 /* control.c in Sources */,
 				ABD768EE0A73CB63006C27C1 /* file_lib.c in Sources */,

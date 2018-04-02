@@ -42,7 +42,7 @@ Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
 
 int cameradist = 0, cameraclock = 0;
 unsigned char playerswhenstarted;
-char qe,cp;
+char qe;
 
 static int32 CommandSetup = 0;
 static int32 CommandSoundToggleOff = 0;
@@ -2043,7 +2043,7 @@ void gameexit(const char *t)
     if(ud.recstat == 1) closedemowrite();
     else if(ud.recstat == 2) { if (frecfilep) fclose(frecfilep); }  // JBF: fixes crash on demo playback
 
-    if(qe || cp)
+    if(qe)
         goto GOTOHERE;
 
     if(playerswhenstarted > 1 && ud.coop != 1 && *t == ' ')
@@ -7479,9 +7479,6 @@ void getnames(void)
 
         waitforeverybody();
     }
-
-    if(cp == 1 && numplayers < 2)
-        gameexit("Please put the Duke Nukem 3D Atomic Edition CD in the CD-ROM drive.");
 }
 
 void writestring(int a1,int a2,int a3,short a4,int vx,int vy,int vz)
@@ -7497,25 +7494,6 @@ void writestring(int a1,int a2,int a3,short a4,int vx,int vy,int vz)
 
 }
 
-
-char testcd(char *fn, int testsiz);
-
-// JBF: various hacks here
-void copyprotect(void)
-{
-    cp = 0;
-
-#ifdef NOCOPYPROTECT
-    return;
-#endif
-if (VOLUMEONE) return;
-
-    if( testcd(IDFILENAME, IDFSIZE) )
-    {
-        cp = 1;
-        return;
-    }
-}
 
 void backtomenu(void)
 {
@@ -7763,9 +7741,6 @@ int app_main(int argc, char const * const argv[])
             CommandGrps = s;
         }
     }
-
-    copyprotect();
-    if (cp) return 1;
 
     if (gamegrptitle) {
         sprintf(buf, "JFDuke3D: %s", gamegrptitle);

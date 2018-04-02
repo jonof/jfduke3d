@@ -37,7 +37,7 @@ AS=ml
 LINK=link /opt:nowin98 /nologo /opt:ref
 CFLAGS= /MD /J /nologo $(flags_cl)  \
 	/I$(INC) /I$(EINC) /I$(MACTROOT) /I$(AUDIOLIBROOT)\include \
-	/DNOCOPYPROTECT $(ENGINEOPTS) \
+	$(ENGINEOPTS) \
 	"/I$(DXROOT)\include" /DRENDERTYPEWIN=1
 LIBS=user32.lib gdi32.lib shell32.lib dxguid.lib winmm.lib wsock32.lib comctl32.lib \
      dsound.lib #opengl32.lib
@@ -64,7 +64,6 @@ GAMEOBJS=$(SRC)\game.$o \
 	$(SRC)\sounds.$o \
 	$(SRC)\rts.$o \
 	$(SRC)\config.$o \
-	$(SRC)\testcd.$o \
 	$(SRC)\osdfuncs.$o \
 	$(SRC)\osdcmds.$o \
 	$(SRC)\grpscan.$o \
