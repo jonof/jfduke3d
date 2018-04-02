@@ -453,6 +453,16 @@ static INT_PTR CALLBACK startup_dlgproc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
 
                 SendMessage(hwndDlg, WM_NEXTDLGCTL, (WPARAM)GetDlgItem(hwndDlg, IDOK), TRUE);
             }
+            {
+                // Set the font of the application title.
+                HFONT hfont = CreateFont(-12, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, ANSI_CHARSET,
+                    OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
+                    TEXT("MS Shell Dlg"));
+                if (hfont) {
+                    hwnd = GetDlgItem(hwndDlg, IDC_STARTWIN_APPTITLE);
+                    SendMessage(hwnd, WM_SETFONT, (WPARAM)hfont, FALSE);
+                }
+            }
             return TRUE;
         }
 
@@ -494,6 +504,15 @@ static INT_PTR CALLBACK startup_dlgproc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
             if (pages[TAB_MESSAGES]) {
                 DestroyWindow(pages[TAB_MESSAGES]);
                 pages[TAB_MESSAGES] = NULL;
+            }
+
+            // Dispose of the font used for the application title.
+            {
+                HWND hwnd = GetDlgItem(hwndDlg, IDC_STARTWIN_APPTITLE);
+                HFONT hfont = (HFONT)SendMessage(hwnd, WM_GETFONT, 0, 0);
+                if (hfont) {
+                    DeleteObject(hfont);
+                }
             }
 
             startupdlg = NULL;
