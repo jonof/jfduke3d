@@ -8249,7 +8249,7 @@ int playback(void)
         if( (ps[myconnectindex].gm&MODE_MENU) && (ps[myconnectindex].gm&MODE_EOL) )
             goto RECHECK;
 
-        if (KB_KeyPressed(sc_Escape) || BUTTON(gamefunc_Show_Menu))
+        if (!(ps[myconnectindex].gm&MODE_MENU) && (KB_KeyPressed(sc_Escape) || BUTTON(gamefunc_Show_Menu)))
         {
             KB_ClearKeyDown(sc_Escape);
             CONTROL_ClearButton(gamefunc_Show_Menu);
