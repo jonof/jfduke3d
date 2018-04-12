@@ -3033,19 +3033,18 @@ if (PLUTOPAK) {
                 cmenu(212);
                 probey = 2+(whichkey^2);
             } else if (function == 2) {
-                if (whichkey < 2*joynumbuttons) {
-                    JoystickFunctions[whichkey>>1][whichkey&1] = x;
-                    CONTROL_MapButton( x, whichkey>>1, whichkey&1, controldevice_joystick);
-                } else {
-                    JoystickFunctions[joynumbuttons + (whichkey-2*joynumbuttons)][0] = x;
-                    CONTROL_MapButton( x, joynumbuttons + (whichkey-2*joynumbuttons), 0, controldevice_joystick);
-                }
+				JoystickFunctions[whichkey>>1][whichkey&1] = x;
+				CONTROL_MapButton( x, whichkey>>1, whichkey&1, controldevice_joystick);
                 cmenu(207);
                 probey = whichkey;
             } else if (function == 3) {
                 JoystickDigitalFunctions[whichkey>>1][whichkey&1] = x;
                 CONTROL_MapDigitalAxis(whichkey>>1, x, whichkey&1, controldevice_joystick);
-                cmenu((whichkey>>2)+208);
+				if ((whichkey>>2) < 2) {
+					cmenu(208+(whichkey>>2));
+				} else {
+					cmenu(217+(whichkey>>2)-2);
+				}
                 probey = 1+((whichkey>>1)&1)*4+(whichkey&1);
             }
             break;
@@ -3068,10 +3067,7 @@ if (PLUTOPAK) {
             }
         } else if (function == 2) {
             static const char *directions[] = { "UP", "RIGHT", "DOWN", "LEFT" };
-            if (whichkey < 2*joynumbuttons)
-                Bsprintf(buf,"TO %s%s", (whichkey&1)?"DOUBLE-CLICKED ":"", getjoyname(1,whichkey>>1));
-            else
-                Bsprintf(buf,"TO HAT %s", directions[whichkey-2*joynumbuttons]);
+			Bsprintf(buf,"TO %s%s", (whichkey&1)?"DOUBLE-CLICKED ":"", getjoyname(1,whichkey>>1));
         } else if (function == 3) {
             Bsprintf(buf,"TO DIGITAL %s %s",getjoyname(0,whichkey>>1),(whichkey&1)?"POSITIVE":"NEGATIVE");
         }
@@ -3274,7 +3270,7 @@ if (PLUTOPAK) {
          rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,15,0,0,"JOYSTICK BUTTONS");
 
-        c = 2*joynumbuttons + 4*(joynumhats>0);
+        c = 2*joynumbuttons;
 
         x = probe(0,0,0,c);
             
@@ -3286,11 +3282,7 @@ if (PLUTOPAK) {
             function = 2;
             whichkey = x;
             cmenu(211);
-            if (x < 2*joynumbuttons) {
-                probey = JoystickFunctions[x>>1][x&1];
-            } else {
-                probey = JoystickFunctions[joynumbuttons + (x-2*joynumbuttons)][0];
-            }
+			probey = JoystickFunctions[x>>1][x&1];
             if (probey < 0) probey = NUMGAMEFUNCTIONS-1;
             break;
         }
@@ -3304,14 +3296,8 @@ if (PLUTOPAK) {
         }
         
         for (l=0; l<min(13,c); l++) {
-            if (m+l < 2*joynumbuttons) {
-                sprintf(buf, "%s%s", ((l+m)&1)?"Double ":"", getjoyname(1,(l+m)>>1));
-                x = JoystickFunctions[(l+m)>>1][(l+m)&1];
-            } else {
-                static const char *directions[] = { "Up", "Right", "Down", "Left" };
-                sprintf(buf, "Hat %s", directions[(l+m)-2*joynumbuttons]);
-                x = JoystickFunctions[joynumbuttons + ((l+m)-2*joynumbuttons)][0];
-            }
+			sprintf(buf, "%s%s", ((l+m)&1)?"Double ":"", getjoyname(1,(l+m)>>1));
+			x = JoystickFunctions[(l+m)>>1][(l+m)&1];
             minitextshade(80-4,33+l*8,buf,(m+l == probey)?0:16,0,10+16);
 
             if (x == -1)
@@ -3415,21 +3401,23 @@ if (PLUTOPAK) {
         gametext(140,38,buf,0,2+8+16);
 
         gametext(76,38+15,"DIGITAL",0,2+8+16);
+			gametext(140, 38+15, "-", 0, 2+8+16);
             if (JoystickDigitalFunctions[thispage*2][0] < 0)
                 strcpy(buf, "  -NONE-");
             else
                 strcpy(buf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[thispage*2][0]));
 
             for (i=0;buf[i];i++) if (buf[i]=='_') buf[i] = ' ';
-            minitext(140+12,38+15,buf,0,10+16);
+            minitext(140+12,38+16,buf,0,10+16);
 
+			gametext(140+72, 38+15, "+", 0, 2+8+16);
             if (JoystickDigitalFunctions[thispage*2][1] < 0)
                 strcpy(buf, "  -NONE-");
             else
                 strcpy(buf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[thispage*2][1]));
 
             for (i=0;buf[i];i++) if (buf[i]=='_') buf[i] = ' ';
-            minitext(140+12+72,38+15,buf,0,10+16);
+            minitext(140+12+72,38+16,buf,0,10+16);
             
         gametext(76,38+15+15,"ANALOG",0,2+8+16);
         if (CONFIG_AnalogNumToName( JoystickAnalogueAxes[thispage*2] )) {
@@ -3452,21 +3440,23 @@ if (PLUTOPAK) {
             gametext(140,38+64,buf,0,2+8+16);
 
             gametext(76,38+64+15,"DIGITAL",0,2+8+16);
+				gametext(140, 38+64+15, "-", 0, 2+8+16);
                 if (JoystickDigitalFunctions[thispage*2+1][0] < 0)
                     strcpy(buf, "  -NONE-");
                 else
                     strcpy(buf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[thispage*2+1][0]));
 
                 for (i=0;buf[i];i++) if (buf[i]=='_') buf[i] = ' ';
-                minitext(140+12,38+15+64,buf,0,10+16);
+                minitext(140+12,38+16+64,buf,0,10+16);
 
+				gametext(140+72, 38+64+15, "+", 0, 2+8+16);
                 if (JoystickDigitalFunctions[thispage*2+1][1] < 0)
                     strcpy(buf, "  -NONE-");
                 else
                     strcpy(buf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[thispage*2+1][1]));
 
                 for (i=0;buf[i];i++) if (buf[i]=='_') buf[i] = ' ';
-                minitext(140+12+72,38+15+64,buf,0,10+16);
+                minitext(140+12+72,38+16+64,buf,0,10+16);
             
             gametext(76,38+64+15+15,"ANALOG",0,2+8+16);
             if (CONFIG_AnalogNumToName( JoystickAnalogueAxes[thispage*2+1] )) {
