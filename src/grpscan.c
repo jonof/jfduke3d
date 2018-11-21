@@ -35,6 +35,7 @@ struct grpfile grpfiles[] = {
     { "Registered Version 1.3d",    0xBBC9CE44, 26524524, GAMEDUKE, NULL, NULL },
     { "Registered Version 1.4", 0xF514A6AC, 44348015, GAMEDUKE, NULL, NULL },
     { "Registered Version 1.5", 0xFD3DCFF1, 44356548, GAMEDUKE, NULL, NULL },
+    { "20th Anniversary", 0x982AFE4A, 44356548, GAMEDUKE, NULL, NULL },
     { "Shareware Version",      0x983AD923, 11035779, GAMEDUKE, NULL, NULL },
     { "Mac Shareware Version",  0xC5F71561, 10444391, GAMEDUKE, NULL, NULL },
     { "Mac Registered Version",     0x00000000, 0,        GAMEDUKE, NULL, NULL },
