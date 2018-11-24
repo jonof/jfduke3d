@@ -1647,7 +1647,7 @@ void loadefs(const char *filenam)
                 "Check that the \"%s\" file is in the JFDuke3D directory "
                 "and try running the game again.";
             int bufsz = strlen(msgfmt) + strlen(filenam) + strlen(duke3dgrp);
-            char *msg = Balloca(bufsz+1);
+            char *msg = Bmalloc(bufsz+1);
             sprintf(msg, msgfmt, filenam, duke3dgrp);
             gameexit(msg);
             return;

@@ -5,6 +5,7 @@
 #define IDC_ALWAYSSHOW              1003
 #define IDC_STARTWIN_APPTITLE       1004
 #define IDC_STARTWIN_APPLINK        1005
+#define IDC_STARTWIN_APPVERSION     1006
 
 #define IDD_PAGE_CONFIG             1100
 #define IDC_FULLSCREEN              1101
@@ -32,4 +33,11 @@
 #define IDC_STATIC (-1)
 #endif
 
-#define Y_POS(origin,index) (origin + (index * 15))
+#ifdef RC_INVOKED
+#ifndef __DATE__
+#define __DATE__ "0000-00-00"
+#endif
+#ifndef __TIME__
+#define __TIME__ "00:00:00"
+#endif
+#endif

@@ -1,1 +1,3 @@
-#define VERSION_STRING "20180609"
+extern const char *game_version;
+extern const char *game_date;
+extern const char *game_time;

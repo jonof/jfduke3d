@@ -7608,9 +7608,11 @@ int app_main(int argc, char const * const argv[])
     buildsetlogfile("duke3d.log");
 
     wm_setapptitle("JFDuke3D");
-    buildprintf("\nJFDuke3D v" VERSION_STRING "\n");
-    buildprintf("Built " __DATE__ " " __TIME__ "\n");
-    buildprintf("See GPL.TXT for license terms.\n");
+    buildprintf("\nJFDuke3D\n"
+        "Based on Duke Nukem 3D by 3D Realms Entertainment.\n"
+        "Additional improvements by Jonathon Fowler (http://www.jonof.id.au) and other contributors.\n"
+        "See GPL.TXT for license terms.\n\n"
+        "Version %s.\nBuilt %s %s.\n", game_version, game_date, game_time);
 
     if (preinitengine()) {
        wm_msgbox("Build Engine Initialisation Error",
