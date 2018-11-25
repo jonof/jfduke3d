@@ -16,9 +16,6 @@ RELEASE ?= 1
 # Base path of app installation
 PREFIX ?= /usr/local/share/games/jfduke3d
 
-# DirectX SDK location
-DXROOT ?= $(USERPROFILE)/sdks/directx/dx81
-
 # Engine source code path
 EROOT ?= jfbuild
 
@@ -29,10 +26,14 @@ MACTROOT ?= jfmact
 AUDIOLIBROOT ?= jfaudiolib
 
 # Engine options
+#  SUPERBUILD     - enables voxels
+#  POLYMOST       - enables Polymost renderer
+#  USE_OPENGL     - enables OpenGL support in Polymost
+#     Define as 1 or 2 for GL 2.1 profile
+#  NOASM          - disables the use of assembly code
 SUPERBUILD ?= 1
 POLYMOST ?= 1
 USE_OPENGL ?= 1
-DYNAMIC_OPENGL ?= 1
 NOASM ?= 0
 
 
@@ -138,6 +139,7 @@ ifneq (no,$(shell git --version || echo no))
 GAMEOBJS+= $(SRC)/version-auto.$o
 EDITOROBJS+= $(SRC)/version-auto.$o
 else
+GAMEOBJS+= $(SRC)/version.$o
 EDITOROBJS+= $(SRC)/version.$o
 endif
 
@@ -177,8 +179,8 @@ include Makefile.deps
 enginelib editorlib:
 	$(MAKE) -C $(EROOT) \
 		SUPERBUILD=$(SUPERBUILD) POLYMOST=$(POLYMOST) \
-		USE_OPENGL=$(USE_OPENGL) DYNAMIC_OPENGL=$(DYNAMIC_OPENGL) \
-		NOASM=$(NOASM) RELEASE=$(RELEASE) $@
+		USE_OPENGL=$(USE_OPENGL) NOASM=$(NOASM) \
+		RELEASE=$(RELEASE) $@
 $(EROOT)/generatesdlappicon$(EXESUFFIX):
 	$(MAKE) -C $(EROOT) generatesdlappicon$(EXESUFFIX)
 
@@ -230,6 +232,12 @@ else
 	-rm -f duke3d$(EXESUFFIX) build$(EXESUFFIX) core*
 	$(MAKE) -C $(EROOT) veryclean
 endif
+
+.PHONY: $(SRC)/version-auto.c
+$(SRC)/version-auto.c:
+	printf "const char *game_version = \"%s\";\n" $(shell git describe --always || echo git error) > $@
+	echo "const char *game_date = __DATE__;" >> $@
+	echo "const char *game_time = __TIME__;" >> $@
 
 ifeq ($(PLATFORM),WINDOWS)
 .PHONY: datainst
