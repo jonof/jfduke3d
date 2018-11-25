@@ -23,7 +23,7 @@ CC=wcc386
 CXX=wpp386
 CFLAGS= -zq -5r -s -orb -fp5 -d2 -db &
 	-i=$(INC) -i=$(EINC) -i=$(SRC)\jmact -i=$(SRC)\jaudiolib -i=$(DXROOT)\include &
-	-dRENDERTYPEWIN=1 -dNOCOPYPROTECT $(ENGINEOPTS) -i=..\jfaud\inc
+	-dRENDERTYPEWIN=1 $(ENGINEOPTS) -i=..\jfaud\inc
 LIBS=wsock32.lib dxguid.lib ..\jfaud\jfaud.lib winmm.lib #opengl32.lib
 WASMFLAGS=-d1
 EXESUFFIX=.exe
@@ -65,7 +65,6 @@ GAMEOBJS=$(OBJ)\game.$o &
 	$(OBJ)\rts.$o &
 	$(OBJ)\config.$o &
 	$(OBJ)\animlib.$o &
-	$(OBJ)\testcd.$o &
 	$(OBJ)\osdfuncs.$o &
 	$(OBJ)\osdcmds.$o &
 	$(OBJ)\winbits.$o &

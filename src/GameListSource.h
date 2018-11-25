@@ -21,22 +21,13 @@
  */
 //-------------------------------------------------------------------------
 
-#ifndef __grpscan_h__
-#define __grpscan_h__
+@interface GameListSource : NSObject <NSTableViewDataSource>
+{
+}
+- (id)tableView:(NSTableView *)aTableView
+    objectValueForTableColumn:(NSTableColumn *)aTableColumn
+	    row:(NSInteger)rowIndex;
+- (int)numberOfRowsInTableView:(NSTableView *)aTableView;
+- (int)indexForGrp:(struct grpfile *)grpFile;
+@end
 
-// List of internally-known GRP files
-struct grpfile {
-    const char *name;
-    unsigned int crcval;
-    int size;
-    int game;
-    const struct grpfile *ref;    // For foundgrps items, is the grpfiles[] entry matched.
-    struct grpfile *next;
-};
-extern struct grpfile grpfiles[];
-extern struct grpfile *foundgrps;
-
-int ScanGroups(void);
-void FreeGroups(void);
-
-#endif

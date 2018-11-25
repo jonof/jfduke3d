@@ -1,20 +1,20 @@
 //-------------------------------------------------------------------------
 /*
  Copyright (C) 2013 Jonathon Fowler <jf@jonof.id.au>
- 
+
  This file is part of JFDuke3D
- 
+
  Duke Nukem 3D is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
  as published by the Free Software Foundation; either version 2
  of the License, or (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- 
+
  See the GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -31,14 +31,16 @@
 #include "duke3d.h"
 #include "grpscan.h"
 
-struct grpfile grpfiles[numgrpfiles] = {
-    { "Registered Version 1.3d",    0xBBC9CE44, 26524524, GAMEDUKE, NULL },
-    { "Registered Version 1.4", 0xF514A6AC, 44348015, GAMEDUKE, NULL },
-    { "Registered Version 1.5", 0xFD3DCFF1, 44356548, GAMEDUKE, NULL },
-    { "Shareware Version",      0x983AD923, 11035779, GAMEDUKE, NULL },
-    { "Mac Shareware Version",  0xC5F71561, 10444391, GAMEDUKE, NULL },
-    { "Mac Registered Version",     0x00000000, 0,        GAMEDUKE, NULL },
-    { "NAM",                        0x75C1F07B, 43448927, GAMENAM,  NULL },
+struct grpfile grpfiles[] = {
+    { "Registered Version 1.3d",    0xBBC9CE44, 26524524, GAMEDUKE, NULL, NULL },
+    { "Registered Version 1.4", 0xF514A6AC, 44348015, GAMEDUKE, NULL, NULL },
+    { "Registered Version 1.5", 0xFD3DCFF1, 44356548, GAMEDUKE, NULL, NULL },
+    { "20th Anniversary", 0x982AFE4A, 44356548, GAMEDUKE, NULL, NULL },
+    { "Shareware Version",      0x983AD923, 11035779, GAMEDUKE, NULL, NULL },
+    { "Mac Shareware Version",  0xC5F71561, 10444391, GAMEDUKE, NULL, NULL },
+    { "Mac Registered Version",     0x00000000, 0,        GAMEDUKE, NULL, NULL },
+    { "NAM",                        0x75C1F07B, 43448927, GAMENAM,  NULL, NULL },
+    { NULL, 0, 0, 0, NULL, NULL },
 };
 struct grpfile *foundgrps = NULL;
 
@@ -101,9 +103,10 @@ int ScanGroups(void)
     struct grpfile *grp;
     char *fn;
     struct Bstat st;
+    int i;
 
     buildprintf("Scanning for GRP files...\n");
-    
+
     LoadGroupsCache();
 
     srch = klistpath("/", "*.grp", CACHE1D_FIND_FILE);
@@ -122,8 +125,18 @@ int ScanGroups(void)
                 grp->name = strdup(sidx->name);
                 grp->crcval = fg->crcval;
                 grp->size = fg->size;
+                grp->ref = NULL;
                 grp->next = foundgrps;
                 foundgrps = grp;
+
+                // Determine which grpfiles[] entry, if any, matches.
+                for (i = 0; grpfiles[i].name; i++) {
+                    if (grpfiles[i].crcval == grp->crcval && grpfiles[i].size == grp->size) {
+                        grp->ref = &grpfiles[i];
+                        grp->game = grp->ref->game;
+                        break;
+                    }
+                }
 
                 fgg = (struct grpcache *)calloc(1, sizeof(struct grpcache));
                 strcpy(fgg->name, fg->name);
@@ -146,7 +159,7 @@ int ScanGroups(void)
             if (fstat(fh, &st)) continue;
 
             buildprintf(" Checksumming %s...", sidx->name);
-            crc32init(&crcval);         
+            crc32init(&crcval);
             do {
                 b = read(fh, buf, sizeof(buf));
                 if (b > 0) crc32block(&crcval, buf, b);
@@ -154,13 +167,22 @@ int ScanGroups(void)
             crc32finish(&crcval);
             close(fh);
             buildprintf(" Done\n");
-        
+
             grp = (struct grpfile *)calloc(1, sizeof(struct grpfile));
             grp->name = strdup(sidx->name);
             grp->crcval = crcval;
             grp->size = st.st_size;
             grp->next = foundgrps;
             foundgrps = grp;
+
+            // Determine which grpfiles[] entry, if any, matches.
+            for (i = 0; grpfiles[i].name; i++) {
+                if (grpfiles[i].crcval == grp->crcval && grpfiles[i].size == grp->size) {
+                    grp->ref = &grpfiles[i];
+                    grp->game = grp->ref->game;
+                    break;
+                }
+            }
 
             fgg = (struct grpcache *)calloc(1, sizeof(struct grpcache));
             strncpy(fgg->name, sidx->name, BMAX_PATH);

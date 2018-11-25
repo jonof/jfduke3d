@@ -1,4 +1,4 @@
-duke3d_h=$(INC)/duke3d.h $(EINC)/build.h $(EINC)/compat.h $(EINC)/cache1d.h $(EINC)/pragmas.h $(EINC)/mmulti.h $(EINC)/baselayer.h $(MACTROOT)/types.h $(MACTROOT)/file_lib.h $(MACTROOT)/util_lib.h $(MACTROOT)/keyboard.h $(MACTROOT)/control.h $(INC)/develop.h $(INC)/gamedefs.h $(INC)/function.h $(INC)/config.h $(INC)/sounds.h $(INC)/rts.h $(INC)/_rts.h $(INC)/soundefs.h $(AUDIOLIBROOT)/include/fx_man.h $(AUDIOLIBROOT)/include/music.h $(INC)/names.h $(INC)/funct.h
+duke3d_h=$(INC)/duke3d.h $(EINC)/build.h $(EINC)/compat.h $(EINC)/cache1d.h $(EINC)/pragmas.h $(EINC)/mmulti.h $(EINC)/baselayer.h $(MACTROOT)/types.h $(MACTROOT)/file_lib.h $(MACTROOT)/util_lib.h $(MACTROOT)/keyboard.h $(MACTROOT)/control.h $(INC)/develop.h $(INC)/gamedefs.h $(INC)/function.h $(INC)/config.h $(INC)/sounds.h $(INC)/rts.h $(INC)/_rts.h $(INC)/soundefs.h $(AUDIOLIBROOT)/include/fx_man.h $(AUDIOLIBROOT)/include/music.h $(INC)/names.h $(INC)/funct.h $(INC)/version.h
 
 $(SRC)/game.$o: $(SRC)/game.c $(MACTROOT)/scriplib.h $(duke3d_h) $(EINC)/osd.h $(INC)/osdfuncs.h $(INC)/osdcmds.h $(INC)/grpscan.h
 $(SRC)/actors.$o: $(SRC)/actors.c $(duke3d_h)
@@ -11,21 +11,30 @@ $(SRC)/sector.$o: $(SRC)/sector.c $(duke3d_h)
 $(SRC)/sounds.$o: $(SRC)/sounds.c $(duke3d_h)
 $(SRC)/rts.$o: $(SRC)/rts.c $(duke3d_h)
 $(SRC)/config.$o: $(SRC)/config.c $(duke3d_h) $(MACTROOT)/scriplib.h $(INC)/_functio.h $(EINC)/osd.h
-$(SRC)/testcd.$o: $(SRC)/testcd.c $(EINC)/build.h $(EINC)/compat.h
 $(SRC)/winbits.$o: $(SRC)/winbits.c $(EINC)/build.h $(EINC)/compat.h $(EINC)/winlayer.h
 $(SRC)/osdfuncs.$o: $(SRC)/osdfuncs.c $(duke3d_h)
 $(SRC)/osdcmds.$o: $(SRC)/osdcmds.c $(INC)/osdcmds.h $(EINC)/osd.h $(duke3d_h) $(EINC)/crc32.h
 
 $(SRC)/astub.$o: $(SRC)/astub.c $(EINC)/build.h $(EINC)/compat.h $(EINC)/editor.h $(EINC)/pragmas.h $(EINC)/baselayer.h $(EINC)/cache1d.h $(INC)/names.h
 
-$(SRC)/game_icon.$o: $(RSRC)/game_icon.c
-$(SRC)/build_icon.$o: $(RSRC)/build_icon.c
+$(SRC)/version.$o: $(SRC)/version.c
+$(SRC)/version-auto.$o: $(SRC)/version-auto.c
 
 $(SRC)/grpscan.$o: $(SRC)/grpscan.c $(EINC)/compat.h $(EINC)/baselayer.h $(EINC)/scriptfile.h $(EINC)/cache1d.h $(EINC)/crc32.h $(INC)/grpscan.h
-$(SRC)/gameres.$o: $(SRC)/misc/gameres.rc $(SRC)/startwin.game.h $(RSRC)/game.bmp $(RSRC)/game_icon.ico $(RSRC)/game_icon2.ico $(RSRC)/game_icon3.ico
-$(SRC)/buildres.$o: $(SRC)/misc/buildres.rc $(EINC)/startwin.editor.h $(RSRC)/build.bmp $(RSRC)/build_icon.ico
-$(SRC)/startwin.game.$o: $(SRC)/startwin.game.c $(duke3d_h) $(EINC)/build.h $(EINC)/winlayer.h $(EINC)/compat.h $(INC)/grpscan.h
-$(SRC)/startgtk.game.$o: $(SRC)/startgtk.game.c $(duke3d_h) $(EINC)/dynamicgtk.h $(EINC)/build.h $(EINC)/baselayer.h $(EINC)/compat.h
+$(SRC)/gameres.$(res): $(SRC)/gameres.rc $(INC)/gameres.h $(INC)/version.h $(RSRC)/game.bmp $(RSRC)/game_icon.ico $(RSRC)/game_icon2.ico
+$(SRC)/buildres.$(res): $(SRC)/buildres.rc $(EINC)/buildres.h $(RSRC)/build.bmp $(RSRC)/build_icon.ico
+$(SRC)/startwin_game.$o: $(SRC)/startwin_game.c $(duke3d_h) $(EINC)/build.h $(EINC)/winlayer.h $(EINC)/compat.h $(INC)/grpscan.h
+$(SRC)/startgtk_game.$o: $(SRC)/startgtk_game.c $(duke3d_h) $(EINC)/build.h $(EINC)/baselayer.h $(SRC)/grpscan.h $(EINC)/compat.h
+
+# Derived source files from art assets
+$(RSRC)/startgtk_game_gresource.c: $(RSRC)/startgtk_game.gresource.xml $(RSRC)/game.png $(RSRC)/startgtk_game.glade
+$(RSRC)/startgtk_game_gresource.h: $(RSRC)/startgtk_game.gresource.xml
+$(RSRC)/startgtk_build_gresource.c: $(RSRC)/startgtk_build.gresource.xml $(RSRC)/build.png $(RSRC)/startgtk_build.glade
+$(RSRC)/startgtk_build_gresource.h: $(RSRC)/startgtk_build.gresource.xml
+$(RSRC)/sdlappicon_game.c: $(RSRC)/game.png
+$(RSRC)/sdlappicon_game.$o: $(RSRC)/sdlappicon_game.c
+$(RSRC)/sdlappicon_build.c: $(RSRC)/build.png
+$(RSRC)/sdlappicon_build.$o: $(RSRC)/sdlappicon_build.c
 
 # jMACT objects
 $(MACTROOT)/animlib.$o: $(MACTROOT)/animlib.c $(MACTROOT)/types.h $(MACTROOT)/develop.h $(MACTROOT)/util_lib.h $(MACTROOT)/animlib.h $(EINC)/compat.h

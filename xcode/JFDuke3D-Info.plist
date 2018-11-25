@@ -2,17 +2,19 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSHumanReadableCopyright</key>
+	<string>See GPL.TXT for license terms.</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
 	<key>LSMinimumSystemVersionByArchitecture</key>
 	<dict>
 		<key>x86_64</key>
-		<string>10.6.0</string>
+		<string>${MACOSX_DEPLOYMENT_TARGET}.0</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIconFile</key>
-	<string>game_icon</string>
 	<key>CFBundleIdentifier</key>
 	<string>au.id.jonof.jfduke3d</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -22,9 +24,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
-	<key>NSMainNibFile</key>
-	<string>game.osxmain</string>
+	<string>20180609</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>

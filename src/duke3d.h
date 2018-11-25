@@ -36,6 +36,8 @@ extern "C" {
 
 #include "baselayer.h"
 
+#include "version.h"
+#include "grpscan.h"
 
 extern int conversion,shareware,gametype;
 
@@ -45,7 +47,7 @@ extern int conversion,shareware,gametype;
 #define VOLUMEALL (shareware==0)
 #define PLUTOPAK (conversion==14)
 #define VOLUMEONE (shareware==1)
-#define NAM (gametype==1)
+#define NAM (gametype==GAMENAM)
 
 // #define TEN
 // #define BETA
@@ -507,7 +509,7 @@ extern char betaname[80];
 extern unsigned char cachedebug,earthquaketime;
 extern unsigned char lumplockbyte[11];
 
-extern char defaultduke3dgrp[BMAX_PATH];
+extern char duke3dgrp[BMAX_PATH+1];
 
     //DUKE3D.H - replace the end "my's" with this
 extern int myx, omyx, myxvel, myy, omyy, myyvel, myz, omyz, myzvel;
@@ -575,6 +577,19 @@ extern unsigned char useprecache;
 
 #define NAM_GRENADE_LIFETIME	120
 #define NAM_GRENADE_LIFETIME_VAR	30
+
+struct startwin_settings {
+    int fullscreen;
+    int xdim3d, ydim3d, bpp3d;
+    int forcesetup;
+    int usemouse, usejoy;
+    int samplerate, bitspersample, channels;
+
+    struct grpfile *selectedgrp;
+
+    int numplayers;
+    char *joinhost;
+};
 
 #ifdef __cplusplus
 }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/">
+    <file alias="appicon.png">build.png</file>
+    <file alias="startgtk.glade">startgtk_build.glade</file>
+  </gresource>
+</gresources>

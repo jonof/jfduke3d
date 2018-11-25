@@ -1,47 +1,85 @@
 # Duke3D Makefile for Microsoft Make
 
 RELEASE=1
-DXROOT=$(USERPROFILE)\sdks\directx\dx81
+
+# Engine options
+#  SUPERBUILD     - enables voxels
+#  POLYMOST       - enables Polymost renderer
+#  USE_OPENGL     - enables OpenGL support in Polymost
+#     Define as 1 or 2 for GL 2.1 profile
+#  NOASM          - disables the use of assembly code
+SUPERBUILD=1
+POLYMOST=1
+USE_OPENGL=1
+NOASM=0
+
 EROOT=jfbuild
 MACTROOT=jfmact
 AUDIOLIBROOT=jfaudiolib
 
+# Create Makefile.msvcuser yourself to provide your own overrides
+# for configurable values
+!if EXIST(Makefile.msvcuser)
+!include Makefile.msvcuser
+!endif
+
 SRC=src
-OBJ=obj
+RSRC=rsrc
 EINC=$(EROOT)\include
 ELIB=$(EROOT)\src
 INC=$(SRC)
+
 o=obj
+res=res
 
 ENGINELIB=engine.lib
 EDITORLIB=build.lib
 
-!ifdef DEBUG
-# debugging options
-flags_cl=/G6 /Ot /Z7
-flags_link=/DEBUG
+flags_cl=
+flags_rc=
+!if "$(PLATFORM)" == "X64"
+NOASM=1
+flags_cl=
+flags_rc=/d_M_AMD64
 !else
-# release options
-flags_cl=/G6Fy /Ox #/Ob1gity
-flags_link=/RELEASE
+flags_cl=/arch:IA32
 !endif
 
+!if $(RELEASE)
+# release options
+flags_cl=$(flags_cl) /Ox
+flags_link=/RELEASE
+!else
+# debugging options
+flags_cl=$(flags_cl) /Ot /Z7
+flags_link=/DEBUG
+!endif
 
-ENGINEOPTS=/DSUPERBUILD /DPOLYMOST /DUSE_OPENGL /DDYNAMIC_OPENGL
+ENGINEOPTS=/DRENDERTYPEWIN=1
+!if $(SUPERBUILD)
+ENGINEOPTS=$(ENGINEOPTS) /DSUPERBUILD
+!endif
+!if $(POLYMOST)
+ENGINEOPTS=$(ENGINEOPTS) /DPOLYMOST
+!endif
+!if $(USE_OPENGL)
+ENGINEOPTS=$(ENGINEOPTS) /DUSE_OPENGL=$(USE_OPENGL)
+!endif
+!if $(NOASM)
+ENGINEOPTS=$(ENGINEOPTS) /DNOASM
+!endif
 
 !include $(AUDIOLIBROOT)/Makefile.msvcshared
 
-
 CC=cl
-AS=ml
-LINK=link /opt:nowin98 /nologo /opt:ref
-CFLAGS= /MD /J /nologo $(flags_cl)  \
+RC=rc
+LINK=link
+OURCFLAGS=/nologo /MD /J $(flags_cl)  \
 	/I$(INC) /I$(EINC) /I$(MACTROOT) /I$(AUDIOLIBROOT)\include \
-	/DNOCOPYPROTECT $(ENGINEOPTS) \
-	"/I$(DXROOT)\include" /DRENDERTYPEWIN=1
-LIBS=user32.lib gdi32.lib shell32.lib dxguid.lib winmm.lib wsock32.lib comctl32.lib \
-     dsound.lib #opengl32.lib
-ASFLAGS=/nologo /coff
+	$(ENGINEOPTS)
+LIBS=user32.lib gdi32.lib shell32.lib ws2_32.lib comctl32.lib comdlg32.lib uxtheme.lib xinput9_1_0.lib
+LINKFLAGS=/opt:ref /nologo $(flags_link)
+RFLAGS=/nologo /i$(EINC) /i$(SRC) $(flags_rc)
 EXESUFFIX=.exe
 
 JMACTOBJ=$(MACTROOT)\util_lib.$o \
@@ -64,78 +102,81 @@ GAMEOBJS=$(SRC)\game.$o \
 	$(SRC)\sounds.$o \
 	$(SRC)\rts.$o \
 	$(SRC)\config.$o \
-	$(SRC)\testcd.$o \
 	$(SRC)\osdfuncs.$o \
 	$(SRC)\osdcmds.$o \
 	$(SRC)\grpscan.$o \
 	$(SRC)\winbits.$o \
-	$(SRC)\gameres.res \
-	$(SRC)\startwin.game.$o \
+	$(SRC)\gameres.$(res) \
+	$(SRC)\startwin_game.$o \
 	$(JMACTOBJ)
 
 EDITOROBJS=$(SRC)\astub.$o \
-	$(SRC)\buildres.res
+	$(SRC)\buildres.$(res)
 
-		
+# Source-control version stamping
+!if [git --version >nul] == 0
+GAMEOBJS=$(GAMEOBJS) $(SRC)\version-auto.$o
+EDITOROBJS=$(EDITOROBJS) $(SRC)\version-auto.$o
+!else
+GAMEOBJS=$(GAMEOBJS) $(SRC)\version.$o
+EDITOROBJS=$(EDITOROBJS) $(SRC)\version.$o
+!endif
+
 # RULES
-.SUFFIXES: .masm
-
-{$(SRC)}.masm{$(SRC)}.$o:
-	$(AS) /c $(ASFLAGS) /Fo$@ $<
-
 {$(MACTROOT)}.c{$(MACTROOT)}.$o:
-	$(CC) /c $(CFLAGS) /Fo$@ $<
-
-{$(SRC)\util}.c{$(SRC)}.$o:
-	$(CC) /c $(CFLAGS) /Fo$@ $<
+	$(CC) /c $(CFLAGS) $(OURCFLAGS) /Fo$@ $<
 
 {$(SRC)}.c{$(SRC)}.$o:
-	$(CC) /c $(CFLAGS) /Fo$@ $<
+	$(CC) /c $(CFLAGS) $(OURCFLAGS) /Fo$@ $<
 
 {$(SRC)}.cpp{$(SRC)}.$o:
-	$(CC) /c $(CFLAGS) /Fo$@ $<
+	$(CC) /c $(CFLAGS) $(OURCFLAGS) /Fo$@ $<
 
-{$(SRC)\misc}.rc{$(SRC)}.res:
-	$(RC) /i$(EINC) /i$(SRC) /fo$@ /r $<
+{$(SRC)}.rc{$(SRC)}.$(res):
+	$(RC) $(RFLAGS) /fo$@ /r $<
 
 
 # TARGETS
 all: duke3d$(EXESUFFIX) build$(EXESUFFIX) ;
 
 duke3d$(EXESUFFIX): $(GAMEOBJS) $(ELIB)\$(ENGINELIB) $(AUDIOLIBROOT)\$(JFAUDIOLIB)
-	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS "/LIBPATH:$(DXROOT)\lib" $(flags_link) /MAP $** $(LIBS) msvcrt.lib
-	
+	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS $(LINKFLAGS) /MAP $** $(LIBS) $(JFAUDIOLIB_LINKFLAGS) msvcrt.lib
+
 build$(EXESUFFIX): $(EDITOROBJS) $(ELIB)\$(ENGINELIB) $(ELIB)\$(EDITORLIB)
-	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS "/LIBPATH:$(DXROOT)\lib" $(flags_link) /MAP $** $(LIBS) msvcrt.lib
+	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS $(LINKFLAGS) /MAP $** $(LIBS) msvcrt.lib
 
 !include Makefile.deps
 
 enginelib editorlib: AlwaysBuild
-	echo CFLAGS=$(ENGINEOPTS) > engineoverrides.mak
 	cd "$(EROOT)"
-	nmake /f Makefile.msvc "OVERRIDES=$(MAKEDIR)\engineoverrides.mak" $@
+	$(MAKE) /f Makefile.msvc /$(MAKEFLAGS) SUPERBUILD=$(SUPERBUILD) POLYMOST=$(POLYMOST) USE_OPENGL=$(USE_OPENGL) NOASM=$(NOASM) $@
 	cd "$(MAKEDIR)"
 
 jfaudiolib: AlwaysBuild
 	cd "$(AUDIOLIBROOT)"
-	nmake /f Makefile.msvc RELEASE=$(RELEASE)
+	$(MAKE) /f Makefile.msvc /$(MAKEFLAGS) RELEASE=$(RELEASE)
 	cd "$(MAKEDIR)"
 
+$(SRC)\version-auto.c: AlwaysBuild
+	powershell tools\generateversion.ps1 > $@
 
 AlwaysBuild: ;
 $(ELIB)\$(EDITORLIB): editorlib ;
 $(ELIB)\$(ENGINELIB): enginelib ;
 $(AUDIOLIBROOT)\$(JFAUDIOLIB): jfaudiolib ;
 
-# PHONIES	
+# PHONIES
 clean:
 	-del /q $(GAMEOBJS) $(EDITOROBJS)
 	cd "$(EROOT)"
-	nmake /f Makefile.msvc $@
+	$(MAKE) /f Makefile.msvc $@
 	cd "$(MAKEDIR)"
-	
+	cd "$(AUDIOLIBROOT)"
+	$(MAKE) /f Makefile.msvc $@
+	cd "$(MAKEDIR)"
+
 veryclean: clean
 	-del /q duke3d$(EXESUFFIX) build$(EXESUFFIX)
 	cd "$(EROOT)"
-	nmake /f Makefile.msvc $@
+	$(MAKE) /f Makefile.msvc $@
 	cd "$(MAKEDIR)"

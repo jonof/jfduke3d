@@ -19,6 +19,17 @@
 			name = all;
 			productName = all;
 		};
+		ABD2DF5021AA3E1600BDB555 /* Version stamp */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = ABD2DF5A21AA3E1600BDB555 /* Build configuration list for PBXAggregateTarget "Version stamp" */;
+			buildPhases = (
+				ABD2DF5B21AA3E1A00BDB555 /* Generate version-auto.c */,
+			);
+			dependencies = (
+			);
+			name = "Version stamp";
+			productName = "Version stamp";
+		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
@@ -27,11 +38,11 @@
 		AB0FFB8C172B98B500400B2B /* libengine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB0FFB6A172B981400400B2B /* libengine.a */; };
 		AB0FFB8D172B98B500400B2B /* libeditor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB0FFB6C172B981400400B2B /* libeditor.a */; };
 		AB0FFB8E172B98B500400B2B /* libeditorsupp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB0FFB6E172B981400400B2B /* libeditorsupp.a */; };
-		AB1DE7EF10199F6E00657779 /* GrpFile.game.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1DE7EE10199F6E00657779 /* GrpFile.game.m */; };
-		AB1DE7F610199FD200657779 /* GameListSource.game.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1DE7F510199FD200657779 /* GameListSource.game.m */; };
+		AB1DE7F610199FD200657779 /* GameListSource.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1DE7F510199FD200657779 /* GameListSource.m */; };
 		AB23F52017355B2B002B565F /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB23F51F17355B2B002B565F /* AudioToolbox.framework */; };
 		AB23F54517355B72002B565F /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB2EA11F1012195E00DD2F1F /* AudioUnit.framework */; };
 		AB2EA109101215AE00DD2F1F /* sounds.c in Sources */ = {isa = PBXBuildFile; fileRef = AB2EA108101215AE00DD2F1F /* sounds.c */; };
+		AB30FFF81BE47EBF00FACA0E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB7AF6141BE46EDC00935B15 /* Images.xcassets */; };
 		AB69BD220A73C36100F3DCB8 /* actors.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD120A73C36100F3DCB8 /* actors.c */; };
 		AB69BD230A73C36100F3DCB8 /* config.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD130A73C36100F3DCB8 /* config.c */; };
 		AB69BD240A73C36100F3DCB8 /* game.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD140A73C36100F3DCB8 /* game.c */; };
@@ -45,13 +56,14 @@
 		AB69BD2D0A73C36100F3DCB8 /* premap.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD1D0A73C36100F3DCB8 /* premap.c */; };
 		AB69BD2E0A73C36100F3DCB8 /* rts.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD1E0A73C36100F3DCB8 /* rts.c */; };
 		AB69BD2F0A73C36100F3DCB8 /* sector.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD1F0A73C36100F3DCB8 /* sector.c */; };
-		AB69BD310A73C36100F3DCB8 /* testcd.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD210A73C36100F3DCB8 /* testcd.c */; };
-		AB69BD360A73C3EC00F3DCB8 /* game.osxmain.nib in Resources */ = {isa = PBXBuildFile; fileRef = AB69BD330A73C3EC00F3DCB8 /* game.osxmain.nib */; };
 		AB69BD370A73C3EC00F3DCB8 /* startwin.game.nib in Resources */ = {isa = PBXBuildFile; fileRef = AB69BD340A73C3EC00F3DCB8 /* startwin.game.nib */; };
-		AB8C5943101B826E00B42306 /* vorbis.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB8C5941101B826E00B42306 /* vorbis.framework */; };
-		AB8C595F101B838600B42306 /* vorbis.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = AB8C5941101B826E00B42306 /* vorbis.framework */; };
-		ABB4AAD20C64BD9E00F28920 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL.framework */; };
-		ABB4AAD70C64BDC400F28920 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL.framework */; };
+		AB7AF6151BE46EDC00935B15 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB7AF6141BE46EDC00935B15 /* Images.xcassets */; };
+		ABB4AAD20C64BD9E00F28920 /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		ABB4AAD70C64BDC400F28920 /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		ABD2DF2621A582F500BDB555 /* gamecontrollerdb.txt in Resources */ = {isa = PBXBuildFile; fileRef = ABD2DF2521A582DD00BDB555 /* gamecontrollerdb.txt */; };
+		ABD2DF2721A582FD00BDB555 /* gamecontrollerdb.txt in Resources */ = {isa = PBXBuildFile; fileRef = ABD2DF2521A582DD00BDB555 /* gamecontrollerdb.txt */; };
+		ABD2DF6121AA3F0E00BDB555 /* version-auto.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD2DF6021AA3ED200BDB555 /* version-auto.c */; };
+		ABD2DF6221AA3F0E00BDB555 /* version-auto.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD2DF6021AA3ED200BDB555 /* version-auto.c */; };
 		ABD768EC0A73CB63006C27C1 /* animlib.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD768DA0A73CB63006C27C1 /* animlib.c */; };
 		ABD768ED0A73CB63006C27C1 /* control.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD768DC0A73CB63006C27C1 /* control.c */; };
 		ABD768EE0A73CB63006C27C1 /* file_lib.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD768DF0A73CB63006C27C1 /* file_lib.c */; };
@@ -60,18 +72,13 @@
 		ABD768F10A73CB63006C27C1 /* mouse.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD768E50A73CB63006C27C1 /* mouse.c */; };
 		ABD768F20A73CB63006C27C1 /* scriplib.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD768E70A73CB63006C27C1 /* scriplib.c */; };
 		ABD768F30A73CB63006C27C1 /* util_lib.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD768EA0A73CB63006C27C1 /* util_lib.c */; };
-		ABD769040A73CBDE006C27C1 /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL.framework */; };
-		ABD769180A73CDF6006C27C1 /* StartupWinController.game.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD769170A73CDF6006C27C1 /* StartupWinController.game.m */; };
-		ABD7692A0A73CE40006C27C1 /* game_icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = ABD769280A73CE40006C27C1 /* game_icon.icns */; };
-		ABD7692B0A73CE40006C27C1 /* game.bmp in Resources */ = {isa = PBXBuildFile; fileRef = ABD769290A73CE40006C27C1 /* game.bmp */; };
+		ABD769040A73CBDE006C27C1 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL2.framework */; };
+		ABD769180A73CDF6006C27C1 /* StartupWinController.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD769170A73CDF6006C27C1 /* StartupWinController.m */; };
 		ABD769310A73CE6D006C27C1 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABD769300A73CE6D006C27C1 /* AppKit.framework */; };
-		ABD769720A73D164006C27C1 /* build.osxmain.nib in Resources */ = {isa = PBXBuildFile; fileRef = ABD7696F0A73D164006C27C1 /* build.osxmain.nib */; };
 		ABD769730A73D164006C27C1 /* startwin.editor.nib in Resources */ = {isa = PBXBuildFile; fileRef = ABD769700A73D164006C27C1 /* startwin.editor.nib */; };
 		ABD769750A73D17A006C27C1 /* astub.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD769740A73D17A006C27C1 /* astub.c */; };
 		ABD76A1F0A73D1A5006C27C1 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABD769300A73CE6D006C27C1 /* AppKit.framework */; };
-		ABD76A200A73D1A6006C27C1 /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL.framework */; };
-		ABD76A460A73D411006C27C1 /* build_icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = ABD76A440A73D411006C27C1 /* build_icon.icns */; };
-		ABD76A470A73D411006C27C1 /* build.bmp in Resources */ = {isa = PBXBuildFile; fileRef = ABD76A450A73D411006C27C1 /* build.bmp */; };
+		ABD76A200A73D1A6006C27C1 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL2.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -187,37 +194,57 @@
 			remoteGlobalIDString = ABD7695D0A73D116006C27C1;
 			remoteInfo = "Build Editor for JFDuke3D";
 		};
+		ABD2DF2121A5707900BDB555 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = ABE362492144CA6500BA44B3;
+			remoteInfo = bin2c;
+		};
+		ABD2DF5C21AA3E5B00BDB555 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB69BCF50A73C1A800F3DCB8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ABD2DF5021AA3E1600BDB555;
+			remoteInfo = "Version stamp";
+		};
+		ABD2DF5E21AA3E6100BDB555 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB69BCF50A73C1A800F3DCB8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ABD2DF5021AA3E1600BDB555;
+			remoteInfo = "Version stamp";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		ABB4AAD50C64BDC000F28920 /* CopyFiles */ = {
+		ABB4AAD50C64BDC000F28920 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				ABB4AAD70C64BDC400F28920 /* SDL.framework in CopyFiles */,
+				ABB4AAD70C64BDC400F28920 /* SDL2.framework in Embed Frameworks */,
 			);
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		ABD7692C0A73CE49006C27C1 /* CopyFiles */ = {
+		ABD7692C0A73CE49006C27C1 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				AB8C595F101B838600B42306 /* vorbis.framework in CopyFiles */,
-				ABB4AAD20C64BD9E00F28920 /* SDL.framework in CopyFiles */,
+				ABB4AAD20C64BD9E00F28920 /* SDL2.framework in Embed Frameworks */,
 			);
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		AB1DE7ED10199F6E00657779 /* GrpFile.game.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GrpFile.game.h; sourceTree = "<group>"; };
-		AB1DE7EE10199F6E00657779 /* GrpFile.game.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GrpFile.game.m; sourceTree = "<group>"; };
-		AB1DE7F410199FD200657779 /* GameListSource.game.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameListSource.game.h; sourceTree = "<group>"; };
-		AB1DE7F510199FD200657779 /* GameListSource.game.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameListSource.game.m; sourceTree = "<group>"; };
+		AB1DE7F410199FD200657779 /* GameListSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameListSource.h; sourceTree = "<group>"; };
+		AB1DE7F510199FD200657779 /* GameListSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameListSource.m; sourceTree = "<group>"; };
 		AB23F51F17355B2B002B565F /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = /System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<absolute>"; };
 		AB2EA0F21012147800DD2F1F /* jfaudiolib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jfaudiolib.xcodeproj; path = ../jfaudiolib/jfaudiolib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		AB2EA108101215AE00DD2F1F /* sounds.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sounds.c; sourceTree = "<group>"; };
@@ -237,11 +264,11 @@
 		AB69BD1D0A73C36100F3DCB8 /* premap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = premap.c; sourceTree = "<group>"; };
 		AB69BD1E0A73C36100F3DCB8 /* rts.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rts.c; sourceTree = "<group>"; };
 		AB69BD1F0A73C36100F3DCB8 /* sector.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sector.c; sourceTree = "<group>"; };
-		AB69BD210A73C36100F3DCB8 /* testcd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = testcd.c; sourceTree = "<group>"; };
-		AB69BD330A73C3EC00F3DCB8 /* game.osxmain.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = game.osxmain.nib; sourceTree = "<group>"; };
 		AB69BD340A73C3EC00F3DCB8 /* startwin.game.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = startwin.game.nib; sourceTree = "<group>"; };
 		AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = engine.xcodeproj; path = ../jfbuild/xcode/engine.xcodeproj; sourceTree = SOURCE_ROOT; };
-		AB8C5941101B826E00B42306 /* vorbis.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vorbis.framework; path = "../jfaudiolib/third-party/vorbis.framework"; sourceTree = SOURCE_ROOT; };
+		AB7AF6141BE46EDC00935B15 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		ABD2DF2521A582DD00BDB555 /* gamecontrollerdb.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = gamecontrollerdb.txt; path = ../rsrc/gamecontrollerdb.txt; sourceTree = "<group>"; };
+		ABD2DF6021AA3ED200BDB555 /* version-auto.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "version-auto.c"; sourceTree = "<group>"; };
 		ABD768D80A73CB63006C27C1 /* _control.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _control.h; sourceTree = "<group>"; };
 		ABD768D90A73CB63006C27C1 /* _scrplib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _scrplib.h; sourceTree = "<group>"; };
 		ABD768DA0A73CB63006C27C1 /* animlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = animlib.c; sourceTree = "<group>"; };
@@ -262,18 +289,13 @@
 		ABD768E90A73CB63006C27C1 /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
 		ABD768EA0A73CB63006C27C1 /* util_lib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = util_lib.c; sourceTree = "<group>"; };
 		ABD768EB0A73CB63006C27C1 /* util_lib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util_lib.h; sourceTree = "<group>"; };
-		ABD769030A73CBDE006C27C1 /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL.framework; path = /Users/jonof/Library/Frameworks/SDL.framework; sourceTree = "<absolute>"; };
-		ABD769170A73CDF6006C27C1 /* StartupWinController.game.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StartupWinController.game.m; sourceTree = "<group>"; };
-		ABD769280A73CE40006C27C1 /* game_icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = game_icon.icns; path = ../rsrc/game_icon.icns; sourceTree = SOURCE_ROOT; };
-		ABD769290A73CE40006C27C1 /* game.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; name = game.bmp; path = ../rsrc/game.bmp; sourceTree = SOURCE_ROOT; };
+		ABD769030A73CBDE006C27C1 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = /Users/jonof/Library/Frameworks/SDL2.framework; sourceTree = "<absolute>"; };
+		ABD769170A73CDF6006C27C1 /* StartupWinController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StartupWinController.m; sourceTree = "<group>"; };
 		ABD769300A73CE6D006C27C1 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		ABD7695E0A73D116006C27C1 /* Build Editor for JFDuke3D.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Build Editor for JFDuke3D.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABD769600A73D116006C27C1 /* Build Editor-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Build Editor-Info.plist"; sourceTree = "<group>"; };
-		ABD7696F0A73D164006C27C1 /* build.osxmain.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = build.osxmain.nib; sourceTree = "<group>"; };
 		ABD769700A73D164006C27C1 /* startwin.editor.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = startwin.editor.nib; sourceTree = "<group>"; };
 		ABD769740A73D17A006C27C1 /* astub.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = astub.c; sourceTree = "<group>"; };
-		ABD76A440A73D411006C27C1 /* build_icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = build_icon.icns; path = ../rsrc/build_icon.icns; sourceTree = "<group>"; };
-		ABD76A450A73D411006C27C1 /* build.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; name = build.bmp; path = ../rsrc/build.bmp; sourceTree = "<group>"; };
 		ABF3C30E10188C8C00233700 /* _functio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _functio.h; sourceTree = "<group>"; };
 		ABF3C30F10188C8C00233700 /* _rts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _rts.h; sourceTree = "<group>"; };
 		ABF3C31010188C8C00233700 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
@@ -298,9 +320,8 @@
 			files = (
 				AB0FFB84172B989100400B2B /* libengine.a in Frameworks */,
 				AB0FFB85172B98A400400B2B /* libjfaudiolib.a in Frameworks */,
-				ABD769040A73CBDE006C27C1 /* SDL.framework in Frameworks */,
+				ABD769040A73CBDE006C27C1 /* SDL2.framework in Frameworks */,
 				ABD769310A73CE6D006C27C1 /* AppKit.framework in Frameworks */,
-				AB8C5943101B826E00B42306 /* vorbis.framework in Frameworks */,
 				AB23F52017355B2B002B565F /* AudioToolbox.framework in Frameworks */,
 				AB23F54517355B72002B565F /* AudioUnit.framework in Frameworks */,
 			);
@@ -314,7 +335,7 @@
 				AB0FFB8D172B98B500400B2B /* libeditor.a in Frameworks */,
 				AB0FFB8E172B98B500400B2B /* libeditorsupp.a in Frameworks */,
 				ABD76A1F0A73D1A5006C27C1 /* AppKit.framework in Frameworks */,
-				ABD76A200A73D1A6006C27C1 /* SDL.framework in Frameworks */,
+				ABD76A200A73D1A6006C27C1 /* SDL2.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -337,6 +358,7 @@
 				AB0FFB6C172B981400400B2B /* libeditor.a */,
 				AB0FFB6E172B981400400B2B /* libeditorsupp.a */,
 				AB0FFB70172B981400400B2B /* arttool */,
+				ABD2DF2221A5707900BDB555 /* bin2c */,
 				AB0FFB72172B981400400B2B /* kextract */,
 				AB0FFB74172B981400400B2B /* kgroup */,
 				AB98B2D41A69FC60009E8749 /* transpal */,
@@ -388,12 +410,10 @@
 				ABF3C31B10188CA300233700 /* soundefs.h */,
 				AB2EA108101215AE00DD2F1F /* sounds.c */,
 				ABF3C31C10188CA300233700 /* sounds.h */,
-				AB69BD210A73C36100F3DCB8 /* testcd.c */,
-				AB1DE7F410199FD200657779 /* GameListSource.game.h */,
-				AB1DE7F510199FD200657779 /* GameListSource.game.m */,
-				AB1DE7ED10199F6E00657779 /* GrpFile.game.h */,
-				AB1DE7EE10199F6E00657779 /* GrpFile.game.m */,
-				ABD769170A73CDF6006C27C1 /* StartupWinController.game.m */,
+				AB1DE7F410199FD200657779 /* GameListSource.h */,
+				AB1DE7F510199FD200657779 /* GameListSource.m */,
+				ABD769170A73CDF6006C27C1 /* StartupWinController.m */,
+				ABD2DF6021AA3ED200BDB555 /* version-auto.c */,
 			);
 			name = src;
 			path = ../src;
@@ -405,8 +425,7 @@
 				ABD768D70A73CB4D006C27C1 /* jfmact */,
 				AB69BCFE0A73C1B200F3DCB8 /* src */,
 				AB69BD450A73C41B00F3DCB8 /* xcode */,
-				ABD769280A73CE40006C27C1 /* game_icon.icns */,
-				ABD769290A73CE40006C27C1 /* game.bmp */,
+				ABD2DF2521A582DD00BDB555 /* gamecontrollerdb.txt */,
 			);
 			name = Game;
 			sourceTree = "<group>";
@@ -415,9 +434,7 @@
 			isa = PBXGroup;
 			children = (
 				ABD7696B0A73D135006C27C1 /* src */,
-				ABD7696C0A73D13B006C27C1 /* osx */,
-				ABD76A440A73D411006C27C1 /* build_icon.icns */,
-				ABD76A450A73D411006C27C1 /* build.bmp */,
+				ABD7696C0A73D13B006C27C1 /* xcode */,
 			);
 			name = Editor;
 			sourceTree = "<group>";
@@ -435,8 +452,8 @@
 			isa = PBXGroup;
 			children = (
 				AB69BD080A73C21E00F3DCB8 /* JFDuke3D-Info.plist */,
-				AB69BD330A73C3EC00F3DCB8 /* game.osxmain.nib */,
 				AB69BD340A73C3EC00F3DCB8 /* startwin.game.nib */,
+				AB7AF6141BE46EDC00935B15 /* Images.xcassets */,
 			);
 			name = xcode;
 			sourceTree = "<group>";
@@ -472,11 +489,10 @@
 		ABD769020A73CBC0006C27C1 /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				AB8C5941101B826E00B42306 /* vorbis.framework */,
 				AB2EA11F1012195E00DD2F1F /* AudioUnit.framework */,
 				AB23F51F17355B2B002B565F /* AudioToolbox.framework */,
 				ABD769300A73CE6D006C27C1 /* AppKit.framework */,
-				ABD769030A73CBDE006C27C1 /* SDL.framework */,
+				ABD769030A73CBDE006C27C1 /* SDL2.framework */,
 			);
 			name = "Linked Frameworks";
 			sourceTree = "<group>";
@@ -490,14 +506,13 @@
 			path = ../src;
 			sourceTree = "<group>";
 		};
-		ABD7696C0A73D13B006C27C1 /* osx */ = {
+		ABD7696C0A73D13B006C27C1 /* xcode */ = {
 			isa = PBXGroup;
 			children = (
 				ABD769600A73D116006C27C1 /* Build Editor-Info.plist */,
-				ABD7696F0A73D164006C27C1 /* build.osxmain.nib */,
 				ABD769700A73D164006C27C1 /* startwin.editor.nib */,
 			);
-			name = osx;
+			name = xcode;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -510,13 +525,14 @@
 				AB69BD010A73C21E00F3DCB8 /* Resources */,
 				AB69BD020A73C21E00F3DCB8 /* Sources */,
 				AB69BD030A73C21E00F3DCB8 /* Frameworks */,
-				ABD7692C0A73CE49006C27C1 /* CopyFiles */,
+				ABD7692C0A73CE49006C27C1 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				AB0FFB79172B984C00400B2B /* PBXTargetDependency */,
 				AB0FFB7B172B984C00400B2B /* PBXTargetDependency */,
+				ABD2DF5D21AA3E5B00BDB555 /* PBXTargetDependency */,
 			);
 			name = JFDuke3D;
 			productName = JFDuke3D;
@@ -530,7 +546,7 @@
 				ABD7695A0A73D116006C27C1 /* Resources */,
 				ABD7695B0A73D116006C27C1 /* Sources */,
 				ABD7695C0A73D116006C27C1 /* Frameworks */,
-				ABB4AAD50C64BDC000F28920 /* CopyFiles */,
+				ABB4AAD50C64BDC000F28920 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -538,6 +554,7 @@
 				AB0FFB87172B98AD00400B2B /* PBXTargetDependency */,
 				AB0FFB89172B98AD00400B2B /* PBXTargetDependency */,
 				AB0FFB8B172B98AD00400B2B /* PBXTargetDependency */,
+				ABD2DF5F21AA3E6100BDB555 /* PBXTargetDependency */,
 			);
 			name = "Build Editor for JFDuke3D";
 			productName = "Build Editor";
@@ -552,8 +569,20 @@
 			attributes = {
 				LastUpgradeCheck = 0610;
 				TargetAttributes = {
+					AB69BD040A73C21E00F3DCB8 = {
+						DevelopmentTeam = S7U4E54CHC;
+					};
 					AB98B2D61A69FD42009E8749 = {
 						CreatedOnToolsVersion = 6.1.1;
+						DevelopmentTeam = S7U4E54CHC;
+					};
+					ABD2DF5021AA3E1600BDB555 = {
+						CreatedOnToolsVersion = 10.1;
+						DevelopmentTeam = S7U4E54CHC;
+						ProvisioningStyle = Automatic;
+					};
+					ABD7695D0A73D116006C27C1 = {
+						DevelopmentTeam = S7U4E54CHC;
 					};
 				};
 			};
@@ -583,6 +612,7 @@
 			projectRoot = "";
 			targets = (
 				AB98B2D61A69FD42009E8749 /* all */,
+				ABD2DF5021AA3E1600BDB555 /* Version stamp */,
 				AB69BD040A73C21E00F3DCB8 /* JFDuke3D */,
 				ABD7695D0A73D116006C27C1 /* Build Editor for JFDuke3D */,
 			);
@@ -653,6 +683,13 @@
 			remoteRef = AB98B2D31A69FC60009E8749 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		ABD2DF2221A5707900BDB555 /* bin2c */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = bin2c;
+			remoteRef = ABD2DF2121A5707900BDB555 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -660,10 +697,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AB69BD360A73C3EC00F3DCB8 /* game.osxmain.nib in Resources */,
+				ABD2DF2621A582F500BDB555 /* gamecontrollerdb.txt in Resources */,
+				AB7AF6151BE46EDC00935B15 /* Images.xcassets in Resources */,
 				AB69BD370A73C3EC00F3DCB8 /* startwin.game.nib in Resources */,
-				ABD7692A0A73CE40006C27C1 /* game_icon.icns in Resources */,
-				ABD7692B0A73CE40006C27C1 /* game.bmp in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -671,14 +707,35 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ABD769720A73D164006C27C1 /* build.osxmain.nib in Resources */,
+				ABD2DF2721A582FD00BDB555 /* gamecontrollerdb.txt in Resources */,
+				AB30FFF81BE47EBF00FACA0E /* Images.xcassets in Resources */,
 				ABD769730A73D164006C27C1 /* startwin.editor.nib in Resources */,
-				ABD76A460A73D411006C27C1 /* build_icon.icns in Resources */,
-				ABD76A470A73D411006C27C1 /* build.bmp in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		ABD2DF5B21AA3E1A00BDB555 /* Generate version-auto.c */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Generate version-auto.c";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(SOURCE_ROOT)/../src/version-auto.c",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd $PROJECT_DIR/..\ngitdescribe=$(git describe --always 2>/dev/null || echo git error)\n\ncat >src/version-auto.c <<EOT\nconst char *game_version = \"$gitdescribe\";\nconst char *game_date = __DATE__;\nconst char *game_time = __TIME__;\nEOT\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		AB69BD020A73C21E00F3DCB8 /* Sources */ = {
@@ -698,7 +755,6 @@
 				AB69BD2D0A73C36100F3DCB8 /* premap.c in Sources */,
 				AB69BD2E0A73C36100F3DCB8 /* rts.c in Sources */,
 				AB69BD2F0A73C36100F3DCB8 /* sector.c in Sources */,
-				AB69BD310A73C36100F3DCB8 /* testcd.c in Sources */,
 				ABD768EC0A73CB63006C27C1 /* animlib.c in Sources */,
 				ABD768ED0A73CB63006C27C1 /* control.c in Sources */,
 				ABD768EE0A73CB63006C27C1 /* file_lib.c in Sources */,
@@ -707,10 +763,10 @@
 				ABD768F10A73CB63006C27C1 /* mouse.c in Sources */,
 				ABD768F20A73CB63006C27C1 /* scriplib.c in Sources */,
 				ABD768F30A73CB63006C27C1 /* util_lib.c in Sources */,
-				ABD769180A73CDF6006C27C1 /* StartupWinController.game.m in Sources */,
+				ABD769180A73CDF6006C27C1 /* StartupWinController.m in Sources */,
 				AB2EA109101215AE00DD2F1F /* sounds.c in Sources */,
-				AB1DE7EF10199F6E00657779 /* GrpFile.game.m in Sources */,
-				AB1DE7F610199FD200657779 /* GameListSource.game.m in Sources */,
+				ABD2DF6121AA3F0E00BDB555 /* version-auto.c in Sources */,
+				AB1DE7F610199FD200657779 /* GameListSource.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -719,6 +775,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ABD769750A73D17A006C27C1 /* astub.c in Sources */,
+				ABD2DF6221AA3F0E00BDB555 /* version-auto.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -760,14 +817,26 @@
 			target = ABD7695D0A73D116006C27C1 /* Build Editor for JFDuke3D */;
 			targetProxy = AB98B2DC1A69FD68009E8749 /* PBXContainerItemProxy */;
 		};
+		ABD2DF5D21AA3E5B00BDB555 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ABD2DF5021AA3E1600BDB555 /* Version stamp */;
+			targetProxy = ABD2DF5C21AA3E5B00BDB555 /* PBXContainerItemProxy */;
+		};
+		ABD2DF5F21AA3E6100BDB555 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ABD2DF5021AA3E1600BDB555 /* Version stamp */;
+			targetProxy = ABD2DF5E21AA3E6100BDB555 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		AB69BCF70A73C1A800F3DCB8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = S7U4E54CHC;
 				FRAMEWORK_SEARCH_PATHS = (
 					"../jfaudiolib/third-party",
 					"$(HOME)/Library/Frameworks",
@@ -779,8 +848,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					SUPERBUILD,
 					POLYMOST,
-					USE_OPENGL,
-					DYNAMIC_OPENGL,
+					"USE_OPENGL=1",
 					USE_A_C,
 					NOASM,
 					RENDERTYPESDL,
@@ -790,7 +858,7 @@
 					../jfbuild/include,
 					../jfaudiolib/include,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				WARNING_CFLAGS = (
 					"-W",
 					"-Wall",
@@ -802,8 +870,10 @@
 		AB69BCF80A73C1A800F3DCB8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = YES;
+				DEVELOPMENT_TEAM = S7U4E54CHC;
 				FRAMEWORK_SEARCH_PATHS = (
 					"../jfaudiolib/third-party",
 					"$(HOME)/Library/Frameworks",
@@ -814,8 +884,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					SUPERBUILD,
 					POLYMOST,
-					USE_OPENGL,
-					DYNAMIC_OPENGL,
+					"USE_OPENGL=1",
 					USE_A_C,
 					NOASM,
 					RENDERTYPESDL,
@@ -825,7 +894,7 @@
 					../jfbuild/include,
 					../jfaudiolib/include,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				WARNING_CFLAGS = (
 					"-W",
 					"-Wall",
@@ -837,10 +906,11 @@
 		AB69BD0D0A73C30600F3DCB8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = "JFDuke3D-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
-				OTHER_LDFLAGS = "-lstdc++";
+				OTHER_LDFLAGS = "-lc++";
 				PRODUCT_NAME = JFDuke3D;
 				WRAPPER_EXTENSION = app;
 			};
@@ -849,10 +919,11 @@
 		AB69BD0E0A73C30600F3DCB8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = "JFDuke3D-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
-				OTHER_LDFLAGS = "-lstdc++";
+				OTHER_LDFLAGS = "-lc++";
 				PRODUCT_NAME = JFDuke3D;
 				WRAPPER_EXTENSION = app;
 			};
@@ -872,12 +943,29 @@
 			};
 			name = Release;
 		};
+		ABD2DF5121AA3E1600BDB555 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		ABD2DF5221AA3E1600BDB555 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		ABD769620A73D117006C27C1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = EditorAppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = "Build Editor-Info.plist";
-				OTHER_LDFLAGS = "-lstdc++";
+				OTHER_LDFLAGS = "-lc++";
 				PRODUCT_NAME = "Build Editor for JFDuke3D";
 				WRAPPER_EXTENSION = app;
 			};
@@ -886,9 +974,10 @@
 		ABD769630A73D117006C27C1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = EditorAppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = "Build Editor-Info.plist";
-				OTHER_LDFLAGS = "-lstdc++";
+				OTHER_LDFLAGS = "-lc++";
 				PRODUCT_NAME = "Build Editor for JFDuke3D";
 				WRAPPER_EXTENSION = app;
 			};
@@ -922,6 +1011,16 @@
 				AB98B2D91A69FD42009E8749 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ABD2DF5A21AA3E1600BDB555 /* Build configuration list for PBXAggregateTarget "Version stamp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ABD2DF5121AA3E1600BDB555 /* Debug */,
+				ABD2DF5221AA3E1600BDB555 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		ABD769610A73D117006C27C1 /* Build configuration list for PBXNativeTarget "Build Editor for JFDuke3D" */ = {
 			isa = XCConfigurationList;
