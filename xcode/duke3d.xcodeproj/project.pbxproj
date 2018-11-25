@@ -19,6 +19,17 @@
 			name = all;
 			productName = all;
 		};
+		ABD2DF5021AA3E1600BDB555 /* Version stamp */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = ABD2DF5A21AA3E1600BDB555 /* Build configuration list for PBXAggregateTarget "Version stamp" */;
+			buildPhases = (
+				ABD2DF5B21AA3E1A00BDB555 /* Generate version-auto.c */,
+			);
+			dependencies = (
+			);
+			name = "Version stamp";
+			productName = "Version stamp";
+		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
@@ -51,6 +62,8 @@
 		ABB4AAD70C64BDC400F28920 /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		ABD2DF2621A582F500BDB555 /* gamecontrollerdb.txt in Resources */ = {isa = PBXBuildFile; fileRef = ABD2DF2521A582DD00BDB555 /* gamecontrollerdb.txt */; };
 		ABD2DF2721A582FD00BDB555 /* gamecontrollerdb.txt in Resources */ = {isa = PBXBuildFile; fileRef = ABD2DF2521A582DD00BDB555 /* gamecontrollerdb.txt */; };
+		ABD2DF6121AA3F0E00BDB555 /* version-auto.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD2DF6021AA3ED200BDB555 /* version-auto.c */; };
+		ABD2DF6221AA3F0E00BDB555 /* version-auto.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD2DF6021AA3ED200BDB555 /* version-auto.c */; };
 		ABD768EC0A73CB63006C27C1 /* animlib.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD768DA0A73CB63006C27C1 /* animlib.c */; };
 		ABD768ED0A73CB63006C27C1 /* control.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD768DC0A73CB63006C27C1 /* control.c */; };
 		ABD768EE0A73CB63006C27C1 /* file_lib.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD768DF0A73CB63006C27C1 /* file_lib.c */; };
@@ -188,6 +201,20 @@
 			remoteGlobalIDString = ABE362492144CA6500BA44B3;
 			remoteInfo = bin2c;
 		};
+		ABD2DF5C21AA3E5B00BDB555 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB69BCF50A73C1A800F3DCB8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ABD2DF5021AA3E1600BDB555;
+			remoteInfo = "Version stamp";
+		};
+		ABD2DF5E21AA3E6100BDB555 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB69BCF50A73C1A800F3DCB8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ABD2DF5021AA3E1600BDB555;
+			remoteInfo = "Version stamp";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -241,6 +268,7 @@
 		AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = engine.xcodeproj; path = ../jfbuild/xcode/engine.xcodeproj; sourceTree = SOURCE_ROOT; };
 		AB7AF6141BE46EDC00935B15 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		ABD2DF2521A582DD00BDB555 /* gamecontrollerdb.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = gamecontrollerdb.txt; path = ../rsrc/gamecontrollerdb.txt; sourceTree = "<group>"; };
+		ABD2DF6021AA3ED200BDB555 /* version-auto.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "version-auto.c"; sourceTree = "<group>"; };
 		ABD768D80A73CB63006C27C1 /* _control.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _control.h; sourceTree = "<group>"; };
 		ABD768D90A73CB63006C27C1 /* _scrplib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _scrplib.h; sourceTree = "<group>"; };
 		ABD768DA0A73CB63006C27C1 /* animlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = animlib.c; sourceTree = "<group>"; };
@@ -385,6 +413,7 @@
 				AB1DE7F410199FD200657779 /* GameListSource.h */,
 				AB1DE7F510199FD200657779 /* GameListSource.m */,
 				ABD769170A73CDF6006C27C1 /* StartupWinController.m */,
+				ABD2DF6021AA3ED200BDB555 /* version-auto.c */,
 			);
 			name = src;
 			path = ../src;
@@ -503,6 +532,7 @@
 			dependencies = (
 				AB0FFB79172B984C00400B2B /* PBXTargetDependency */,
 				AB0FFB7B172B984C00400B2B /* PBXTargetDependency */,
+				ABD2DF5D21AA3E5B00BDB555 /* PBXTargetDependency */,
 			);
 			name = JFDuke3D;
 			productName = JFDuke3D;
@@ -524,6 +554,7 @@
 				AB0FFB87172B98AD00400B2B /* PBXTargetDependency */,
 				AB0FFB89172B98AD00400B2B /* PBXTargetDependency */,
 				AB0FFB8B172B98AD00400B2B /* PBXTargetDependency */,
+				ABD2DF5F21AA3E6100BDB555 /* PBXTargetDependency */,
 			);
 			name = "Build Editor for JFDuke3D";
 			productName = "Build Editor";
@@ -544,6 +575,11 @@
 					AB98B2D61A69FD42009E8749 = {
 						CreatedOnToolsVersion = 6.1.1;
 						DevelopmentTeam = S7U4E54CHC;
+					};
+					ABD2DF5021AA3E1600BDB555 = {
+						CreatedOnToolsVersion = 10.1;
+						DevelopmentTeam = S7U4E54CHC;
+						ProvisioningStyle = Automatic;
 					};
 					ABD7695D0A73D116006C27C1 = {
 						DevelopmentTeam = S7U4E54CHC;
@@ -576,6 +612,7 @@
 			projectRoot = "";
 			targets = (
 				AB98B2D61A69FD42009E8749 /* all */,
+				ABD2DF5021AA3E1600BDB555 /* Version stamp */,
 				AB69BD040A73C21E00F3DCB8 /* JFDuke3D */,
 				ABD7695D0A73D116006C27C1 /* Build Editor for JFDuke3D */,
 			);
@@ -678,6 +715,28 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		ABD2DF5B21AA3E1A00BDB555 /* Generate version-auto.c */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Generate version-auto.c";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(SOURCE_ROOT)/../src/version-auto.c",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd $PROJECT_DIR/..\ngitdescribe=$(git describe --always 2>/dev/null || echo git error)\n\ncat >src/version-auto.c <<EOT\nconst char *game_version = \"$gitdescribe\";\nconst char *game_date = __DATE__;\nconst char *game_time = __TIME__;\nEOT\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		AB69BD020A73C21E00F3DCB8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -706,6 +765,7 @@
 				ABD768F30A73CB63006C27C1 /* util_lib.c in Sources */,
 				ABD769180A73CDF6006C27C1 /* StartupWinController.m in Sources */,
 				AB2EA109101215AE00DD2F1F /* sounds.c in Sources */,
+				ABD2DF6121AA3F0E00BDB555 /* version-auto.c in Sources */,
 				AB1DE7F610199FD200657779 /* GameListSource.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -715,6 +775,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ABD769750A73D17A006C27C1 /* astub.c in Sources */,
+				ABD2DF6221AA3F0E00BDB555 /* version-auto.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -755,6 +816,16 @@
 			isa = PBXTargetDependency;
 			target = ABD7695D0A73D116006C27C1 /* Build Editor for JFDuke3D */;
 			targetProxy = AB98B2DC1A69FD68009E8749 /* PBXContainerItemProxy */;
+		};
+		ABD2DF5D21AA3E5B00BDB555 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ABD2DF5021AA3E1600BDB555 /* Version stamp */;
+			targetProxy = ABD2DF5C21AA3E5B00BDB555 /* PBXContainerItemProxy */;
+		};
+		ABD2DF5F21AA3E6100BDB555 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ABD2DF5021AA3E1600BDB555 /* Version stamp */;
+			targetProxy = ABD2DF5E21AA3E6100BDB555 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -872,6 +943,22 @@
 			};
 			name = Release;
 		};
+		ABD2DF5121AA3E1600BDB555 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		ABD2DF5221AA3E1600BDB555 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		ABD769620A73D117006C27C1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -922,6 +1009,15 @@
 			buildConfigurations = (
 				AB98B2D81A69FD42009E8749 /* Debug */,
 				AB98B2D91A69FD42009E8749 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ABD2DF5A21AA3E1600BDB555 /* Build configuration list for PBXAggregateTarget "Version stamp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ABD2DF5121AA3E1600BDB555 /* Debug */,
+				ABD2DF5221AA3E1600BDB555 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
