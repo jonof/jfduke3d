@@ -25,18 +25,6 @@ int osdcmd_quit(const osdfuncparm_t *parm)
     return OSDCMD_OK;
 }
 
-int osdcmd_echo(const osdfuncparm_t *parm)
-{
-    int i;
-    for (i = 0; i < parm->numparms; i++) {
-        if (i > 0) buildprintf(" ");
-        buildprintf("%s", parm->parms[i]);
-    }
-    buildprintf("\n");
-    
-    return OSDCMD_OK;
-}
-
 int osdcmd_changelevel(const osdfuncparm_t *parm)
 {
     int volume=0,level,i;
@@ -419,8 +407,6 @@ int osdcmd_usemousejoy(const osdfuncparm_t *parm)
 int registerosdcommands(void)
 {
     osdcmd_cheatsinfo_stat.cheatnum = -1;
-
-    OSD_RegisterFunction("echo","echo [text]: echoes text to the console", osdcmd_echo);
 
 if (VOLUMEONE) {
     OSD_RegisterFunction("changelevel","changelevel <level>: warps to the given level", osdcmd_changelevel);

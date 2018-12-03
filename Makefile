@@ -26,15 +26,14 @@ MACTROOT ?= jfmact
 AUDIOLIBROOT ?= jfaudiolib
 
 # Engine options
-#  SUPERBUILD     - enables voxels
-#  POLYMOST       - enables Polymost renderer
+#  USE_POLYMOST   - enables Polymost renderer
 #  USE_OPENGL     - enables OpenGL support in Polymost
+#     Define as 0 to disable OpenGL
 #     Define as 1 or 2 for GL 2.1 profile
-#  NOASM          - disables the use of assembly code
-SUPERBUILD ?= 1
-POLYMOST ?= 1
+#  USE_ASM        - enables the use of assembly code
+USE_POLYMOST ?= 1
 USE_OPENGL ?= 1
-NOASM ?= 0
+USE_ASM ?= 1
 
 
 ##
@@ -162,7 +161,7 @@ style=Release
 endif
 .PHONY: alldarwin
 alldarwin:
-	cd osx && xcodebuild -target All -buildstyle $(style)
+	cd xcode && xcodebuild -project duke3d.xcodeproj -target all -configuration $(style)
 endif
 
 all: duke3d$(EXESUFFIX) build$(EXESUFFIX)
@@ -178,8 +177,9 @@ include Makefile.deps
 .PHONY: enginelib editorlib
 enginelib editorlib:
 	$(MAKE) -C $(EROOT) \
-		SUPERBUILD=$(SUPERBUILD) POLYMOST=$(POLYMOST) \
-		USE_OPENGL=$(USE_OPENGL) NOASM=$(NOASM) \
+		USE_POLYMOST=$(USE_POLYMOST) \
+		USE_OPENGL=$(USE_OPENGL) \
+		USE_ASM=$(USE_ASM) \
 		RELEASE=$(RELEASE) $@
 $(EROOT)/generatesdlappicon$(EXESUFFIX):
 	$(MAKE) -C $(EROOT) generatesdlappicon$(EXESUFFIX)

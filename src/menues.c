@@ -2576,7 +2576,7 @@ if (PLUTOPAK) {
 
         c = (320>>1)-120;
 
-#if defined(POLYMOST) && defined(USE_OPENGL)
+#if USE_POLYMOST && USE_OPENGL
         x = 7;
 #else
         x = 5;
@@ -2749,7 +2749,7 @@ if (PLUTOPAK) {
         case 4:
             break;
 
-#if defined(POLYMOST) && defined(USE_OPENGL)
+#if USE_POLYMOST && USE_OPENGL
         case 5:
             if (bpp==8) break;
             switch (gltexfiltermode) {
@@ -2795,7 +2795,7 @@ if (PLUTOPAK) {
             }
         }
 
-#if defined(POLYMOST) && defined(USE_OPENGL)
+#if USE_POLYMOST && USE_OPENGL
         menutext(c,50+62+16+16,0,bpp==8,"FILTERING");
             switch (gltexfiltermode) {
                 case 0: strcpy(buf,"NEAREST"); break;
