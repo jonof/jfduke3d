@@ -134,7 +134,7 @@ ifeq ($(RENDERTYPE),SDL)
 endif
 
 # Source-control version stamping
-ifneq (no,$(shell git --version || echo no))
+ifneq (,$(findstring git version,$(shell git --version)))
 GAMEOBJS+= $(SRC)/version-auto.$o
 EDITOROBJS+= $(SRC)/version-auto.$o
 else
@@ -143,6 +143,7 @@ EDITOROBJS+= $(SRC)/version.$o
 endif
 
 OURCFLAGS+= $(BUILDCFLAGS)
+LIBS+= $(BUILDLIBS)
 
 ifneq ($(PLATFORM),WINDOWS)
 	OURCFLAGS+= -DPREFIX=\"$(PREFIX)\"
@@ -235,7 +236,7 @@ endif
 
 .PHONY: $(SRC)/version-auto.c
 $(SRC)/version-auto.c:
-	printf "const char *game_version = \"%s\";\n" $(shell git describe --always || echo git error) > $@
+	printf "const char *game_version = \"%s\";\n" "$(shell git describe --always || echo git error)" > $@
 	echo "const char *game_date = __DATE__;" >> $@
 	echo "const char *game_time = __TIME__;" >> $@
 
