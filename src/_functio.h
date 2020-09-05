@@ -157,7 +157,7 @@ static char * keydefaults[] =
    };
 
 
-static char * mousedefaults[] =
+static char * mousedefaults[MAXMOUSEBUTTONS] =
    {
    "Fire",
    "Strafe",
@@ -168,7 +168,7 @@ static char * mousedefaults[] =
    };
 
 
-static char * mouseclickeddefaults[] =
+static char * mouseclickeddefaults[MAXMOUSEBUTTONS] =
    {
    "",
    "Open",
@@ -179,68 +179,23 @@ static char * mouseclickeddefaults[] =
    };
 
 
-static char * joystickdefaults[] =
+static char * joystickdefaults[MAXJOYBUTTONS] =
    {
-   "Fire",
-   "Strafe",
-   "Run",
-   "Open",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "Aim_Down",
-   "Look_Right",
-   "Aim_Up",
-   "Look_Left",
-   };
-
-
-static char * joystickclickeddefaults[] =
-   {
-   "",
-   "Inventory",
-   "Jump",
-   "Crouch",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
+   "Fire",        // A
+   "Strafe",      // B
+   "Run",         // X
+   "Open",        // Y
+   "",            // Back
+   "",            // Guide
+   "",            // Start
+   "",            // L thumb
+   "",            // R thumb
+   "",            // L shoulder
+   "",            // R shoulder
+   "Aim_Up",      // DP up
+   "Aim_Down",    // DP down
+   "Look_Left",   // DP left
+   "Look_Right",  // DP right
    "",
    "",
    "",
@@ -261,14 +216,51 @@ static char * joystickclickeddefaults[] =
    };
 
 
-static char * mouseanalogdefaults[] =
+static char * joystickclickeddefaults[MAXJOYBUTTONS] =
+   {
+   "",            // A
+   "Inventory",   // B
+   "Jump",        // X
+   "Crouch",      // Y
+   "",            // Back
+   "",            // Guide
+   "",            // Start
+   "",            // L thumb
+   "",            // R thumb
+   "",            // L shoulder
+   "",            // R shoulder
+   "",            // DP up
+   "",            // DP down
+   "",            // DP left
+   "",            // DP right
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   };
+
+
+static char * mouseanalogdefaults[MAXMOUSEAXES] =
    {
    "analog_turning",
    "analog_moving",
    };
 
 
-static char * mousedigitaldefaults[] =
+static char * mousedigitaldefaults[MAXMOUSEAXES*2] =
    {
    "",
    "",
@@ -277,16 +269,7 @@ static char * mousedigitaldefaults[] =
    };
 
 
-static char * gamepaddigitaldefaults[] =
-   {
-   "Turn_Left",
-   "Turn_Right",
-   "Move_Forward",
-   "Move_Backward",
-   };
-
-
-static char * joystickanalogdefaults[] =
+static char * joystickanalogdefaults[MAXJOYAXES] =
    {
    "analog_turning",
    "analog_moving",
@@ -296,10 +279,14 @@ static char * joystickanalogdefaults[] =
    "",
    "",
    "",
+   "",
+   "",
+   "",
+   "",
    };
 
 
-static char * joystickdigitaldefaults[] =
+static char * joystickdigitaldefaults[MAXJOYAXES*2] =
    {
    "",
    "",
@@ -308,6 +295,14 @@ static char * joystickdigitaldefaults[] =
    "",
    "",
    "Run",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
    "",
    "",
    "",
