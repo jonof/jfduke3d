@@ -29,7 +29,8 @@ AUDIOLIBROOT ?= jfaudiolib
 #  USE_POLYMOST   - enables Polymost renderer
 #  USE_OPENGL     - enables OpenGL support in Polymost
 #     Define as 0 to disable OpenGL
-#     Define as 1 or 2 for GL 2.1 profile
+#     Define as USE_GL2 (or 1 or 2) for GL 2.0/2.1 profile
+#     Define as USE_GLES2 (or 12) for GLES 2.0 profile
 #  USE_ASM        - enables the use of assembly code
 USE_POLYMOST ?= 1
 USE_OPENGL ?= 1
