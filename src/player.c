@@ -54,7 +54,7 @@ void setpal(struct player_struct *p)
 
 void fadepal(int r, int g, int b, int start, int end, int step)
 {
-	if (getrendermode() >= 3) return;
+	if (POLYMOST_RENDERMODE_POLYGL()) return;
 	if (step > 0) for (; start < end; start += step) palto(r,g,b,start);
 	else for (; start >= end; start += step) palto(r,g,b,start);
 }

@@ -562,8 +562,8 @@ extern int stereomode, stereowidth, stereopixelwidth;
 
 extern int myaimmode, myaimstat, omyaimstat;
 
-#define IFISGLMODE if (getrendermode() >= 3)
-#define IFISSOFTMODE if (getrendermode() < 3)
+#define IFISGLMODE if (POLYMOST_RENDERMODE_POLYGL())
+#define IFISSOFTMODE if (!POLYMOST_RENDERMODE_POLYGL())
 
 void onvideomodechange(int newmode);
 

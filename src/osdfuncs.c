@@ -68,8 +68,8 @@ void GAME_clearbackground(int UNUSED(c), int r)
     int x, y, xsiz, ysiz, tx2, ty2;
     int daydim, bits;
 
-    if (getrendermode() < 3) bits = BITS; else bits = BITSTL;
-    
+    if (!POLYMOST_RENDERMODE_POLYGL()) bits = BITS; else bits = BITSTL;
+
     daydim = r<<3;
 
     xsiz = tilesizx[BGTILE]; tx2 = xdim/xsiz;

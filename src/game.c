@@ -138,15 +138,13 @@ void setgamepalette(struct player_struct *player, unsigned char *pal, int set)
         return;
     }
 
-    if (getrendermode() < 3) {
+    if (!POLYMOST_RENDERMODE_POLYGL()) {
         // 8-bit mode
-        player->palette = pal;
         setbrightness(ud.brightness>>2, pal, set);
         //pub = pus = NUMPAGES;
-        return;
     }
-
-    if (pal == palette || pal == waterpal || pal == slimepal) {
+#if USE_POLYMOST && USE_OPENGL
+    else if (pal == palette || pal == waterpal || pal == slimepal) {
         // only reset the palette to normal if the previous one wasn't handled by tinting
         polymosttexfullbright = 240;
         if (player->palette != palette && player->palette != waterpal && player->palette != slimepal)
@@ -156,6 +154,7 @@ void setgamepalette(struct player_struct *player, unsigned char *pal, int set)
         polymosttexfullbright = 256;
         setbrightness(ud.brightness>>2, pal, set);
     }
+#endif
     player->palette = pal;
 }
 
@@ -1650,7 +1649,7 @@ void coolgaugetext(short snum)
 
      ss = ud.screen_size; if (ss < 4) return;
 
-     if (getrendermode() >= 3) pus = NUMPAGES;  // JBF 20040101: always redraw in GL
+     if (POLYMOST_RENDERMODE_POLYGL()) pus = NUMPAGES;  // JBF 20040101: always redraw in GL
 
      if ( ud.multimode > 1 && ud.coop != 1 )
      {
@@ -2280,7 +2279,7 @@ void displayrest(int smoothratio)
     pp = &ps[screenpeek];
 
     // this takes care of fullscreen tint for OpenGL
-    if (getrendermode() >= 3) {
+    if (POLYMOST_RENDERMODE_POLYGL()) {
         if (pp->palette == waterpal) tintr=0,tintg=0,tintb=63,tintf=8;
         else if (pp->palette == slimepal) tintr=0,tintg=63,tintb=0,tintf=8;
     }
@@ -2844,7 +2843,7 @@ void displayrooms(short snum,int smoothratio)
 
     p = &ps[snum];
 
-    if(pub > 0 || getrendermode() >= 3) // JBF 20040101: redraw background always
+    if(pub > 0 || POLYMOST_RENDERMODE_POLYGL()) // JBF 20040101: redraw background always
     {
         if(ud.screen_size >= 8) drawbackground();
         pub = 0;
@@ -2899,7 +2898,7 @@ void displayrooms(short snum,int smoothratio)
                 allocache((void **)&waloff[TILE_SAVESHOT],200*320,&walock[TILE_SAVESHOT]);
             setviewtotile(TILE_SAVESHOT,200L,320L);
         }
-        else if( getrendermode() == 0 && ( ( ud.screen_tilting && p->rotscrnang ) || ud.detail==0 ) )
+        else if( POLYMOST_RENDERMODE_CLASSIC() && ( ( ud.screen_tilting && p->rotscrnang ) || ud.detail==0 ) )
         {
                 if (ud.screen_tilting) tang = p->rotscrnang; else tang = 0;
 
@@ -2933,10 +2932,13 @@ void displayrooms(short snum,int smoothratio)
                 i = (tang&511); if (i > 256) i = 512-i;
                 i = sintable[i+512]*8 + sintable[i]*5L;
                 setaspect(i>>1,yxaspect);
-          } else if (getrendermode() > 0 /*&& (p->rotscrnang || p->orotscrnang)*/) {
-        setrollangle(p->orotscrnang + mulscale16(((p->rotscrnang - p->orotscrnang + 1024)&2047)-1024,smoothratio));
-        p->orotscrnang = p->rotscrnang; // JBF: save it for next time
-      }
+        }
+#if USE_POLYMOST
+        else if (POLYMOST_RENDERMODE_POLYMOST() /*&& (p->rotscrnang || p->orotscrnang)*/) {
+            setrollangle(p->orotscrnang + mulscale16(((p->rotscrnang - p->orotscrnang + 1024)&2047)-1024,smoothratio));
+            p->orotscrnang = p->rotscrnang; // JBF: save it for next time
+        }
+#endif
 
           if ( (snum == myconnectindex) && (numplayers > 1) )
                   {
@@ -3043,20 +3045,18 @@ void displayrooms(short snum,int smoothratio)
             screencapt = 0;
 //            walock[TILE_SAVESHOT] = 1;
         }
-        else if( getrendermode() == 0 && ( ( ud.screen_tilting && p->rotscrnang) || ud.detail==0 ) )
+        else if( POLYMOST_RENDERMODE_CLASSIC() && ( ( ud.screen_tilting && p->rotscrnang) || ud.detail==0 ) )
         {
             if (ud.screen_tilting) tang = p->rotscrnang; else tang = 0;
 
-        if (getrendermode() == 0) {
-                setviewback();
-                picanm[TILE_TILT] &= 0xff0000ff;
+            setviewback();
+            picanm[TILE_TILT] &= 0xff0000ff;
                 i = (tang&511); if (i > 256) i = 512-i;
                 i = sintable[i+512]*8 + sintable[i]*5L;
                 if ((1-ud.detail) == 0) i >>= 1;
             i>>=(tiltcs-1); // JBF 20030807
                 rotatesprite(160<<16,100<<16,i,tang+512,TILE_TILT,0,0,4+2+64,windowx1,windowy1,windowx2,windowy2);
-                walock[TILE_TILT] = 199;
-        }
+            walock[TILE_TILT] = 199;
         }
     }
 
@@ -5065,10 +5065,12 @@ void animatesprites(int x,int y,short a,int smoothratio)
                     t->xrepeat = t->yrepeat = 0;
                 continue;
             case CHAIR3:
+#if USE_POLYMOST && USE_OPENGL
                 if (bpp > 8 && usemodels && md_tilehasmodel(t->picnum) >= 0) {
                     t->cstat &= ~4;
                     break;
                 }
+#endif
 
                 k = (((t->ang+3072+128-a)&2047)>>8)&7;
                 if(k>4)
@@ -5322,10 +5324,12 @@ void animatesprites(int x,int y,short a,int smoothratio)
                 t->picnum = GROWSPARK+( (totalclock>>4)&3 );
                 break;
             case RPG:
+#if USE_POLYMOST && USE_OPENGL
                 if (bpp > 8 && usemodels && md_tilehasmodel(s->picnum) >= 0) {
                     t->cstat &= ~4;
                     break;
                 }
+#endif
 
                  k = getangle(s->x-x,s->y-y);
                  k = (((s->ang+3072+128-k)&2047)/170);
@@ -5339,10 +5343,12 @@ void animatesprites(int x,int y,short a,int smoothratio)
                  break;
 
             case RECON:
+#if USE_POLYMOST && USE_OPENGL
                 if (bpp > 8 && usemodels && md_tilehasmodel(s->picnum) >= 0) {
                     t->cstat &= ~4;
                     break;
                 }
+#endif
 
                 k = getangle(s->x-x,s->y-y);
                 if( T1 < 4 )
@@ -5426,10 +5432,13 @@ void animatesprites(int x,int y,short a,int smoothratio)
 
                 if(s->owner == -1)
                 {
+#if USE_POLYMOST && USE_OPENGL
                     if (bpp > 8 && usemodels && md_tilehasmodel(s->picnum) >= 0) {
                         k = 0;
                         t->cstat &= ~4;
-                    } else {
+                    } else
+#endif
+                    {
                         k = (((s->ang+3072+128-a)&2047)>>8)&7;
                         if(k>4)
                         {
@@ -5548,10 +5557,13 @@ void animatesprites(int x,int y,short a,int smoothratio)
             {
                 l = *(decodescriptptr(t4)+2);
 
+#if USE_POLYMOST && USE_OPENGL
                 if (bpp > 8 && usemodels && md_tilehasmodel(s->picnum) >= 0) {
                     k = 0;
                     t->cstat &= ~4;
-                } else switch( l ) {
+                } else
+#endif
+                switch( l ) {
                     case 2:
                         k = (((s->ang+3072+128-a)&2047)>>8)&1;
                         break;
@@ -5647,6 +5659,7 @@ void animatesprites(int x,int y,short a,int smoothratio)
                     yrep = tsprite[spritesortcnt].yrepeat;// - (klabs(daz-t->z)>>11);
                     tsprite[spritesortcnt].yrepeat = yrep;
 
+#if USE_POLYMOST && USE_OPENGL
                     if (bpp > 8 && usemodels && md_tilehasmodel(t->picnum) >= 0)
                     {
                         tsprite[spritesortcnt].yrepeat = 0;
@@ -5654,6 +5667,7 @@ void animatesprites(int x,int y,short a,int smoothratio)
                             //1024:tell MD2SPRITE.C to use Z-buffer hacks to hide overdraw issues
                         tsprite[spritesortcnt].cstat |= (512+1024);
                     }
+#endif
 
                     spritesortcnt++;
                 }
@@ -5706,10 +5720,13 @@ void animatesprites(int x,int y,short a,int smoothratio)
                 t->picnum += (s->shade>>1);
                 break;
             case PLAYERONWATER:
+#if USE_POLYMOST && USE_OPENGL
                 if (bpp > 8 && usemodels && md_tilehasmodel(s->picnum) >= 0) {
                     k = 0;
                     t->cstat &= ~4;
-                } else {
+                } else
+#endif
+                {
                     k = (((t->ang+3072+128-a)&2047)>>8)&7;
                     if(k>4)
                     {
@@ -5762,10 +5779,12 @@ void animatesprites(int x,int y,short a,int smoothratio)
 
             case CAMERA1:
             case RAT:
+#if USE_POLYMOST && USE_OPENGL
                 if (bpp > 8 && usemodels && md_tilehasmodel(s->picnum) >= 0) {
                     t->cstat &= ~4;
                     break;
                 }
+#endif
 
                 k = (((t->ang+3072+128-a)&2047)>>8)&7;
                 if(k>4)

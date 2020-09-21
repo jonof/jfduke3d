@@ -132,7 +132,9 @@ int loadpheader(char spot,struct savehead *saveh)
     if (waloff[TILE_LOADSHOT] == 0) allocache((void **)&waloff[TILE_LOADSHOT],320*200,&walock[TILE_LOADSHOT]);
     tilesizx[TILE_LOADSHOT] = 200; tilesizy[TILE_LOADSHOT] = 320;
     if (kdfread((char *)waloff[TILE_LOADSHOT],320,200,fil) != 200) goto corrupt;
+#if USE_POLYMOST && USE_OPENGL
     invalidatetile(TILE_LOADSHOT,0,255);
+#endif
 
     kclose(fil);
 
@@ -246,7 +248,9 @@ int loadplayer(signed char spot)
     if (waloff[TILE_LOADSHOT] == 0) allocache((void **)&waloff[TILE_LOADSHOT],320*200,&walock[TILE_LOADSHOT]);
     tilesizx[TILE_LOADSHOT] = 200; tilesizy[TILE_LOADSHOT] = 320;
     if (kdfread((char *)waloff[TILE_LOADSHOT],320,200,fil) != 200) goto corrupt;
+#if USE_POLYMOST && USE_OPENGL
     invalidatetile(TILE_LOADSHOT,0,255);
+#endif
 
     if (kdfread(&numwalls,2,1,fil) != 1) goto corrupt;
     if (kdfread(&wall[0],sizeof(walltype),MAXWALLS,fil) != MAXWALLS) goto corrupt;
@@ -2526,12 +2530,14 @@ if (PLUTOPAK) {
                     if (vidsets[daz] != -1) continue;
                     if (validmode[day].bpp == 8) {
                         vidsets[dax++] = 8|((validmode[day].fs&1)<<16);
+#if USE_POLYMOST
                         vidsets[dax++] = 0x20000|8|((validmode[day].fs&1)<<16);
+#endif
                     } else
                         vidsets[dax++] = 0x20000|validmode[day].bpp|((validmode[day].fs&1)<<16);
                 }
                 for (dax = 0; dax < (int)(sizeof(vidsets)/sizeof(vidsets[1])) && vidsets[dax] != -1; dax++)
-                    if (vidsets[dax] == (((getrendermode()>=2)<<17)|(fullscreen<<16)|bpp)) break;
+                    if (vidsets[dax] == ((POLYMOST_RENDERMODE_POLYMOST()<<17)|(fullscreen<<16)|bpp)) break;
                 if (dax < (int)(sizeof(vidsets)/sizeof(vidsets[1]))) newvidset = dax;
                 curvidset = newvidset;
                 
@@ -2720,7 +2726,10 @@ if (PLUTOPAK) {
                 int pxdim, pydim, pfs, pbpp, prend;
                 int nxdim, nydim, nfs, nbpp, nrend;
 
-                pxdim = xdim; pydim = ydim; pbpp = bpp; pfs = fullscreen; prend = getrendermode();
+                pxdim = xdim; pydim = ydim; pbpp = bpp; pfs = fullscreen;
+#if USE_POLYMOST
+                prend = getrendermode();
+#endif
                 nxdim = (newvidmode==validmodecnt)?xdim:validmode[newvidmode].xdim;
                 nydim = (newvidmode==validmodecnt)?ydim:validmode[newvidmode].ydim;
                 nfs   = newfullscreen;
@@ -2729,12 +2738,16 @@ if (PLUTOPAK) {
 
                 if (setgamemode(nfs, nxdim, nydim, nbpp) < 0) {
                     if (setgamemode(pfs, pxdim, pydim, pbpp) < 0) {
+#if USE_POLYMOST
                         setrendermode(prend);
+#endif
                         gameexit("Failed restoring old video mode.");
                     } else onvideomodechange(pbpp > 8);
                 } else onvideomodechange(nbpp > 8);
                 vscrn();
+#if USE_POLYMOST
                 setrendermode(nrend);
+#endif
 
                 curvidmode = newvidmode; curvidset = newvidset;
                 changesmade = 0;
@@ -4325,7 +4338,7 @@ void palto(unsigned char r, unsigned char g, unsigned char b,int e)
     int tc;
 
     setpalettefade(r,g,b,e&127);
-    if (getrendermode() >= 3) pus = pub = NUMPAGES; // JBF 20040110: redraw the status bar next time
+    if (POLYMOST_RENDERMODE_POLYGL()) pus = pub = NUMPAGES; // JBF 20040110: redraw the status bar next time
     if ((e&128) == 0) {
         nextpage();
         for (tc = totalclock; totalclock < tc + 4; handleevents(), getpackets() );
@@ -4826,7 +4839,9 @@ void playanm(const char *fn,char t)
         else                           ototalclock += 10;
 
         waloff[TILE_ANIM] = (intptr_t)(ANIM_DrawFrame(i));
+#if USE_POLYMOST && USE_OPENGL
         invalidatetile(TILE_ANIM, 0, 1<<4);  // JBF 20031228
+#endif
         clearview(0);
         rotatesprite(0<<16,0<<16,65536L,512,TILE_ANIM,0,0,2+4+8+16+64, 0,0,xdim-1,ydim-1);
         nextpage();

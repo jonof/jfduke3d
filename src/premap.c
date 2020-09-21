@@ -45,11 +45,15 @@ static void tloadtile(short tilenume, char type)
             j = tilenume + (picanm[tilenume]&63);
         }
         for (;i<=j;i++) {
+#if USE_POLYMOST && USE_OPENGL
             if (useprecache) polymost_precache(tilenume, 0, type);
+#endif
             gotpic[i>>3] |= pow2char[i&7];
         }
     } else {
+#if USE_POLYMOST && USE_OPENGL
         if (useprecache) polymost_precache(tilenume, 0, type);
+#endif
         gotpic[tilenume>>3] |= pow2char[tilenume&7];
     }
 }
@@ -281,10 +285,12 @@ void cacheit(void)
     unsigned int starttime, endtime;
     int done, total, percent;
     int lastdone = -1, lasttotal = -1, lastpercent = -1, lastclock;
-    
+
     starttime = getticks();
+#if USE_POLYMOST && USE_OPENGL
     polymost_precache_begin();
-    
+#endif
+
     precachenecessarysounds();
 
     cachegoodsprites();
@@ -317,8 +323,9 @@ void cacheit(void)
         }
     }
 
+#if USE_POLYMOST && USE_OPENGL
     if (useprecache) {
-    int cycles = 0;
+        int cycles = 0;
     lastclock = totalclock;
         while (polymost_precache_run(&done, &total)) {
         if (total == 0) {
@@ -343,9 +350,10 @@ void cacheit(void)
         lastclock = totalclock;
 
         sprintf(buf,"Loading textures ... %d%%\n",percent);
-        dofrontscreens(buf);
+            dofrontscreens(buf);
+        }
     }
-    }
+#endif
 
     j = 0;
     for(i=0;i<MAXTILES;i++) {
@@ -378,7 +386,9 @@ void xyzmirror(short i,short wn)
 
     setviewback();
     squarerotatetile(wn);
+#if USE_POLYMOST && USE_OPENGL
     invalidatetile(wn,-1,255);
+#endif
 }
 
 void vscrn(void)

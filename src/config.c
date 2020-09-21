@@ -575,10 +575,12 @@ int32 CONFIG_ReadSetup( void )
 #ifdef RENDERTYPEWIN
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "MaxRefreshFreq", (int32*)&maxrefreshfreq);
 #endif
+#if USE_POLYMOST && USE_OPENGL
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLTextureMode", &gltexfiltermode);
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLAnisotropy", &glanisotropy);
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLUseTextureCompr", &glusetexcompr);
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLUseCompressedTextureCache", &glusetexcache);
+#endif
 
     SCRIPT_GetNumber( scripthandle, "Setup", "ForceSetup",&ForceSetup);
     SCRIPT_GetNumber( scripthandle, "Misc", "Executions",&ud.executions); ud.executions++;
@@ -660,10 +662,12 @@ void CONFIG_WriteSetup( void )
 #ifdef RENDERTYPEWIN
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "MaxRefreshFreq",maxrefreshfreq,false,false);
 #endif
+#if USE_POLYMOST && USE_OPENGL
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLTextureMode",gltexfiltermode,false,false);
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLAnisotropy",glanisotropy,false,false);
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLUseTextureCompr",glusetexcompr,false,false);
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLUseCompressedTextureCache", glusetexcache,false,false);
+#endif
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenSize",ud.screen_size,false,false);
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenGamma",ud.brightness,false,false);
 

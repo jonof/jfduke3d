@@ -1996,7 +1996,9 @@ int ExtInit(void)
 	if (loadsetup("build.cfg") < 0) buildputs("Configuration file not found, using defaults.\n"), rv = 1;
 	memcpy((void *)buildkeys,(void *)keys,NUMBUILDKEYS);   //Trick to make build use setup.dat keys
 
+#if USE_POLYMOST && USE_OPENGL
 	polymosttexfullbright = 240;
+#endif
 
         if (initengine()) {
 		wm_msgbox("Build Engine Initialisation Error",
