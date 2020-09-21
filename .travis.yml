@@ -1,0 +1,42 @@
+language: cpp
+
+env:
+  global:
+    - USE_ASM=0
+  jobs:
+    - USE_POLYMOST=0 USE_OPENGL=0
+    - USE_POLYMOST=0 USE_OPENGL=1
+    - USE_POLYMOST=1 USE_OPENGL=0
+    - USE_POLYMOST=1 USE_OPENGL=1
+
+os:
+  - linux
+  - windows
+
+arch:
+  - amd64
+  - arm64
+
+addons:
+  apt:
+    packages:
+      - libsdl2-dev
+
+before_script:
+  - |
+    if [ "$TRAVIS_OS_NAME" = "windows" ]; then
+      echo USE_POLYMOST=$USE_POLYMOST > Makefile.msvcuser
+      echo USE_OPENGL=$USE_OPENGL >> Makefile.msvcuser
+      echo USE_ASM=$USE_ASM >> Makefile.msvcuser
+    fi
+
+script:
+  - |
+    if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+      make all
+    fi
+  - |
+    if [ "$TRAVIS_OS_NAME" = "windows" ]; then
+      vcvarsall='C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat'
+      cmd //c "$vcvarsall" $TRAVIS_CPU_ARCH '&&' nmake //f Makefile.msvc all
+    fi

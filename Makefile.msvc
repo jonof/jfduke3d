@@ -156,7 +156,7 @@ jfaudiolib: AlwaysBuild
 	cd "$(MAKEDIR)"
 
 $(SRC)\version-auto.c: AlwaysBuild
-	powershell tools\generateversion.ps1 > $@
+	cmd /c tools\generateversion.cmd > $@
 
 AlwaysBuild: ;
 $(ELIB)\$(EDITORLIB): editorlib ;
