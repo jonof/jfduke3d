@@ -14,7 +14,7 @@
 RELEASE ?= 1
 
 # Base path of app installation
-PREFIX ?= /usr/local/share/games/jfduke3d
+DATADIR ?= /usr/local/share/games/jfduke3d
 
 # Engine source code path
 EROOT ?= jfbuild
@@ -146,7 +146,7 @@ OURCFLAGS+= $(BUILDCFLAGS)
 LIBS+= $(BUILDLIBS)
 
 ifneq ($(PLATFORM),WINDOWS)
-	OURCFLAGS+= -DPREFIX=\"$(PREFIX)\"
+	OURCFLAGS+= -DDATADIR=\"$(DATADIR)\"
 endif
 
 .PHONY: clean all engine $(ELIB)/$(ENGINELIB) $(ELIB)/$(EDITORLIB) $(AUDIOLIBROOT)/$(JFAUDIOLIB)
