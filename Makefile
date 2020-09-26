@@ -13,7 +13,7 @@
 # Debugging options
 RELEASE ?= 1
 
-# Base path of app installation
+# Path where game data is installed
 DATADIR ?= /usr/local/share/games/jfduke3d
 
 # Engine source code path

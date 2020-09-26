@@ -1914,9 +1914,9 @@ int ExtInit(void)
 
 #if defined(DATADIR)
     {
-        const char *prefixdir = DATADIR;
-        if (prefixdir && prefixdir[0]) {
-            addsearchpath(prefixdir);
+        const char *datadir = DATADIR;
+        if (datadir && datadir[0]) {
+            addsearchpath(datadir);
         }
     }
 #endif
