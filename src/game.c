@@ -7530,13 +7530,13 @@ void backtomenu(void)
 
 int shareware = 0;
 int gametype = 0;
+const char *gameeditionname = "Unknown edition";
 
 int app_main(int argc, char const * const argv[])
 {
     int i, j, k, l;
     int configloaded;
     struct grpfile *gamegrp = NULL;
-    const char *gamegrptitle = NULL;
 
 #ifdef RENDERTYPEWIN
     if (win_checkinstance()) {
@@ -7730,7 +7730,7 @@ int app_main(int argc, char const * const argv[])
     if (gamegrp) {
         Bstrcpy(duke3dgrp, gamegrp->name);
         gametype = gamegrp->game;
-        gamegrptitle = gamegrp->ref->name;  // Points to static data, so won't be lost in FreeGroups().
+        gameeditionname = gamegrp->ref->name;  // Points to static data, so won't be lost in FreeGroups().
     }
     if (gametype == GAMENAM) {
         strcpy(defaultconfilename, "nam.con");
@@ -7761,11 +7761,6 @@ int app_main(int argc, char const * const argv[])
             free(CommandGrps);
             CommandGrps = s;
         }
-    }
-
-    if (gamegrptitle) {
-        sprintf(buf, "JFDuke3D: %s", gamegrptitle);
-        wm_setapptitle(buf);
     }
 
     RegisterShutdownFunction( Shutdown );
@@ -7889,6 +7884,8 @@ if (VOLUMEONE) {
 //    getpackets();
 
     MAIN_LOOP_RESTART:
+
+    wm_setwindowtitle(gameeditionname);
 
     if(ud.warp_on == 0)
         Logo();

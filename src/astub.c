@@ -247,13 +247,7 @@ void ExtLoadMap(const char *mapname)
 	int sky=0;
 	int j;
 
-	char title[256];
-	Bsprintf(title,
-#ifndef __APPLE__
-			"BUILD Editor for JFDuke3D - "
-#endif
-			"%s", mapname);
-	wm_setapptitle(title);
+	wm_setwindowtitle(mapname);
 
 	// PreCache Wall Tiles
 	for(j=0;j<numwalls;j++)
@@ -334,13 +328,7 @@ void ExtPreSaveMap(void)
 
 void ExtSaveMap(const char *mapname)
 {
-	char title[256];
-	Bsprintf(title,
-#ifndef __APPLE__
-			 "BUILD Editor for JFDuke3D - "
-#endif
-			 "%s", mapname);
-	wm_setapptitle(title);
+	wm_setwindowtitle(mapname);
 
 	saveboard("backup.map",&posx,&posy,&posz,&ang,&cursectnum);
 }
@@ -1873,8 +1861,6 @@ void Keys2d(void)
 
 }// end key2d
 
-
-char *startwin_labeltext = "Starting Build Editor for Duke Nukem 3D...";
 
 #define TRUE (1)
 #define FALSE (0)

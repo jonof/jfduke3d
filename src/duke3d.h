@@ -40,6 +40,7 @@ extern "C" {
 #include "grpscan.h"
 
 extern int conversion,shareware,gametype;
+extern const char *gameeditionname;
 
 #define GAMEDUKE 0
 #define GAMENAM 1

@@ -1578,6 +1578,18 @@ if (VOLUMEONE) {
 
      resettimevars();  // Here we go
 
+    if (g&MODE_GAME) {
+        char windowtitle[256];
+        if( boardfilename[0] != 0 && ud.level_number == 7 && ud.volume_number == 0 ) {
+            Bsnprintf(windowtitle, sizeof(windowtitle), "User map: %s - %s", boardfilename, gameeditionname);
+        } else {
+            Bsnprintf(windowtitle, sizeof(windowtitle), "%s - %s",
+                level_names[(ud.volume_number*11) + ud.level_number], gameeditionname);
+        }
+        windowtitle[sizeof(windowtitle)-1] = 0;
+        wm_setwindowtitle(windowtitle);
+    }
+
     return 0;
 }
 
