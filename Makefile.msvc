@@ -36,7 +36,7 @@ EDITORLIB=build.lib
 
 flags_cl=
 flags_rc=
-!if "$(PLATFORM)" == "X64"
+!if "$(PLATFORM)" == "X64" || "$(PLATFORM)" == "x64"
 flags_rc=/d_M_AMD64
 USE_ASM=0
 !elseif "$(PLATFORM)" == "ARM"
