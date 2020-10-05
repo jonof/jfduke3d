@@ -1659,8 +1659,6 @@ void coolgaugetext(short snum)
 
      ss = ud.screen_size; if (ss < 4) return;
 
-     if (POLYMOST_RENDERMODE_POLYGL()) pus = NUMPAGES;  // JBF 20040101: always redraw in GL
-
      if ( ud.multimode > 1 && ud.coop != 1 )
      {
           if (pus)
@@ -1724,6 +1722,7 @@ void coolgaugetext(short snum)
                 else if ((unsigned int)j != 0x80000000) minitext(284-30-o,180,"OFF",2,10+16 + 256);
                 if (p->inven_icon >= 6) minitext(284-35-o,180,"AUTO",2,10+16 + 256);
           }
+          pus = 0;
           return;
      }
 
@@ -1778,6 +1777,12 @@ void coolgaugetext(short snum)
      //15 - update kills
      //16 - update FREEZE_WEAPON ammo
 #define SBY (200-tilesizy[BOTTOMSTATUSBAR])
+     if (numpages == 127)
+     {
+          // When the frame is non-persistent, redraw all elements so that all the permanent
+          // sprites get cleanly evicted.
+          u = -1;
+     }
      if (u == -1)
      {
           patchstatusbar(0,0,320,200);
@@ -2869,7 +2874,7 @@ void displayrooms(short snum,int smoothratio)
 
     p = &ps[snum];
 
-    if(pub > 0 || POLYMOST_RENDERMODE_POLYGL()) // JBF 20040101: redraw background always
+    if(pub > 0)
     {
         drawbackground();
         pub = 0;

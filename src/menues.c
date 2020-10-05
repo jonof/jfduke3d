@@ -4340,7 +4340,6 @@ void palto(unsigned char r, unsigned char g, unsigned char b,int e)
     int tc;
 
     setpalettefade(r,g,b,e&127);
-    if (POLYMOST_RENDERMODE_POLYGL()) pus = pub = NUMPAGES; // JBF 20040110: redraw the status bar next time
     if ((e&128) == 0) {
         nextpage();
         for (tc = totalclock; totalclock < tc + 4; handleevents(), getpackets() );
