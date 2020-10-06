@@ -283,8 +283,6 @@ void cacheit(void)
     int i,j,k;
     int tc;
     unsigned int starttime, endtime;
-    int done, total, percent;
-    int lastdone = -1, lasttotal = -1, lastpercent = -1, lastclock;
 
     starttime = getticks();
 #if USE_POLYMOST && USE_OPENGL
@@ -326,30 +324,36 @@ void cacheit(void)
 #if USE_POLYMOST && USE_OPENGL
     if (useprecache) {
         int cycles = 0;
-    lastclock = totalclock;
+        int done, total, percent;
+        int lastdone = -1, lasttotal = -1, lastpercent = -1, lastclock, firstclock;
+
+        firstclock = lastclock = totalclock;
         while (polymost_precache_run(&done, &total)) {
-        if (total == 0) {
-            break;
-        }
-        if (done == lastdone && total == lasttotal && (cycles++ & 1023) > 0) {
-            continue;
-        }
+            if (total == 0) {
+                break;
+            }
+            if (done == lastdone && total == lasttotal && (cycles++ & 1023) > 0) {
+                continue;
+            }
+            handleevents();
+            getpackets();
 
-        lastdone = done;
-        lasttotal = total;
-        percent = done * 100 / total;
+            if (totalclock - firstclock < TICRATE*5) {
+                continue;
+            }
 
-        handleevents();
-        getpackets();
+            lastdone = done;
+            lasttotal = total;
+            percent = done * 100 / total;
 
-        if (percent == lastpercent || lastclock - totalclock == 0) {
-            continue;
-        }
+            if (percent == lastpercent || totalclock - lastclock < TICRATE/10) {
+                continue;
+            }
 
-        lastpercent = percent;
-        lastclock = totalclock;
+            lastpercent = percent;
+            lastclock = totalclock;
 
-        sprintf(buf,"Loading textures ... %d%%\n",percent);
+            sprintf(buf,"Loading textures ... %d%%\n",percent);
             dofrontscreens(buf);
         }
     }
@@ -357,14 +361,14 @@ void cacheit(void)
 
     j = 0;
     for(i=0;i<MAXTILES;i++) {
-    if(gotpic[i>>3] & pow2char[i&7]) {
-        if (waloff[i] == 0)
-            loadtile((short)i);
+        if(gotpic[i>>3] & pow2char[i&7]) {
+            if (waloff[i] == 0)
+                loadtile((short)i);
 
-        j++;
-    } else continue;
+            j++;
+        } else continue;
 
-    if((j&7) == 0) { handleevents(); getpackets(); }
+        if((j&7) == 0) { handleevents(); getpackets(); }
     }
 
     clearbufbyte(gotpic,sizeof(gotpic),0L);
