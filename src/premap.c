@@ -1041,16 +1041,16 @@ void newgame(char vn,char ln,char sk)
 
         flushperms();
         setview(0,0,xdim-1,ydim-1);
-        clearview(0L);
+        clearallviews(0L);
         nextpage();
 
         playanm("vol41a.anm",6);
-        clearview(0L);
+        clearallviews(0L);
         nextpage();
 
         playanm("vol42a.anm",7);
         playanm("vol43a.anm",9);
-        clearview(0L);
+        clearallviews(0L);
         nextpage();
 
         FX_StopAllSounds();
@@ -1339,7 +1339,7 @@ void dofrontscreens(const char *statustext)
             vscrn();
         }
 
-        clearview(0L);
+        clearallviews(0L);
         rotatesprite(320<<15,200<<15,65536L,0,LOADSCREEN,0,0,2+8+64,0,0,xdim-1,ydim-1);
 
         if( boardfilename[0] != 0 && ud.level_number == 7 && ud.volume_number == 0 )
@@ -1367,7 +1367,7 @@ void dofrontscreens(const char *statustext)
     else
     {
         if (!statustext) {
-            clearview(0L);
+            clearallviews(0L);
             setgamepalette(&ps[myconnectindex], palette, 0);    // JBF 20040308
         }
 
@@ -1579,7 +1579,7 @@ if (VOLUMEONE) {
 
      palto(0,0,0,0);
      vscrn();
-     clearview(0L);
+     clearallviews(0L);
      drawbackground();
      displayrooms(myconnectindex,65536);
 

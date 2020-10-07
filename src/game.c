@@ -1643,6 +1643,7 @@ void coolgaugetext(short snum)
 {
      struct player_struct *p;
      int i, j, o, ss, u;
+     short inv_percent = -1;
      char c, permbit;
 
      p = &ps[snum];
@@ -1744,13 +1745,17 @@ void coolgaugetext(short snum)
      if (sbar.holoduke_on != p->holoduke_on) { sbar.holoduke_on = p->holoduke_on; u |= (4096+8192); }
      if (sbar.jetpack_on != p->jetpack_on) { sbar.jetpack_on = p->jetpack_on; u |= (4096+8192); }
      if (sbar.heat_on != p->heat_on) { sbar.heat_on = p->heat_on; u |= (4096+8192); }
-     if (sbar.firstaid_amount != p->firstaid_amount) { sbar.firstaid_amount = p->firstaid_amount; u |= 8192; }
-     if (sbar.steroids_amount != p->steroids_amount) { sbar.steroids_amount = p->steroids_amount; u |= 8192; }
-     if (sbar.holoduke_amount != p->holoduke_amount) { sbar.holoduke_amount = p->holoduke_amount; u |= 8192; }
-     if (sbar.jetpack_amount != p->jetpack_amount) { sbar.jetpack_amount = p->jetpack_amount; u |= 8192; }
-     if (sbar.heat_amount != p->heat_amount) { sbar.heat_amount = p->heat_amount; u |= 8192; }
-     if (sbar.scuba_amount != p->scuba_amount) { sbar.scuba_amount = p->scuba_amount; u |= 8192; }
-     if (sbar.boot_amount != p->boot_amount) { sbar.boot_amount = p->boot_amount; u |= 8192; }
+     switch(p->inven_icon)
+     {
+          case 1: inv_percent = p->firstaid_amount; break;
+          case 2: inv_percent = ((p->steroids_amount+3)>>2); break;
+          case 3: inv_percent = ((p->holoduke_amount+15)/24); break;
+          case 4: inv_percent = ((p->jetpack_amount+15)>>4); break;
+          case 5: inv_percent = p->heat_amount/12; break;
+          case 6: inv_percent = ((p->scuba_amount+63)>>6); break;
+          case 7: inv_percent = (p->boot_amount>>1); break;
+     }
+     if (inv_percent >= 0 && sbar.inv_percent != inv_percent) { sbar.inv_percent = inv_percent; u |= 8192; }
      if (u == 0) return;
 
      //0 - update health
@@ -1861,17 +1866,7 @@ void coolgaugetext(short snum)
                 }
                 if (u&8192)
                 {
-                     switch(p->inven_icon)
-                     {
-                          case 1: i = p->firstaid_amount; break;
-                          case 2: i = ((p->steroids_amount+3)>>2); break;
-                          case 3: i = ((p->holoduke_amount+15)/24); break;
-                          case 4: i = ((p->jetpack_amount+15)>>4); break;
-                          case 5: i = p->heat_amount/12; break;
-                          case 6: i = ((p->scuba_amount+63)>>6); break;
-                          case 7: i = (p->boot_amount>>1); break;
-                     }
-                     invennum(284-30-o,SBY+28,(char)i,0,10+permbit);
+                     invennum(284-30-o,SBY+28,(char)inv_percent,0,10+permbit);
                 }
           }
      }
@@ -7168,7 +7163,7 @@ void Logo(void)
     KB_ClearKeysDown(); // JBF
 
     setview(0,0,xdim-1,ydim-1);
-    clearview(0L);
+    clearallviews(0L);
     IFISSOFTMODE palto(0,0,0,63);
 
     flushperms();
@@ -7189,7 +7184,7 @@ if (VOLUMEALL) {
         KB_ClearKeysDown(); // JBF
     }
 
-    clearview(0L);
+    clearallviews(0L);
     nextpage();
 }
 
@@ -7198,6 +7193,7 @@ if (VOLUMEALL) {
         fadepal(0,0,0, 0,64,7);
         //ps[myconnectindex].palette = drealms;
         //palto(0,0,0,63);
+        clearallviews(0L);
         setgamepalette(&ps[myconnectindex], drealms, 3);    // JBF 20040308
         rotatesprite(0,0,65536L,0,DREALMS,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
         nextpage();
@@ -7218,7 +7214,7 @@ if (VOLUMEALL) {
     }
 
     fadepal(0,0,0, 0,64,7);
-    clearview(0L);
+    clearallviews(0L);
     nextpage();
 
     //ps[myconnectindex].palette = titlepal;
@@ -7232,7 +7228,7 @@ if (VOLUMEALL) {
     uinfo.button0 = uinfo.button1 = FALSE;
     KB_FlushKeyboardQueue();
     do {
-        clearview(0);
+        clearallviews(0);
         rotatesprite(0,0,65536L,0,BETASCREEN,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
 
         if( totalclock > 120 && totalclock < (120+60) )
@@ -7306,7 +7302,7 @@ if (VOLUMEALL) {
     waitforeverybody();
 
     flushperms();
-    clearview(0L);
+    clearallviews(0L);
     nextpage();
 
     //ps[myconnectindex].palette = palette;
@@ -7314,7 +7310,7 @@ if (VOLUMEALL) {
     sound(NITEVISION_ONOFF);
 
     //palto(0,0,0,0);
-    clearview(0L);
+    clearallviews(0L);
 }
 
 void loadtmb(void)
@@ -7884,7 +7880,7 @@ if (VOLUMEONE) {
 
     if(ud.warp_on > 1 && ud.multimode < 2)
     {
-        clearview(0L);
+        clearallviews(0L);
         //ps[myconnectindex].palette = palette;
         //palto(0,0,0,0);
     setgamepalette(&ps[myconnectindex], palette, 0);    // JBF 20040308
@@ -9116,7 +9112,7 @@ void dobonus(char bonusonly)
 
     fadepal(0,0,0, 0,64,7);
     setview(0,0,xdim-1,ydim-1);
-    clearview(0L);
+    clearallviews(0L);
     nextpage();
     flushperms();
 
@@ -9133,8 +9129,8 @@ void dobonus(char bonusonly)
             if(ud.lockout == 0)
             {
                 setgamepalette(&ps[myconnectindex], endingpal, 3);
-                clearview(0L);
-                rotatesprite(0,50<<16,65536L,0,VICTORY1,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+                clearallviews(0L);
+                rotatesprite(0,50<<16,65536L,0,VICTORY1,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
                 nextpage();
                 //ps[myconnectindex].palette = endingpal;
                 fadepal(0,0,0, 63,0,-1);
@@ -9145,15 +9141,15 @@ void dobonus(char bonusonly)
                 totalclock = 0; tinc = 0;
                 while( 1 )
                 {
-                    clearview(0L);
-                    rotatesprite(0,50<<16,65536L,0,VICTORY1,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+                    clearallviews(0L);
+                    rotatesprite(0,50<<16,65536L,0,VICTORY1,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
 
                     // boss
                     if( totalclock > 390 && totalclock < 780 )
                         for(t=0;t<35;t+=5) if( bossmove[t+2] && (totalclock%390) > bossmove[t] && (totalclock%390) <= bossmove[t+1] )
                     {
                         if(t==10 && bonuscnt == 1) { sound(SHOTGUN_FIRE);sound(SQUISHED); bonuscnt++; }
-                        rotatesprite(bossmove[t+3]<<16,bossmove[t+4]<<16,65536L,0,bossmove[t+2],0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+                        rotatesprite(bossmove[t+3]<<16,bossmove[t+4]<<16,65536L,0,bossmove[t+2],0,0,2+8+16+64,0,0,xdim-1,ydim-1);
                     }
 
                     // Breathe
@@ -9161,7 +9157,7 @@ void dobonus(char bonusonly)
                     {
                         if(totalclock >= 750)
                         {
-                            rotatesprite(86<<16,59<<16,65536L,0,VICTORY1+8,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+                            rotatesprite(86<<16,59<<16,65536L,0,VICTORY1+8,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
                             if(totalclock >= 750 && bonuscnt == 2) { sound(DUKETALKTOBOSS); bonuscnt++; }
                         }
                         for(t=0;t<20;t+=5)
@@ -9172,7 +9168,7 @@ void dobonus(char bonusonly)
                                     sound(BOSSTALKTODUKE);
                                     bonuscnt++;
                                 }
-                                rotatesprite(breathe[t+3]<<16,breathe[t+4]<<16,65536L,0,breathe[t+2],0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+                                rotatesprite(breathe[t+3]<<16,breathe[t+4]<<16,65536L,0,breathe[t+2],0,0,2+8+16+64,0,0,xdim-1,ydim-1);
                         }
                     }
 
@@ -9208,14 +9204,14 @@ void dobonus(char bonusonly)
             break;
         case 1:
             stopmusic();
-            clearview(0L);
+            clearallviews(0L);
             nextpage();
 
             if(ud.lockout == 0)
             {
                 playanm("cineov2.anm",1);
                 KB_FlushKeyBoardQueue();
-                clearview(0L);
+                clearallviews(0L);
                 nextpage();
             }
 
@@ -9245,20 +9241,20 @@ void dobonus(char bonusonly)
             setview(0,0,xdim-1,ydim-1);
 
             stopmusic();
-            clearview(0L);
+            clearallviews(0L);
             nextpage();
 
             if(ud.lockout == 0)
             {
                 KB_FlushKeyboardQueue();
                 playanm("vol4e1.anm",8);
-                clearview(0L);
+                clearallviews(0L);
                 nextpage();
                 playanm("vol4e2.anm",10);
-                clearview(0L);
+                clearallviews(0L);
                 nextpage();
                 playanm("vol4e3.anm",11);
-                clearview(0L);
+                clearallviews(0L);
                 nextpage();
             }
 
@@ -9270,7 +9266,7 @@ void dobonus(char bonusonly)
             //ps[myconnectindex].palette = palette;
             setgamepalette(&ps[myconnectindex], palette, 3);    // JBF 20040308
             IFISSOFTMODE palto(0,0,0,63);
-            clearview(0L);
+            clearallviews(0L);
             menutext(160,60,0,0,"THANKS TO ALL OUR");
             menutext(160,60+16,0,0,"FANS FOR GIVING");
             menutext(160,60+16+16,0,0,"US BIG HEADS.");
@@ -9284,14 +9280,14 @@ void dobonus(char bonusonly)
 
             fadepal(0,0,0, 0,64,3);
 
-            clearview(0L);
+            clearallviews(0L);
             nextpage();
 
             playanm("DUKETEAM.ANM",4);
 
             userack();
 
-            clearview(0L);
+            clearallviews(0L);
             nextpage();
             IFISSOFTMODE palto(0,0,0,63);
 
@@ -9304,7 +9300,7 @@ void dobonus(char bonusonly)
         case 2:
 
             stopmusic();
-            clearview(0L);
+            clearallviews(0L);
             nextpage();
             if(ud.lockout == 0)
             {
@@ -9313,7 +9309,7 @@ void dobonus(char bonusonly)
                 KB_FlushKeyBoardQueue();
                 ototalclock = totalclock+200;
                 while(totalclock < ototalclock) { handleevents(); getpackets(); }
-                clearview(0L);
+                clearallviews(0L);
                 nextpage();
 
                 FX_StopAllSounds();
@@ -9359,7 +9355,7 @@ void dobonus(char bonusonly)
                 clearsoundlocks();
                 sound(ENDSEQVOL3SND4);
 
-                clearview(0l);
+                clearallviews(0l);
                 nextpage();
 
                 playanm("DUKETEAM.ANM",4);
@@ -9372,7 +9368,7 @@ void dobonus(char bonusonly)
 
             KB_FlushKeyBoardQueue();
 
-            clearview(0L);
+            clearallviews(0L);
 
             break;
     }
@@ -9408,11 +9404,11 @@ void dobonus(char bonusonly)
 
 
         t = 0;
-        minitext(23,80,"   NAME                                           KILLS",8,2+8+16+128);
+        minitext(23,80,"   NAME                                           KILLS",8,2+8+16);
         for(i=0;i<playerswhenstarted;i++)
         {
             sprintf(buf,"%-4d",i+1);
-            minitext(92+(i*23),80,buf,3,2+8+16+128);
+            minitext(92+(i*23),80,buf,3,2+8+16);
         }
 
         for(i=0;i<playerswhenstarted;i++)
@@ -9420,21 +9416,21 @@ void dobonus(char bonusonly)
             xfragtotal = 0;
             sprintf(buf,"%d",i+1);
 
-            minitext(30,90+t,buf,0,2+8+16+128);
-            minitext(38,90+t,ud.user_name[i],ps[i].palookup,2+8+16+128);
+            minitext(30,90+t,buf,0,2+8+16);
+            minitext(38,90+t,ud.user_name[i],ps[i].palookup,2+8+16);
 
             for(y=0;y<playerswhenstarted;y++)
             {
                 if(i == y)
                 {
                     sprintf(buf,"%-4d",ps[y].fraggedself);
-                    minitext(92+(y*23),90+t,buf,2,2+8+16+128);
+                    minitext(92+(y*23),90+t,buf,2,2+8+16);
                     xfragtotal -= ps[y].fraggedself;
                 }
                 else
                 {
                     sprintf(buf,"%-4d",frags[i][y]);
-                    minitext(92+(y*23),90+t,buf,0,2+8+16+128);
+                    minitext(92+(y*23),90+t,buf,0,2+8+16);
                     xfragtotal += frags[i][y];
                 }
 
@@ -9446,7 +9442,7 @@ void dobonus(char bonusonly)
             }
 
             sprintf(buf,"%-4d",xfragtotal);
-            minitext(101+(8*23),90+t,buf,2,2+8+16+128);
+            minitext(101+(8*23),90+t,buf,2,2+8+16);
 
             t += 7;
         }
@@ -9461,10 +9457,10 @@ void dobonus(char bonusonly)
                 yfragtotal += frags[i][y];
             }
             sprintf(buf,"%-4d",yfragtotal);
-            minitext(92+(y*23),96+(8*7),buf,2,2+8+16+128);
+            minitext(92+(y*23),96+(8*7),buf,2,2+8+16);
         }
 
-        minitext(45,96+(8*7),"DEATHS",8,2+8+16+128);
+        minitext(45,96+(8*7),"DEATHS",8,2+8+16);
         nextpage();
 
         fadepal(0,0,0, 63,0,-7);
@@ -9497,8 +9493,8 @@ void dobonus(char bonusonly)
             break;
     }
 
-    clearview(0);
-    rotatesprite(0,0,65536L,0,BONUSSCREEN+gfx_offset,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+    clearallviews(0);
+    rotatesprite(0,0,65536L,0,BONUSSCREEN+gfx_offset,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
 
     menutext(160,20-6,0,0,lastmapname);
     menutext(160,36-6,0,0,"COMPLETED");
@@ -9547,8 +9543,8 @@ void dobonus(char bonusonly)
 
         if(ps[myconnectindex].gm&MODE_EOL)
         {
-            clearview(0);
-            rotatesprite(0,0,65536L,0,BONUSSCREEN+gfx_offset,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+            clearallviews(0);
+            rotatesprite(0,0,65536L,0,BONUSSCREEN+gfx_offset,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
 
             if( totalclock > (1000000000L) && totalclock < (1000000320L) )
             {
@@ -9578,11 +9574,11 @@ void dobonus(char bonusonly)
                     case 1:
                     case 4:
                     case 5:
-                        rotatesprite(199<<16,31<<16,65536L,0,BONUSSCREEN+3+gfx_offset,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+                        rotatesprite(199<<16,31<<16,65536L,0,BONUSSCREEN+3+gfx_offset,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
                         break;
                     case 2:
                     case 3:
-                       rotatesprite(199<<16,31<<16,65536L,0,BONUSSCREEN+4+gfx_offset,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+                       rotatesprite(199<<16,31<<16,65536L,0,BONUSSCREEN+4+gfx_offset,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
                        break;
                 }
             }
@@ -9593,10 +9589,10 @@ void dobonus(char bonusonly)
                 {
                     case 1:
                     case 3:
-                        rotatesprite(199<<16,31<<16,65536L,0,BONUSSCREEN+1+gfx_offset,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+                        rotatesprite(199<<16,31<<16,65536L,0,BONUSSCREEN+1+gfx_offset,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
                         break;
                     case 2:
-                        rotatesprite(199<<16,31<<16,65536L,0,BONUSSCREEN+2+gfx_offset,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+                        rotatesprite(199<<16,31<<16,65536L,0,BONUSSCREEN+2+gfx_offset,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
                         break;
                 }
             }

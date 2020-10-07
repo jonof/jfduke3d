@@ -534,7 +534,7 @@ typedef struct
         short firstaid_amount, steroids_amount, holoduke_amount, jetpack_amount;
         short heat_amount, scuba_amount, boot_amount;
         short last_weapon, weapon_pos, kickback_pic;
-
+        short inv_percent;
 } STATUSBARTYPE;
 
 extern STATUSBARTYPE sbar;
