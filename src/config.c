@@ -214,7 +214,7 @@ void CONFIG_SetDefaults( void )
     UseMouse = 1;
     ud.mouseflip = 0;
     ud.runkey_mode = 0;
-    ud.statusbarscale = 100;
+    ud.statusbarscale = 8;
     ud.screen_size = 8;
     ud.screen_tilting = 1;
     ud.shadows = 1;

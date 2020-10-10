@@ -2437,10 +2437,10 @@ if (PLUTOPAK) {
                     case 2:
                         {
                             short sbs, sbsl;
-                            sbs = sbsl = scale(max(0,ud.statusbarscale-50),63,100-50);
+                            sbs = sbsl = scale(min(7,max(0,ud.statusbarscale-1)),63,7);
                             barsm(d+8,yy+7, (short *)&sbs,9,x==io,SHX(-5),PHX(-5));
                             if (x == io && sbs != sbsl) {
-                                sbs = scale(sbs,100-50,63)+50;
+                                sbs = 1+sbs/9;
                                 setstatusbarscale(sbs);
                             }
                         }

@@ -67,48 +67,55 @@ char firstdemofile[80] = { '\0' };
 static int netparam = 0;    // Index into argv of the first -net argument
 static int netsuccess = 0;  // Outcome of calling initmultiplayersparms().
 
-#if 0
-#define patchstatusbar(x1,y1,x2,y2)                                        \
-{                                                                          \
-    rotatesprite(0,(200-34)<<16,65536L,0,BOTTOMSTATUSBAR,4,0,10+16+64+128, \
-        scale(x1,xdim,320),scale(y1,ydim,200),                             \
-        scale(x2,xdim,320)-1,scale(y2,ydim,200)-1);                        \
-}
-#endif
 void setstatusbarscale(int sc)
 {
-    ud.statusbarscale = min(100,max(10,sc));
+    ud.statusbarscale = min(8,max(1,sc));
     vscrn();
-}
-static inline int sbarx(int x)
-{
-    if (ud.screen_size == 4) return scale(x<<16,ud.statusbarscale,100);
-    return (((320l<<16) - scale(320l<<16,ud.statusbarscale,100)) >> 1) + scale(x<<16,ud.statusbarscale,100);
-}
-static inline int sbary(int y)
-{
-    return ((200l<<16) - scale(200l<<16,ud.statusbarscale,100) + scale(y<<16,ud.statusbarscale,100));
 }
 static inline int sbarsc(int sc)
 {
-    return scale(sc,ud.statusbarscale,100);
+    return scale(sc,ud.statusbarscale,8);
+}
+static inline int sbarx(int x)
+{
+    if (ud.screen_size == 4) return sbarsc(x<<16);
+    return (((320l<<16) - sbarsc(320l<<16)) >> 1) + sbarsc(x<<16);
+}
+static inline int sbary(int y)
+{
+    return ((200l<<16) - sbarsc(200l<<16) + sbarsc(y<<16));
 }
 void patchstatusbar(int x1, int y1, int x2, int y2)
 {
-    int scl, tx, ty;
+    int ty;
     int clx1,cly1,clx2,cly2,clofx,clofy;
+    int barw;
 
-    scl = sbarsc(65536);
-    tx = sbarx(0); ty = sbary(200-tilesizy[BOTTOMSTATUSBAR]);
+    ty = tilesizy[BOTTOMSTATUSBAR];
 
-    clx1 = scale(scale(x1,xdim,320),ud.statusbarscale,100);
-    cly1 = scale(scale(y1,ydim,200),ud.statusbarscale,100);
-    clx2 = scale(scale(x2,xdim,320),ud.statusbarscale,100);
-    cly2 = scale(scale(y2,ydim,200),ud.statusbarscale,100);
-    clofx = (xdim - scale(xdim,ud.statusbarscale,100)) >> 1;
-    clofy = (ydim - scale(ydim,ud.statusbarscale,100));
+    if (x1 == 0 && y1 == 0 && x2 == 320 && y2 == 200)
+    {
+        clofx = clofy = 0;
+        clx1 = cly1 = 0;
+        clx2 = xdim; cly2 = ydim;
+    }
+    else
+    {
+        barw = sbarsc(scale(320<<16, ydim<<16, 200*pixelaspect));
+        clofx = ((xdim<<16) - barw)>>1;
+        clofy = (ydim<<16) - sbarsc(scale(200<<16, ydim, 200)) + 32768;
+        clx1 = sbarsc(scale(x1<<16, ydim<<16, 200*pixelaspect));
+        cly1 = sbarsc(scale(y1<<16, ydim, 200));
+        clx2 = sbarsc(scale(x2<<16, ydim<<16, 200*pixelaspect));
+        cly2 = sbarsc(scale(y2<<16, ydim, 200));
+        clx1 = (clx1 + clofx)>>16;
+        cly1 = (cly1 + clofy)>>16;
+        clx2 = (clx2 + clofx)>>16;
+        cly2 = (cly2 + clofy)>>16;
+    }
 
-    rotatesprite(tx,ty,scl,0,BOTTOMSTATUSBAR,4,0,10+16+64+128,clx1+clofx,cly1+clofy,clx2+clofx-1,cly2+clofy-1);
+    rotatesprite(sbarx(0),sbary(200-ty),sbarsc(65536),0,BOTTOMSTATUSBAR,4,0,
+                 10+16+64+128,clx1,cly1,clx2-1,cly2-1);
 }
 
 int recfilep,totalreccnt;
@@ -1805,7 +1812,7 @@ void coolgaugetext(short snum)
 
      if (u&1024)
      {
-          if (u != -1) patchstatusbar(196,SBY+17,219,SBY+17+11);
+          if (u != -1) patchstatusbar(196,SBY+17,220,SBY+17+11);
           if (p->curr_weapon != KNEE_WEAPON)
           {
                 if (p->curr_weapon == HANDREMOTE_WEAPON) i = HANDBOMB_WEAPON; else i = p->curr_weapon;
@@ -2483,7 +2490,7 @@ void displayrest(int smoothratio)
 
     // JBF 20040124: display level stats in screen corner
     if(ud.levelstats && (ps[myconnectindex].gm&MODE_MENU) == 0) {
-        i = (ud.screen_size <= 4)?0:scale(tilesizy[BOTTOMSTATUSBAR],ud.statusbarscale,100);
+        i = (ud.screen_size <= 4)?0:sbarsc(tilesizy[BOTTOMSTATUSBAR]);
 
         sprintf(buf,"Time: %d:%02d",
             (ps[myconnectindex].player_par/(26*60)),
@@ -2568,6 +2575,7 @@ void drawbackground(void)
 {
     short dapicnum;
     int x,y,x1,y1,x2,y2,rx;
+#define ROUND16(f) (((f)>>16)+(((f)&0x8000)>>15))
 
     flushperms();
 
@@ -2584,30 +2592,33 @@ void drawbackground(void)
     }
 
     y1 = 0; y2 = ydim;
-    if ( (ready2send && ps[myconnectindex].gm == MODE_GAME) || ud.recstat == 2 )
+    if( ready2send || (ps[myconnectindex].gm&MODE_GAME) || ud.recstat == 2 )
     {
-        if (ud.screen_size == 8)
-            y1 = scale(ydim,200-scale(tilesizy[BOTTOMSTATUSBAR],ud.statusbarscale,100),200);
-        else if(ud.coop != 1)
+        if(ud.coop != 1)
         {
             if (ud.multimode > 1) y1 += scale(ydim,8,200);
             if (ud.multimode > 4) y1 += scale(ydim,8,200);
         }
+        if (ud.screen_size >= 8)
+            y2 = ROUND16(scale(200<<16,ydim,200)-sbarsc(scale(tilesizy[BOTTOMSTATUSBAR]<<16,ydim,200)) + 32768);
     } else {
         // when not rendering a game, fullscreen wipe
-        for(y=y1;y<y2;y+=tilesizy[dapicnum])
+        for(y=0;y<ydim;y+=tilesizy[dapicnum])
             for(x=0;x<xdim;x+=tilesizx[dapicnum])
                 rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,0,0,xdim-1,ydim-1);
         return;
     }
-    y2 = scale(ydim,200-scale(tilesizy[BOTTOMSTATUSBAR],ud.statusbarscale,100),200);
 
-    if (ud.screen_size > 8) {
+    if(ud.screen_size > 8 || y1 > 0)
+    {
         // across top
         for (y=0; y<windowy1; y+=tilesizy[dapicnum])
             for (x=0; x<xdim; x+=tilesizx[dapicnum])
-                rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,0,y1,xdim-1,windowy1-1);
+                rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,0,0,xdim-1,windowy1-1);
+    }
 
+    if(ud.screen_size > 8)
+    {
         // sides
         rx = windowx2-windowx2%tilesizx[dapicnum];
         for (y=windowy1-windowy1%tilesizy[dapicnum]; y<windowy2; y+=tilesizy[dapicnum])
@@ -2624,17 +2635,22 @@ void drawbackground(void)
 
     // draw in the bits to the left and right of the status bar
     if (ud.screen_size >= 8) {
+        int cl, cr, barw;
+        barw = sbarsc(scale(320<<16,ydim<<16,200*pixelaspect));
         y1 = y2;
         y2 = ydim-1;
         x1 = 0;
         x2 = xdim-1;
+        cl = ((xdim<<16)-barw)>>17;
+        cr = ((xdim<<16)+barw)>>17;
         for(y=y1-y1%tilesizy[dapicnum]; y<y2; y+=tilesizy[dapicnum])
             for(x=0;x<x2; x+=tilesizx[dapicnum]) {
-                rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,x1,y1,x2,y2);
+                if (x<cl || x+tilesizx[dapicnum]>=cr)
+                    rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,x1,y1,x2,y2);
             }
     }
 
-     if(ud.screen_size > 8 && ((ready2send && ps[myconnectindex].gm == MODE_GAME) || ud.recstat == 2))
+     if(ud.screen_size > 8)
      {
           y = 0;
           if(ud.coop != 1)
@@ -2646,7 +2662,7 @@ void drawbackground(void)
           x1 = max(windowx1-4,0);
           y1 = max(windowy1-4,y);
           x2 = min(windowx2+4,xdim-1);
-          y2 = min(windowy2+4,scale(ydim,200-scale(tilesizy[BOTTOMSTATUSBAR],ud.statusbarscale,100),200)-1);
+          y2 = min(windowy2+4,scale(ydim,200-sbarsc(tilesizy[BOTTOMSTATUSBAR]),200)-1);
 
           for(y=y1+4;y<y2-4;y+=64)
           {
@@ -2845,7 +2861,7 @@ void displayrooms(short snum,int smoothratio)
 
     if(pub > 0 || POLYMOST_RENDERMODE_POLYGL()) // JBF 20040101: redraw background always
     {
-        if(ud.screen_size >= 8) drawbackground();
+        drawbackground();
         pub = 0;
     }
 
