@@ -5,7 +5,6 @@ env:
     - USE_ASM=0
   jobs:
     - USE_POLYMOST=0 USE_OPENGL=0
-    - USE_POLYMOST=0 USE_OPENGL=1
     - USE_POLYMOST=1 USE_OPENGL=0
     - USE_POLYMOST=1 USE_OPENGL=1
 
@@ -21,6 +20,7 @@ addons:
   apt:
     packages:
       - libsdl2-dev
+      - libgtk-3-dev
 
 before_script:
   - |
