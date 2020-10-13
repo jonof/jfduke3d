@@ -1644,7 +1644,7 @@ void coolgaugetext(short snum)
      struct player_struct *p;
      int i, j, o, ss, u;
      short inv_percent = -1;
-     char c, permbit;
+     char c;
 
      p = &ps[snum];
 
@@ -1688,7 +1688,7 @@ void coolgaugetext(short snum)
           if (p->curr_weapon == HANDREMOTE_WEAPON) i = HANDBOMB_WEAPON; else i = p->curr_weapon;
           digitalnumber(53,200-17,p->ammo_amount[i],-16,10+16);
 
-          o = 158; permbit = 0;
+          o = 158;
           if (p->inven_icon)
           {
                 switch(p->inven_icon)
@@ -1702,9 +1702,9 @@ void coolgaugetext(short snum)
                      case 7: i = BOOT_ICON; break;
                      default: i = -1;
                 }
-                if (i >= 0) rotatesprite(sbarx(231-o),sbary(200-21),sbarsc(65536L),0,i,0,0,10+16+permbit,0,0,xdim-1,ydim-1);
+                if (i >= 0) rotatesprite(sbarx(231-o),sbary(200-21),sbarsc(65536L),0,i,0,0,10+16,0,0,xdim-1,ydim-1);
 
-                minitext(292-30-o,190,"%",6,10+16+permbit + 256);
+                minitext(292-30-o,190,"%",6,10+16 + 256);
 
                 j = 0x80000000;
                 switch(p->inven_icon)
@@ -1717,10 +1717,10 @@ void coolgaugetext(short snum)
                      case 6: i = ((p->scuba_amount+63)>>6); break;
                      case 7: i = (p->boot_amount>>1); break;
                 }
-                invennum(284-30-o,200-6,(char)i,0,10+permbit);
-                if (j > 0) minitext(288-30-o,180,"ON",0,10+16+permbit + 256);
-                else if ((unsigned int)j != 0x80000000) minitext(284-30-o,180,"OFF",2,10+16+permbit + 256);
-                if (p->inven_icon >= 6) minitext(284-35-o,180,"AUTO",2,10+16+permbit + 256);
+                invennum(284-30-o,200-6,(char)i,0,10);
+                if (j > 0) minitext(288-30-o,180,"ON",0,10+16 + 256);
+                else if ((unsigned int)j != 0x80000000) minitext(284-30-o,180,"OFF",2,10+16 + 256);
+                if (p->inven_icon >= 6) minitext(284-35-o,180,"AUTO",2,10+16 + 256);
           }
           return;
      }
@@ -1834,7 +1834,7 @@ void coolgaugetext(short snum)
           }
           if (p->inven_icon)
           {
-                o = 0; permbit = 128;
+                o = 0;
 
                 if (u&(2048+4096))
                 {
@@ -1848,9 +1848,9 @@ void coolgaugetext(short snum)
                           case 6: i = AIRTANK_ICON; break;
                           case 7: i = BOOT_ICON; break;
                      }
-                     rotatesprite(sbarx(231-o),sbary(SBY+13),sbarsc(65536L),0,i,0,0,10+16+permbit,0,0,xdim-1,ydim-1);
-                     minitext(292-30-o,SBY+24,"%",6,10+16+permbit + 256);
-                     if (p->inven_icon >= 6) minitext(284-35-o,SBY+14,"AUTO",2,10+16+permbit + 256);
+                     rotatesprite(sbarx(231-o),sbary(SBY+13),sbarsc(65536L),0,i,0,0,10+16+128,0,0,xdim-1,ydim-1);
+                     minitext(292-30-o,SBY+24,"%",6,10+16+128 + 256);
+                     if (p->inven_icon >= 6) minitext(284-35-o,SBY+14,"AUTO",2,10+16+128 + 256);
                 }
                 if (u&(2048+4096))
                 {
@@ -1861,12 +1861,12 @@ void coolgaugetext(short snum)
                           case 5: j = p->heat_on; break;
                           default: j = 0x80000000;
                      }
-                     if (j > 0) minitext(288-30-o,SBY+14,"ON",0,10+16+permbit + 256);
-                     else if ((unsigned int)j != 0x80000000) minitext(284-30-o,SBY+14,"OFF",2,10+16+permbit + 256);
+                     if (j > 0) minitext(288-30-o,SBY+14,"ON",0,10+16+128 + 256);
+                     else if ((unsigned int)j != 0x80000000) minitext(284-30-o,SBY+14,"OFF",2,10+16+128 + 256);
                 }
                 if (u&8192)
                 {
-                     invennum(284-30-o,SBY+28,(char)inv_percent,0,10+permbit);
+                     invennum(284-30-o,SBY+28,(char)inv_percent,0,10+128);
                 }
           }
      }
