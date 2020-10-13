@@ -2417,11 +2417,15 @@ void displayrest(int smoothratio)
 
                 if(ud.overhead_on == 2)
                 {
-                    if(ud.screen_size > 0) a = 147;
-                    else a = 182;
+                    if(ud.screen_size > 0)
+                    {
+                        a = 159;
+                        a += tilesizy[BOTTOMSTATUSBAR] - mulscale16(tilesizy[BOTTOMSTATUSBAR], sbarscale);
+                    }
+                    else a = 194;
 
-                    minitext(1,a+6,volume_names[ud.volume_number],0,2+8+16);
-                    minitext(1,a+12,level_names[ud.volume_number*11 + ud.level_number],0,2+8+16);
+                    minitext(1,a-6,volume_names[ud.volume_number],0,2+8+16);
+                    minitext(1,a,level_names[ud.volume_number*11 + ud.level_number],0,2+8+16);
                 }
         }
     }
@@ -2487,12 +2491,21 @@ void displayrest(int smoothratio)
 
     // JBF 20040124: display level stats in screen corner
     if(ud.levelstats && (ps[myconnectindex].gm&MODE_MENU) == 0) {
-        i = (ud.screen_size <= 4)?0:mulscale16(tilesizy[BOTTOMSTATUSBAR], sbarscale);
+        if (ud.screen_size > 0)
+        {
+            i = 159;
+            i += tilesizy[BOTTOMSTATUSBAR] - mulscale16(tilesizy[BOTTOMSTATUSBAR], sbarscale);
+        }
+        else i = 194;
+        if (ud.overhead_on == 2) i -= 6+6+4;
+
+                    // minitext(1,a+6,volume_names[ud.volume_number],0,2+8+16);
+                    // minitext(1,a+12,level_names[ud.volume_number*11 + ud.level_number],0,2+8+16);
 
         sprintf(buf,"Time: %d:%02d",
             (ps[myconnectindex].player_par/(26*60)),
             (ps[myconnectindex].player_par/26)%60);
-        minitext(320-5*12,200-i-6-6-6,buf,0,26);
+        minitext(1,i-6-6,buf,0,2+8+16);
 
         if(ud.player_skill > 3 )
             sprintf(buf,"Kills: %d",ps[myconnectindex].actors_killed);
@@ -2500,10 +2513,10 @@ void displayrest(int smoothratio)
             sprintf(buf,"Kills: %d/%d",ps[myconnectindex].actors_killed,
                 ps[myconnectindex].max_actors_killed>ps[myconnectindex].actors_killed?
                 ps[myconnectindex].max_actors_killed:ps[myconnectindex].actors_killed);
-        minitext(320-5*12,200-i-6-6,buf,0,26);
+        minitext(1,i-6,buf,0,2+8+16);
 
         sprintf(buf,"Secrets: %d/%d", ps[myconnectindex].secret_rooms,ps[myconnectindex].max_secret_rooms);
-        minitext(320-5*12,200-i-6,buf,0,26);
+        minitext(1,i,buf,0,2+8+16);
     }
     if (tintf > 0 || dotint) palto(tintr,tintg,tintb,tintf|128);
 }
