@@ -395,15 +395,11 @@ void xyzmirror(short i,short wn)
 #endif
 }
 
-static inline int sbarsc(int sc)
-{
-    return scale(sc,ud.statusbarscale,8);
-}
-
 void vscrn(void)
 {
 #define ROUND16(f) (((f)>>16)+(((f)&0x8000)>>15))
      int i, j, ss, x1, x2, y1, y2;
+     extern int sbarscale;
 
      if(ud.screen_size < 0) ud.screen_size = 0;
      else if(ud.screen_size > 63) ud.screen_size = 64;
@@ -432,7 +428,7 @@ void vscrn(void)
 
      if (ud.screen_size >= 8) y2 -= ss;
      y2 = scale(y2<<16,ydim,200);
-     if (ud.screen_size >= 8) y2 -= sbarsc(scale(tilesizy[BOTTOMSTATUSBAR]<<16,ydim,200));
+     if (ud.screen_size >= 8) y2 -= mulscale16(scale(tilesizy[BOTTOMSTATUSBAR]<<16,ydim,200), sbarscale);
      y2 = ROUND16(y2 + 32768);
 
      setview(x1,y1,x2-1,y2-1);

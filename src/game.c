@@ -41,6 +41,7 @@ Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
 #define TIMERUPDATESIZ 32
 
 int cameradist = 0, cameraclock = 0;
+int sbarscale = -1;
 unsigned char playerswhenstarted;
 char qe;
 
@@ -69,22 +70,23 @@ static int netsuccess = 0;  // Outcome of calling initmultiplayersparms().
 
 void setstatusbarscale(int sc)
 {
-    ud.statusbarscale = min(8,max(1,sc));
-    vscrn();
+    sbarscale = (sc << 16) / 8;
 }
-static inline int sbarsc(int sc)
+
+void statusbarsprite(int x, int y, int z, short a, short picnum, signed char dashade,
+    unsigned char dapalnum, unsigned char dastat, int cx1, int cy1, int cx2, int cy2)
 {
-    return scale(sc,ud.statusbarscale,8);
+    int sx, sy, sc;
+
+    if (ud.screen_size == 4) sx = x * sbarscale;
+    else sx = (160l<<16) - (160l - x) * sbarscale;
+
+    sy = (200l<<16) - (200l - y) * sbarscale;
+    sc = mulscale16(z, sbarscale);
+
+    rotatesprite(sx,sy,sc,a,picnum,dashade,dapalnum,dastat,cx1,cy1,cx2,cy2);
 }
-static inline int sbarx(int x)
-{
-    if (ud.screen_size == 4) return sbarsc(x<<16);
-    return (((320l<<16) - sbarsc(320l<<16)) >> 1) + sbarsc(x<<16);
-}
-static inline int sbary(int y)
-{
-    return ((200l<<16) - sbarsc(200l<<16) + sbarsc(y<<16));
-}
+
 void patchstatusbar(int x1, int y1, int x2, int y2)
 {
     int ty;
@@ -101,20 +103,20 @@ void patchstatusbar(int x1, int y1, int x2, int y2)
     }
     else
     {
-        barw = sbarsc(scale(320<<16, ydim<<16, 200*pixelaspect));
+        barw = scale(320<<16, ydim * sbarscale, 200*pixelaspect);
         clofx = ((xdim<<16) - barw)>>1;
-        clofy = (ydim<<16) - sbarsc(scale(200<<16, ydim, 200)) + 32768;
-        clx1 = sbarsc(scale(x1<<16, ydim<<16, 200*pixelaspect));
-        cly1 = sbarsc(scale(y1<<16, ydim, 200));
-        clx2 = sbarsc(scale(x2<<16, ydim<<16, 200*pixelaspect));
-        cly2 = sbarsc(scale(y2<<16, ydim, 200));
+        clofy = (ydim<<16) - scale(200<<16, ydim * sbarscale, 200<<16) + 32768;
+        clx1 = scale(x1<<16, ydim * sbarscale, 200*pixelaspect);
+        cly1 = scale(y1<<16, ydim * sbarscale, 200<<16);
+        clx2 = scale(x2<<16, ydim * sbarscale, 200*pixelaspect);
+        cly2 = scale(y2<<16, ydim * sbarscale, 200<<16);
         clx1 = (clx1 + clofx)>>16;
         cly1 = (cly1 + clofy)>>16;
         clx2 = (clx2 + clofx)>>16;
         cly2 = (cly2 + clofy)>>16;
     }
 
-    rotatesprite(sbarx(0),sbary(200-ty),sbarsc(65536),0,BOTTOMSTATUSBAR,4,0,
+    statusbarsprite(0,200-ty,65536,0,BOTTOMSTATUSBAR,4,0,
                  10+16+64+128,clx1,cly1,clx2-1,cly2-1);
 }
 
@@ -333,7 +335,7 @@ int minitext(int x,int y,const char *t,unsigned char p,short sb)
         if(ch == 32) {x+=5;t++;continue;}
         else ac = ch - '!' + MINIFONT;
 
-        if (cmode) rotatesprite(sbarx(x),sbary(y),sbarsc(65536L),0,ac,0,p,sb,0,0,xdim-1,ydim-1);
+        if (cmode) statusbarsprite(x,y,65536L,0,ac,0,p,sb,0,0,xdim-1,ydim-1);
         else rotatesprite(x<<16,y<<16,65536L,0,ac,0,p,sb,0,0,xdim-1,ydim-1);
         x += 4; // tilesizx[ac]+1;
 
@@ -356,7 +358,7 @@ int minitextshade(int x,int y,const char *t,char s,unsigned char p,short sb)
         if(ch == 32) {x+=5;t++;continue;}
         else ac = ch - '!' + MINIFONT;
 
-        if (cmode) rotatesprite(sbarx(x),sbary(y),sbarsc(65536L),0,ac,s,p,sb,0,0,xdim-1,ydim-1);
+        if (cmode) statusbarsprite(x,y,65536L,0,ac,s,p,sb,0,0,xdim-1,ydim-1);
         else rotatesprite(x<<16,y<<16,65536L,0,ac,s,p,sb,0,0,xdim-1,ydim-1);
         x += 4; // tilesizx[ac]+1;
 
@@ -1307,23 +1309,23 @@ void invennum(int x,int y,unsigned char num1,char ha,unsigned char sbits)
     sprintf(dabuf,"%d",num1);
     if(num1 > 99)
     {
-        rotatesprite(sbarx(x-4),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[0]-'0',ha,0,sbits,0,0,xdim-1,ydim-1);
-        rotatesprite(sbarx(x),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[1]-'0',ha,0,sbits,0,0,xdim-1,ydim-1);
-        rotatesprite(sbarx(x+4),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[2]-'0',ha,0,sbits,0,0,xdim-1,ydim-1);
+        statusbarsprite(x-4,y,65536L,0,THREEBYFIVE+dabuf[0]-'0',ha,0,sbits,0,0,xdim-1,ydim-1);
+        statusbarsprite(x,y,65536L,0,THREEBYFIVE+dabuf[1]-'0',ha,0,sbits,0,0,xdim-1,ydim-1);
+        statusbarsprite(x+4,y,65536L,0,THREEBYFIVE+dabuf[2]-'0',ha,0,sbits,0,0,xdim-1,ydim-1);
     }
     else if(num1 > 9)
     {
-        rotatesprite(sbarx(x),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[0]-'0',ha,0,sbits,0,0,xdim-1,ydim-1);
-        rotatesprite(sbarx(x+4),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[1]-'0',ha,0,sbits,0,0,xdim-1,ydim-1);
+        statusbarsprite(x,y,65536L,0,THREEBYFIVE+dabuf[0]-'0',ha,0,sbits,0,0,xdim-1,ydim-1);
+        statusbarsprite(x+4,y,65536L,0,THREEBYFIVE+dabuf[1]-'0',ha,0,sbits,0,0,xdim-1,ydim-1);
     }
     else
-        rotatesprite(sbarx(x+4),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[0]-'0',ha,0,sbits,0,0,xdim-1,ydim-1);
+        statusbarsprite(x+4,y,65536L,0,THREEBYFIVE+dabuf[0]-'0',ha,0,sbits,0,0,xdim-1,ydim-1);
 }
 
 void orderweaponnum(short ind,int x,int y,int UNUSED(num1), int UNUSED(num2),char ha)
 {
-    rotatesprite(sbarx(x-7),sbary(y),sbarsc(65536L),0,THREEBYFIVE+ind+1,ha-10,7,10+128,0,0,xdim-1,ydim-1);
-    rotatesprite(sbarx(x-3),sbary(y),sbarsc(65536L),0,THREEBYFIVE+10,ha,0,10+128,0,0,xdim-1,ydim-1);
+    statusbarsprite(x-7,y,65536L,0,THREEBYFIVE+ind+1,ha-10,7,10+128,0,0,xdim-1,ydim-1);
+    statusbarsprite(x-3,y,65536L,0,THREEBYFIVE+10,ha,0,10+128,0,0,xdim-1,ydim-1);
 
     minitextshade(x+1,y-4,"ORDER",26,6,2+8+16+128 + 256);
 }
@@ -1333,9 +1335,9 @@ void weaponnum(short ind,int x,int y,int num1, int num2,char ha)
 {
     char dabuf[80] = {0};
 
-    rotatesprite(sbarx(x-7),sbary(y),sbarsc(65536L),0,THREEBYFIVE+ind+1,ha-10,7,10+128,0,0,xdim-1,ydim-1);
-    rotatesprite(sbarx(x-3),sbary(y),sbarsc(65536L),0,THREEBYFIVE+10,ha,0,10+128,0,0,xdim-1,ydim-1);
-    rotatesprite(sbarx(x+9),sbary(y),sbarsc(65536L),0,THREEBYFIVE+11,ha,0,10+128,0,0,xdim-1,ydim-1);
+    statusbarsprite(x-7,y,65536L,0,THREEBYFIVE+ind+1,ha-10,7,10+128,0,0,xdim-1,ydim-1);
+    statusbarsprite(x-3,y,65536L,0,THREEBYFIVE+10,ha,0,10+128,0,0,xdim-1,ydim-1);
+    statusbarsprite(x+9,y,65536L,0,THREEBYFIVE+11,ha,0,10+128,0,0,xdim-1,ydim-1);
 
     if(num1 > 99) num1 = 99;
     if(num2 > 99) num2 = 99;
@@ -1343,55 +1345,55 @@ void weaponnum(short ind,int x,int y,int num1, int num2,char ha)
     sprintf(dabuf,"%d",num1);
     if(num1 > 9)
     {
-        rotatesprite(sbarx(x),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[0]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
-        rotatesprite(sbarx(x+4),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[1]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
+        statusbarsprite(x,y,65536L,0,THREEBYFIVE+dabuf[0]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
+        statusbarsprite(x+4,y,65536L,0,THREEBYFIVE+dabuf[1]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
     }
-    else rotatesprite(sbarx(x+4),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[0]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
+    else statusbarsprite(x+4,y,65536L,0,THREEBYFIVE+dabuf[0]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
 
     sprintf(dabuf,"%d",num2);
     if(num2 > 9)
     {
-        rotatesprite(sbarx(x+13),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[0]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
-        rotatesprite(sbarx(x+17),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[1]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
+        statusbarsprite(x+13,y,65536L,0,THREEBYFIVE+dabuf[0]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
+        statusbarsprite(x+17,y,65536L,0,THREEBYFIVE+dabuf[1]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
     }
-    else rotatesprite(sbarx(x+13),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[0]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
+    else statusbarsprite(x+13,y,65536L,0,THREEBYFIVE+dabuf[0]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
 }
 
 void weaponnum999(char ind,int x,int y,int num1, int num2,char ha)
 {
     char dabuf[80] = {0};
 
-    rotatesprite(sbarx(x-7),sbary(y),sbarsc(65536L),0,THREEBYFIVE+ind+1,ha-10,7,10+128,0,0,xdim-1,ydim-1);
-    rotatesprite(sbarx(x-4),sbary(y),sbarsc(65536L),0,THREEBYFIVE+10,ha,0,10+128,0,0,xdim-1,ydim-1);
-    rotatesprite(sbarx(x+13),sbary(y),sbarsc(65536L),0,THREEBYFIVE+11,ha,0,10+128,0,0,xdim-1,ydim-1);
+    statusbarsprite(x-7,y,65536L,0,THREEBYFIVE+ind+1,ha-10,7,10+128,0,0,xdim-1,ydim-1);
+    statusbarsprite(x-4,y,65536L,0,THREEBYFIVE+10,ha,0,10+128,0,0,xdim-1,ydim-1);
+    statusbarsprite(x+13,y,65536L,0,THREEBYFIVE+11,ha,0,10+128,0,0,xdim-1,ydim-1);
 
     sprintf(dabuf,"%d",num1);
     if(num1 > 99)
     {
-        rotatesprite(sbarx(x),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[0]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
-        rotatesprite(sbarx(x+4),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[1]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
-        rotatesprite(sbarx(x+8),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[2]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
+        statusbarsprite(x,y,65536L,0,THREEBYFIVE+dabuf[0]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
+        statusbarsprite(x+4,y,65536L,0,THREEBYFIVE+dabuf[1]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
+        statusbarsprite(x+8,y,65536L,0,THREEBYFIVE+dabuf[2]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
     }
     else if(num1 > 9)
     {
-        rotatesprite(sbarx(x+4),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[0]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
-        rotatesprite(sbarx(x+8),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[1]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
+        statusbarsprite(x+4,y,65536L,0,THREEBYFIVE+dabuf[0]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
+        statusbarsprite(x+8,y,65536L,0,THREEBYFIVE+dabuf[1]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
     }
-    else rotatesprite(sbarx(x+8),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[0]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
+    else statusbarsprite(x+8,y,65536L,0,THREEBYFIVE+dabuf[0]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
 
     sprintf(dabuf,"%d",num2);
     if(num2 > 99)
     {
-        rotatesprite(sbarx(x+17),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[0]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
-        rotatesprite(sbarx(x+21),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[1]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
-        rotatesprite(sbarx(x+25),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[2]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
+        statusbarsprite(x+17,y,65536L,0,THREEBYFIVE+dabuf[0]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
+        statusbarsprite(x+21,y,65536L,0,THREEBYFIVE+dabuf[1]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
+        statusbarsprite(x+25,y,65536L,0,THREEBYFIVE+dabuf[2]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
     }
     else if(num2 > 9)
     {
-        rotatesprite(sbarx(x+17),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[0]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
-        rotatesprite(sbarx(x+21),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[1]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
+        statusbarsprite(x+17,y,65536L,0,THREEBYFIVE+dabuf[0]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
+        statusbarsprite(x+21,y,65536L,0,THREEBYFIVE+dabuf[1]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
     }
-    else rotatesprite(sbarx(x+25),sbary(y),sbarsc(65536L),0,THREEBYFIVE+dabuf[0]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
+    else statusbarsprite(x+25,y,65536L,0,THREEBYFIVE+dabuf[0]-'0',ha,0,10+128,0,0,xdim-1,ydim-1);
 }
 
     //REPLACE FULLY
@@ -1532,7 +1534,7 @@ void digitalnumber(int x,int y,int n,char s,unsigned char cs)
     for(k=0;k<i;k++)
     {
         p = DIGITALNUM+*(b+k)-'0';
-        rotatesprite(sbarx(c+j),sbary(y),sbarsc(65536L),0,p,s,0,cs,0,0,xdim-1,ydim-1);
+        statusbarsprite(c+j,y,65536L,0,p,s,0,cs,0,0,xdim-1,ydim-1);
         j += tilesizx[p]+1;
     }
 }
@@ -1675,15 +1677,15 @@ void coolgaugetext(short snum)
 
      if (ss == 4)   //DRAW MINI STATUS BAR:
      {
-          rotatesprite(sbarx(5),sbary(200-28),sbarsc(65536L),0,HEALTHBOX,0,21,10+16,0,0,xdim-1,ydim-1);
+          statusbarsprite(5,200-28,65536L,0,HEALTHBOX,0,21,10+16,0,0,xdim-1,ydim-1);
           if (p->inven_icon)
-                rotatesprite(sbarx(69),sbary(200-30),sbarsc(65536L),0,INVENTORYBOX,0,21,10+16,0,0,xdim-1,ydim-1);
+                statusbarsprite(69,200-30,65536L,0,INVENTORYBOX,0,21,10+16,0,0,xdim-1,ydim-1);
 
           if(sprite[p->i].pal == 1 && p->last_extra < 2)
                 digitalnumber(20,200-17,1,-16,10+16);
           else digitalnumber(20,200-17,p->last_extra,-16,10+16);
 
-          rotatesprite(sbarx(37),sbary(200-28),sbarsc(65536L),0,AMMOBOX,0,21,10+16,0,0,xdim-1,ydim-1);
+          statusbarsprite(37,200-28,65536L,0,AMMOBOX,0,21,10+16,0,0,xdim-1,ydim-1);
 
           if (p->curr_weapon == HANDREMOTE_WEAPON) i = HANDBOMB_WEAPON; else i = p->curr_weapon;
           digitalnumber(53,200-17,p->ammo_amount[i],-16,10+16);
@@ -1702,7 +1704,7 @@ void coolgaugetext(short snum)
                      case 7: i = BOOT_ICON; break;
                      default: i = -1;
                 }
-                if (i >= 0) rotatesprite(sbarx(231-o),sbary(200-21),sbarsc(65536L),0,i,0,0,10+16,0,0,xdim-1,ydim-1);
+                if (i >= 0) statusbarsprite(231-o,200-21,65536L,0,i,0,0,10+16,0,0,xdim-1,ydim-1);
 
                 minitext(292-30-o,190,"%",6,10+16 + 256);
 
@@ -1780,7 +1782,7 @@ void coolgaugetext(short snum)
      {
           patchstatusbar(0,0,320,200);
           if (ud.multimode > 1 && ud.coop != 1)
-                rotatesprite(sbarx(277+1),sbary(SBY+7-1),sbarsc(65536L),0,KILLSICON,0,0,10+16+128,0,0,xdim-1,ydim-1);
+                statusbarsprite(277+1,SBY+7-1,65536L,0,KILLSICON,0,0,10+16+128,0,0,xdim-1,ydim-1);
      }
      if (ud.multimode > 1 && ud.coop != 1)
      {
@@ -1795,9 +1797,9 @@ void coolgaugetext(short snum)
           if (u&16384)
           {
                 if (u != -1) patchstatusbar(275,SBY+18,299,SBY+18+12);
-                if (p->got_access&4) rotatesprite(sbarx(275),sbary(SBY+16),sbarsc(65536L),0,ACCESS_ICON,0,23,10+16+128,0,0,xdim-1,ydim-1);
-                if (p->got_access&2) rotatesprite(sbarx(288),sbary(SBY+16),sbarsc(65536L),0,ACCESS_ICON,0,21,10+16+128,0,0,xdim-1,ydim-1);
-                if (p->got_access&1) rotatesprite(sbarx(281),sbary(SBY+23),sbarsc(65536L),0,ACCESS_ICON,0,0,10+16+128,0,0,xdim-1,ydim-1);
+                if (p->got_access&4) statusbarsprite(275,SBY+16,65536L,0,ACCESS_ICON,0,23,10+16+128,0,0,xdim-1,ydim-1);
+                if (p->got_access&2) statusbarsprite(288,SBY+16,65536L,0,ACCESS_ICON,0,21,10+16+128,0,0,xdim-1,ydim-1);
+                if (p->got_access&1) statusbarsprite(281,SBY+23,65536L,0,ACCESS_ICON,0,0,10+16+128,0,0,xdim-1,ydim-1);
           }
      }
      if (u&(4+8+16+32+64+128+256+512+65536L)) weapon_amounts(p,96,SBY+16,u);
@@ -1848,7 +1850,7 @@ void coolgaugetext(short snum)
                           case 6: i = AIRTANK_ICON; break;
                           case 7: i = BOOT_ICON; break;
                      }
-                     rotatesprite(sbarx(231-o),sbary(SBY+13),sbarsc(65536L),0,i,0,0,10+16+128,0,0,xdim-1,ydim-1);
+                     statusbarsprite(231-o,SBY+13,65536L,0,i,0,0,10+16+128,0,0,xdim-1,ydim-1);
                      minitext(292-30-o,SBY+24,"%",6,10+16+128 + 256);
                      if (p->inven_icon >= 6) minitext(284-35-o,SBY+14,"AUTO",2,10+16+128 + 256);
                 }
@@ -2485,7 +2487,7 @@ void displayrest(int smoothratio)
 
     // JBF 20040124: display level stats in screen corner
     if(ud.levelstats && (ps[myconnectindex].gm&MODE_MENU) == 0) {
-        i = (ud.screen_size <= 4)?0:sbarsc(tilesizy[BOTTOMSTATUSBAR]);
+        i = (ud.screen_size <= 4)?0:mulscale16(tilesizy[BOTTOMSTATUSBAR], sbarscale);
 
         sprintf(buf,"Time: %d:%02d",
             (ps[myconnectindex].player_par/(26*60)),
@@ -2595,7 +2597,7 @@ void drawbackground(void)
             if (ud.multimode > 4) y1 += scale(ydim,8,200);
         }
         if (ud.screen_size >= 8)
-            y2 = ROUND16(scale(200<<16,ydim,200)-sbarsc(scale(tilesizy[BOTTOMSTATUSBAR]<<16,ydim,200)) + 32768);
+            y2 = ROUND16(scale(200<<16,ydim,200)-mulscale16(scale(tilesizy[BOTTOMSTATUSBAR]<<16,ydim,200), sbarscale) + 32768);
     } else {
         // when not rendering a game, fullscreen wipe
         for(y=0;y<ydim;y+=tilesizy[dapicnum])
@@ -2631,7 +2633,7 @@ void drawbackground(void)
     // draw in the bits to the left and right of the status bar
     if (ud.screen_size >= 8) {
         int cl, cr, barw;
-        barw = sbarsc(scale(320<<16,ydim<<16,200*pixelaspect));
+        barw = mulscale16(scale(320<<16,ydim<<16,200*pixelaspect), sbarscale);
         y1 = y2;
         y2 = ydim-1;
         x1 = 0;
@@ -2657,7 +2659,7 @@ void drawbackground(void)
           x1 = max(windowx1-4,0);
           y1 = max(windowy1-4,y);
           x2 = min(windowx2+4,xdim-1);
-          y2 = min(windowy2+4,scale(ydim,200-sbarsc(tilesizy[BOTTOMSTATUSBAR]),200)-1);
+          y2 = min(windowy2+4,scale(ydim,200-mulscale16(tilesizy[BOTTOMSTATUSBAR], sbarscale),200)-1);
 
           for(y=y1+4;y<y2-4;y+=64)
           {

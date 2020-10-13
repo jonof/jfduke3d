@@ -251,13 +251,13 @@ static int osdcmd_vidmode(const osdfuncparm_t *parm)
 
 static int osdcmd_setstatusbarscale(const osdfuncparm_t *parm)
 {
-    if (parm->numparms == 0) {
-        buildprintf("setstatusbarscale: scale is %d%%\n", ud.statusbarscale);
-        return OSDCMD_OK;
-    } else if (parm->numparms != 1) return OSDCMD_SHOWHELP;
+    if (parm->numparms == 1) {
+        ud.statusbarscale = max(1, min(8, Batol(parm->parms[0])));
+        setstatusbarscale(ud.statusbarscale);
+        vscrn();
+    } else if (parm->numparms > 1) return OSDCMD_SHOWHELP;
 
-    setstatusbarscale(Batol(parm->parms[0]));
-    buildprintf("setstatusbarscale: new scale is %d%%\n", ud.statusbarscale);
+    buildprintf("setstatusbarscale: scale is %d (%d%%)\n", ud.statusbarscale, 100*ud.statusbarscale/8);
     return OSDCMD_OK;
 }
 

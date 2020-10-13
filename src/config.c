@@ -587,6 +587,8 @@ int32 CONFIG_ReadSetup( void )
     SCRIPT_GetNumber( scripthandle, "Misc", "RunMode",&RunMode);
     SCRIPT_GetNumber( scripthandle, "Misc", "Crosshairs",&ud.crosshair);
     SCRIPT_GetNumber( scripthandle, "Misc", "StatusBarScale",&ud.statusbarscale);
+    ud.statusbarscale = max(1, min(8, ud.statusbarscale));
+    setstatusbarscale(ud.statusbarscale);
     SCRIPT_GetNumber( scripthandle, "Misc", "ShowLevelStats",&ud.levelstats);
     SCRIPT_GetNumber( scripthandle, "Misc", "ShowOpponentWeapons",&ShowOpponentWeapons);
     dummy = useprecache; SCRIPT_GetNumber( scripthandle, "Misc", "UsePrecache",&dummy); useprecache = dummy != 0;

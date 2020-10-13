@@ -2441,7 +2441,9 @@ if (PLUTOPAK) {
                             barsm(d+8,yy+7, (short *)&sbs,9,x==io,SHX(-5),PHX(-5));
                             if (x == io && sbs != sbsl) {
                                 sbs = 1+sbs/9;
+                                ud.statusbarscale = sbs;
                                 setstatusbarscale(sbs);
+                                vscrn();
                             }
                         }
                         break;
