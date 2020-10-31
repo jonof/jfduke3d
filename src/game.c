@@ -2638,14 +2638,14 @@ void drawbackground(void)
         rx = windowx2-windowx2%tilesizx[dapicnum];
         for (y=windowy1-windowy1%tilesizy[dapicnum]; y<windowy2; y+=tilesizy[dapicnum])
             for (x=0; x<windowx1 || x+rx<xdim; x+=tilesizx[dapicnum]) {
-                rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,0,windowy1,windowx1-1,windowy2-1);
-                rotatesprite((x+rx)<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,windowx2,windowy1,xdim-1,windowy2-1);
+                rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,0,windowy1,windowx1-1,windowy2);
+                rotatesprite((x+rx)<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,windowx2+1,windowy1,xdim-1,windowy2);
             }
 
         // along bottom
         for (y=windowy2-(windowy2%tilesizy[dapicnum]); y<y2; y+=tilesizy[dapicnum])
             for (x=0; x<xdim; x+=tilesizx[dapicnum])
-                rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,0,windowy2,xdim-1,y2-1);
+                rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,0,windowy2+1,xdim-1,y2-1);
     }
 
     // draw in the bits to the left and right of the status bar
@@ -2659,9 +2659,11 @@ void drawbackground(void)
         cl = ((xdim<<16)-barw)>>17;
         cr = ((xdim<<16)+barw)>>17;
         for(y=y1-y1%tilesizy[dapicnum]; y<y2; y+=tilesizy[dapicnum])
-            for(x=0;x<x2; x+=tilesizx[dapicnum]) {
-                if (x<cl || x+tilesizx[dapicnum]>=cr)
-                    rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,x1,y1,x2,y2);
+            for(x=0;x<=x2; x+=tilesizx[dapicnum]) {
+                if (x<cl)
+                    rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,x1,y1,cl,y2);
+                else if (x+tilesizx[dapicnum]>cr)
+                    rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,cr,y1,x2,y2);
             }
     }
 
@@ -6340,7 +6342,7 @@ if (VOLUMEONE) {
 }
 
 
-int nonsharedtimer;
+int nonsharedtimer,screencaptured = 0;
 void nonsharedkeys(void)
 {
     short i,ch, weapon;
@@ -6352,14 +6354,19 @@ void nonsharedkeys(void)
         CONTROL_GetInput( &noshareinfo );
     }
 
+    if (screencaptured)
+    {
+        FTA(103,&ps[myconnectindex]);
+        screencaptured = 0;
+    }
     if( KB_KeyPressed( sc_F12 ) )
     {
         char *tpl;
         if (NAM) tpl = "nam00000.pcx";
         else tpl = "duke0000.pcx";
         KB_ClearKeyDown( sc_F12 );
-    screencapture(tpl,0);
-    FTA(103,&ps[myconnectindex]);
+        screencapture(tpl,2);
+        screencaptured = 1;
     }
 
     if( !ALT_IS_PRESSED && ud.overhead_on == 0)
