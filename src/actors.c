@@ -761,6 +761,7 @@ void movefta(void)
                 hittype[i].timetosleep++;
                 if( hittype[i].timetosleep >= (x>>8) )
                 {
+                    int rz, orz;
                     if(badguy(s))
                     {
                         px = ps[p].oposx+64-(TRAND&127);
@@ -779,10 +780,16 @@ void movefta(void)
                             i = nexti;
                             continue;
                         }
-                        j = cansee(sx,sy,s->z-(TRAND%(52<<8)),s->sectnum,px,py,ps[p].oposz-(TRAND%(32<<8)),ps[p].cursectnum);
+                        rz = TRAND;
+                        orz = TRAND;
+                        j = cansee(sx,sy,s->z-(rz%(52<<8)),s->sectnum,px,py,ps[p].oposz-(orz%(32<<8)),ps[p].cursectnum);
                     }
                     else
-                        j = cansee(s->x,s->y,s->z-((TRAND&31)<<8),s->sectnum,ps[p].oposx,ps[p].oposy,ps[p].oposz-((TRAND&31)<<8),ps[p].cursectnum);
+                    {
+                        rz = TRAND;
+                        orz = TRAND;
+                        j = cansee(s->x,s->y,s->z-((rz&31)<<8),s->sectnum,ps[p].oposx,ps[p].oposy,ps[p].oposz-((orz&31)<<8),ps[p].cursectnum);
+                    }
 
        //             j = 1;
 
