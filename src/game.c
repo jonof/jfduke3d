@@ -451,7 +451,7 @@ void getpackets(void)
 
                 multiflag = 2;
                 multiwhat = 0;
-                     multiwho = packbuf[2]; //other: need to send in m/s mode because of possible re-transmit
+                multiwho = packbuf[2]; //other: need to send in m/s mode because of possible re-transmit
                 multipos = packbuf[1];
                 loadplayer( multipos );
                 multiflag = 0;
@@ -568,8 +568,10 @@ void getpackets(void)
                    }
                 }
 
-                strcpy(recbuf,(char*)packbuf+2);   //XXXX unsafe
-                recbuf[packbufleng-2] = 0;
+                i = sizeof(recbuf)-1;
+                i = max(0, min(i, packbufleng-2));
+                memcpy(recbuf, (char*)packbuf + 2, i);
+                recbuf[i] = 0;
 
                 adduserquote(recbuf);
                 sound(EXITMENUSOUND);
@@ -616,18 +618,28 @@ void getpackets(void)
                     for(i=connectpoint2[connecthead];i>=0;i=connectpoint2[i])
                         if (i != other) sendpacket(i,packbuf,packbufleng);
 
+
+                if (other != packbuf[1])
+                    debugprintf("getpackets: player %d announcement with mismatched index %d.\n",
+                        other, packbuf[1]);
+
                 if (packbuf[2] != BYTEVERSION)
                     gameexit("\nYou cannot play Duke with different versions.");
 
-                other = packbuf[1];
-
-                for (i=3;packbuf[i];i++)
-                    ud.user_name[other][i-3] = packbuf[i];
-                ud.user_name[other][i-3] = 0;
+                for (i=3,j=0; packbuf[i] && i<packbufleng; i++)
+                    if (j < (int)sizeof(ud.user_name[0])-1)
+                        ud.user_name[other][j++] = packbuf[i];
+                ud.user_name[other][j] = 0;
                 i++;
 
-                j = i; //This used to be Duke packet #9... now concatenated with Duke packet #6
-                for (;i-j<10;i++) ud.wchoice[other][i-j] = packbuf[i];
+                if (packbufleng-i < 10+3)
+                {
+                    debugprintf("getpackets: player %d announcement is too short.\n", other);
+                    break;
+                }
+
+                //This used to be Duke packet #9... now concatenated with Duke packet #6
+                for (j=0;j<10;j++,i++) ud.wchoice[other][j] = packbuf[i];
 
                 ps[other].aim_mode = packbuf[i++];
                 ps[other].auto_aim = packbuf[i++];
@@ -667,8 +679,10 @@ void getpackets(void)
                 ud.m_marker = ud.marker = packbuf[9];
                 ud.m_ffire = ud.ffire = packbuf[10];
 
-                copybufbyte(packbuf+10,boardfilename,packbufleng-11);
-                boardfilename[packbufleng-11] = 0;
+                l = sizeof(boardfilename)-1;
+                l = min(l, packbufleng-11);
+                copybufbyte(packbuf+10,boardfilename,l);
+                boardfilename[l] = 0;
 
                 for(i=connecthead;i>=0;i=connectpoint2[i])
                 {
@@ -843,19 +857,19 @@ void faketimerhandler()
 
         if (nsyn[0].fvel != osyn[0].fvel)
         {
-            packbuf[j++] = (char)nsyn[0].fvel;
-            packbuf[j++] = (char)(nsyn[0].fvel>>8);
+            packbuf[j++] = (unsigned char)nsyn[0].fvel;
+            packbuf[j++] = (unsigned char)(nsyn[0].fvel>>8);
             packbuf[k] |= 1;
         }
         if (nsyn[0].svel != osyn[0].svel)
         {
-            packbuf[j++] = (char)nsyn[0].svel;
-            packbuf[j++] = (char)(nsyn[0].svel>>8);
+            packbuf[j++] = (unsigned char)nsyn[0].svel;
+            packbuf[j++] = (unsigned char)(nsyn[0].svel>>8);
             packbuf[k] |= 2;
         }
         if (nsyn[0].avel != osyn[0].avel)
         {
-            packbuf[j++] = (signed char)nsyn[0].avel;
+            packbuf[j++] = (unsigned char)nsyn[0].avel;
             packbuf[k] |= 4;
         }
         if ((nsyn[0].bits^osyn[0].bits)&0x000000ff) packbuf[j++] = (nsyn[0].bits&255), packbuf[k] |= 8;
@@ -864,7 +878,7 @@ void faketimerhandler()
         if ((nsyn[0].bits^osyn[0].bits)&0xff000000) packbuf[j++] = ((nsyn[0].bits>>24)&255), packbuf[k] |= 64;
         if (nsyn[0].horz != osyn[0].horz)
         {
-            packbuf[j++] = (char)nsyn[0].horz;
+            packbuf[j++] = (unsigned char)nsyn[0].horz;
             packbuf[k] |= 128;
         }
 
@@ -904,19 +918,19 @@ void faketimerhandler()
 
         if (nsyn[0].fvel != osyn[0].fvel)
         {
-            packbuf[j++] = (char)nsyn[0].fvel;
-            packbuf[j++] = (char)(nsyn[0].fvel>>8);
+            packbuf[j++] = (unsigned char)nsyn[0].fvel;
+            packbuf[j++] = (unsigned char)(nsyn[0].fvel>>8);
             packbuf[1] |= 1;
         }
         if (nsyn[0].svel != osyn[0].svel)
         {
-            packbuf[j++] = (char)nsyn[0].svel;
-            packbuf[j++] = (char)(nsyn[0].svel>>8);
+            packbuf[j++] = (unsigned char)nsyn[0].svel;
+            packbuf[j++] = (unsigned char)(nsyn[0].svel>>8);
             packbuf[1] |= 2;
         }
         if (nsyn[0].avel != osyn[0].avel)
         {
-            packbuf[j++] = (signed char)nsyn[0].avel;
+            packbuf[j++] = (unsigned char)nsyn[0].avel;
             packbuf[1] |= 4;
         }
         if ((nsyn[0].bits^osyn[0].bits)&0x000000ff) packbuf[j++] = (nsyn[0].bits&255), packbuf[1] |= 8;
@@ -925,7 +939,7 @@ void faketimerhandler()
         if ((nsyn[0].bits^osyn[0].bits)&0xff000000) packbuf[j++] = ((nsyn[0].bits>>24)&255), packbuf[1] |= 64;
         if (nsyn[0].horz != osyn[0].horz)
         {
-            packbuf[j++] = (char)nsyn[0].horz;
+            packbuf[j++] = (unsigned char)nsyn[0].horz;
             packbuf[1] |= 128;
         }
 
@@ -981,19 +995,19 @@ void faketimerhandler()
             packbuf[k] = 0;
             if (nsyn[i].fvel != osyn[i].fvel)
             {
-                packbuf[j++] = (char)nsyn[i].fvel;
-                packbuf[j++] = (char)(nsyn[i].fvel>>8);
+                packbuf[j++] = (unsigned char)nsyn[i].fvel;
+                packbuf[j++] = (unsigned char)(nsyn[i].fvel>>8);
                 packbuf[k] |= 1;
             }
             if (nsyn[i].svel != osyn[i].svel)
             {
-                packbuf[j++] = (char)nsyn[i].svel;
-                packbuf[j++] = (char)(nsyn[i].svel>>8);
+                packbuf[j++] = (unsigned char)nsyn[i].svel;
+                packbuf[j++] = (unsigned char)(nsyn[i].svel>>8);
                 packbuf[k] |= 2;
             }
             if (nsyn[i].avel != osyn[i].avel)
             {
-                packbuf[j++] = (signed char)nsyn[i].avel;
+                packbuf[j++] = (unsigned char)nsyn[i].avel;
                 packbuf[k] |= 4;
             }
             if ((nsyn[i].bits^osyn[i].bits)&0x000000ff) packbuf[j++] = (nsyn[i].bits&255), packbuf[k] |= 8;
@@ -1002,7 +1016,7 @@ void faketimerhandler()
             if ((nsyn[i].bits^osyn[i].bits)&0xff000000) packbuf[j++] = ((nsyn[i].bits>>24)&255), packbuf[k] |= 64;
             if (nsyn[i].horz != osyn[i].horz)
             {
-                packbuf[j++] = (char)nsyn[i].horz;
+                packbuf[j++] = (unsigned char)nsyn[i].horz;
                 packbuf[k] |= 128;
             }
             k++;
@@ -2154,9 +2168,7 @@ void typemode(void)
                 if(ud.multimode < 3)
                      sendmessagecommand = 2;
 
-                strcat(recbuf,ud.user_name[myconnectindex]);
-                strcat(recbuf,": ");
-                strcat(recbuf,typebuf);
+                snprintf(recbuf, sizeof(recbuf), "%s: %s", ud.user_name[myconnectindex], typebuf);
                 j = strlen(recbuf);
                 memcpy(tempbuf+2,recbuf,j+1);
 
@@ -7503,8 +7515,9 @@ void getnames(void)
 {
      int i,l;
 
-     for(l=0;myname[l];l++)
-          ud.user_name[myconnectindex][l] = Btoupper(myname[l]);
+     for(i=0;myname[i] && i < (int)sizeof(ud.user_name[0])-1;i++)
+          ud.user_name[myconnectindex][i] = Btoupper(myname[i]);
+     ud.user_name[myconnectindex][i] = 0;
 
      if(numplayers > 1)
      {
@@ -7514,7 +7527,8 @@ void getnames(void)
           l = 3;
 
               //null terminated player name to send
-          for(i=0;myname[i];i++) tempbuf[l++] = Btoupper(myname[i]);
+          for(i=0;ud.user_name[myconnectindex][i];i++)
+               tempbuf[l++] = ud.user_name[myconnectindex][i];
           tempbuf[l++] = 0;
 
           for(i=0;i<10;i++)
@@ -8878,7 +8892,7 @@ ENDFAKEPROCESSINPUT:
 char domovethings(void)
 {
     short i, j;
-    char ch;
+    unsigned char ch;
 
     for(i=connecthead;i>=0;i=connectpoint2[i])
         if( sync[i].bits&(1<<17) )
@@ -9007,7 +9021,7 @@ char domovethings(void)
 
       if ((numplayers >= 2) && ((movefifoplc&7) == 7))
       {
-            ch = (char)(randomseed&255);
+            ch = (unsigned char)(randomseed&255);
             for(i=connecthead;i>=0;i=connectpoint2[i])
                  ch += ((ps[i].posx+ps[i].posy+ps[i].posz+ps[i].ang+ps[i].horiz)&255);
             syncval[myconnectindex][syncvalhead[myconnectindex]&(MOVEFIFOSIZ-1)] = ch;
