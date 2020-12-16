@@ -6844,6 +6844,7 @@ void comlinehelp(void)
         ARGCHAR "name NAME\tFoward NAME\n"
         ARGCHAR "nam\t\tActivates NAM compatibility mode (sets CON to NAM.CON and GRP to NAM.GRP)\n"
         ARGCHAR "setup\t\tDisplays the configuration dialogue box\n"
+        ARGCHAR "nosetup\t\tPrevents display of the configuration dialogue box\n"
         ARGCHAR "net\t\tNet mode game (all arguments that follow are parameters for networking)\n"
         ;
     wm_msgbox("JFDuke3D",s);
@@ -6909,7 +6910,12 @@ void checkcommandline(int argc, char const * const *argv)
                     continue;
                 }
                 if (!Bstrcasecmp(c,"setup")) {
-                    CommandSetup = TRUE;
+                    CommandSetup = 1;
+                    i++;
+                    continue;
+                }
+                if (!Bstrcasecmp(c,"nosetup")) {
+                    CommandSetup = -1;
                     i++;
                     continue;
                 }
@@ -7736,7 +7742,7 @@ int app_main(int argc, char const * const argv[])
         settings.channels = NumChannels;
         settings.selectedgrp = gamegrp;
 
-        if (configloaded < 0 || ForceSetup || CommandSetup) {
+        if (configloaded < 0 || (ForceSetup && CommandSetup == 0) || (CommandSetup > 0)) {
             if (startwin_run(&settings) == STARTWIN_CANCEL) {
                 uninitengine();
                 exit(0);
