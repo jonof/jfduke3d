@@ -204,18 +204,27 @@ static void setup_config_mode(void)
     populate_sound_quality(TRUE);
     EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_SOUNDQUALITY), TRUE);
 
-    EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_SINGLEPLAYER), TRUE);
-    CheckRadioButton(pages[TAB_CONFIG], IDC_SINGLEPLAYER, IDC_HOSTMULTIPLAYER, IDC_SINGLEPLAYER);
+    if (!settings->netoverride) {
+        EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_SINGLEPLAYER), TRUE);
+        CheckRadioButton(pages[TAB_CONFIG], IDC_SINGLEPLAYER, IDC_HOSTMULTIPLAYER, IDC_SINGLEPLAYER);
 
-    EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_JOINMULTIPLAYER), TRUE);
-    EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_HOSTFIELD), FALSE);
+        EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_JOINMULTIPLAYER), TRUE);
+        EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_HOSTFIELD), FALSE);
 
-    EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_HOSTMULTIPLAYER), TRUE);
-    EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_NUMPLAYERS), FALSE);
-    EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_NUMPLAYERSUD), TRUE);
-    SetDlgItemInt(pages[TAB_CONFIG], IDC_NUMPLAYERS, 2, TRUE);
-    SendDlgItemMessage(pages[TAB_CONFIG], IDC_NUMPLAYERSUD, UDM_SETPOS, 0, 2);
-    SendDlgItemMessage(pages[TAB_CONFIG], IDC_NUMPLAYERSUD, UDM_SETRANGE, 0, MAKELPARAM(MAXPLAYERS, 2));
+        EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_HOSTMULTIPLAYER), TRUE);
+        EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_NUMPLAYERS), FALSE);
+        EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_NUMPLAYERSUD), TRUE);
+        SetDlgItemInt(pages[TAB_CONFIG], IDC_NUMPLAYERS, 2, TRUE);
+        SendDlgItemMessage(pages[TAB_CONFIG], IDC_NUMPLAYERSUD, UDM_SETPOS, 0, 2);
+        SendDlgItemMessage(pages[TAB_CONFIG], IDC_NUMPLAYERSUD, UDM_SETRANGE, 0, MAKELPARAM(MAXPLAYERS, 2));
+    } else {
+        EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_SINGLEPLAYER), FALSE);
+        EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_JOINMULTIPLAYER), FALSE);
+        EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_HOSTFIELD), FALSE);
+        EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_HOSTMULTIPLAYER), FALSE);
+        EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_NUMPLAYERS), FALSE);
+        EnableWindow(GetDlgItem(pages[TAB_CONFIG], IDC_NUMPLAYERSUD), FALSE);
+    }
 
     populate_game_list(TRUE);
     EnableWindow(GetDlgItem(pages[TAB_GAME], IDC_GAMELIST), TRUE);

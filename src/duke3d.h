@@ -590,6 +590,7 @@ struct startwin_settings {
 
     int numplayers;
     char *joinhost;
+    int netoverride;
 };
 
 #ifdef __cplusplus

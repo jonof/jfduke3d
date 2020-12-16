@@ -224,16 +224,24 @@ static void setup_config_mode(void)
     populate_sound_quality(TRUE);
     gtk_widget_set_sensitive(controls.soundqualitycombo, TRUE);
 
-    gtk_widget_set_sensitive(controls.singleplayerbutton, TRUE);
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(controls.singleplayerbutton), TRUE);
+    if (!settings->netoverride) {
+        gtk_widget_set_sensitive(controls.singleplayerbutton, TRUE);
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(controls.singleplayerbutton), TRUE);
 
-    gtk_widget_set_sensitive(controls.joinmultibutton, TRUE);
-    gtk_widget_set_sensitive(controls.hostfield, FALSE);
+        gtk_widget_set_sensitive(controls.joinmultibutton, TRUE);
+        gtk_widget_set_sensitive(controls.hostfield, FALSE);
 
-    gtk_widget_set_sensitive(controls.hostmultibutton, TRUE);
-    gtk_widget_set_sensitive(controls.numplayersspin, FALSE);
-    gtk_spin_button_set_range(GTK_SPIN_BUTTON(controls.numplayersspin), 2, MAXPLAYERS);
-    gtk_spin_button_set_value(GTK_SPIN_BUTTON(controls.numplayersspin), 2.0);
+        gtk_widget_set_sensitive(controls.hostmultibutton, TRUE);
+        gtk_widget_set_sensitive(controls.numplayersspin, FALSE);
+        gtk_spin_button_set_range(GTK_SPIN_BUTTON(controls.numplayersspin), 2, MAXPLAYERS);
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(controls.numplayersspin), 2.0);
+    } else {
+        gtk_widget_set_sensitive(controls.singleplayerbutton, FALSE);
+        gtk_widget_set_sensitive(controls.joinmultibutton, FALSE);
+        gtk_widget_set_sensitive(controls.hostfield, FALSE);
+        gtk_widget_set_sensitive(controls.hostmultibutton, FALSE);
+        gtk_widget_set_sensitive(controls.numplayersspin, FALSE);
+    }
 
     populate_game_list(TRUE);
     gtk_widget_set_sensitive(controls.gametable, TRUE);

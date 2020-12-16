@@ -7741,6 +7741,7 @@ int app_main(int argc, char const * const argv[])
         settings.bitspersample = NumBits;
         settings.channels = NumChannels;
         settings.selectedgrp = gamegrp;
+        settings.netoverride = netparam > 0;
 
         if (configloaded < 0 || (ForceSetup && CommandSetup == 0) || (CommandSetup > 0)) {
             if (startwin_run(&settings) == STARTWIN_CANCEL) {
