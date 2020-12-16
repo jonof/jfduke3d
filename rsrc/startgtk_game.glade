@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
+<!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.4"/>
   <object class="GtkListStore" id="gamelist">
@@ -40,6 +40,9 @@
     <property name="resizable">False</property>
     <property name="window_position">center</property>
     <property name="type_hint">dialog</property>
+    <child>
+      <placeholder/>
+    </child>
     <child>
       <object class="GtkBox">
         <property name="visible">True</property>
@@ -152,6 +155,7 @@
                             <property name="margin_right">12</property>
                             <property name="label" translatable="yes">_Video mode:</property>
                             <property name="use_underline">True</property>
+                            <property name="mnemonic_widget">vmode3dcombo</property>
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
@@ -163,7 +167,9 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="margin_top">8</property>
-                            <property name="label" translatable="yes">Sound quality:</property>
+                            <property name="label" translatable="yes">S_ound quality:</property>
+                            <property name="use_underline">True</property>
+                            <property name="mnemonic_widget">soundqualitycombo</property>
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
@@ -207,10 +213,11 @@
                             <property name="margin_top">8</property>
                             <child>
                               <object class="GtkCheckButton" id="usemousecheck">
-                                <property name="label" translatable="yes">Mouse</property>
+                                <property name="label" translatable="yes">Mo_use</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
+                                <property name="use_underline">True</property>
                                 <property name="draw_indicator">True</property>
                               </object>
                               <packing>
@@ -221,10 +228,11 @@
                             </child>
                             <child>
                               <object class="GtkCheckButton" id="usejoystickcheck">
-                                <property name="label" translatable="yes">Joystick</property>
+                                <property name="label" translatable="yes">_Joystick</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
+                                <property name="use_underline">True</property>
                                 <property name="draw_indicator">True</property>
                               </object>
                               <packing>
@@ -256,7 +264,7 @@
                         <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkRadioButton" id="singleplayerbutton">
-                            <property name="label" translatable="yes">_Single player game</property>
+                            <property name="label" translatable="yes">Sin_gle player game</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
@@ -272,10 +280,11 @@
                         </child>
                         <child>
                           <object class="GtkRadioButton" id="joinmultibutton">
-                            <property name="label" translatable="yes">Join multi-player game</property>
+                            <property name="label" translatable="yes">Joi_n multi-player game</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
+                            <property name="use_underline">True</property>
                             <property name="active">True</property>
                             <property name="draw_indicator">True</property>
                             <property name="group">singleplayerbutton</property>
@@ -296,7 +305,9 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="margin_right">12</property>
-                                <property name="label" translatable="yes">Host address:</property>
+                                <property name="label" translatable="yes">Host a_ddress:</property>
+                                <property name="use_underline">True</property>
+                                <property name="mnemonic_widget">hostfield</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -324,10 +335,11 @@
                         </child>
                         <child>
                           <object class="GtkRadioButton" id="hostmultibutton">
-                            <property name="label" translatable="yes">Host multi-player game</property>
+                            <property name="label" translatable="yes">Hos_t multi-player game</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
+                            <property name="use_underline">True</property>
                             <property name="active">True</property>
                             <property name="draw_indicator">True</property>
                             <property name="group">singleplayerbutton</property>
@@ -348,7 +360,9 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="margin_right">12</property>
-                                <property name="label" translatable="yes">Players:</property>
+                                <property name="label" translatable="yes">_Players:</property>
+                                <property name="use_underline">True</property>
+                                <property name="mnemonic_widget">numplayersspin</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
