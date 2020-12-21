@@ -1,0 +1,4 @@
+// Sample Xcode configuration with JonoF's signing settings.
+CODE_SIGN_IDENTITY = Developer ID Application
+CODE_SIGN_STYLE = Manual
+DEVELOPMENT_TEAM = S7U4E54CHC

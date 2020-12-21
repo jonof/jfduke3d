@@ -1,0 +1,7 @@
+// By default the binary is signed to run locally.
+CODE_SIGN_IDENTITY = -
+
+// Copy xcode/Signing.xcconfig.sample to xcode/Signing.xcconfig
+// and then update the signing settings to personalise.
+#include? "Signing.xcconfig"
+
