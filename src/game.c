@@ -66,6 +66,7 @@ unsigned char waterpal[768], slimepal[768], titlepal[768], drealms[768], endingp
 char firstdemofile[80] = { '\0' };
 
 static int netparam = 0;    // Index into argv of the first -net argument
+static int endnetparam = 0; // Index into argv following the final -net parameter.
 static int netsuccess = 0;  // Outcome of calling initmultiplayersparms().
 
 void setstatusbarscale(int sc)
@@ -6845,7 +6846,7 @@ void comlinehelp(void)
         ARGCHAR "nam\t\tActivates NAM compatibility mode (sets CON to NAM.CON and GRP to NAM.GRP)\n"
         ARGCHAR "setup\t\tDisplays the configuration dialogue box\n"
         ARGCHAR "nosetup\t\tPrevents display of the configuration dialogue box\n"
-        ARGCHAR "net\t\tNet mode game (all arguments that follow are parameters for networking)\n"
+        ARGCHAR "net\t\tNet mode game (see documentation)\n"
         ;
     wm_msgbox("JFDuke3D", "%s", s);
 }
@@ -6890,41 +6891,33 @@ void checkcommandline(int argc, char const * const *argv)
                 c++;
 
                 if (!Bstrcasecmp(c,"net")) {
-                    netparam = i+1;
-                    break;  // All further args go to mmulti.
+                    netparam = ++i;
+                    for (; i<argc; i++)
+                        if (!strcmp(argv[i], "--")) break;
+                    endnetparam = i;
                 }
-                if (!Bstrcasecmp(c,"name")) {
+                else if (!Bstrcasecmp(c,"name")) {
                     if (argc > i+1) {
                         CommandName = argv[i+1];
                         i++;
                     }
-                    i++;
-                    continue;
                 }
-                if (!Bstrcasecmp(c,"map")) {
+                else if (!Bstrcasecmp(c,"map")) {
                     if (argc > i+1) {
                         CommandMap = argv[i+1];
                         i++;
                     }
-                    i++;
-                    continue;
                 }
-                if (!Bstrcasecmp(c,"setup")) {
+                else if (!Bstrcasecmp(c,"setup")) {
                     CommandSetup = 1;
-                    i++;
-                    continue;
                 }
-                if (!Bstrcasecmp(c,"nosetup")) {
+                else if (!Bstrcasecmp(c,"nosetup")) {
                     CommandSetup = -1;
-                    i++;
-                    continue;
                 }
-                if (!Bstrcasecmp(c,"nam")) {
+                else if (!Bstrcasecmp(c,"nam")) {
                     strcpy(duke3dgrp, "nam.grp");
-                    i++;
-                    continue;
                 }
-
+                else
                 switch(*c)
                 {
                     case '?':
@@ -7722,7 +7715,7 @@ int app_main(int argc, char const * const argv[])
     }
 
     if (netparam) { // -net parameter on command line.
-        netsuccess = initmultiplayersparms(argc - netparam, &argv[netparam]);
+        netsuccess = initmultiplayersparms(endnetparam - netparam, &argv[netparam]);
     }
 
 #if defined RENDERTYPEWIN || (defined RENDERTYPESDL && (defined __APPLE__ || defined HAVE_GTK))
