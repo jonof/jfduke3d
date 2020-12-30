@@ -1293,7 +1293,7 @@ void PrintStatus(char *string,int num,char x,char y,char color)
 
 void SpriteName(short spritenum, char *lo2)
 {
-    Bsprintf(lo2,names[sprite[spritenum].picnum]);
+    Bsprintf(lo2,"%s",names[sprite[spritenum].picnum]);
 }// end SpriteName
 
 unsigned char GAMEpalette[768];

@@ -1269,7 +1269,10 @@ void genspriteremaps(void)
     if(fp != -1)
         kread(fp,(char *)&numl,1);
     else
+    {
         gameexit("\nERROR: File 'LOOKUP.DAT' not found.");
+        return;
+    }
 
     for(j=0;j < numl;j++)
     {

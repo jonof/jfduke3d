@@ -2084,7 +2084,7 @@ void gameexit(const char *t)
     if(*t != 0)
     {
         if (!(t[0] == ' ' && t[1] == 0)) {
-            wm_msgbox("JFDuke3D", t);
+            wm_msgbox("JFDuke3D", "%s", t);
         }
     }
 
@@ -6847,7 +6847,7 @@ void comlinehelp(void)
         ARGCHAR "nosetup\t\tPrevents display of the configuration dialogue box\n"
         ARGCHAR "net\t\tNet mode game (all arguments that follow are parameters for networking)\n"
         ;
-    wm_msgbox("JFDuke3D",s);
+    wm_msgbox("JFDuke3D", "%s", s);
 }
 
 void checkcommandline(int argc, char const * const *argv)
@@ -9584,7 +9584,7 @@ void dobonus(char bonusonly)
     KB_FlushKeyboardQueue();
     while( 1 )
     {
-        int yy, zz;
+        int yy = 0, zz;
 
         handleevents();
         CONTROL_GetUserInput(&uinfo);

@@ -6949,17 +6949,13 @@ void moveeffectors(void)   //STATNUM 3
 
                 wal = &wall[t[2]];
 
-                if(wal->cstat|32)
+                wal->cstat &= (255-32);
+                wal->cstat |= 16;
+                if(wal->nextwall >= 0)
                 {
-                    wal->cstat &= (255-32);
-                    wal->cstat |= 16;
-                    if(wal->nextwall >= 0)
-                    {
-                        wall[wal->nextwall].cstat &= (255-32);
-                        wall[wal->nextwall].cstat |= 16;
-                    }
+                    wall[wal->nextwall].cstat &= (255-32);
+                    wall[wal->nextwall].cstat |= 16;
                 }
-                else break;
 
                 wal->overpicnum++;
                 if(wal->nextwall >= 0)

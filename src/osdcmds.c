@@ -10,7 +10,7 @@ struct osdcmd_cheatsinfo osdcmd_cheatsinfo_stat;
 int osdcmd_quit(const osdfuncparm_t *parm)
 {
     extern int quittimer;
-    parm=parm;
+    (void)parm;
     if (!gamequit && numplayers > 1) {
         if((ps[myconnectindex].gm&MODE_GAME)) {
             gamequit = 1;
@@ -146,7 +146,7 @@ int osdcmd_map(const osdfuncparm_t *parm)
 
 int osdcmd_god(const osdfuncparm_t *parm)
 {
-    parm=parm;
+    (void)parm;
     if (numplayers == 1 && ps[myconnectindex].gm & MODE_GAME) {
         osdcmd_cheatsinfo_stat.cheatnum = 0;
     } else {
@@ -158,7 +158,7 @@ int osdcmd_god(const osdfuncparm_t *parm)
 
 int osdcmd_noclip(const osdfuncparm_t *parm)
 {
-    parm=parm;
+    (void)parm;
     if (numplayers == 1 && ps[myconnectindex].gm & MODE_GAME) {
         osdcmd_cheatsinfo_stat.cheatnum = 20;
     } else {

@@ -601,9 +601,6 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				English,
-				Japanese,
-				French,
-				German,
 			);
 			mainGroup = AB69BCF30A73C1A800F3DCB8;
 			productRefGroup = AB69BD060A73C21E00F3DCB8 /* Products */;
@@ -843,6 +840,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AB81F9452590B9DE00306B8E /* Common.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD)";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -870,6 +868,7 @@
 					"-W",
 					"-Wall",
 					"-Wno-unused-variable",
+					"-Wno-unused-parameter",
 				);
 			};
 			name = Debug;
@@ -878,6 +877,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AB81F9452590B9DE00306B8E /* Common.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD)";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -903,6 +903,7 @@
 					"-W",
 					"-Wall",
 					"-Wno-unused-variable",
+					"-Wno-unused-parameter",
 				);
 			};
 			name = Release;
@@ -917,6 +918,7 @@
 				INFOPLIST_FILE = "JFDuke3D-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				OTHER_LDFLAGS = "-lc++";
+				PRODUCT_BUNDLE_IDENTIFIER = au.id.jonof.jfduke3d;
 				PRODUCT_NAME = JFDuke3D;
 				WRAPPER_EXTENSION = app;
 			};
@@ -932,6 +934,7 @@
 				INFOPLIST_FILE = "JFDuke3D-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				OTHER_LDFLAGS = "-lc++";
+				PRODUCT_BUNDLE_IDENTIFIER = au.id.jonof.jfduke3d;
 				PRODUCT_NAME = JFDuke3D;
 				WRAPPER_EXTENSION = app;
 			};
@@ -975,7 +978,9 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "Build Editor-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(LD_RUNPATH_SEARCH_PATHS_$(IS_MACCATALYST)) @loader_path/../Frameworks";
 				OTHER_LDFLAGS = "-lc++";
+				PRODUCT_BUNDLE_IDENTIFIER = au.id.jonof.jfduke3d.build;
 				PRODUCT_NAME = "Build Editor for JFDuke3D";
 				WRAPPER_EXTENSION = app;
 			};
@@ -989,7 +994,9 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "Build Editor-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(LD_RUNPATH_SEARCH_PATHS_$(IS_MACCATALYST)) @loader_path/../Frameworks";
 				OTHER_LDFLAGS = "-lc++";
+				PRODUCT_BUNDLE_IDENTIFIER = au.id.jonof.jfduke3d.build;
 				PRODUCT_NAME = "Build Editor for JFDuke3D";
 				WRAPPER_EXTENSION = app;
 			};
