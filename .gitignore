@@ -15,6 +15,7 @@
 /xcode/*.xcodeproj/*.pbxuser
 /xcode/*.xcodeproj/project.xcworkspace
 /xcode/*.xcodeproj/xcuserdata
+/xcode/Version.xcconfig
 /xcode/Signing.xcconfig
 
 /xcode/build

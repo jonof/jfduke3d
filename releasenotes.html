@@ -1,419 +1,711 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="Author" content="Jonathon Fowler" />
 	<title>Release Notes for JFDuke3D</title>
 	<style type="text/css">
 		body {
-			font-family: "Bitstream Vera Sans","Tahoma","Arial",sans-serif;
-			font-size: 10pt;
-			margin: 0.5em;
-			border: 2px dashed #ccc;
+			font-family: sans-serif;
+			font-weight: 400;
+			background: #444;
+			margin: 0;
+			padding: 0;
+		}
+		#page {
+			max-width: 50em;
+			background: #eee;
+			margin: 0 auto;
 			padding: 1em;
+			min-height: 100vh;
 		}
-		h2,h3,h4 {
-			margin-top: 0;
-			margin-bottom: 0.5em;
-			color: #777;
+
+		h1 { font-size: 1.5em; }
+		h2 { font-size: 1.2em; }
+		h3 { font-size: 1.0em; }
+
+		header {
+			text-align: center;
 		}
-		h1 {
-			margin-top: 0; margin-bottom: 0.5em;
-			padding: 3px;
-			background-color: #ddd;
-			font-size: 170%;
-			color: #444;
+		header h1 {
+			font-weight: 800;
+			font-size: 3em;
+			color: #222;
+			margin: 0.5em 0;
+			text-shadow: 0.02em 0.02em rgba(255,255,255,0.5), 0.04em 0.04em rgba(0,0,0,0.2);
 		}
-		h2 { font-size: 145%; }
-		h3 { font-size: 125%; }
-		h4 { font-size: 110%; }
-		p { margin-top: 0.5em; margin-bottom: 0.75em; }
-		pre { margin-left: 0.75em; padding-left: 0.75em; border-left: 2px solid #ddd; }
-
-		dl { margin-left: 3em; }
-		dt { font-weight: bold; }
-		dd { padding-bottom: 1em; margin-left: 2em; }
-		table { margin: 1em; }
-		table.center { margin-left: auto; margin-right: auto; }
-		caption { font-style: oblique; }
-
-		span.warning { color: #f00; }
-
-		address {
+		section#content {
+			position: relative;
+		}
+		footer {
+			text-align: center;
 			margin-top: 3em;
-			font-size: 85%;
-			font-style: normal;
+			color: #aaa;
+			font-size: 90%;
+		}
+		figure {
+			text-align: center;
+		}
+		figure img {
+			max-width: 100%;
+		}
+		figcaption {
+			font-size: 90%;
+			font-style: italic;
 		}
 
-		@media print {
-			body { border: none; margin: 0; }
+		@media (max-width: 600px) {
+			header h1 {
+				font-size: 2em;
+			}
+		}
+
+		dt {
+			font-weight: bold;
+		}
+		dd + dt {
+			margin-top: 0.5em;
 		}
 	</style>
 </head>
 
 <body>
-	<h1>Release Notes for JFDuke3D</h1>
-	<p>Release date: 10 March 2013</p>
+	<div id="page">
+		<header>
+			<h1>JFDuke3D</h1>
+			<h2>Release notes, version $VERSION</h2>
+		</header>
 
-	<h2>New Features and Improvements</h2>
-	<ul>
-		<li>The minimum supported Windows version is now XP. See below in <a href="#profiles">Individual
-		User Profiles</a> for what this means to your configuration and savegames.</li>
-		<li>Mac OS X version.</li>
-	</ul>
-		
-	<h2>Known Issues</h2>
-	<ul>
-		<li>Networking is still crap.</li>
-	</ul>
+		<section id="content">
+			<p>Visit <a href="https://www.jonof.id.au/jfduke3d">the JFDuke3D website</a> for the latest information. The source code for JFDuke3D can be found in <a href="https://github.com/jonof/jfduke3d">this Git repository</a>.</p>
 
-	<h3><a name="profiles">Individual User Profiles</a></h3>
+			<nav>
+				<h1>Index</h1>
+				<ul>
+					<li><a href="#requirements">System Requirements</a></li>
+					<li><a href="#install">Installation and Setup</a></li>
+					<li><a href="#multiplayer">Multiplayer</a></li>
+					<li><a href="#nam">NAM Support</a></li>
+					<li><a href="#console">Console Commands</a></li>
+					<li><a href="#license">License</a></li>
+				</ul>
+			</nav>
 
-	<p>Previous versions of this port supported old versions of Windows where storing game configuration and
-	save data in the game directory along side the EXE and GRP files was accepted practice. Since Windows 9x, ME,
-	and even XP are well beyond their supported life, I have switched the behaviour of this port to storing user-specific
-	data in the user's profile directory. This directory can be found at:</p>
-	<ul>
-		<li>On Windows XP: <code>C:\Documents and Settings\<em>your username</em>\Application Data\JFDuke3D</code></li>
-		<li>On Windows Vista/7/8: <code>C:\Users\<em>your username</em>\AppData\JFDuke3D</code></li>
-	</ul>
-	<p>If you are upgrading from an older version of this port, you may want to move your
-	<code>duke3d.cfg</code> and <code>game<em>n</em>.sav</code> files to the appropriate new location.</p>
-	
-	<h3><a name="multiplayer">Multiplayer games</a></h3>
+			<h1 id="requirements">System Requirements</h1>
 
-	<p>Multiplayer games are started via command-line parameters passed to DUKE3D.EXE. This is a short guide
-	to getting a multiplayer game running between these three hypothetical computers:</p>
-	<table class="center" border="1" rules="groups" cellpadding="2">
-		<colgroup><col /></colgroup>
-		<thead>
-			<tr><th>Host name</th><th>IP address</th></tr>
-		</thead>
-		<tbody>
-			<tr><td>faye</td><td>192.168.1.2</td></tr>
-			<tr><td>asuka</td><td>192.168.1.5</td></tr>
-			<tr><td>kaoru</td><td>192.168.1.6</td></tr>
-		</tbody>
-	</table>
-	<p><span class="warning">Keep in mind that the networking features are still being refined and there are
-	certain issues and caveats to be aware of when using it.</span> The basic syntax of the network command
-	line is like so: <code>DUKE3D <em>(normal game parameters)</em> /net <em>(network parameters)</em></code></p>
-	<table border="1" rules="cols" cellpadding="2" class="center">
-		<caption>Network parameters</caption>
-		<colgroup>
-			<col valign="top" />
-		</colgroup>
-		<tr>
-			<td>/nx:y</td>
-			<td>Game comm type. <em>x</em> = 0 for master/slave or 1 for peer-to-peer.<br />
-				If unspecified, <em>y</em> defaults to 2. For more than two players in a
-				master-slave game, you have to indicate the number on the <em>master</em>.
-				eg: /n0 or /n0:4</td>
-		</tr>
-		<tr>
-			<td>/px</td>
-			<td>Overrides the default port (23513) with <em>x</em> being the new port value.</td>
-		</tr>
-		<tr>
-			<td>address:port</td>
-			<td>An address of a machine. See the items below for more information.</td>
-		</tr>
-	</table>
+			<p>At minimum, you need:</p>
+			<ul>
+				<li>64-bit Intel, AMD, or compatible CPU</li>
+				<li>OpenGL 2.1 capable GPU</li>
+				<li>(Windows) Vista or newer (7, 8, 10)</li>
+				<li>(Mac) macOS 10.9 (Mavericks) or newer</li>
+			</ul>
 
-	<h4>Master/Slave mode</h4>
-	<p>This mode is the easiest mode for use with Internet play since it requires only the address of the master
-	of the game (the person hosting the game) be specified by each slave who joins. Here are example command
-	lines each machine must run to join the game hosted by the machine named 'asuka':
-	</p>
-	<table border="1" rules="cols" cellpadding="2">
-		<tr><td>asuka</td><td><code>DUKE3D.EXE /net /n0:3</code></td></tr>
-		<tr><td>faye</td><td><code>DUKE3D.EXE /net /n0 192.168.1.5</code></td></tr>
-		<tr><td>kaoru</td><td><code>DUKE3D.EXE /net /n0 192.168.1.5</code></td></tr>
-	</table>
+			<p>Additionally, these platforms and architectures are supported when building from source code:</p>
+			<ul>
+				<li>32-bit Intel/AMD, and 32 or 64-bit ARM CPUs</li>
+				<li>OpenGL ES 2.0 capable GPUs, e.g.
+					<ul>
+						<li>Broadcom VideoCore IV (tested with Raspberry Pi 3 B+)</li>
+						<li>ARM Mali-T860 (tested with Libre Computer ROC-RK3399-PC)</li>
+					</ul></li>
+			</ul>
 
-	<h4>Peer-to-peer mode</h4>
-	<p>This mode is often useful for playing on a LAN where it is easier to coordinate and organise the order of
-	peers in the game. This mode will become simpler to set up in the future but for now this is how to do
-	it. Peer-to-peer mode requires each machine specify the addresses of each other machine in the game in the
-	same order, but indicating its own position in the sequence with the <code>/n1</code> option.</p>
-	<table border="1" rules="cols" cellpadding="2">
-		<tr><td>asuka</td><td><code>DUKE3D.EXE /net /n1 192.168.1.2 192.168.1.6</code></td></tr>
-		<tr><td>faye</td><td><code>DUKE3D.EXE /net 192.168.1.5 /n1 192.168.1.6</code></td></tr>
-		<tr><td>kaoru</td><td><code>DUKE3D.EXE /net 192.168.1.5 192.168.1.2 /n1</code></td></tr>
-	</table>
+			<h1 id="install">Installation and Setup</h1>
 
-	<h4>Addresses and ports</h4>
-	<p>The networking code is capable of resolving WINS host names (on Windows) and DNS names to their
-	corresponding addresses, so if your network is configured with such services, instead of having to specify
-	raw IP addresses, you can give the computer's WINS host name or a DNS host name.</p>
-	<p>The default port the game communicates on is 23513. Some users may find it necessary to set up a
-	forward through their Internet firewall in order to get games working when playing across the Internet.
-	You can override the default port via the <code>/p<em>???</em></code> switch where <em>???</em> is the new
-	port number. If a master is running a game on a port other than the default, the slaves will have to
-	specify the alternative port with <code>address:port</code> notation, eg. 192.168.1.5:20000</p>
+			<p>After unzipping the JFDuke3D package somewhere on your computer, run the main executable: <code>JFDuke3D.app</code> on macOS, <code>duke3d.exe</code> on Windows. You ought to see the startup window open at the Game tab.</p>
+			<figure>
+				<img src="data:image/png;base64,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"
+alt="The initial startup window as it appears on macOS" width="626" height="446">
+				<figcaption>Windows, Linux and BSD (if built with GTK support) have similar startup windows with the same options.</figcaption>
+			</figure>
+			<p>You will now need to import the game data from a commercial release or the shareware version of Duke Nukem 3D as the game will not work without it.<p>
+			<ol>
+				<li>Click the "Choose a location..." button, then navigate to a location where Duke Nukem 3D data can be found.</li>
+				<li>Choose a folder and JFDuke3D will then scan the location you've selected, copying any compatible game data it finds.</li>
+			</ol>
 
-	<h2><a name="nam">NAM Support</a></h2>
+			<p>Where game data files are stored by JFDuke3D depends on the operating system you are using:</p>
+			<ul>
+				<li>(Linux, shared with all users) <code>/usr/local/share/games/jfduke3d</code></li>
+				<li>(Linux, single user) <code>~/.jfduke3d</code></li>
+				<li>(macOS, single user) <code>~/Library/Application Support/JFDuke3D</code></li>
+				<li>(Windows) <em>wherever you've put duke3d.exe</em></li>
+			</ul>
+			<p>Below are known locations Duke Nukem 3D game data for various sources:</p>
+			<dl>
+				<dt>MS DOS Registered version CD-ROM</dt>
+				<dd>In the <code>DN3DINST</code> directory of the disc.</dd>
+				<dt>MS DOS Atomic Edition CD-ROM</dt>
+				<dd>In the <code>ATOMINST</code> directory of the disc.</dd>
+				<dt>Megaton Edition from Steam on macOS</dt>
+				<dd>In Steam, go to <em>Duke Nukem 3D: Megaton Edition</em>, open the 'gear' menu, choose <em>Manage</em> &gt; <em>Browse local files</em>. Make note of this location to use for importing.</dd>
+				<dt>Megaton Edition from Steam on Windows</dt>
+				<dd>In Steam, go to <em>Duke Nukem 3D: Megaton Edition</em>, open the 'gear' menu, choose <em>Manage</em> &gt; <em>Browse local files</em>. Make note of this location to use for importing.</dd>
+				<dt>Atomic Edition from GOG.com on macOS</dt>
+				<dd>In GOG Galaxy 2, go to <em>Duke Nukem 3D Atomic Edition</em>, open the 'options' menu (beside Play), choose <em>Manage installation</em> &gt; <em>Show folder</em>. Make note of this location to use for importing.</dd>
+				<dt>Atomic Edition from GOG.com on Windows</dt>
+				<dd>In GOG Galaxy 2, go to <em>Duke Nukem 3D Atomic Edition</em>, open the 'options' menu (beside Play), choose <em>Manage installation</em> &gt; <em>Show folder</em>. Make note of this location to use for importing.</dd>
+				<dt>20th Anniversary World Tour from Steam on Windows</dt>
+				<dd>In Steam, go to <em>Duke Nukem 3D: 20th Anniversary</em>, open the 'gear' menu, choose <em>Manage</em> &gt; <em>Browse local files</em>. Make note of this location to use for importing.</dd>
+				<dt>MS DOS Shareware version</dt>
+				<dd><p>If you have downloaded an original 3D Realms distribution file named <code>3DDUKE13.ZIP</code>:</p>
+					<ol>
+						<li>Unzip <code>3DDUKE13.ZIP</code> to obtain the <code>DN3DSW13.SHR</code> file.</li>
+						<li>Rename <code>DN3DSW13.SHR</code> to <code>DN3DSW13.ZIP</code>, then unzip it.</li>
+					</ol>
+					<p>Alternatively, you can fetch <a href="https://www.jonof.id.au/files/jfduke3d/dn3dsw13.zip">dn3dsw13.zip authenticity-intact from my site</a> ready to unzip and point JFDuke3D at for importing.</p>
+				</dd>
+			</dl>
 
-	<p>Because it was trivial to do so, the commercial Duke3D-based game &ldquo;NAM&rdquo; is now supported
-	directly by JFDuke3D. Here is how to use it:</p>
-	<ol>
-		<li>Find the GAME.CON and NAM.GRP files from your copy of NAM.</li>
-		<li>Rename GAME.CON to NAM.CON and put it in the JFDuke3D directory.</li>
-		<li>Copy NAM.GRP to the JFDuke3D directory.</li>
-		<li>Run JFDuke3D and select NAM from the Game tab in the "Game or Addon" list. If you have disabled
-		the startup window from automatically showing, you can run DUKE3D.EXE passing the <code>-setup</code>
-		switch to display it, or enable the "Show startup window" option in the Options &rarr; Game Options
-		menu inside the game, or you can run DUKE3D.EXE passing the <code>-nam</code> to enable NAM mode
-		directly.</li>
-	</ol>
+			<h2 id="portable-install">"Portable" Installation</h2>
+			<p>Typically the game will store its configuration information and saved games in a private location for your user account:</p>
+			<ul>
+			<li>(Linux) <code>~/.jfduke3d</code></li>
+			<li>(macOS) <code>~/Library/Application Support/JFDuke3D</code></li>
+			<li>(Windows) <code>C:\Users\<em>your-name</em>\AppData\JFDuke3D</code></li>
+			</ul>
+			<p>To have the game instead store these files in the working directory where the game was started, create an empty file named <code>user_profiles_disabled</code> (no extension) beside the executable. You can put the <code>duke3d.grp</code> file in the same location, thus making everything self-contained and 'portable'.</p>
 
-	<h2><a name="deffile">DEF-file Language</a></h2>
+			<h1 id="multiplayer">Multiplayer</h1>
 
-	<p>Documentation of the DEF file language can now be found on <a
-		href="http://www.jonof.id.au/jfbuild.def">my website</a> as the information there is
-	common to all JFBuild-based ports.</p>
+			<p>Multiplayer games can be started from the startup window, or for more specialised situations, with command-line parameters passed to the game.</p>
+			<p>From the startup window, one player should choose "Host multi-player game" and select the number of players, then press Start to begin waiting. The other players should choose "Join multi-player game" and enter the hostname or IP address of the system hosting the game, and then press Start. The game will proceed once all players are joined.</p>
+			<figure>
+				<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAmYAAAG4CAMAAADYLtt6AAAAvVBMVEVHcEwAAAAAAACYmJgAAAAAAAAAAAAAAAAAAA
+AAAADs7e3///8AAADg4ODc3NzNzc3S0tLV1dWop6fY2Ng5h/3/cAD/hgDCwcFkofxQlPwScf//fwD/eAD/ZAA2NjYp
+KSlBQUEle/7/mQD/jgD/0ABMTEz/qAGGhoZpaWl7e3udnZ1WVlaSkpL/vQ9ycnJgYGAEY/+50vmJtvpGHwB2PwD5X1
+euPQDZTwqogADarBnlbgAqc+Lj4+Pz8/S2trVl2fm0AAAACnRSTlMAVFB7KhchDwczcONqcAAAONpJREFUeF7syTEK
+ADAIQ1GhhOZQ6v2PVRyLuHVrXpbAtxvLHgHt4+uu3rFG2milxwsih10yRgEAhGGg4CKB/Kj0/8+S6uCgHYSOOUqXy3
+j0nlUGWA1CAD2pzMoQgu/OPBTX4EwZbx+/vLy8t5sx2SVjFABiEAimTKMmlS8RCcj+/1l33SFnk97plmG63fQn0rrx
+7dvvWdzsSxbM3bBSgvOC9EUWBVSYCpomHnbpXreBEIjCaDpXfIOZYt5g12v2p9oCKeL9HysRGqFYsWLJnZ09BaB7gW
+pOH7+cPiEAYLszXEDKsHwbivgt4GwmMYrZObTQl96HgHvdXq3Kc++P/v6YeUvcu4iLZXGlZ2oSGzHlTdm2TnmGmrjR
+ggcO4a8xS3uXcHVY3FBxYtGZ8KYuV5BszCM3PHjCMWaKKrD/oDSUpSvtmqIm0YkB0Arf+tm9aL8lQM5zzptwveRVqN
+OcawvSiLIaY5ryWh/9/x/7u2P2xV7d6yoMwwAUvgu6W9P4DH2CKuSHeKoqlrz/YyGlFaVQASvQb7QlT0cyk3G4Gpmt
+MpuVWlhtrfClUnQFsMm1dLkz3iN9MLYOJANa8FHaEA13dpuZNXtmj0qOMUByAFhRRKEOlsw8kIU37JkdGibDjSeZrZ
+4m2yyzD963oe9qVcZpVEWOS2Z2yiwBLr26/4P7/ws75o6DMAwEURpavGMKn2DxF7uioPH9j8VGYZMIRaQO4UmW7BnZ
+cjHNzlrMMLIcAfBmOQKo5hYjANaQbyg79U2CUAuKB0o1sA02QBBh3OWOKCZq2nr/eP7lvBIzvWQeEwaqzYXGpNFcaB
+B+E8oF6LkjBYKPZKrGbBA6iyEryrLs8MGfLzEjYK5nAQ2Q03p20oiM1rNmOKk8+wTd79bvmTMnwAV2rnEujWwgjAJ5
+Zt86ohfHbr1/QP+6GrMXe3asAiAMAwHUxTnXOtw3CK4iXfL/nyUSShUVETe5B12aKeE6lKBi3pZN2bBjsWw63pHuJP
+6stmdxmvYBGqdzRe5ilvCeRMy+Ucwe36nqcGo+l1K/skuHOADAIAxFMaul24G4/7FmlmwJmCXIPoHg21Yzc/qD597n
+V1dXL2dG7yRCWIJYnURiWILNfh2kIAxDURR1ENtHkApuoCNB0f2vz7E6cfANVc5Zw+X9pNeC6bPMQGbIDLb8NsOagc
+yQGTJL67Wg5S2z6jWDKf+wZlgzaMnwzLBmGXA0sWYDMsPbbK7ODFoy+Ggis3wnM2SW388MmUGbnzNLyr4Ay+l6Ww8v
+1vPlfuzb9CC/jHrbhIEAvIdJSe8aCI4l7BfH68aAQEB2+pBKmP//s2YnrCMwlIZGlKrfA3fynf306WyUZnwa/Pmw3l
+TTaNbybHkvzbxd2TKs71ocztAyNhk4mgrvDATratpp5riHZk6x62S5B7NC86+nmWO9meZttryw7J2akfLxzcgcZgRn
+X1MzmOAR87C03O1t5qXbx9soCcwF+kU1w3ACzRZLy300C8rHEcjdXDTjlzCtGe/DlNaKX4MpxofBS/wQxmhWNbs8M3
+vNvi8Wbcu+jb801wOSHQ7PlqP9HA6H2YrW10whgNG8h1HsimbMld+u2U5EmdiN0CzK0EG2wSeYZt1htniAMZT/Eez5
++PKrw8vx+DxD0fqaacPsB3uyMMO73N6CLWrhIa5kPUKz7eYUPodmF+NsMU6zuKeYNWyQl75qCXw4P3gb0C64a1MZl2
+t1itqg0W5cMbcMXDeTS2llzmucuRYOnZ2DmkXEhbBGk0oZ26zIRbSJhQwR/VKU3rBmSWqDH8kATSGiGhESkRHEMBLJ
+BpFkooTzYp01hzXF6TVrjbPlyGlGRNexf0rt978bnk5hv9+fVeualn+4ZrQFR9ZkSnEGmmp0jlHKDKcMKAW3bKhWts
+UwqgzjVNkW5KcWiqyzsw222K6ahMTGkzWGWwKpICaXWMnQEGkGNauFrRVEBljGJpA+FjGuMkDhIylstoKiQMxSCKLX
+w5ri9NPM8a5LM+k4tv9rmFXrxM8Lnp4a146XT7VsBbdQecF96WjWTjRQbc4+MRsZNMstzVTT3rRQwzs7BzSrtgYxTZ
+IYHWmOoURcC1fAXYqIcj2omV8QBGFkAAIR8xjTAtAiCDaEkTsHsZavh9lihzq4L1515U/TWra8VbM/5Npdb9owFAbg
+Xazq5jPC+FgTU2RsMgcClDZpL4oU+///rB0nKXb4iAiDsKmvSh1kOdw8OscxDFgF2WZbxD6APewnDA213ZI2WTRRNv
+A62UUjhm6AFmNAcjzFSLbM8rdByYwgs9SYShSBLbPqymPMgA1Qg55J6K05Z8hsCdDjAGQCMeMYfZxZVxo9vOdPOGYN
+JGZS5+1x3gM1k5xLwxbd8u3Nikk3OrtoOt4gO/Ckef9XTXMxOYTMGNsX9mheeXJrRtrT25k7NM/LsmsyQzeYNKBQWA
+tKT/RINUsNKaSJL1owsytrmS0XZljFYHZVscvMEDI5zgz/+ACZZcx2QNbFwbTcxVwV1UwB9Lm9mZm8IjOM5x3em7nO
+mjGbV5AdNWal2eCEqWkVaNw7mVl26YyEmwACIVIYCpIKRCSCBCdIIKjCOSJEvvFSggIVKQQiSXGJGuI1FUNcJRTdXe
+kEnHSZBtCIA0evWs0GrAfeM6lh1udLQGYg0WqsIfZBST/DJdh24zWouQR4Xnu+5B83KyavyyzzLvsI0OEOkXeLzDVW
+T82UtM2r0zj1qR99ZWZoSSlCBUpRKhF7zIYJSQK8TkAlhBpm+XVqliQqRWZ2ZS0z0JIx7htqbFmtZqA5Y/26aqaYzp
+llS8bWCnwu+QxgxST3oSMZX0gAEsu55uXNyskrM+vsMbszPfPbecx+Og3zrURmC1ltHGkI7d3R2r8xM5vhUBwPFTmg
+8wLVEFKOsBd16pdNqjIQ53/XNM1ldbJtZvgLDbecNTo38x1lmx1kTaE5BW11K2aNkiRBqoLReWn1O831sr+qPf31r8
+3MNk17oHF3KjM92SllUXQQWYjZHmwclhZGbkGLb8NMNKMSpCkd/Q/MQM9W3Zpp0jqzJk1TO7syW8p2hU33E4YVZ2OT
+x+nTxjpb34TZWaWpfWYXT7fbRtN0e+aX08/N/Em1YVpkNcQsNetsXOQhimzjXN2CWSJePiEz4vteK8ysM6xlppo12/
+2/PpWlzEVWQ8z2z0eT0tmv8XjqHG0sbsAsS+jopZ30/51of5C11DSbPwJkVlnZMG0pm54S4/BDWs4MnYWRdabbZ4bp
+eJ8u2BXaYXZvlZ3MjFll1YY5jcrUETPZvvnDvt21NAxDcRz2RqwSN0VyVP7plEXrfEO0pa3F7/+53FlOmlE6ZhE2Vv
+K77PXDyWlKZZpxlNVKupvuhllsZ8xOBk+zRVdZi+zdtdGZ5bwzAUktNARns/0yi+1/mr30K7OMzJIwyzYSC8ykObwz
+E87Nj1Exi8wSbgizq1ZZWP4B8CjLKpVvYGal9RfRpoBzZltn89bZ28iYxWmWDLrQuF+/yXDLP0DMpeE7iSqT+o1Jlp
+3lSlVLbSxVmGnDD12Xo2QWmbGy7V8BFn3KLLMq3XN/HoqwLjEA5KoYU4mVOAujO84ex8gs7maJHJp/XMxqt5cRwSmD
+51FYIts/xuAjwGjnKa8AsmvOGiU9j4tZ3M3CNNvKbOYxyfYvyuZNrnwNDMj2I5PYVKmkUhssnZE4Q62kySEwm1xMr8
+dd5/fVz/++aR5tZ/akJLf+B2UqlMMYw868sGDMrGJlaaraylSvnGkXFcr1egDMftk52yY3bS4M90M7TdECNsRoE9sS
+m63Ka+Fx4on7eAT//2f1HCGtsB3bCtvxbl7umeUYc7OfrrnPERiCcOaR71v3R9o8azZ743Lr3A5mB5Tt7sba4VX9xO
+aYSTAroMyEmeEM/Im5TmsO1K8fs9mMkB8Ls3cfp6aZ8+XZdtQyDWUfNGVWn1YLzdkpYwtNmQ4zyxn6l5ozk4389WNG
+vR8LM+RsAmZvDi/PwkrTZf63lOE9TEOFpQZowXxKQIeQgXC7Xm/vLnC2MoNe8foxIz8cZm+npRnI8VkAYVeZ0DKTRF
+NmoLDaA0mLpaHMMqa1Xu9OyFRcPto4G/QTs5fXu0H4XLPSZMwcbzaVpinawQwogysZJ9oiSquloswwZrW2YWa1A84e
+nzj7bOPMGbN5qAqNaSGVoki6K8zkFPXEyu+geH1MUB4NO4KikpwqUNL2Y1vQB6rGo47cvxzPhjIPOHs+Zm+uzmbCzP
++jweyDXheeQLOGNrgEj4XsQpghuwvFWXLUNr8CsyjFEvJZ30qlopDuouyZmHUNh506zdMG9iLWtCmQM2NtmpNjdQKU
+cmsf2bpcNKyA2oqcPVGc1eSlpCnbvNuQj5Mxc5/NQhNVKsz0YJaY3DleBayBM/tzskthZhNwocYztDzFWeaOmc96KF
+kFmxfAzEtr0RPJPNIxSggLCSkyQkSk/r6kMrd2a1OPIXk8xsOEsteCGdlA2ZDJmLk/2ZSfhBlcGtvffVmfkabVgNkI
+sIGy3ZlT1DJA+3WccXfMZNNAEaXsgbRI8Bwx6ytWUSnjnKW6K6ZRykr4QwazlOVzKcOWi5Iplyhht5yAmR+SqidqVq
+uAFybVs+RzhuC0g2WGNEqi1bGZsRubfZ4OjoUx4tYZzLKCVeBOqWBNZ+sN9PZID1MfOXFbAozDTLfMRxjMzghxWhx0
+zDVo2J45abFSy1M8w8ZZ5I5Zz3xJeQCIQSnjkhcyZFFQp4Gs8hlNa+Xi+Tzi7bznVNYpnTUC0MSjgFlVxJT1sub+pN
+msGnYCRCyq+lIEpK/gQJgOhqIhnuhHYWbshzYS0KbRnta4MxZ1PfMJrwIvz4mu3wxmIMclQGnDzLTMR2yZZ+PMcGYp
+05idO2kL3iW2TcWZNrTumMm0l1kjEbO6lUiNrHP19Yz76msU4CVZr2JPRFL6PAwBTVkyqVwYgbA7HTNPNb9etKL1B5
+Zirg1NLiIbZnNi7Ee2TOiZjAJXJAR1JENHXhJOVcaZ+u1ghnHmkmbCLjP1/P+YQGs7q/0hZmursyftVyvbNg2MX4FZ
+liNpyFNTDLNZwxko6lMwUD5gFkrlqkrJKEI4HO2Z7JUZwXwGZl2VqZFeAjxiiCkqtMFjuGvDzNhHNmPs1T8JYStAkm
+Rgww2XUFls6s0wIxsoG+KI2fTZTJprZjrMkIcloHBWWxNnjmGGCEPDNKvNtZn6SnfMQobEIGYZwtIWWFGhTbMxZiJS
+++poyZRLazpmbUH0nIVpE7POtkdPlE1zEGbGPrZRH0oBXwfjl11keGIzpFnHu6d6A+l312weNuQeP76fOpu5YFZrFH
+Aycwgz0M5wZjFT20sJuATOzHSmfcIdM1ml2YAZ5b3seSEpo5JWM5lmfiyyY8wyEftZKvHoXDCs0s9LSevpmDVN1wEy
+MVJUC/iuJp7BJS8VKUo1MmXsB7a67eBzj394TCvjIQkxxaqOZBUx9VaYIWceUDYNs19/B7m9ESjVGWXDLFnZXDp/UQ
+M4W1hhmF06BQYzXAUcdk13zEpkSMVWzXiFY1aZMoaLR8FYI48xkw1jAnZpylnNlIvnAZw7eQlAOaogJGIiFQEhUqSs
+NgmmNzbMjH1s6xom8HPBUdRgVrcsjQCvkrHKs/UGGr2LyxWz6U3TLACGMMPettR5c3EVsDhZbV48aZ8MAK/QemGt6c
+BBfFjPPJIYHJn9/+xmk+85Pil+YuuC82/94XJUb6P3R5qImVOaRZoDfc3MIcxAi+FeAGr0A6BL2g5xtlRdc3vyEsef
+v9Dg0tYXwuxh0vvN3C5o5OOeCdAkyRIwuKLtSmFmpDC7cgr+8yQZuuZuMLDXjFkYkpuKdqa+GGb3096h4YQZM+tM0z
+OT1f7uqvYLjdnKpNm1BPwHlxfAMHJmkHzNmAX0u/jFmTtm/3vYPHM2u3RPU1PwN/ZMHWZAzPU4w9lsvQNBXSE5V/QJ
+4ww4G681+y9g9i87Z6wCIAiE4TYrtKEoUWuxENqKwlvE93+sCORqM5ok+uYbP2644/9dKjTc199muSPFyywAefJs4n
+ibNejBRuOA6mEPysFwLrMYZrw0C9NzMpr9DS/sYO+Mflu1wSi+h03bulDSVgmbzAIKTUJI0ujeoCQ3ovz/f9ZqY3Nc
+HAO9CAkPn6c+1OrLT99nf+Wcr4OzqblpbjgqomfOyWw2aaHTRYbxfGk+cS1uZ4Q2Tf7rYZ+YWQ0o32yHq5nomZdJL0
+qLckZkT4ARmFl1zzcLxNRMvDP9WdoPZif6FyqXs+k4MLOJQJyB8mrGTOP9iP8FGbPnUWBm881cgZl8NetJV9E14X/a
+jAIzW82eeUNjmBU989IjZnM6a5vBMxyPAjObb7bHQ5O9AIiPqVkbndL2LTY9sK4pY7Ya8HgWY7O8Yyi1zTfbCszWy6
+Kj+X5LzLAz7NoWycMyEpjh302D9Wm62TtX5npZF9l8s5j3M7wA/HYPTewM+1DaErM1w8wHZsFwMculcIOHnB1gCUGu
+7P/cuFkL2Xyz3c9jdi13Ubfl7JXd/4ictDFgzNQtWyHdkBqXHIYZ+xi8WTbfLPyEGXPFtbxspdI66vW6HWY8XftfUz
+GD2d1i9oV8M2B2+DJmP6QdKNHyOiLM4iTLvJXALA8XR/hFwyR8g4WUmUO3+90iNhrH7vlmC87MlzFD3IbPQmdbYzYz
+HrMjxWzBMXOC3EnirPCLJllw9F64hVSYQ+Mwn8ZxZrC655uhmkVtMYN1gJ2hIqQdZgeG2czYu1nwoaSC2WJPCzBzhL
+oe84rCQsqsfvGWmfjMVPd8MxUz8iXMigLIRU6tMfuQsdXMcZxKNcvyXXCkrRO2l8JCmghzaLyhFGYGq3u+2UrBjO0m
+PLxqxXlKUcxkzK6vNQJmZjfNDS1PeAK8bBYOc4I+vlDMZAsp1Qgwa/QC7H4Ws1Mx0BW6TVpgxu5myHQxFbPt6unxKD
+Bzd9PMC5xstaV+UYYZLKTMHGo+Zt3zzWIVM0LXzR20SsVLs+iZ/NBZWl2hP7vm6VMmjGdl68e7J2M2ZeZPUc22i3Dx
+TJ2gAXWCMjtpQnumMIeOALOmuxn+2cQx45xFWO+lSACV8s/HqIh/ktyeWi2jeQWzcMDOpsd32CtdHFBNn0+qX/QFv2
+eSerMD70vMliVmFJ5Iqws+uhaL9eckRUQyndhqjlIePzvUd8PFzHG9nMtzncyqS75ZjpuWWCRBqOZaEbhOoojzeMY0
+jQ3T7osyXAlCeBsSZla95ZtNOR8cM4YCqRdGF+ktorqlsJUUY467QoQQwkP3JmBm1T3fjPNRFiHRN1HafCH+43kCnc
+7nM7BDqpBfnAWz1XBHfigfA2b2bgbTednriEYArvlfA3dUCXfkBxwDMLPqlG+mTjS4mjDTGOywI6URM8wzTMDMqnu+
+WSJNNGpVtj7N97VYK0apuntYUIaH5kgws01zisvZvF4lKf78qvlkW/TMe4d9YIYXgBmYWXXPNwvKoX5UDxlI8aPlSf
+MxbdEz6ynDC8A1ATOr7vlmSDeoxezTa5Ht/FVqWUEZbb3NlF0GGTxl1WO+2Qa2o1rI5B1NPknVakYpY8VMOV6hDPY5
+QzCz6p5v5kmTs3rKgNldy/ChoAzSXP/RMzcGYGbVKd8MCtA16yEDZXdjNlINqFXKMDXzDMDMqlO+GXQsA3uiqLmSYS
+mmohtmIjX3MvTM4GEkmNl8M0zO8NZUIatgdtPFfqrVTHo5KDt34hFgZvPNlAV01XJGlH6JlnlXZ9RDPWV4Zz6PBjOb
+b4auOcENvhaymiyXaBkppArKoBQ9cxyY2XwzhE/hEQDG0C8hTWY2CiI4IxJlajHbjgEzW82gAI8ALWRQWhtjjL6Jji
+ljhm0oT2PAzOabQRvk3FUoUyFrSNlDOavUMmiC2ewIMLP5ZtBELmdayHD/b2qbkZYyFLNk6Jg9Tl3v/61/ZP39/Vs/
++WbQmyhnJWa+hrLGLMebKGcaykQxDB4Gjtl/7N1db+Q0FAZgLkCAzcTTpJDuAscurMmHvQnTjpZSOf7/PwsfZ2PPxJ
+oq6Sq02t335jhK0qtHtkepjjO2J/Tzzs0sh036m8WYCcnEbEKW5HFBW3bHLChLmE07O/3ame33lH5ZzN7cbdPfLJ3O
+js7ZRWWY44JGxtHqzwsns68HHb48M3S2UX+zmLDmIbMUGWJZsmRi8FvAbMlMD91vXz8z+sUxu96ov1n6Y/Mep7NEmR
+eC9X7RoTmO2QVlE1NFvjJ7+bwZc0fvxsH1Vv3NYmD6YPSR2Smyj1ZwyVySR0/14pKJyV4/M0tPMmRDrBhNfDH+khCa
+ZOfvGGuwhFcw1fzpzBYvyeyOko/OrrfqbxbTxmVznIlCArLFB1MgsyeXzIasZJbZnJknk+fmclhlyuZTmCluY8XAKE
+OWWDpNZxk6/2AtahjvxVeGPqM2GMZrUQtFKKlehtkdPbw5jM6uN+tvln7ZvPdG5sgwiw9zOvpeQamyY9j/r2RmQSr+
+tJPmqdtWGNs7iu0zmbW9sqEuYEaElk6SVjg0kdkUfUKqVehR0wJehhk9uHKgntkG/c2SxMPvA7PkK9HCPOKfCMqS99
+u1zKQ2hvHyU5hhqu55zAwYZacazBSyiMxy4VKHFZNR9CgYPQlYBTVxNE0FIMLKWeFbA2GCi5wOHaDPqu1hGtNWQkfo
+Frme5XaD/maXl80P2LgnZfa4WBnOiCmzsOTWZC0zyF3ZF1O76rx2l6o0IhfQOJe55PXErAFoVbmDwqlyj2rJFUNmVp
+mGc9hjG+xMsJ2+Ws6sblGNr5FZIRwx2TKXXjsow4D3QtzFwEvJ1T4wkwVplKs7WjVDAFDw2uLVHgZK+2q4cjg7UZJp
+nAt87fUyW7U3w9TRWZjOkiVvWR5Cv7xUGZDVzCreWKy+XbU2rXJjYQ13l05gydui5SMzLUpWc5vxwk9wpSqv6hqZ5d
+Lsmi7Dd3HMeL6YmZWoJlYMWFRGpZAu4/6rqug5sx1X2dACoUhxoGAdRk6QmT59lFSCd8QvmgTGFbXTcezxcvNKmK3v
+oZEGTg4yD8oik5XMZsrCxo6tZ2Zsz0GbPfdTV2Tm7HWd0T0KHJnJ1pgiMsPkYmQ2LpoFvzK1NiZbvGgOYo9qQvUBEO
+R8b2YVpclshhItRYqGAs5rgkVmMaXUnlnJhUtHuzaO4Qo5l5sxowdXDtQz26K/WRoWN1epsxUH0x2xYeiMWVCmyWpm
+mEzz0m+xSh6Zjf2Eu8YEU34DB4FZ0QgQZ8ycsQyu1uzNGAcADtVUR2Zlo86YFYLMmOFD42AMjNPSnJk1ruTSMzNAfb
+o2jhUKA0M3yC3mhh5uD/QGh2836W+Wpo3OLnyOXITsve+kgcxSZT1Zz+yqxaIqNs1mEi0FZr5zdT8yk7kxeCKEu4X8
+dF/MZjOTq7xf9xMA9ct8CBUDBVXNCbNBMhwN5SkzrQZqYeIHilAtKTLLkSgbbzT9QIe+ogQXRul8NRaZhbFWA762FT
+N0RlAZMtumv1maOrZiTL4UuR4tx2XIkJk/BDhVBuQZzHZQGVOCNaLy7apLXpqWB2alG1o+MmtksWu4f5JBY7raZCow
+02qHf0whxWq/kFlUE6tnRkQembUcAHpayrMXGi4gwAMrQO48M6KAUMgoZqi54LXD20BOjQLoBs9sGtMGQJntmKEzVI
+bMNt6bxajLznxPg4cnpd0/vH83KvOLZrovA/McZo4JB659b2rAGanjvJOBmdHAVdOMImvOK7AmBy66xjABUAVme8kd
+rgYcNsbtFh+b2tmmazDnlzTGiNknhvSRIdRt8naerfqbpZHBzIfZb0VsBYQNth8uHAh8dMY8sqlldvrjgRdkFbOYPT
+trV53NdvCFL9MtsLG/NZYYRNx12/2HRrMcZ9nQl03K7Haz/mZpILoZnUVm2Modob3/619nLWC7vz8+PLiuUwHZubIP
+URkj65mtDzK7GNYAM0vCGF0ftnziMbtXx+xm80UzxkRn94+nzrBFS4CGeRcTjAVkQdkxKivJ/8PMFuZi9potPeu8JP
+TzTcrs79vDf+zdUUvDMBSGYS8UNZyKbERRYyuWzjkVlYQESvH//yxJAyfJUpOrQrHnuRrs9mUbdHxnxn2z1BMgE3TG
+LWFvBjxjaZEdRuYrMzJT2bLHDbZ4U/+/+grd333PsG+W0wFS/Ci08TpFi2dQsDCbmG3MReYXplBzzZadWaq6WpFqhn
+2zgk9A0rho+FgZhmZLs3aOfdnaxqJ/ZvQSUF2xGTJbMNo3K9uDp3ruGkPClXbTBnBhKhmYxTHjlWVG+2ZlmyYOLSas
+4OjO1Ca7hsALW2FmtG9WNnSQCU1wMZrec8HI/I//dWZG+2Zle8iEJibgmxgZfmFSZrRv9pdNDSGp+0xnHGkJkXdGmd
+EiUM4roKS06cq0gtjbwCgz2jfL23ZwRCrNUdyYSR92NgfGKDP6NCs61JCQUmnTc89oJSWkftk7m97GeasNv4u+aKtU
+X1QAJhsezkIQRRESPF3mHv7/n9XnUOaMnO9UThCo58IAikWaG14gZXt4n6FgRDPJN3sbb18JZmG7XoBYMtFM8s12iP
+YmFIriQJoJ+/PN3kbP9CHJJl8Uh9BM+Hi+2S789F7HLC9kB9BM2JFvtoM4mrcUo8WjKA6gmbAr32y/avZFxZxvC+YA
+mgl78832o9WwmAvBpjlocNOhNBP255tdn6NrJuzPNxPNBHxBvploJnxBvploJnxBvploJnxBvploJnxBhoZoJnxJvt
+kW0az7efvjzO3P7rPGPcLJJvkIsIOftxt+fta4R9o0ZTX7OLi9AEzdgil1ddVxma7GywS1KXDwacizWd3hPQz1i/Pz
+cX78WXFyKqvtwQTSuOa4jLJ4nlEDY8CZaL/ls9lBNLMv6qL8tlvEJUPYr8Pdzem3ZqTz5Urjvq2ZjWC+gWY78s12Uw
++xuKSpv1KzYX5NM1xBB/x6+K3ZNKepNvqiQkGv0SwmZXg7vnx03KxZnGiK8AuAOSBas2hYMktazQZrljZpFpbqiJvm
+SKoYiQmFIaJ+brYhCEOxJRoio4r0BuPi9TQbw2KcRnRhW4EiVZRALjthY5qOuWxtC6h1fuJEfeSLmTQQe548qPhezX
+7e3N3+1kyZDnDB6McVCtwI3TeYxk6b+MFxs2Z1Km+gW2pRUc05zd6hsqqEG9Z6BxNrFmz7fU82/WOvZss4jrEwNM6W
+bPeSZiCrlCGkN0xE6mqaOasb56BobrXxeX5TRQkmcDNFhL5ulxmTB5bA81Mbnry2NqoKtjpPHnr3Hs2K0+39zenhj2
+bRBbSmM/pxhYJ5YdnT3XH84LhZs7CAHcYSeOTShDKv0G5A74EqItpPtWx/vtlezVZh2KBiprnwVhVF3yfNlB2Lyhk7
+Y91DHTXrGyKZ62k2AtFAUQmEJWuWN81cdgK9ArTh5ooa1ixNnm6DS/3z5JV4j2Y/b36eeGv7o1m0GGaYJxUKmpl6j0
+jmL9wHx82areUNHNQE59MqvOisGUiDiUTLN87Q2K+ZB3DWrKG+COSLwhjWTFOPoqcwEGf+I3q+rl72VF9NswGoCaoH
+EO1Ws23ZCZhEVZlOLWl+5hHMnAxQefLwLs0eTje8tW00g41Ww+jHFQqAUpmY7n583K4GDzQ4JKNKU5su3R9MmTXrFY
+AW0TR2OE6+2VPNmGrVrCDaaOaMrYqa5qaZuFETWZ01cxSvrZkB4Kc8v1mzXHaCrwnnF5U0Cw5AV6Y5RJ6892nGPpwe
+LjULtgeMflyhwClUVsEOKJ3/6LjKtNUynMsbaGCeHFBPDTSVmELSbLBtOfSIlrsdJt/sqWYuhIDnVjOipeALwwFT0D
+3pvJpRc23NaCgbG/L8IkzlRdmJYergZyBOLJPLk1dro6GnJk+ej+/7GvWBbWCyZh35pFnd0+8KBTYiGv7kgbo35KqP
+jls6oqkBvCXrAURSAEZjjWIHJ9YMs6FeI1q+Ux8l3ywTZhTuuWezQEMBYs2WiUKhaSiYOOqC2z7h2SxvmjPRpgIFV5
+Q4T5UZbOTpML0GwBIkN5Ul4wFvDV8GY60Cpnnfj0JPKxR050v534zbNttBoim3JQ3K86U7Zr4ZM9IyELUbzca5J9ux
+QcOSNBs6QzWMUcpaaLLeG4r5k2a8driB6h/Pbwnk1y9MR3dxab/7T+fBhuPnm12ChahXxUYzon5sC17SaLRJsyKSRd
+2vz2TKEBm/+d7s+podnRD/BxOBquYlA8vnXzfNZ54FaCIOhuSbyVkAYf9q9vWIZpJvth/RTPLNRLNvi+Sb7Uc0k3yz
+r0c0k3yz/Yhmkm/2zRHNJN9MNBMk30yQfDPRTPLNRDNB8s2Oj+SbiWaC5JsJkqEhmkm+mWgmSL7Z1yNIvpkgz2aimT
+ybiWbCd803E80E2TSFw+WbiWbC/nwz0UzYn6EhmgnfL99MNBP255uJZsJX55uJZsLX55t9f81Od/e3t/d3JwgHyDf7
+ppp1d7dn7jpcHUESgbJln+yZIPlmybLMHRJVVDVQzjUyr1Vp47uvIchqdrq94AQA0fQTjagmjUdEC+btu4Lkmz1dzO
+5Op/MfANAHoCaNxH7NBMk3u09y3fxF8uweAIwH0HSwNayyZkxVR8gNA6LNhcCYXEuM74aephrOA5Wt1yJiiG40CgDq
+hXrV81vJKqRBAw8MnHseHMk3W7dK1mzdPgFgoDnylTTINdoo6FTBbWShzoXAAKRaYtF4vqt73TqHMLGRuYiYoqFOHf
+u50dYAi688lSDXelraSDr3PBySb/a2ZogLmbBqFoF5xuAALEmz4HJ1zVxLLG+ayqKjFi7kImLKIlFzP2/AdDyoBkwE
+ep97HhnJN8ub5j1rtv6FlSqsOlANdmyt4MaanQuBeQC5lhj/60ZrjAVcqEwLMkzF7UzSMBrA98amQVdRJ5974thIvt
+ndWubodLp/yB8B2uTQNGw0CwvfYc34VSbXEosWYemgLKAmtSAXEcua1VQB3qwfKy41457HR/LN1q3yx8PDj/yFBkoz
+ANrEjWY1hXqgpNm5EBiAXEuM784O1WT5vZMChj4VEcuaYVq0sgbRtAgXmuWeLyKr2XG/no2WDAVsNENc7LhumvB5z8
+y1xPhubckMFsBIJXIRsawZ2tkuyqQaY6PdapZ7HhDJN3v7x6amxgVtBDCF/JbHtcSYFol5fqaIWOwA3+caY5kd1d8k
+3+yQP513ZvbO1G/WEqtH7vQE14fReOxD8s2O/x+BmmEO9du1xBru9JTSz0OEIPlm10OQfDNBMjREM9FM8s0EyTcTzS
+TfTDQT5Nmsjsp7FWt8FoLkm3VR6a4oOq1ih09BkHyzLuriJlHoT/JMkE1T6183Z35pjTNdjUxQeB2lcsfnGwTJN2ti
+cfObIjbZEIvMGPA68wiMmjs+bWAEyTfT7c2GVm80ey9sk43PNzCC5Juti1mmiBvN4kRTTIvUGCbj8mmm0Vg9k1VQDk
+Cv2SZLZuGOK2Nw1MekWeWMGdHaFlALOmd6jzQcgHxeKh+L2gydex4EyTeLNxdsNKvTaSYNN8DZ2DgHRpFvHYVutPAT
+ABuTTVaV3HHFGdUFU3NDmDttFKYAbp7GTpvI7Q2AfF4qH4vaDJ17XiD5ZkfULCwAXEiajUA0uQGRgJq2mvGFO+oYY4
+1k5ORTA1C6gbtW1DRUAuPIwzH5vFQedzN07nkQJN9MX26am2ezJMnokmZD8iofI9EGaKl8RrPRWpvEBOaRG7Qz1oyo
+qFUTIpm/SCMy+bxUPha1GTr3PAiSb6a7rWadPn+Z4ft1rXHDK5r1AMyFZituBjAFbuhDmRYvF5xHTUn03DGfl8rHoj
+ZDc88DIflmLX9tlvmlWwDKtNUyQFNEJP2yZpo0PK2aTWGrGUUoqrnBKGgzArE3FWAHlM7njvm8VD4WtRk69zwKkm9W
+N380W0+alI5oagBvyXq8rBlmovm8aSozbTQbLRkPbvBkem6HcexVb8hVuWM+L5WPRW2Gzj2PguSbVbo5r2e/Gl0h0T
+ZIdHidaiNCiQxr1CLTrq0mgunKZ89LtdiSex4HWc1Q1borbm6KTtcV9pI1e0ScplfOSx0eyTdjWq1j1LrFldBPzIm+
+evm81NGQfLNjIPlmopkg+WZHRPLNRDNB8s32I0i+mWgm+Wai2X/YO5vWhmEYDO+wsS9cJ87BN1kX4zQNzR8Q+f8/a5
+tqHbLCWKCDNXl1qPBBt4faEPQ+/g7r/vLNgNn73ZXfWr4ZMANmkFADs63kmwEzYIa3GTC7WSHfzHf62/6GmmIdmK0r
+5Jtx+GrTFTnHeDUQyTowQ77ZbTDjGZgh3+wPMCtMfSsyZ5qibv+aQ4zDRWQ4kPUqOFQhok00k673+gGYXRXeZlzmzz
+oVGTk25ywuzW7oL9u/CmBQc2HuVWRoXQWHVYhYJ/qjxNzImNz2MUO+2dpizp+Viiq8XPKORvft0uwomvrLemAREyLW
+ifPU6MABl+bKfLNdXZoUL6f5lKZomJm50ESG1kMWqUJEm2jOKQ94m+HS/BkzFRImLyJdIWeYeVJzoWlZa1fMTIhoE+
+ICzWsxA2Y7+zcruXOFxZ8aicmZJczMhVxcm0lqV8xMiFgn+iAHDhLH/WCGfLP1mKmQ0IsUYg4igXUhzsyFkRONJNYV
+MxmYaLCJmVXNP5LbE2bIN1tfh4XQ0C0XgjtZ9MWhtQPeZv8x3wzfNPEVADIdYLaxfDNghrcZFuiAGfLNsHJyy/pg7w
+xWm8cBILyHXXbXRZYtH3STdDG2ZWG/wFjv/1i7SiLi/k7XLCRNEfNBKVRGp4+Epp0ZNgIxQMd+M2pG+Gr2Mgj7zcqH
+/WbUjLDfjLDfjOvA7DfjOjBhvxnXgdlv9v514JMQ8FkWWE/HA8J+s8M68FkI+DHRAcoDcT0eEPabHdaBz0LAX2s2LY
+8PCPvNDuvAj0PA7lMI2ClngnJmgjAdMAzJpsla08Q5XzsG44akWd7+HT1QO5muXMQtMYxrglj1QJytU/urcXuyBNhv
+dpxtPQ8B27H1dm2j1bXtgGlJNolpqe8T6coubTQe0eXt3zADqkfoZbsu18QwAPTLNUm8+hQs3l2dn7zAiuMSNbtgB/
+T+YQjYasBEoPc7zdK3pFkbY9RQVgBhTQcJ5dDZFmNArwBtso85c4dEZ/Xu6vxkAbDf7LgOvM8z2cchYCuvys2PNFPO
+ufUabooO0eXtX4yhNi2sSdSXcyAniHOweHd1fhIZTuoXtA58HgLeaybS4fJJsyvKAPAzosvbv1CzWpGuTGTN7r0IGv
+isWa9QCOw3O64Dn4eA9y64QUhz1Sz0YqeZHUTjAqLL278QZlZIV8IvWTNgXrVyJgeLd1fnJznbWuA68CEEbHsJTMYZ
+BSgz/6qZstbdXs2a3jZ3zfo0HQxEl7d/gckKXHPF+q5Zu7hVmRws3l2dnywA9psd14HPQ8CZ3cnhVPWoxS+PLAsSos
+OO2AG+z8HiPflJapbgOvAjVI9fkJORODL2YTIe5LTfjOvAR5p4+EmQeIDwyxBRNOw3I3zTpGbUjK9m5H39ZtSMsN/s
+50PN2G9Gyu83Y1ULANG1TdO0ncBbKL/fjMVTEhCtqLZtq0T7Ls/K7zejZqLFdgXv8qz8fjNq1oktIzo2Ar0GatZWW6
+Zq2W/2GqhZkzSTQSbNGpQCX82k1hIABvkjNJMXy1S4fEcpsN/MGWdsAIz+Ns22WvyXZiLoTQdRkmbsN3MKiDZ+o2YY
+lA/V15pV9bZtdZU0Y79ZSZphHpJm9WjMBL8CWEKe/nXeLbf9XxHaZ2jmm4+PGL/U7I5kv1lZmhmfNAtLp41qbYvayt
+v0L+yqu1tYWFr1DM1k+vIFacZ+s3PcpPzs2tubphgHrAFqztO/sBrIYeH6afMTXhakGfvNznH9vA4SSTM9Gmem5Njo
+8/QvrARyWBjP0iz6D2p2KDcof7b1olkfBMYJwkjT5enfpFne/32aZtpvH/wV4KTfrFjNjII2E7DMI/L0b9Ish4XF0D
+xFMxk2fqBx0m9WsGbemn6ZgGjVffrXSuT9X2njMzRrQ1XQx7PsN/v/tEhEI5DoDid4hmbD9C/DV5rt/tgk2W9WcBYg
+OP/Gv2liy6Bhv1nJmkW8T7Ou3jJ1x36zF8F/a5RiuyKkYBz4NVAz1LJDtVXoZM1+s5fByEndSK21bGr2m1GzVyIS7D
+ejZoRVLYT9ZtSMmrHfjPBNk5qx34yaEfabfTuE/WaE/WbUjP1m1Iyw3ww/1jMiUEy/GcQP9YwIgWL6zSrgH3bgWAAA
+AAABGEFG8+dKo6Nl0lF27t0GYBiGglgKB/7sP7C3uMIghxDUvDtBEQiCvhkE1wyCvhkEfTMI+mYQ9M0g6JtB0DeDoG
+8GQd8Mgr4ZBH0zCPpmEPTNIOibQTAHhqBvBkHfDN7om+E3g6BvBq/0zbjsnE2P6ygWhmfRrZl5UWzHtoR9FweyQP6U
+3XhbwP//WQPkumJF6UpVrq9aqcmjckwOcHQWj0gqWJgiS3+VrDDYAr1U9a9SLfq7fGi+MNkR7FfBMTPYoKt90N/kfL
+MXRcb2ICuwYamrPaiXR883M0t9+km9GPzTvEjB9gApNtTVPtSPnm+2lBsW/NO84GwfODaU1T6Uj55vVpcbVllNCk82
+4tPkDl/GdUfe4B68+b/XDC5h9xjxoWb1Tapq+dq/BuWj55udVsUWU5YnnBkFB8AlPk33dRk49QfX4iOKDnAtvkSe3w
+g8s2Z2oFkOYB9Dxdc1q7TVFt4zfeVaCNykfPR8s1WziumLZmrofr9mzYR7pIQv03Q3As+s2dz6Wzf8Bs0WBKN0Xdul
+3hIDNykfPd9s1czYt3fNUkrprNnsABWuFL2iuUhkArgZzr9JEShmUn3QrKWZA4eW5IhChtkGfECAD0K5tQ+ubUjl6I
+SQGZ9DBqFyhbwFMHB040DgPquDIyF7Pl/PjLiBBgd0/UztppKYNjkXC9d25GLgiTVLhPU321iWDzSDMcmVHH2oVzSB
+sXSmObmn2am+QTAsAmZ9S9v4umh7Dtzi9OD5ZqtmC6vKd82aLrrFZWhxMSEjpEOatC2GHmhHIzj6FoG2Q6oKdOSSbg
+CGqUjlCMnRCIexgyej/JCLZO1zoj/0BNNMBk4Bakq4JOQDEOa1PhPm3OTCgFMccjXzPSelaCUv2mlTSUi7FuvEWJgY
+eGLNnGJnDsMB08SYmJBJznJZoJuZkdzm0t7TrLxFxfRS+3ttq7pcdF3ZpdTWh2LgFqfHTgSKBUCXNdNvlyzEMbZRM6
+7QjHJVyskggxEFqDc4M7UFPN0EFML4PyBX6EaoscPs4BlnADxZ+xwBIB4UDg5lAkC+0axBxFCKlOKQ65lArA/tGNwC
+p00lIe1arJPf4EOzb7fuKMZExljTsMExZjPWdz4ss4c0K2ttmfZCoSoj2mumyzIGPquZ53Or2cIWbd8uWZyYplkcgm
+YgMxyHdMphOklSwlASfHCDmDkCxSRU/vO7mUicBJAKuLlQiQKZaGKDwHufAqDcqlkM841mI4B+IClWza5nvudspjg6
+E5tKQtq1WKeeX7NoVsQ2SsqgmWFBLjrGaEfS4x7RLFJhOVtVaWvDarasmj26mv3xN5q9acaqTZa2zfNc9VGzOVcYR5
+lgnA/RiKlvc3gODeEnjviqWSYQxTDUN1DBnHXlMWbtu9LsKAzQE/IQJn4Wh1Lgotn1zO1qFjXbVBLTxmK/iWZGmOiY
+7VvL+EWzwfkwQivwkGZLHV5wtiroph/Q7D+R+6tZ8Ey/XbIYkcb1JGrWyw6pVMDUwswScAMZHIcCXBh4wkIn3aoZVI
+ODvzBIjkaOCKTCgYts7bvSDEObOkngIkUvzpo5Snw7RSKOYcj1TA8nHq5Vs00l/bAWex7vA0+tGWvUgdlpZt3EbHvR
+rFdg48AKOrJkxh3NfpxuoXV5KrX2jeV0stWptktsxsBNfnywmq1ntfz9z7Nvb5ufZ3sFTyKyoFkmHCAbIJNEowRAE4
+CGpMwRcFJSh3fNjgPFASMBXHBEcknUY+271iyZ5JwT0AnRqbM4aAU1MgUm6p26nrnmlDlWzTaVFEoUsdhVsxB4Zs1Y
+R1K0YAdFsr9oxhoilTDmJFHOHtKs1Mwyr9qpstpfVutVMx/4rGZxS3PzqfnnH7+22ZQgYCS/vIscsAUGNzh80MfNT7
+XNptuYO1k3oVuVJN9qsymx8YarsN3e2Fc1i9Rb627039dsu9fk2Wfr3M0DdqZVfUM9fiOvPc0fe/HhLsB+JwK53mBv
+8q7h+J28ntA47WTZ6ePV7F/P8rzZi2PK9iA9YkO1k2bVx09oPI1mLwzfYT1Dyg026NNfO0j210n/j307RoEQBsIoPG
+DW/BsQIan0FGu/eP9jLSwIhhQWZgrhfQdI9ZhMirSZqarsKZlhmvd81z5PqbIt6+euddnSZWaKIT0Cvvd5HXq5m6n7
+NANCjJL5/zoH34HN7QkAtLuZ+e1m4NI8yBR9MgPTzA5yegKAzKLM+9IEmclOHDIDQp2ZJD00MzDNwDSTb2ZAaKaZQk
+k9ASVIsjNpzKknII9Rpjqz15B6Aoa2MsWxZ2fAMEbJav/Ockk9ACUPP/bsKAUAEIQBaI7Quv+FEwZD8gbR+3G4A/jh
+dTL1b3KfW9BZiYmDuYJ2z/S/R2IGGbrDnh2kMBDCYBTu4plM7n/hNmngpw1zgTbfQhAXbh4KGgKnXzNmZ+6nWAEjBc
+SttWj2dl7c6zvzJrMRGgptWAuxdIqnK43MMjQvyswwJAhZCzHMRmc6zeQqXZlC+6gMiD+2iIbMyM48zOa1qXuz8S1I
+vSkpatLjD6/vOvFkvwxSGIBBINjDOm3//+FSoguhxAekzsXEvQ6K+gGzJPtqlpJ1nvWa2QHZB3ddbs0n3wFhz4IlWU
+4z78ydV3kWBXE0bRisWLsyuytgqQaBQcigf2YgNSuCsGS9Zr4C9oGWyNWSgQrcy3pzPjmIjUjNvDCfR8t8BtRESzgh
+hECCfCHlVzfmk6MPe3awAiAMA0HUy0z8/y8WLEElUj2XvOtel6UlVpICPpasfjeDpPiuNS4x/KrZuXjPookIptZEwN
+Kx2MuVafJAG7hTAeu6IaYMV807Bz3YMYMUgEEgBvYS9f8vLmUou3QL7t2MCEpALzIEJWWNUcmoZcVlu34GKlD4EBzL
+cOc4I3f+BZFRzJBZ12e5pE1VjInv2PzKOqwoaKBfqxmDhTRfFi5rg8+ekZE4Nd3DjM0ZufObvTpWARgGgTB8S7n//Z
++4kDPJVkjX+IE63OAi6DqFhfUuDyAxGbw9o9LHqIWV3JJ3voExIXQEEOEvrTHpD0QY6mYD36xR9bZbBisAglAQ9Pb8
+/y+O3sRa0skKQnesiwu7l4Gqh2ExrFj7dopWGZzAv5CCZx8nzZ3XzCWEfskQbZysuCc6BVfKnUPheQ4d9FG8MqZcDM
+OP16AwXwb2NS6Y1O3MuXNVZPQ5bPR7aDFd7vz3GLMBISPo2ng8xdwAAAAASUVORK5CYII=" width="614" height="440" alt="The startup window as it appears under macOS">
+<figcaption>Windows, Linux and BSD (if built with GTK support) have similar startup windows with the same options.</figcaption></figure>
 
-	<h2><a name="maphack">Map Hack scripts</a></h2>
+			<p>The game communicates on UDP port 23513 by default, so if you intend to play across the Internet you may need to forward that port through relevant firewalls of the system hosting the game.</p>
 
-	<p>"Map Hack" scripts are files that override certain aspects of a map file when it is rendered in OpenGL
-	Polymost mode. Currently they allow for angle adjustment on sprites, and the ability to prevent particular
-	sprites from being drawn as a model. These are useful for making small corrections to ornamental sprites in
-	a way that doesn't require modifying the original map.</p>
-	<p>The game will automatically load a map hack script whenever a map is loaded. The script should have the
-	same base name as the original .MAP file, but with an .MHK extension. The map hack language is described
-	below. It uses the same parser as DEF files, so you can use comments in the same way.</p>
+			<h2>Command-line launching</h2>
+			<p>The general command line syntax to use on each platform is:</p>
+			<ul>
+				<li>(Linux, in a terminal) <code>/path/to/jfduke3d/duke3d [options] -net [net options]</code></li>
+				<li>(macOS, from a Terminal window) <code>open /Path/To/JFDuke3D.app --args [options] -net [net options]</code></li>
+				<li>(Windows, from a Command Prompt window) <code>x:\path\to\jfduke3d\duke3d.exe [options] -net [net options]</code></li>
+			</ul>
 
-	<dl>
-		<dt>sprite <em>number</em></dt>
-		<dd>Begins a sprite definition. <em>number</em> is the sprite number to affect. You can find this in
-		the Build editor by highlighting the sprite in 2D mode and pressing Control+Tab. The next group of
-		commands describe the changes to make to the sprite.
-		<dl>
-			<dt>notmd<br />
-			notmd2<br />
-			notmd3</dt>
-			<dd>Prevents the sprite from being drawn as a model. It gets drawn as a regular sprite
-			instead. <strong>notmd2</strong> and <strong>notmd3</strong> are synonyms for
-			<strong>notmd</strong>.</dd>
+			<p>Multiplayer games can use either of two communication modes: hosted (a.k.a. master/slave mode) and peer-to-peer. Peer-to-peer is more difficult to use over the Internet and more troublesome to correctly configure. In all modes you must know the exact number of players as the game will not start until all players are present.</p>
 
-			<dt>nomdanim<br />
-			nomd2anim<br />
-			nomd3anim</dt>
-			<dd>Prevents model animation from playing if the sprite is being drawn as a model.
-			<strong>nomd2anim</strong> and <strong>nomd3anim</strong> are synonyms for
-			<strong>nomdanim</strong>.</dd>
+			<h2 id="multiplayer-hosted">Hosted (master/slave) mode</h2>
+			<p>Choose a system to be the host of the game, and each other player will connect to that host.</p>
+			<p>The <em>"net options"</em> for this mode are:</p>
+			<ul>
+				<li><code>-p<em>portnum</em></code> &mdash; host the game on a different UDP port to the default 23513.</li>
+				<li><code>-nm</code> &mdash; be host of a 2-player game.</li>
+				<li><code>-nm:<em>num</em></code> &mdash; be host of a <em>num</em>-player game.</li>
+				<li><code>-nm <em>host-name-or-ip</em></code> &mdash; join a game hosted by <em>host-name-or-ip</em>.</li>
+				<li><code>-nm <em>host-name-or-ip:port</em></code> &mdash; join a game hosted by <em>host-name-or-ip</em> on non-default port <em>port</em>.</li>
+			</ul>
 
-			<dt>angleoff <em>angle</em><br />
-			angoff <em>angle</em></dt>
-			<dd>Adds <em>angle</em> to the angle of the sprite just before it is rendered. This is good
-			for fixing up things like toilet sprites that are facing the wrong way.
-			<strong>angoff</strong> is a synonym for <strong>angleoff</strong>.</dd>
-		</dl></dd>
-	</dl>
+			<p>For example, a three-player hosted game is launched like so:</p>
+			<ol>
+				<li>(Player 1, hosts) <code>duke3d -name Player1 -net -nm:3</code></li>
+				<li>(Player 2, joins) <code>duke3d -name Player2 -net -nm host1</code></li>
+				<li>(Player 3, joins) <code>duke3d -name Player3 -net -nm host1</code></li>
+			</ol>
 
-	<p>Here is an example map hack script:</p>
-<pre>// Map hack file for JFDuke3D
-// Level: E1L2.MAP (Original Atomic Edition version)
-// Prepared by jf@jonof.id.au
+			<h2 id="multiplayer-p2p">Peer-to-peer mode</h2>
+			<p>In this mode each player sends data to each other player in the game directly, which is only really practical in non-firewalled LAN-like environments. The list of peers specified on the command line must be consistently ordered amongst all players, and each peer will launch the game with slightly different options.</p>
+			<p>The <em>"net options"</em> for this mode are:</p>
+			<ul>
+				<li><code>-p<em>portnum</em></code> &mdash; communicate with other peers on a different UDP port to the default 23513.</li>
+				<li><code>-np <em>ordered-peer-list&hellip;</em></code> &mdash; participate in a peer-to-peer game.</li>
+				<li><code>.</code> or <code>*</code> &mdash; identify the local machine in the ordered peer list.</li>
+				<li><code><em>host-name-or-ip</em></code> &mdash; identify a peer at <em>host-name-or-ip</em> in the ordered peer list.</li>
+				<li><code><em>host-name-or-ip:port</em></code> &mdash; identify a peer at <em>host-name-or-ip</em> on non-default port <em>port</em> in the ordered peer list.</li>
+			</ul>
 
-// Invisible switch behind hand dryer in toilet of porn shop
-sprite 191 notmd2
+			<p>For example, a three-player peer-to-peer game is launched like so:</p>
+			<ol>
+				<li>(Player 1) <code>duke3d -name Player1 -net -np . host2 host3</code></li>
+				<li>(Player 2) <code>duke3d -name Player2 -net -np host1 . host3</code></li>
+				<li>(Player 3) <code>duke3d -name Player3 -net -np host1 host2 .</code></li>
+			</ol>
 
-// Invisible switches on telephones near billiards room in club
-sprite 254 notmd2
-sprite 517 notmd2
+			<h1 id="nam">NAM Support</h1>
 
-// Toilet in restroom in club
-sprite 478 angoff -512</pre>
+			<p>Because it was trivial to do so, the commercial Duke3D-based game &ldquo;NAM&rdquo; is supported
+			by JFDuke3D. Here is how to use it:</p>
+			<ol>
+				<li>Find the GAME.CON and NAM.GRP files from your copy of NAM.</li>
+				<li>Rename GAME.CON to NAM.CON and put it in the JFDuke3D directory.</li>
+				<li>Copy NAM.GRP to the JFDuke3D directory.</li>
+				<li>Run JFDuke3D and select NAM from the Game tab in the "Game or Addon" list. If you have disabled
+				the startup window from automatically showing, you can run DUKE3D.EXE passing the <code>-setup</code>
+				switch to display it, or enable the "Show startup window" option in the Options &rarr; Game Options
+				menu inside the game, or you can run DUKE3D.EXE passing the <code>-nam</code> to enable NAM mode
+				directly.</li>
+			</ol>
 
-	<h2><a name="hightile">Hightile</a></h2>
+			<h1 id="console">Console Commands</h1>
 
-	<p>This release features the "Hightile" texturing improvements to Polymost. Hightile allows Polymost to use
-	true-colour textures instead of the artwork in the game's usual .ART file.</p>
-	<p>Replacement textures can be saved as JPEG, PNG (alpha channel supported), TGA, BMP, CEL, GIF, and PCX
-	formats. Hightile uses Ken Silverman's picture library to provide rapid picture file loading.</p>
-	<p>Hightile textures are defined in the DUKE3D.DEF file. See the <a href="#deffile">DEF-file language</a>
-	reference for information on how to specify Hightile textures.</p>
-	
-	<h3>Limitations to Hightile</h3>
-	<ul>
-		<li>Hightile will squash or stretch the replacement to fit in the dimensions of the original tile
-		it replaces. Artists should keep their replacements in the same ratio as the original tile for the
-		art to not look distorted.</li>
-	</ul>
-	
-	<h2><a name="hightile-zip">ZIP file support</a></h2>
+			<p>This is a list of more useful console commands and settings and their purpose:</p>
 
-	<p>Duke (and Build games in general) can load game resources from a ZIP file.</p>
-	<p>ZIP files are used in Duke in the same manner as extra GRP files are specified. Use the "/g" command-line
-	switch to specify the ZIP to load. eg. <code>DUKE3D.EXE /gMYFILE.ZIP</code></p>
+			<dl>
+				<dt>changelevel &lt;episode&gt; &lt;level&gt;</dt>
+				<dd>Warps to a new level.</dd>
 
-	<h2><a name="polymost">Polymost</a></h2>
+				<dt>clear</dt>
+				<dd>Clear the console.</dd>
 
-	<p>Polymost is a full 3D implementation of the Build engine renderer, with hardware acceleration capability,
-	and perspective in six degrees of freedom. In Ken's own words (copied from POLYMOST.C in my Build engine
-	source distribution):</p>
-	<pre>
-"POLYMOST" code written by Ken Silverman
-Ken Silverman's official web site: http://www.advsys.net/ken
+				<dt>glinfo</dt>
+				<dd>Displays some information about the OpenGL driver. Use "glinfo exts" to display supported OpenGL extensions.</dd>
 
-Motivation:
-When 3D Realms released the Duke Nukem 3D source code, I thought somebody would do a OpenGL or
-Direct3D port. Well, after a few months passed, I saw no sign of somebody working on a true
-hardware-accelerated port of Build, just people saying it wasn't possible. Eventually, I realized
-the only way this was going to happen was for me to do it myself. First, I needed to port Build to
-Windows. I could have done it myself, but instead I thought I'd ask my Australian buddy, Jonathon
-Fowler, if he would upgrade his Windows port to my favorite compiler (MSVC) - which he did. Once
-that was done, I was ready to start the "POLYMOST" project.
+				<dt>glmultisample &lt;0, 1, 2, &hellip;&gt;</dt>
+				<dd>Enable OpenGL multisample antialiasing. 0 disables it. You need
+				to use "restartvid" to apply any changes to this value.</dd>
 
-About:
-This source file is basically a complete rewrite of the entire rendering part of the Build engine.
-There are small pieces in ENGINE.C to activate this code, and other minor hacks in other source
-files, but most of it is in here. If you're looking for polymost-related code in the other source
-files, you should find most of them by searching for either "polymost" or "rendmode". Speaking of
-rendmode, there are now 4 rendering modes in Build:
+				<dt>gltextureanisotropy &lt;level&gt;</dt>
+				<dd>Sets the OpenGL anisotropic filtering level. The default is the highest level supported by the hardware.</dd>
 
-    rendmode 0: The original code I wrote from 1993-1997
-    rendmode 1: Solid-color rendering: my debug code before I did texture mapping
-    rendmode 2: Software rendering before I started the OpenGL code (Note: this is just a quick
-                hack to make testing easier - it's not optimized to my usual standards!)
-    rendmode 3: The OpenGL code
+				<dt>gltexturemode &lt;mode-number&gt;</dt>
+				<dd>Sets the OpenGL texturing mode. Valid values are:
+				<table class="center" cellpadding="2" rules="cols" border="1">
+					<tr><td>0</td><td>GL_NEAREST</td></tr>
+					<tr><td>1</td><td>GL_LINEAR</td></tr>
+					<tr><td>2</td><td>GL_NEAREST_MIPMAP_NEAREST</td></tr>
+					<tr><td>3</td><td>GL_LINEAR_MIPMAP_NEAREST (bilinear)</td></tr>
+					<tr><td>4</td><td>GL_NEAREST_MIPMAP_LINEAR (gives an unfiltered appearance like the original software renderer)</td></tr>
+					<tr><td>5</td><td>GL_LINEAR_MIPMAP_LINEAR (trilinear, the default)</td></tr>
+				</table></dd>
 
-The original Build engine did hidden surface removal by using a vertical span buffer on the tops
-and bottoms of walls. This worked nice back in the day, but it it's not suitable for a polygon
-engine. So I decided to write a brand new hidden surface removal algorithm - using the same idea
-as the original Build - but one that worked with vectors instead of already rasterized data.
-	</pre>
-	<p>Polymost is the default renderer choice for any video mode with a colour depth greater than 256
-	colours.</p>
-	<p><strong>NOTE:</strong> If your computer does not have an OpenGL graphics card, Polymost in OpenGL mode
-	will most likely use the default Windows OpenGL rasterising facility which does all rendering in software.
-	This may be extremely slow. If your Windows installation doesn't have any form of OpenGL rendering ability,
-	Polymost will probably crash.</p>
-	<p><strong>NOTE 2:</strong> OpenGL Polymost has been tested on an nVidia Riva TNT 16MB, an nVidia GeForce2
-	GTS 32MB, an nVidia GeForce4 Ti4600 128MB, an nVidia GeForce 6800GT 256MB, an ATi Radeon Mobility 9000 64MB,
-	and a 3D-Labs Oxygen GVX420 128MB (minor texturing issues).</p>
+				<dt>glusetexcompr &lt;0 or 1&gt;</dt>
+				<dd>Enables or disables the use of OpenGL texture compression for replacement textures. You need
+				to use "restartvid" to apply any changes to this value.</dd>
 
-	<h2>Console Commands</h2>
+				<dt>god</dt>
+				<dd>Enables God mode.</dd>
 
-	<p>This is a list of console commands and variables and their purpose:</p>
+				<dt>help &lt;name&gt;</dt>
+				<dd>Displays a help message for a particular console variable or command.</dd>
 
-	<dl>
-		<dt>changelevel &lt;episode&gt; &lt;level&gt;</dt>
-		<dd>Warps to a new level.</dd>
-		
-		<dt>dumpbuildinfo</dt>
-		<dd>Displays the compilation information for the game when it was built.</dd>
+				<dt>listsymbols</dt>
+				<dd>Displays the names of all commands and variables available in the console.</dd>
 
-		<dt>echo &lt;text...&gt;</dt>
-		<dd>Displays to the console what is passed as parameters to the command.</dd>
+				<dt>map &lt;mapname&gt;</dt>
+				<dd>Loads a user map.</dd>
 
-		<dt>fileinfo &lt;filename&gt;</dt>
-		<dd>Displays some information about a given file, eg. size, CRC-32 checksum.</dd>
+				<dt>noclip</dt>
+				<dd>Disables player collisions with world objects.</dd>
 
-		<dt>glinfo</dt>
-		<dd>Displays some information about the OpenGL driver.</dd>
+				<dt>novoxmips &lt;0 or 1&gt;</dt>
+				<dd>Disables or enables the use of voxel mipmaps to improve voxel visual quality.</dd>
 
-		<dt>glredbluemode &lt;0 or 1&gt;</dt>
-		<dd>Enables or disables the red-blue stereovision mode in OpenGL. This mode is experimental
-		at this time. We know the flicker is nasty and the menu background will mix into the screen.
-		To avoid the menu bug, run the game in fullscreen mode and type "glredbluemode 1" AFTER
-		beginning the game. Sorry, there is no way to change parallax or separation. Do not contact
-		us about bugs with this mode... if you do, we'll think twice about documenting hidden features
-		in future releases. :P</dd>
+				<dt>osdrows &lt;num&gt;</dt>
+				<dd>Sets the number of visible lines of the console when it is open.</dd>
 
-		<dt>gltextureanisotropy &lt;level&gt;</dt>
-		<dd>Sets the OpenGL anisotropic filtering level.</dd>
+				<dt>restartvid</dt>
+				<dd>Reinitialise video to apply settings changes.</dd>
 
-		<dt>gltexturemode &lt;mode-number&gt;</dt>
-		<dd>Sets the OpenGL texturing mode. Valid values are:
-		<table class="center" cellpadding="2" rules="cols" border="1">
-			<tr><td>0</td><td>GL_NEAREST (looks rather like the original software renderer)</td></tr>
-			<tr><td>1</td><td>GL_LINEAR</td></tr>
-			<tr><td>2</td><td>GL_NEAREST_MIPMAP_NEAREST</td></tr>
-			<tr><td>3</td><td>GL_LINEAR_MIPMAP_NEAREST (bilinear)</td></tr>
-			<tr><td>4</td><td>GL_NEAREST_MIPMAP_LINEAR</td></tr>
-			<tr><td>5</td><td>GL_LINEAR_MIPMAP_LINEAR (trilinear)</td></tr>
-		</table></dd>
+				<dt>screencaptureformat &lt;0 or 1&gt;</dt>
+				<dd>0 = Targa, 1 = PCX</dd>
 
-		<dt>glusetexcompr &lt;0 or 1&gt;</dt>
-		<dd>Enables or disables the use of OpenGL texture compression for hightile textures. You need
-		to use 'restartvid' to apply any changes to this value.</dd>
+				<dt>usegoodalpha &lt;0 or 1&gt;</dt>
+				<dd>If 1, a lower alpha cutoff value is used when rendering textures with transparency, which
+				gives better looking transparent textures at the expense of some sprites behind the transparent
+				item potentially being invisible in certain circumstances. 0 is a more compatible value (and is
+				the default) for this option but slight visual degradation will result.</dd>
 
-		<dt>god</dt>
-		<dd>Enables God mode.</dd>
+				<dt>vidmode &lt;bpp&gt;<br>
+				    vidmode &lt;xdim&gt; &lt;ydim&gt; [bpp [fs]]</dt>
+				<dd>Change the video mode. <em>xdim ydim</em> are the resolution. <em>bpp</em> is the colour depth (8, 16, 24, 32). <em>fs</em> is 0 for windowed, 1 for fullscreen.</dd>
+			</dl>
 
-		<dt>help &lt;name&gt;</dt>
-		<dd>Displays a help message for a particular console variable or command.</dd>
+			<h1 id="license">License</h1>
+			<p>JFDuke3D is free software; you can redistribute it and/or modify it under the terms
+			of the GNU General Public License as published by the Free Software Foundation; either version 2
+			of the License, or (at your option) any later version.</p>
+			<p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+			without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+			<p>See the <a href="GPL.TXT">GNU General Public License</a> for more details.</p>
+			<p>The JFBuild engine used in JFDuke3D is used under the terms of the
+			<a href="buildlic.txt">BUILD Source Code License</a>.</p>
+		</section>
 
-		<dt>listsymbols</dt>
-		<dd>Displays the names of all commands and variables available in the console.</dd>
-
-		<dt>map &lt;mapname&gt;</dt>
-		<dd>Loads a user map.</dd>
-
-		<dt>noclip</dt>
-		<dd>Disables player collisions with world objects.</dd>
-
-		<dt>novoxmips &lt;0 or 1&gt;</dt>
-		<dd>Disables or enables the use of voxel mipmaps to improve voxel visual quality.</dd>
-
-		<dt>osdrows &lt;num&gt;</dt>
-		<dd>Sets the number of visible lines of the console when it is open.</dd>
-
-		<dt>quit</dt>
-		<dd>Exits the game.</dd>
-
-		<dt>restartvid</dt>
-		<dd>Resets the video system, reinitialising the video mode.</dd>
-
-		<dt>screencaptureformat &lt;0 or 1&gt;</dt>
-		<dd>0 = Targa, 1 = PCX</dd>
-
-		<dt>setrendermode &lt;mode&gt;</dt>
-		<dd>Sets the current Polymost render mode.</dd>
-
-		<dt>setstatusbarscale &lt;percent&gt;</dt>
-		<dd>Sets the size of the status bar as a percentage of its original full-width size. Minimum size is
-		10%, maximum 100%.</dd>
-
-		<dt>showcoords &lt;0 or 1&gt;</dt>
-		<dd>Same as typing "DNCOORDS" cheat.</dd>
-
-		<dt>showfps &lt;0 or 1&gt;</dt>
-		<dd>Shows/hides the framerate counter. Same as typing "DNRATE" cheat.</dd>
-
-		<dt>spawn &lt;tile-number or name&gt; [pal] [cstat] [angle] [x y z]</dt>
-		<dd>Places a sprite of the given tile number or name at the current position, or if given, the "x
-		y z" location. A name is a label defined in the CON code. The sprite may be spawned with a
-		specific palette, cstat value, and angle if those parameters are given.</dd>
-
-		<dt>usegoodalpha &lt;0 or 1&gt;</dt>
-		<dd>If 1, a lower alpha cutoff value is used when rendering textures with transparency, which
-		gives better looking transparent textures at the expense of some sprites behind the transparent
-		item potentially being invisible in certain circumstances. 0 is a more compatible value (and is
-		the default) for this option but slight visual degradation will result.</dd>
-
-		<dt>usehightile &lt;0 or 1&gt;</dt>
-		<dd>Disables or enables the use of Hightile textures in GL Polymost mode if any are defined.</dd>
-
-		<dt>usemodels &lt;0 or 1&gt;</dt>
-		<dd>Disables or enables the use of 3D models in GL Polymost mode if any are defined.</dd>
-
-		<dt>usevoxels &lt;0 or 1&gt;</dt>
-		<dd>Disables or enables the use of voxels in the classic renderer if any are defined.</dd>
-
-		<dt>vidmode [xres yres] [bpp]</dt>
-		<dd>Changes the current video mode. You may pass either a new resolution (eg 640 480),
-		a new colour depth (eg 32), or both a resolution and colour depth (eg 640 480 32).</dd>
-
-		<dt>bpp &lt;colourdepth&gt;</dt>
-		<dd>Sets the display colour depth. Does not apply it immediately though. You need to use
-		'restartvid' after setting this if you want to apply the change.</dd>
-	</dl>
-	
-	<address>Happy Duke'ing!<br />
-		Jonathon Fowler (<a href="mailto:jf@jonof.id.au">jf@jonof.id.au</a>)</address>
+		<footer>Jonathon Fowler (<a href="mailto:jf@jonof.id.au">jf@jonof.id.au</a>)</footer>
+	</div>
 </body>
 </html>
 

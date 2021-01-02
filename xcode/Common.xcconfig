@@ -1,7 +1,11 @@
 // By default the binary is signed to run locally.
 CODE_SIGN_IDENTITY = -
+CURRENT_PROJECT_VERSION = 1.0
 
 // Copy xcode/Signing.xcconfig.sample to xcode/Signing.xcconfig
 // and then update the signing settings to personalise.
 #include? "Signing.xcconfig"
 
+// Copy xcode/Version.xcconfig.sample to xcode/Version.xcconfig
+// to set version properties.
+#include? "Version.xcconfig"
