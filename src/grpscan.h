@@ -48,6 +48,13 @@ struct importgroupsmeta {
     int (*cancelled)(void *data);
 };
 
+enum {
+    IMPORTGROUP_COPIED = 2,     // A file was imported.
+    IMPORTGROUP_SKIPPED = 1,    // Identified, but passed over.
+    IMPORTGROUP_OK = 0,         // Nothing good nor bad.
+    IMPORTGROUP_ERROR = -1,
+};
+
 int ScanGroups(void);
 void FreeGroups(void);
 int ImportGroupsFromPath(const char *path, struct importgroupsmeta *cbs);

@@ -97,15 +97,16 @@ static void FreeGroupsCache(void)
 }
 
 // Compute the CRC-32 checksum for the contents of an open file.
-static unsigned int ChecksumFile(int fh)
+static unsigned int ChecksumFile(int fh, struct importgroupsmeta *cbs)
 {
     int b;
     unsigned int crc;
-    unsigned char buf[16*512];
+    unsigned char buf[16384];
 
     crc32init(&crc);
     lseek(fh, 0, SEEK_SET);
     do {
+        if (cbs && cbs->cancelled(cbs->data)) return 0;
         b = read(fh, buf, sizeof(buf));
         if (b > 0) crc32block(&crc, buf, b);
     } while (b == sizeof(buf));
@@ -179,7 +180,7 @@ int ScanGroups(void)
             if (fstat(fh, &st)) continue;
 
             buildprintf(" Checksumming %s\n", sidx->name);
-            crcval = ChecksumFile(fh);
+            crcval = ChecksumFile(fh, NULL);
             close(fh);
 
             grp = (struct grpfile *)calloc(1, sizeof(struct grpfile));
@@ -239,35 +240,42 @@ void FreeGroups(void)
     }
 }
 
+enum {
+    COPYFILE_OK = 0,
+    COPYFILE_ERR_EXISTS = -1,
+    COPYFILE_ERR_OPEN = -2,
+    COPYFILE_ERR_RW = -3,
+    COPYFILE_ERR_CANCELLED = -4,
+};
+
 // Copy the contents of 'fh' to file 'fname', but only if 'fname' doesn't already exist.
-// Return: 0 on success, -1 on 'fname' existence, -2 on create error, -3 on r/w error.
-static int CopyFile(int fh, int size, const char *fname)
+static int CopyFile(int fh, int size, const char *fname, struct importgroupsmeta *cbs)
 {
-    int ofh, r;
+    int ofh, b, rv = COPYFILE_OK;
     char buf[16384];
 
     ofh = open(fname, O_WRONLY|O_BINARY|O_CREAT|O_EXCL, BS_IREAD|BS_IWRITE);
     if (ofh < 0) {
-        if (errno == EEXIST) return -1;
-        return -2;
+        if (errno == EEXIST) return COPYFILE_ERR_EXISTS;
+        return COPYFILE_ERR_OPEN;
     }
     lseek(fh, 0, SEEK_SET);
     do {
-        if ((r = read(fh, buf, sizeof(buf))) < 0) {
-            close(ofh);
-            return -3;
+        if (cbs->cancelled(cbs->data)) {
+            rv = COPYFILE_ERR_CANCELLED;
+        } else if ((b = read(fh, buf, sizeof(buf))) < 0) {
+            rv = COPYFILE_ERR_RW;
+        } else if (b > 0 && write(ofh, buf, b) != b) {
+            rv = COPYFILE_ERR_RW;
         }
-        if (r > 0 && write(ofh, buf, r) != r) {
-            close(ofh);
-            return -3;
-        }
-    } while (r == sizeof(buf));
+    } while (b == sizeof(buf) && rv == COPYFILE_OK);
     close(ofh);
-    if (size != lseek(fh, 0, SEEK_CUR)) return -3;  // File not the expected length.
-    return 0;
+    if (size != lseek(fh, 0, SEEK_CUR)) rv = COPYFILE_ERR_RW;  // File not the expected length.
+    if (rv != COPYFILE_OK) remove(fname);
+    return rv;
 }
 
-static int ImportGroupFromFile(const char *path, int size)
+static int ImportGroupFromFile(const char *path, int size, struct importgroupsmeta *cbs)
 {
     char buf[12];
     int i, fh, rv;
@@ -275,22 +283,33 @@ static int ImportGroupFromFile(const char *path, int size)
     struct grpfile *grp;
 
     fh = open(path, O_RDONLY|O_BINARY, S_IREAD);
-    if (fh < 0) return -1;
+    if (fh < 0) return IMPORTGROUP_OK;  // Maybe no permission. Whatever.
 
     lseek(fh, 0, SEEK_SET);
-    if (read(fh, buf, 12) != 12 || memcmp(buf, "KenSilverman", 12)) { close(fh); return 0; }
+    if (read(fh, buf, 12) != 12 || memcmp(buf, "KenSilverman", 12)) {
+        close(fh);
+        return IMPORTGROUP_OK;
+    }
 
-    crcval = ChecksumFile(fh);
+    crcval = ChecksumFile(fh, cbs);
 
     for (i = 0; grpfiles[i].name; i++) {
         if (grpfiles[i].crcval == crcval && grpfiles[i].size == size)
             break;
     }
-    if (!grpfiles[i].name) { close(fh); return 0; }
+    if (!grpfiles[i].name) {
+        close(fh);
+        return IMPORTGROUP_OK;
+    }
 
-    switch (CopyFile(fh, grpfiles[i].size, grpfiles[i].importname)) {
-        case -1: rv = 1; break;  // Skipped.
-        case 0: // Copied. Add to the identified files list.
+    switch (CopyFile(fh, grpfiles[i].size, grpfiles[i].importname, cbs)) {
+        case COPYFILE_ERR_CANCELLED:
+            rv = IMPORTGROUP_OK;
+            break;
+        case COPYFILE_ERR_EXISTS:
+            rv = IMPORTGROUP_SKIPPED;
+            break;
+        case COPYFILE_OK: // Copied. Add to the identified files list.
             grp = (struct grpfile *)calloc(1, sizeof(struct grpfile));
             grp->name = strdup(grpfiles[i].importname);
             grp->crcval = crcval;
@@ -299,9 +318,11 @@ static int ImportGroupFromFile(const char *path, int size)
             grp->ref = &grpfiles[i];
             grp->game = grpfiles[i].game;
             foundgrps = grp;
-            rv = 2;
+            rv = IMPORTGROUP_COPIED;
             break;
-        default: rv = -1; break; // Errored.
+        default:
+            rv = IMPORTGROUP_ERROR;
+            break;
     }
     close(fh);
     return rv;
@@ -317,7 +338,7 @@ static int ImportGroupsFromDir(const char *path, struct importgroupsmeta *cbs)
     cbs->progress(cbs->data, path);
 
     dir = Bopendir(path);
-    if (!dir) return 0;
+    if (!dir) return IMPORTGROUP_OK;    // Maybe no permission.
 
     while ((dirent = Breaddir(dir))) {
         if (cbs->cancelled(cbs->data)) break;
@@ -334,22 +355,24 @@ static int ImportGroupsFromDir(const char *path, struct importgroupsmeta *cbs)
         snprintf(subpath, subpathlen, "%s/%s", path, dirent->name);
 
         if (dirent->mode & BS_IFDIR) {
-            int r = ImportGroupsFromDir(subpath, cbs);
-            if (r > 0) found += r;
-            else if (r < 0) { errors += -r; break; }
+            switch (ImportGroupsFromDir(subpath, cbs)) {
+                case IMPORTGROUP_COPIED: found = 1; break;
+                case IMPORTGROUP_ERROR: errors = 1; break;
+            }
         }
         else {
-            int r = ImportGroupFromFile(subpath, dirent->size);
-            if (r == 1) buildprintf("Skipped %s\n", subpath);
-            else if (r == 2) { buildprintf("Imported %s\n", subpath); found++; }
-            else if (r < 0) { buildprintf("Error importing %s\n", subpath); errors++; break; }
+            switch (ImportGroupFromFile(subpath, dirent->size, cbs)) {
+                case IMPORTGROUP_SKIPPED: buildprintf("Skipped %s\n", subpath); break;
+                case IMPORTGROUP_COPIED: buildprintf("Imported %s\n", subpath); found = 1; break;
+                case IMPORTGROUP_ERROR: buildprintf("Error importing %s\n", subpath); errors = 1; break;
+            }
         }
         free(subpath);
     }
     Bclosedir(dir);
-    if (found > 0) return found;         // Finding anything is considered fine.
-    else if (errors > 0) return -errors; // Finding nothing but errors reports back errors.
-    return 0;
+    if (found) return IMPORTGROUP_COPIED;   // Finding anything is considered fine.
+    else if (errors) return IMPORTGROUP_ERROR; // Finding nothing but errors reports back errors.
+    return IMPORTGROUP_OK;
 }
 
 int ImportGroupsFromPath(const char *path, struct importgroupsmeta *cbs)
@@ -357,22 +380,22 @@ int ImportGroupsFromPath(const char *path, struct importgroupsmeta *cbs)
     struct stat st;
     int found = 0, errors = 0;
 
-    if (stat(path, &st) < 0) return -1;
+    if (stat(path, &st) < 0) return IMPORTGROUP_OK;
 
     if (st.st_mode & S_IFDIR) {
-        int r = ImportGroupsFromDir(path, cbs);
-        if (r > 0) found += r;
-        else if (r < 0) errors += -r;
+        switch (ImportGroupsFromDir(path, cbs)) {
+            case IMPORTGROUP_COPIED: found = 1; break;
+            case IMPORTGROUP_ERROR: errors = 1; break;
+        }
     } else if (st.st_mode & S_IFREG) {
-        switch (ImportGroupFromFile(path, st.st_size)) {
-            case 0: break; // Not a GRP.
-            case 1: buildprintf("Skipped %s\n", path); break;
-            case 2: buildprintf("Imported %s\n", path); found++; break;
-            default: buildprintf("Error importing %s\n", path); errors++; break;
+        switch (ImportGroupFromFile(path, st.st_size, cbs)) {
+            case IMPORTGROUP_SKIPPED: buildprintf("Skipped %s\n", path); break;
+            case IMPORTGROUP_COPIED: buildprintf("Imported %s\n", path); found = 1; break;
+            case IMPORTGROUP_ERROR: buildprintf("Error importing %s\n", path); errors = 1; break;
         }
     }
 
-    if (found > 0) return found;         // Finding anything is considered fine.
-    else if (errors > 0) return -errors; // Finding nothing but errors reports back errors.
-    else return 0;
+    if (found) return IMPORTGROUP_COPIED;         // Finding anything is considered fine.
+    else if (errors) return IMPORTGROUP_ERROR; // Finding nothing but errors reports back errors.
+    return IMPORTGROUP_OK;
 }
