@@ -1,3 +1,26 @@
+//-------------------------------------------------------------------------
+/*
+ Copyright (C) 2007-2021 Jonathon Fowler <jf@jonof.id.au>
+
+ This file is part of JFDuke3D
+
+ Duke Nukem 3D is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+ See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+//-------------------------------------------------------------------------
+
 #ifndef RENDERTYPEWIN
 #error Only for Windows
 #endif
@@ -6,21 +29,25 @@
 #define _WIN32_WINNT 0x0600
 #define _WIN32_IE 0x0600
 
-#include "compat.h"
-#include "winlayer.h"
-#include "build.h"
-#include "duke3d.h"
-#include "grpscan.h"
-
 #include <windows.h>
+#include <shlobj.h>
+#include <objbase.h>
 #include <windowsx.h>
 #include <strsafe.h>
 #include <commctrl.h>
 #include <uxtheme.h>
 #include <shellapi.h>
+
+#include "compat.h"
+#include "winlayer.h"
+#include "build.h"
+#include "startwin.h"
+#include "grpscan.h"
+
 #include <stdio.h>
 
 #include "gameres.h"
+#include "version.h"
 
 #define TAB_CONFIG 0
 #define TAB_GAME 1
@@ -36,6 +63,11 @@ static struct soundQuality_t {
     { 11025, 16, 2 },
     { 0, 0, 0 },    // May be overwritten by custom sound settings.
     { 0, 0, 0 },
+};
+
+struct importstatus_t {
+    HWND hwndDlg;
+    BOOL cancelled;
 };
 
 static HWND startupdlg = NULL;
@@ -143,24 +175,25 @@ static void populate_game_list(BOOL firstTime)
 
     ZeroMemory(&lvi, sizeof(lvi));
 
-    if (firstTime) {
-        hwnd = GetDlgItem(pages[TAB_GAME], IDC_GAMELIST);
+    hwnd = GetDlgItem(pages[TAB_GAME], IDC_GAMELIST);
+    if (!firstTime) {
+        ListView_DeleteAllItems(hwnd);
+    }
 
-        for (fg = foundgrps, i = 0; fg; fg = fg->next, i++) {
-            if (!fg->ref) continue;
+    for (fg = foundgrps, i = 0; fg; fg = fg->next, i++) {
+        if (!fg->ref) continue;
 
-            lvi.mask = LVIF_PARAM | LVIF_TEXT;
-            lvi.iItem = i;
-            lvi.iSubItem = 0;
-            lvi.pszText = (LPTSTR)fg->ref->name;
-            lvi.lParam = (LPARAM)fg;
-            ListView_InsertItem(hwnd, &lvi);
+        lvi.mask = LVIF_PARAM | LVIF_TEXT;
+        lvi.iItem = i;
+        lvi.iSubItem = 0;
+        lvi.pszText = (LPTSTR)fg->ref->name;
+        lvi.lParam = (LPARAM)fg;
+        ListView_InsertItem(hwnd, &lvi);
 
-            ListView_SetItemText(hwnd, i, 1, (LPTSTR)fg->name);
-        
-            if (fg == settings->selectedgrp) {
-                ListView_SetItemState(hwnd, i, LVIS_SELECTED, LVIS_SELECTED);
-            }
+        ListView_SetItemText(hwnd, i, 1, (LPTSTR)fg->name);
+
+        if (fg == settings->selectedgrp) {
+            ListView_SetItemState(hwnd, i, LVIS_SELECTED, LVIS_SELECTED);
         }
     }
 }
@@ -185,7 +218,10 @@ static void set_page(int n)
 
 static void setup_config_mode(void)
 {
-    set_page(TAB_CONFIG);
+    if (!settings->selectedgrp)
+        set_page(TAB_GAME);
+    else
+        set_page(TAB_CONFIG);
 
     CheckDlgButton(startupdlg, IDC_ALWAYSSHOW, (settings->forcesetup ? BST_CHECKED : BST_UNCHECKED));
     EnableWindow(GetDlgItem(startupdlg, IDC_ALWAYSSHOW), TRUE);
@@ -350,6 +386,161 @@ static void startbutton_clicked(void)
     retval = STARTWIN_RUN;
 }
 
+static INT_PTR CALLBACK importstatus_dlgproc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    switch (uMsg) {
+        case WM_INITDIALOG:
+            SetWindowLongPtr(hwndDlg, DWLP_USER, lParam);
+            return TRUE;
+        case WM_COMMAND:
+            switch (LOWORD(wParam)) {
+                case IDCANCEL: {
+                    struct importstatus_t *status = (struct importstatus_t *)GetWindowLongPtr(hwndDlg, DWLP_USER);
+                    status->cancelled = TRUE;
+                    return TRUE;
+                }
+            }
+            break;
+
+        default: break;
+    }
+
+    return FALSE;
+}
+
+static void importmeta_progress(void *data, const char *path)
+{
+    struct importstatus_t *status = (struct importstatus_t *)data;
+    SetDlgItemText(status->hwndDlg, IDC_IMPORTSTATUS_TEXT, path);
+}
+
+static int importmeta_cancelled(void *data)
+{
+    struct importstatus_t *status = (struct importstatus_t *)data;
+    MSG msg;
+
+    // One iteration of the a modal dialogue box event loop.
+    msg.message = WM_NULL;
+    if (!status->cancelled) {
+        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+            if (msg.message == WM_QUIT) {
+                PostQuitMessage((int)msg.wParam);
+                status->cancelled = TRUE;
+            } else if (!IsDialogMessage(status->hwndDlg, &msg)) {
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+            }
+        }
+    }
+
+    return status->cancelled;
+}
+
+static void chooseimport_clicked(void)
+{
+    BROWSEINFO info;
+    LPITEMIDLIST item;
+    char filename[BMAX_PATH+1] = "";
+
+    ZeroMemory(&info, sizeof(info));
+    info.hwndOwner = startupdlg;
+    info.pszDisplayName = "Import game data";
+    info.lpszTitle = "Select a folder to search.";
+    info.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI | BIF_NONEWFOLDERBUTTON;
+    item = SHBrowseForFolder(&info);
+    if (item != NULL) {
+        if (SHGetPathFromIDList(item, filename)) {
+            struct importstatus_t status;
+            struct importgroupsmeta meta = {
+                (void *)&status,
+                importmeta_progress,
+                importmeta_cancelled
+            };
+
+            status.cancelled = FALSE;
+            status.hwndDlg = CreateDialogParam((HINSTANCE)win_gethinstance(), MAKEINTRESOURCE(IDD_IMPORTSTATUS),
+                startupdlg, importstatus_dlgproc, (LPARAM)&status);
+
+            EnableWindow(startupdlg, FALSE);
+
+            if (ImportGroupsFromPath(filename, &meta) > 0) {
+                populate_game_list(FALSE);
+            }
+
+            EnableWindow(startupdlg, TRUE);
+            DestroyWindow(status.hwndDlg);
+        }
+        CoTaskMemFree(item);
+    }
+}
+
+static INT_PTR CALLBACK importinfo_dlgproc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    switch (uMsg) {
+        case WM_INITDIALOG: {
+            HWND hwnd;
+
+            SetDlgItemText(hwndDlg, IDC_IMPORTINFO_HEADER,
+                "JFDuke3D can scan locations of your choosing for Duke Nukem 3D game data");
+            SetDlgItemText(hwndDlg, IDC_IMPORTINFO_TEXT,
+                "Click the 'Choose a location...' button, then locate a folder to scan.\n\n"
+                "Common locations to check include:\n"
+                " \x95 CD/DVD drives\n"
+                " \x95 GOG.com installation folders\n"
+                " \x95 Steam library folders\n\n"
+                "To play the Shareware version, download the shareware data (dn3dsw13.zip), unzip the file, "
+                    "then select the folder where DUKE3D.GRP is found with the 'Choose a location...' option.");
+
+            {
+                // Set the font of the header text.
+                HFONT hfont = CreateFont(-12, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, ANSI_CHARSET,
+                    OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
+                    TEXT("MS Shell Dlg"));
+                if (hfont) {
+                    hwnd = GetDlgItem(hwndDlg, IDC_IMPORTINFO_HEADER);
+                    SendMessage(hwnd, WM_SETFONT, (WPARAM)hfont, FALSE);
+                }
+            }
+            return TRUE;
+        }
+
+        case WM_DESTROY:
+            // Dispose of the font used for the header text.
+            {
+                HWND hwnd = GetDlgItem(hwndDlg, IDC_IMPORTINFO_HEADER);
+                HFONT hfont = (HFONT)SendMessage(hwnd, WM_GETFONT, 0, 0);
+                if (hfont) {
+                    DeleteObject(hfont);
+                }
+            }
+            return TRUE;
+
+        case WM_COMMAND:
+            switch (LOWORD(wParam)) {
+                case IDCONTINUE:
+                    EndDialog(hwndDlg, 1);
+                    return TRUE;
+                case IDOK:
+                    EndDialog(hwndDlg, 0);
+                    return TRUE;
+            }
+            break;
+
+        default: break;
+    }
+
+    return FALSE;
+}
+
+static void importinfo_clicked(void)
+{
+    const char *sharewareurl = "https://www.jonof.id.au/files/jfduke3d/dn3dsw13.zip";
+
+    if (DialogBox((HINSTANCE)win_gethinstance(), MAKEINTRESOURCE(IDD_IMPORTINFO), startupdlg, importinfo_dlgproc) == 1) {
+        ShellExecute(startupdlg, "open", sharewareurl, NULL, NULL, SW_SHOW);
+    }
+}
+
 static INT_PTR CALLBACK ConfigPageProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg) {
@@ -404,6 +595,16 @@ static INT_PTR CALLBACK GamePageProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 
             return TRUE;
         }
+        case WM_COMMAND:
+            switch (LOWORD(wParam)) {
+                case IDC_CHOOSEIMPORT:
+                    chooseimport_clicked();
+                    return TRUE;
+                case IDC_IMPORTINFO:
+                    importinfo_clicked();
+                    return TRUE;
+            }
+            break;
         default: break;
     }
     return FALSE;

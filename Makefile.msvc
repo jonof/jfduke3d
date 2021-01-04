@@ -75,7 +75,7 @@ LINK=link
 OURCFLAGS=/nologo /MD /J $(flags_cl)  \
 	/I$(INC) /I$(EINC) /I$(MACTROOT) /I$(AUDIOLIBROOT)\include \
 	$(ENGINEOPTS)
-LIBS=user32.lib gdi32.lib shell32.lib ws2_32.lib comctl32.lib comdlg32.lib uxtheme.lib xinput9_1_0.lib
+LIBS=user32.lib gdi32.lib shell32.lib ws2_32.lib comctl32.lib comdlg32.lib ole32.lib uxtheme.lib xinput9_1_0.lib
 LINKFLAGS=/opt:ref /nologo $(flags_link) /LIBPATH:$(AUDIOLIBROOT)\third-party\msvc\lib$(PLATFORM)
 RFLAGS=/nologo /i$(EINC) /i$(SRC) $(flags_rc)
 EXESUFFIX=.exe
