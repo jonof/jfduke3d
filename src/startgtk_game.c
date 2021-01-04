@@ -1,3 +1,26 @@
+//-------------------------------------------------------------------------
+/*
+ Copyright (C) 2007-2021 Jonathon Fowler <jf@jonof.id.au>
+
+ This file is part of JFDuke3D
+
+ Duke Nukem 3D is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+ See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+//-------------------------------------------------------------------------
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -10,8 +33,8 @@
 #include "compat.h"
 #include "baselayer.h"
 #include "build.h"
+#include "startwin.h"
 #include "grpscan.h"
-#include "duke3d.h"
 
 #define TAB_CONFIG 0
 #define TAB_GAME 1
@@ -58,12 +81,20 @@ static struct {
 
     GtkWidget *gametable;
     GtkListStore *gamelist;
+
+    GtkWidget *chooseimportbutton;
+    GtkWidget *importinfobutton;
+
+    GtkWindow *importstatuswindow;
+    GtkWidget *importstatustext;
+    GtkWidget *importstatuscancelbutton;
 } controls;
 
 static gboolean startwinloop = FALSE;
 static struct startwin_settings *settings;
 static gboolean quiteventonclose = FALSE;
 static int retval = -1;
+
 
 extern int gtkenabled;
 
@@ -179,18 +210,16 @@ static void populate_game_list(gboolean firsttime)
     GtkTreeIter iter;
     GtkTreeSelection *sel;
 
-    if (firsttime) {
-        gtk_list_store_clear(controls.gamelist);
+    gtk_list_store_clear(controls.gamelist);
 
-        for (fg = foundgrps; fg; fg = fg->next) {
-            if (!fg->ref) continue;
-            gtk_list_store_insert_with_values(controls.gamelist,
-                &iter, -1,
-                0, fg->ref->name, 1, fg->name, 2, fg, -1);
-            if (fg == settings->selectedgrp) {
-                sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(controls.gametable));
-                gtk_tree_selection_select_iter(sel, &iter);
-            }
+    for (fg = foundgrps; fg; fg = fg->next) {
+        if (!fg->ref) continue;
+        gtk_list_store_insert_with_values(controls.gamelist,
+            &iter, -1,
+            0, fg->ref->name, 1, fg->name, 2, fg, -1);
+        if (fg == settings->selectedgrp) {
+            sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(controls.gametable));
+            gtk_tree_selection_select_iter(sel, &iter);
         }
     }
 }
@@ -202,7 +231,11 @@ static void set_settings(struct startwin_settings *thesettings)
 
 static void setup_config_mode(void)
 {
-    gtk_notebook_set_current_page(GTK_NOTEBOOK(controls.tabs), TAB_CONFIG);
+    if (!settings->selectedgrp) {
+        gtk_notebook_set_current_page(GTK_NOTEBOOK(controls.tabs), TAB_GAME);
+    } else {
+        gtk_notebook_set_current_page(GTK_NOTEBOOK(controls.tabs), TAB_CONFIG);
+    }
 
     // Enable all the controls on the Configuration page.
     gtk_container_foreach(GTK_CONTAINER(controls.configbox),
@@ -245,6 +278,8 @@ static void setup_config_mode(void)
 
     populate_game_list(TRUE);
     gtk_widget_set_sensitive(controls.gametable, TRUE);
+    gtk_widget_set_sensitive(controls.chooseimportbutton, TRUE);
+    gtk_widget_set_sensitive(controls.importinfobutton, TRUE);
 
     gtk_widget_set_sensitive(controls.cancelbutton, TRUE);
     gtk_widget_set_sensitive(controls.startbutton, TRUE);
@@ -260,6 +295,8 @@ static void setup_messages_mode(gboolean allowcancel)
     gtk_widget_set_sensitive(controls.alwaysshowcheck, FALSE);
 
     gtk_widget_set_sensitive(controls.gametable, FALSE);
+    gtk_widget_set_sensitive(controls.chooseimportbutton, FALSE);
+    gtk_widget_set_sensitive(controls.importinfobutton, FALSE);
 
     gtk_widget_set_sensitive(controls.cancelbutton, allowcancel);
     gtk_widget_set_sensitive(controls.startbutton, FALSE);
@@ -350,6 +387,129 @@ static gboolean on_startgtk_delete_event(GtkWidget *widget, GdkEvent *event, gpo
     return TRUE;    // FALSE would let the event go through. We want the game to decide when to close.
 }
 
+static void on_importstatus_cancelbutton_clicked(GtkButton *button, gpointer user_data)
+{
+    g_cancellable_cancel((GCancellable *)user_data);
+}
+
+static int set_importstatus_text(void *text)
+{
+    // Called in the main thread via g_main_context_invoke in the import thread.
+    gtk_label_set_text(GTK_LABEL(controls.importstatustext), text);
+    return 0;
+}
+
+static void importmeta_progress(void *data, const char *path)
+{
+    // Called in the import thread.
+    (void)data;
+    g_main_context_invoke(NULL, set_importstatus_text, (void*)path);
+}
+
+static int importmeta_cancelled(void *data)
+{
+    // Called in the import thread.
+    return g_cancellable_is_cancelled((GCancellable *)data);
+}
+
+static void import_thread_func(GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancellable)
+{
+    char *filename = (char *)task_data;
+    struct importgroupsmeta meta = {
+        (void *)cancellable,
+        importmeta_progress,
+        importmeta_cancelled
+    };
+    g_task_return_int(task, ImportGroupsFromPath(filename, &meta));
+}
+
+static void on_chooseimportbutton_clicked(GtkButton *button, gpointer user_data)
+{
+    GtkWidget *dialog;
+    GtkFileFilter *filter;
+    char *filename = NULL;
+
+    dialog = gtk_file_chooser_dialog_new("Import game data", startwin,
+        GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
+        "_Cancel", GTK_RESPONSE_CANCEL,
+        "_Import", GTK_RESPONSE_ACCEPT,
+        NULL);
+    gtk_file_chooser_set_local_only(GTK_FILE_CHOOSER(dialog), TRUE);
+
+    GtkWidget *content = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+    GtkWidget *label = gtk_label_new("Select a folder to search.");
+    gtk_widget_show(label);
+    gtk_widget_set_margin_top(label, 7);
+    gtk_widget_set_margin_bottom(label, 7);
+    gtk_container_add(GTK_CONTAINER(content), label);
+    gtk_box_reorder_child(GTK_BOX(content), label, 0);
+
+    if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
+        GtkFileChooser *chooser = GTK_FILE_CHOOSER(dialog);
+        filename = gtk_file_chooser_get_filename(chooser);
+    }
+    gtk_widget_destroy(dialog);
+
+    if (filename) {
+        GTask *task = NULL;
+        GError *err = NULL;
+        GCancellable *cancellable = NULL;
+        gulong clickhandlerid;
+        int rv;
+
+        cancellable = g_cancellable_new();
+        task = g_task_new(NULL, cancellable, NULL, NULL);
+        g_task_set_check_cancellable(task, FALSE);
+
+        // Pass the filename as task data.
+        g_task_set_task_data(task, (gpointer)filename, NULL);
+
+        // Connect the import status cancel button passing the GCancellable* as user data.
+        clickhandlerid = g_signal_connect(controls.importstatuscancelbutton, "clicked",
+            G_CALLBACK(on_importstatus_cancelbutton_clicked), (gpointer)cancellable);
+
+        // Show the status window, run the import thread, and while it's running, pump the Gtk queue.
+        gtk_widget_show(GTK_WIDGET(controls.importstatuswindow));
+        g_task_run_in_thread(task, import_thread_func);
+        while (!g_task_get_completed(task)) gtk_main_iteration();
+
+        // Get the return value from the import thread, then hide the status window.
+        rv = g_task_propagate_int(task, &err);
+        if (rv > 0) populate_game_list(FALSE);
+        gtk_widget_hide(GTK_WIDGET(controls.importstatuswindow));
+
+        // Disconnect the cancel button and clean up.
+        g_signal_handler_disconnect(controls.importstatuscancelbutton, clickhandlerid);
+        if (err) g_error_free(err);
+        g_object_unref(cancellable);
+        g_object_unref(task);
+
+        g_free(filename);
+    }
+}
+
+static void on_importinfobutton_clicked(GtkButton *button, gpointer user_data)
+{
+    GtkWidget *dialog;
+    const char *sharewareurl = "https://www.jonof.id.au/files/jfduke3d/dn3dsw13.zip";
+
+    dialog = gtk_message_dialog_new(startwin, GTK_DIALOG_DESTROY_WITH_PARENT,
+        GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE,
+        "JFDuke3D can scan locations of your choosing for Duke Nukem 3D game data");
+    gtk_message_dialog_format_secondary_markup(GTK_MESSAGE_DIALOG(dialog),
+        "Click the 'Choose a location...' button, then locate a folder to scan.\n\n"
+        "Common locations to check include:\n"
+        " • CD/DVD drives\n"
+        " • Steam library directories\n\n"
+        "To play the Shareware version, download the shareware data (dn3dsw13.zip), unzip the file, "
+            "then select the folder where DUKE3D.GRP is found with the 'Choose a location...' option.");
+    gtk_dialog_add_button(GTK_DIALOG(dialog), "Download Shareware", 1);
+    if (gtk_dialog_run(GTK_DIALOG(dialog)) == 1) {
+        g_app_info_launch_default_for_uri(sharewareurl, NULL, NULL);
+    }
+    gtk_widget_destroy(dialog);
+}
+
 static GtkWindow *create_window(void)
 {
     GtkBuilder *builder = NULL;
@@ -413,6 +573,15 @@ static GtkWindow *create_window(void)
 
     controls.gametable = GTK_WIDGET(gtk_builder_get_object(builder, "gametable"));
     controls.gamelist = GTK_LIST_STORE(gtk_builder_get_object(builder, "gamelist"));
+
+    controls.chooseimportbutton = GTK_WIDGET(get_and_connect_signal(builder, "chooseimportbutton",
+        "clicked", G_CALLBACK(on_chooseimportbutton_clicked)));
+    controls.importinfobutton = GTK_WIDGET(get_and_connect_signal(builder, "importinfobutton",
+        "clicked", G_CALLBACK(on_importinfobutton_clicked)));
+
+    controls.importstatuswindow = GTK_WINDOW(gtk_builder_get_object(builder, "importstatuswindow"));
+    controls.importstatustext = GTK_WIDGET(gtk_builder_get_object(builder, "importstatustext"));
+    controls.importstatuscancelbutton = GTK_WIDGET(gtk_builder_get_object(builder, "importstatuscancelbutton"));
 
     g_object_unref(G_OBJECT(builder));
 

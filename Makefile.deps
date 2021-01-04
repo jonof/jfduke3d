@@ -24,7 +24,7 @@ $(SRC)/grpscan.$o: $(SRC)/grpscan.c $(EINC)/compat.h $(EINC)/baselayer.h $(EINC)
 $(SRC)/gameres.$(res): $(SRC)/gameres.rc $(INC)/gameres.h $(INC)/version.h $(RSRC)/game.bmp $(RSRC)/game_icon.ico $(RSRC)/game_icon2.ico
 $(SRC)/buildres.$(res): $(SRC)/buildres.rc $(EINC)/buildres.h $(RSRC)/build.bmp $(RSRC)/build_icon.ico
 $(SRC)/startwin_game.$o: $(SRC)/startwin_game.c $(duke3d_h) $(EINC)/build.h $(EINC)/winlayer.h $(EINC)/compat.h $(INC)/grpscan.h
-$(SRC)/startgtk_game.$o: $(SRC)/startgtk_game.c $(duke3d_h) $(EINC)/build.h $(EINC)/baselayer.h $(SRC)/grpscan.h $(EINC)/compat.h
+$(SRC)/startgtk_game.$o: $(SRC)/startgtk_game.c $(EINC)/compat.h $(EINC)/baselayer.h $(EINC)/build.h $(INC)/startwin.h $(INC)/grpscan.h
 
 # Derived source files from art assets
 $(RSRC)/startgtk_game_gresource.c: $(RSRC)/startgtk_game.gresource.xml $(RSRC)/game.png $(RSRC)/startgtk_game.glade
