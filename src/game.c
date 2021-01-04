@@ -33,7 +33,8 @@ Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
 
 #include "osd.h"
 #include "osdcmds.h"
-//#include "crc32.h"
+#include "startwin.h"
+#include "grpscan.h"
 
 #include "util_lib.h"
 

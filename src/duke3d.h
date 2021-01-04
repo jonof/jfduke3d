@@ -37,7 +37,6 @@ extern "C" {
 #include "baselayer.h"
 
 #include "version.h"
-#include "grpscan.h"
 
 extern int conversion,shareware,gametype;
 extern const char *gameeditionname;
@@ -578,20 +577,6 @@ extern unsigned char useprecache;
 
 #define NAM_GRENADE_LIFETIME	120
 #define NAM_GRENADE_LIFETIME_VAR	30
-
-struct startwin_settings {
-    int fullscreen;
-    int xdim3d, ydim3d, bpp3d;
-    int forcesetup;
-    int usemouse, usejoy;
-    int samplerate, bitspersample, channels;
-
-    struct grpfile *selectedgrp;
-
-    int numplayers;
-    char *joinhost;
-    int netoverride;
-};
 
 #ifdef __cplusplus
 }

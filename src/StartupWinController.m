@@ -1,10 +1,10 @@
 //-------------------------------------------------------------------------
 /*
- Copyright (C) 2013 Jonathon Fowler <jf@jonof.id.au>
+ Copyright (C) 2013-2021 Jonathon Fowler <jf@jonof.id.au>
 
  This file is part of JFDuke3D
 
- Shadow Warrior is free software; you can redistribute it and/or
+ Duke Nukem 3D is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
  as published by the Free Software Foundation; either version 2
  of the License, or (at your option) any later version.
@@ -27,9 +27,7 @@
 #include "baselayer.h"
 #include "build.h"
 #include "grpscan.h"
-#define GetTime xGetTime
-#include "duke3d.h"
-#undef GetTime
+#include "startwin.h"
 
 #import "GameListSource.h"
 
@@ -47,10 +45,15 @@ static struct soundQuality_t {
 
 #include <stdlib.h>
 
+// Callbacks to glue the C in grpscan.c with the Objective-C here.
+static void importmeta_progress(void *data, const char *path);
+static int importmeta_cancelled(void *data);
+
 @interface StartupWinController : NSWindowController <NSWindowDelegate>
 {
     BOOL quiteventonclose;
     GameListSource *gamelistsrc;
+    NSThread *importthread;
     BOOL inmodal;
     struct startwin_settings *settings;
 
@@ -76,8 +79,15 @@ static struct soundQuality_t {
     IBOutlet NSTabViewItem *tabGame;
     IBOutlet NSScrollView *gameList;
 
+    IBOutlet NSButton *chooseImportButton;
+    IBOutlet NSButton *importInfoButton;
+
     IBOutlet NSButton *cancelButton;
     IBOutlet NSButton *startButton;
+
+    IBOutlet NSWindow *importStatusWindow;
+    IBOutlet NSTextField *importStatusText;
+    IBOutlet NSButton *importStatusCancel;
 }
 
 - (int)modalRun;
@@ -88,6 +98,14 @@ static struct soundQuality_t {
 - (IBAction)fullscreenClicked:(id)sender;
 
 - (IBAction)multiPlayerModeClicked:(id)sender;
+
+- (IBAction)chooseImportClicked:(id)sender;
+- (IBAction)importInfoClicked:(id)sender;
+- (IBAction)importStatusCancelClicked:(id)sender;
+- (void)updateImportStatusText:(NSString *)text;
+- (void)doImport:(NSString *)path;
+- (void)doneImport:(NSNumber *)result;
+- (BOOL)isImportCancelled;
 
 - (IBAction)cancel:(id)sender;
 - (IBAction)start:(id)sender;
@@ -247,6 +265,8 @@ static struct soundQuality_t {
         }
 
         [gamelistsrc autorelease];
+    } else {
+        [table reloadData];
     }
 }
 
@@ -265,6 +285,114 @@ static struct soundQuality_t {
     [hostMultiButton setState:(sender == hostMultiButton ? NSOnState : NSOffState)];
     [numPlayersField setEnabled:(sender == hostMultiButton)];
     [numPlayersStepper setEnabled:(sender == hostMultiButton)];
+}
+
+- (IBAction)chooseImportClicked:(id)sender
+{
+    @autoreleasepool {
+        NSArray *filetypes = [[NSArray alloc] initWithObjects:@"grp", @"app", nil];
+        NSOpenPanel *panel = [NSOpenPanel openPanel];
+
+        [panel setTitle:@"Import game data"];
+        [panel setPrompt:@"Import"];
+        [panel setMessage:@"Select a .grp file, an .app bundle, or choose a folder to search."];
+        [panel setAllowedFileTypes:filetypes];
+        [panel setCanChooseFiles:TRUE];
+        [panel setCanChooseDirectories:TRUE];
+        [panel setShowsHiddenFiles:TRUE];
+        [panel beginSheetModalForWindow:[self window]
+                      completionHandler:^void (NSModalResponse resp) {
+            if (resp == NSFileHandlingPanelOKButton) {
+                NSURL *file = [panel URL];
+                if ([file isFileURL]) {
+                    [self doImport:[file path]];
+                }
+            }
+        }];
+    }
+}
+
+- (IBAction)importStatusCancelClicked:(id)sender
+{
+    [importthread cancel];
+}
+
+- (void)updateImportStatusText:(NSString *)text
+{
+    [importStatusText setStringValue:text];
+}
+
+- (void)doImport:(NSString *)path
+{
+    if ([importthread isExecuting]) {
+        NSLog(@"import thread is already executing");
+        return;
+    }
+
+    // Put up the status sheet which becomes modal.
+    [NSApp beginSheet:importStatusWindow
+       modalForWindow:[self window]
+        modalDelegate:self
+       didEndSelector:nil
+          contextInfo:NULL];
+
+    // Spawn a thread to do the scan.
+    importthread = [[NSThread alloc] initWithBlock:^void(void) {
+        struct importgroupsmeta meta = {
+            (void *)self,
+            importmeta_progress,
+            importmeta_cancelled
+        };
+        int result = ImportGroupsFromPath([path UTF8String], &meta);
+        [self performSelectorOnMainThread:@selector(doneImport:)
+                               withObject:[NSNumber numberWithInt:result]
+                            waitUntilDone:FALSE];
+    }];
+    [importthread start];
+}
+
+// Finish up after the import thread returns.
+- (void)doneImport:(NSNumber *)result
+{
+    if ([result intValue] > 0) {
+        [self populateGameList:NO];
+    }
+    [importStatusWindow orderOut:nil];
+    [NSApp endSheet:importStatusWindow returnCode:1];
+}
+
+// Report on whether the import thread has been been cancelled early.
+- (BOOL)isImportCancelled
+{
+    return [importthread isCancelled];
+}
+
+- (IBAction)importInfoClicked:(id)sender
+{
+    @autoreleasepool {
+        NSAlert *alert = [[NSAlert alloc] init];
+        NSURL *sharewareurl = [NSURL URLWithString:@"https://www.jonof.id.au/files/jfduke3d/dn3dsw13.zip"];
+
+        [alert setAlertStyle:NSAlertStyleInformational];
+        [alert setMessageText:@"JFDuke3D can scan locations of your choosing for Duke Nukem 3D game data"];
+        [alert setInformativeText:@"Click the 'Choose a location...' button, then locate "
+            @"a .grp file, an .app bundle, or a folder to scan.\n\n"
+            @"Common locations to check include:\n"
+            @" • CD/DVD drives\n"
+            @" • GOG-managed .app bundles\n"
+            @" • Steam library folders\n\n"
+            @"To play the Shareware version, download the shareware data (dn3dsw13.zip), unzip the file, "
+                @"then select the DUKE3D.GRP file with the 'Choose a location...' option."];
+        [alert addButtonWithTitle:@"OK"];
+        [alert addButtonWithTitle:@"Download Shareware"];
+        switch ([alert runModal]) {
+            case NSAlertFirstButtonReturn:
+                break;
+            case NSAlertSecondButtonReturn:
+                LSOpenCFURLRef((CFURLRef)sharewareurl, nil);
+                break;
+        }
+    }
 }
 
 - (IBAction)cancel:(id)sender
@@ -370,11 +498,17 @@ static struct soundQuality_t {
 
     [self populateGameList:YES];
     [[gameList documentView] setEnabled:YES];
+    [chooseImportButton setEnabled:YES];
+    [importInfoButton setEnabled:YES];
 
     [cancelButton setEnabled:YES];
     [startButton setEnabled:YES];
 
-    [tabView selectTabViewItem:tabConfig];
+    if (!settings->selectedgrp) {
+        [tabView selectTabViewItem:tabGame];
+    } else {
+        [tabView selectTabViewItem:tabConfig];
+    }
     [NSCursor unhide];  // Why should I need to do this?
 }
 
@@ -390,6 +524,8 @@ static struct soundQuality_t {
     }
 
     [[gameList documentView] setEnabled:NO];
+    [chooseImportButton setEnabled:NO];
+    [importInfoButton setEnabled:NO];
 
     [alwaysShowButton setEnabled:NO];
 
@@ -468,7 +604,14 @@ int startwin_puts(const char *s)
     if (startwin == nil) return 1;
 
     @autoreleasepool {
-        [startwin putsMessage:[NSString stringWithUTF8String:s]];
+        NSString *str = [NSString stringWithUTF8String:s];
+        if ([NSThread isMainThread]) {
+            [startwin putsMessage:str];
+        } else {
+            [startwin performSelectorOnMainThread:@selector(putsMessage:)
+                                       withObject:str
+                                    waitUntilDone:TRUE];
+        }
 
         return 0;
     }
@@ -507,4 +650,23 @@ int startwin_run(struct startwin_settings *settings)
 
         return retval;
     }
+}
+
+// Callback for the C-universe ImportGroupsFrom*() to notify the UI in Obj-C land.
+static void importmeta_progress(void *data, const char *path)
+{
+    StartupWinController *control = (StartupWinController *)data;
+
+    @autoreleasepool {
+        [control performSelectorOnMainThread:@selector(updateImportStatusText:)
+                                  withObject:[NSString stringWithUTF8String:path]
+                               waitUntilDone:FALSE];
+    }
+}
+
+// Callback for the C-universe ImportGroupsFrom*() to discover they've been cancelled by the UI.
+static int importmeta_cancelled(void *data)
+{
+    StartupWinController *control = (StartupWinController *)data;
+    return [control isImportCancelled];
 }

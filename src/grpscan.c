@@ -28,19 +28,19 @@
 #include "cache1d.h"
 #include "crc32.h"
 
-#include "duke3d.h"
+#include "build.h"
 #include "grpscan.h"
 
 struct grpfile grpfiles[] = {
-    { "Registered Version 1.3d",    0xBBC9CE44, 26524524, GAMEDUKE, NULL, NULL },
-    { "Registered Version 1.4", 0xF514A6AC, 44348015, GAMEDUKE, NULL, NULL },
-    { "Registered Version 1.5", 0xFD3DCFF1, 44356548, GAMEDUKE, NULL, NULL },
-    { "20th Anniversary", 0x982AFE4A, 44356548, GAMEDUKE, NULL, NULL },
-    { "Shareware Version",      0x983AD923, 11035779, GAMEDUKE, NULL, NULL },
-    { "Mac Shareware Version",  0xC5F71561, 10444391, GAMEDUKE, NULL, NULL },
-    { "Mac Registered Version",     0x00000000, 0,        GAMEDUKE, NULL, NULL },
-    { "NAM",                        0x75C1F07B, 43448927, GAMENAM,  NULL, NULL },
-    { NULL, 0, 0, 0, NULL, NULL },
+    { "Registered Version 1.3d",    0xBBC9CE44, 26524524, GAMEDUKE, "duke3d13.grp",       NULL, NULL },
+    { "Registered Version 1.4",     0xF514A6AC, 44348015, GAMEDUKE, "duke3d14.grp",       NULL, NULL },
+    { "Registered Version 1.5",     0xFD3DCFF1, 44356548, GAMEDUKE, "duke3d.grp",         NULL, NULL },
+    { "20th Anniversary",           0x982AFE4A, 44356548, GAMEDUKE, "duke3d20th.grp",     NULL, NULL },
+    { "Shareware Version",          0x983AD923, 11035779, GAMEDUKE, "duke3dshare.grp",    NULL, NULL },
+    { "Mac Shareware Version",      0xC5F71561, 10444391, GAMEDUKE, "duke3dmacshare.grp", NULL, NULL },
+    // { "Mac Registered Version",     0x00000000, 0,        GAMEDUKE, "duke3dmac.grp",      NULL, NULL },
+    { "NAM",                        0x75C1F07B, 43448927, GAMENAM,  "nam.grp",            NULL, NULL },
+    { NULL, 0, 0, 0, NULL, NULL, NULL },
 };
 struct grpfile *foundgrps = NULL;
 
@@ -48,9 +48,9 @@ struct grpfile *foundgrps = NULL;
 static struct grpcache {
     struct grpcache *next;
     char name[BMAX_PATH+1];
+    int crcval;
     int size;
     int mtime;
-    int crcval;
 } *grpcache = NULL, *usedgrpcache = NULL;
 
 static int LoadGroupsCache(void)
@@ -76,9 +76,9 @@ static int LoadGroupsCache(void)
         grpcache = fg;
 
         strncpy(fg->name, fname, BMAX_PATH);
+        fg->crcval = fcrcval;
         fg->size = fsize;
         fg->mtime = fmtime;
-        fg->crcval = fcrcval;
     }
 
     scriptfile_close(script);
@@ -96,6 +96,27 @@ static void FreeGroupsCache(void)
     }
 }
 
+// Compute the CRC-32 checksum for the contents of an open file.
+static unsigned int ChecksumFile(int fh)
+{
+    int b;
+    unsigned int crc;
+    unsigned char buf[16*512];
+
+    crc32init(&crc);
+    lseek(fh, 0, SEEK_SET);
+    do {
+        b = read(fh, buf, sizeof(buf));
+        if (b > 0) crc32block(&crc, buf, b);
+    } while (b == sizeof(buf));
+    crc32finish(&crc);
+
+    return crc;
+}
+
+// Scan the cache1d path stack for identifiable GRP files, checking the
+// cache to avoid checksumming previously identified files, and identify
+// any new ones found.
 int ScanGroups(void)
 {
     CACHE1D_FIND_REC *srch, *sidx;
@@ -140,9 +161,9 @@ int ScanGroups(void)
 
                 fgg = (struct grpcache *)calloc(1, sizeof(struct grpcache));
                 strcpy(fgg->name, fg->name);
+                fgg->crcval = fg->crcval;
                 fgg->size = fg->size;
                 fgg->mtime = fg->mtime;
-                fgg->crcval = fg->crcval;
                 fgg->next = usedgrpcache;
                 usedgrpcache = fgg;
                 continue;
@@ -152,21 +173,14 @@ int ScanGroups(void)
         {
             int b, fh;
             unsigned int crcval;
-            unsigned char buf[16*512];
 
             fh = openfrompath(sidx->name, BO_RDONLY|BO_BINARY, BS_IREAD);
             if (fh < 0) continue;
             if (fstat(fh, &st)) continue;
 
-            buildprintf(" Checksumming %s...", sidx->name);
-            crc32init(&crcval);
-            do {
-                b = read(fh, buf, sizeof(buf));
-                if (b > 0) crc32block(&crcval, buf, b);
-            } while (b == sizeof(buf));
-            crc32finish(&crcval);
+            buildprintf(" Checksumming %s\n", sidx->name);
+            crcval = ChecksumFile(fh);
             close(fh);
-            buildprintf(" Done\n");
 
             grp = (struct grpfile *)calloc(1, sizeof(struct grpfile));
             grp->name = strdup(sidx->name);
@@ -186,9 +200,9 @@ int ScanGroups(void)
 
             fgg = (struct grpcache *)calloc(1, sizeof(struct grpcache));
             strncpy(fgg->name, sidx->name, BMAX_PATH);
+            fgg->crcval = crcval;
             fgg->size = st.st_size;
             fgg->mtime = st.st_mtime;
-            fgg->crcval = crcval;
             fgg->next = usedgrpcache;
             usedgrpcache = fgg;
         }
@@ -225,3 +239,140 @@ void FreeGroups(void)
     }
 }
 
+// Copy the contents of 'fh' to file 'fname', but only if 'fname' doesn't already exist.
+// Return: 0 on success, -1 on 'fname' existence, -2 on create error, -3 on r/w error.
+static int CopyFile(int fh, int size, const char *fname)
+{
+    int ofh, r;
+    char buf[16384];
+
+    ofh = open(fname, O_WRONLY|O_BINARY|O_CREAT|O_EXCL, BS_IREAD|BS_IWRITE);
+    if (ofh < 0) {
+        if (errno == EEXIST) return -1;
+        return -2;
+    }
+    lseek(fh, 0, SEEK_SET);
+    do {
+        if ((r = read(fh, buf, sizeof(buf))) < 0) {
+            close(ofh);
+            return -3;
+        }
+        if (r > 0 && write(ofh, buf, r) != r) {
+            close(ofh);
+            return -3;
+        }
+    } while (r == sizeof(buf));
+    close(ofh);
+    if (size != lseek(fh, 0, SEEK_CUR)) return -3;  // File not the expected length.
+    return 0;
+}
+
+static int ImportGroupFromFile(const char *path, int size)
+{
+    char buf[12];
+    int i, fh, rv;
+    unsigned int crcval;
+    struct grpfile *grp;
+
+    fh = open(path, O_RDONLY|O_BINARY, S_IREAD);
+    if (fh < 0) return -1;
+
+    lseek(fh, 0, SEEK_SET);
+    if (read(fh, buf, 12) != 12 || memcmp(buf, "KenSilverman", 12)) { close(fh); return 0; }
+
+    crcval = ChecksumFile(fh);
+
+    for (i = 0; grpfiles[i].name; i++) {
+        if (grpfiles[i].crcval == crcval && grpfiles[i].size == size)
+            break;
+    }
+    if (!grpfiles[i].name) { close(fh); return 0; }
+
+    switch (CopyFile(fh, grpfiles[i].size, grpfiles[i].importname)) {
+        case -1: rv = 1; break;  // Skipped.
+        case 0: // Copied. Add to the identified files list.
+            grp = (struct grpfile *)calloc(1, sizeof(struct grpfile));
+            grp->name = strdup(grpfiles[i].importname);
+            grp->crcval = crcval;
+            grp->size = grpfiles[i].size;
+            grp->next = foundgrps;
+            grp->ref = &grpfiles[i];
+            grp->game = grpfiles[i].game;
+            foundgrps = grp;
+            rv = 2;
+            break;
+        default: rv = -1; break; // Errored.
+    }
+    close(fh);
+    return rv;
+}
+
+static int ImportGroupsFromDir(const char *path, struct importgroupsmeta *cbs)
+{
+    BDIR *dir;
+    struct Bdirent *dirent;
+    int subpathlen, found = 0, errors = 0;
+    char *subpath;
+
+    cbs->progress(cbs->data, path);
+
+    dir = Bopendir(path);
+    if (!dir) return 0;
+
+    while ((dirent = Breaddir(dir))) {
+        if (cbs->cancelled(cbs->data)) break;
+
+        if (dirent->name[0] == '.' &&
+            (dirent->name[1] == 0 || (dirent->name[1] == '.' && dirent->name[2] == 0)))
+                continue;
+        if (!(dirent->mode & (BS_IFDIR|BS_IFREG))) continue; // Ignore non-directories and non-regular files.
+        if ((dirent->mode & BS_IFREG) && !Bwildmatch(dirent->name, "*.grp")) continue;  // Ignore non-.grp files.
+
+        subpathlen = strlen(path) + 1 + dirent->namlen + 1;
+        subpath = malloc(subpathlen);
+        if (!subpath) { Bclosedir(dir); break; }
+        snprintf(subpath, subpathlen, "%s/%s", path, dirent->name);
+
+        if (dirent->mode & BS_IFDIR) {
+            int r = ImportGroupsFromDir(subpath, cbs);
+            if (r > 0) found += r;
+            else if (r < 0) { errors += -r; break; }
+        }
+        else {
+            int r = ImportGroupFromFile(subpath, dirent->size);
+            if (r == 1) buildprintf("Skipped %s\n", subpath);
+            else if (r == 2) { buildprintf("Imported %s\n", subpath); found++; }
+            else if (r < 0) { buildprintf("Error importing %s\n", subpath); errors++; break; }
+        }
+        free(subpath);
+    }
+    Bclosedir(dir);
+    if (found > 0) return found;         // Finding anything is considered fine.
+    else if (errors > 0) return -errors; // Finding nothing but errors reports back errors.
+    return 0;
+}
+
+int ImportGroupsFromPath(const char *path, struct importgroupsmeta *cbs)
+{
+    struct stat st;
+    int found = 0, errors = 0;
+
+    if (stat(path, &st) < 0) return -1;
+
+    if (st.st_mode & S_IFDIR) {
+        int r = ImportGroupsFromDir(path, cbs);
+        if (r > 0) found += r;
+        else if (r < 0) errors += -r;
+    } else if (st.st_mode & S_IFREG) {
+        switch (ImportGroupFromFile(path, st.st_size)) {
+            case 0: break; // Not a GRP.
+            case 1: buildprintf("Skipped %s\n", path); break;
+            case 2: buildprintf("Imported %s\n", path); found++; break;
+            default: buildprintf("Error importing %s\n", path); errors++; break;
+        }
+    }
+
+    if (found > 0) return found;         // Finding anything is considered fine.
+    else if (errors > 0) return -errors; // Finding nothing but errors reports back errors.
+    else return 0;
+}

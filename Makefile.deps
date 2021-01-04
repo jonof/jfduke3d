@@ -1,6 +1,6 @@
 duke3d_h=$(INC)/duke3d.h $(EINC)/build.h $(EINC)/compat.h $(EINC)/cache1d.h $(EINC)/pragmas.h $(EINC)/mmulti.h $(EINC)/baselayer.h $(MACTROOT)/types.h $(MACTROOT)/file_lib.h $(MACTROOT)/util_lib.h $(MACTROOT)/keyboard.h $(MACTROOT)/control.h $(INC)/develop.h $(INC)/gamedefs.h $(INC)/function.h $(INC)/config.h $(INC)/sounds.h $(INC)/rts.h $(INC)/_rts.h $(INC)/soundefs.h $(AUDIOLIBROOT)/include/fx_man.h $(AUDIOLIBROOT)/include/music.h $(INC)/names.h $(INC)/funct.h $(INC)/version.h
 
-$(SRC)/game.$o: $(SRC)/game.c $(MACTROOT)/scriplib.h $(duke3d_h) $(EINC)/osd.h $(INC)/osdfuncs.h $(INC)/osdcmds.h $(INC)/grpscan.h
+$(SRC)/game.$o: $(SRC)/game.c $(MACTROOT)/scriplib.h $(duke3d_h) $(EINC)/osd.h $(INC)/osdfuncs.h $(INC)/osdcmds.h $(INC)/grpscan.h $(INC)/startwin.h
 $(SRC)/actors.$o: $(SRC)/actors.c $(duke3d_h)
 $(SRC)/gamedef.$o: $(SRC)/gamedef.c $(duke3d_h)
 $(SRC)/global.$o: $(SRC)/global.c $(duke3d_h)
@@ -20,7 +20,7 @@ $(SRC)/astub.$o: $(SRC)/astub.c $(EINC)/build.h $(EINC)/compat.h $(EINC)/editor.
 $(SRC)/version.$o: $(SRC)/version.c
 $(SRC)/version-auto.$o: $(SRC)/version-auto.c
 
-$(SRC)/grpscan.$o: $(SRC)/grpscan.c $(EINC)/compat.h $(EINC)/baselayer.h $(EINC)/scriptfile.h $(EINC)/cache1d.h $(EINC)/crc32.h $(INC)/grpscan.h
+$(SRC)/grpscan.$o: $(SRC)/grpscan.c $(EINC)/compat.h $(EINC)/baselayer.h $(EINC)/scriptfile.h $(EINC)/cache1d.h $(EINC)/crc32.h $(EINC)/build.h $(INC)/grpscan.h
 $(SRC)/gameres.$(res): $(SRC)/gameres.rc $(INC)/gameres.h $(INC)/version.h $(RSRC)/game.bmp $(RSRC)/game_icon.ico $(RSRC)/game_icon2.ico
 $(SRC)/buildres.$(res): $(SRC)/buildres.rc $(EINC)/buildres.h $(RSRC)/build.bmp $(RSRC)/build_icon.ico
 $(SRC)/startwin_game.$o: $(SRC)/startwin_game.c $(duke3d_h) $(EINC)/build.h $(EINC)/winlayer.h $(EINC)/compat.h $(INC)/grpscan.h
