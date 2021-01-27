@@ -17,7 +17,7 @@ RELEASE ?= 1
 DATADIR ?= /usr/local/share/games/jfduke3d
 
 # Engine source code path
-EROOT ?= jfbuild
+BUILDROOT ?= jfbuild
 
 # JMACT library source path
 MACTROOT ?= jfmact
@@ -46,8 +46,8 @@ USE_ASM ?= 1
 # build locations
 SRC=src
 RSRC=rsrc
-EINC=$(EROOT)/include
-ELIB=$(EROOT)
+EINC=$(BUILDROOT)/include
+ELIB=$(BUILDROOT)
 INC=$(SRC)
 o=o
 res=o
@@ -102,7 +102,7 @@ GAMEOBJS=$(SRC)/game.$o \
 
 EDITOROBJS=$(SRC)/astub.$o
 
-include $(EROOT)/Makefile.shared
+include $(BUILDROOT)/Makefile.shared
 
 ifeq ($(PLATFORM),LINUX)
 	NASMFLAGS+= -f elf
@@ -182,13 +182,13 @@ include Makefile.deps
 
 .PHONY: enginelib editorlib
 enginelib editorlib:
-	$(MAKE) -C $(EROOT) \
+	$(MAKE) -C $(BUILDROOT) \
 		USE_POLYMOST=$(USE_POLYMOST) \
 		USE_OPENGL=$(USE_OPENGL) \
 		USE_ASM=$(USE_ASM) \
 		RELEASE=$(RELEASE) $@
-$(EROOT)/generatesdlappicon$(EXESUFFIX):
-	$(MAKE) -C $(EROOT) generatesdlappicon$(EXESUFFIX)
+$(BUILDROOT)/generatesdlappicon$(EXESUFFIX):
+	$(MAKE) -C $(BUILDROOT) generatesdlappicon$(EXESUFFIX)
 
 $(ELIB)/$(ENGINELIB): enginelib
 $(ELIB)/$(EDITORLIB): editorlib
@@ -219,8 +219,8 @@ $(RSRC)/%_gresource.c: $(RSRC)/%.gresource.xml
 	glib-compile-resources --generate --manual-register --c-name=startgtk --target=$@ --sourcedir=$(RSRC) $<
 $(RSRC)/%_gresource.h: $(RSRC)/%.gresource.xml
 	glib-compile-resources --generate --manual-register --c-name=startgtk --target=$@ --sourcedir=$(RSRC) $<
-$(RSRC)/sdlappicon_%.c: $(RSRC)/%.png $(EROOT)/generatesdlappicon$(EXESUFFIX)
-	$(EROOT)/generatesdlappicon$(EXESUFFIX) $< > $@
+$(RSRC)/sdlappicon_%.c: $(RSRC)/%.png $(BUILDROOT)/generatesdlappicon$(EXESUFFIX)
+	$(BUILDROOT)/generatesdlappicon$(EXESUFFIX) $< > $@
 
 # PHONIES
 clean:
@@ -228,7 +228,7 @@ ifeq ($(PLATFORM),DARWIN)
 	cd xcode && xcodebuild -target all clean
 else
 	-rm -f $(GAMEOBJS) $(EDITOROBJS)
-	$(MAKE) -C $(EROOT) clean
+	$(MAKE) -C $(BUILDROOT) clean
 	$(MAKE) -C $(AUDIOLIBROOT) clean
 endif
 
@@ -236,7 +236,7 @@ veryclean: clean
 ifeq ($(PLATFORM),DARWIN)
 else
 	-rm -f duke3d$(EXESUFFIX) build$(EXESUFFIX) core*
-	$(MAKE) -C $(EROOT) veryclean
+	$(MAKE) -C $(BUILDROOT) veryclean
 endif
 
 .PHONY: $(SRC)/version-auto.c
