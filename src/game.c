@@ -8246,7 +8246,7 @@ int playback(void)
             goto RECHECK;
         }
         fadepal(0,0,0, 0,63,7);
-    setgamepalette(&ps[myconnectindex], palette, 1);    // JBF 20040308
+        setgamepalette(&ps[myconnectindex], palette, 1);    // JBF 20040308
         drawbackground();
         menus();
         //ps[myconnectindex].palette = palette;
@@ -8305,7 +8305,10 @@ int playback(void)
         }
 
         if(foundemo == 0)
+        {
+            ready2send = 0;
             drawbackground();
+        }
         else
         {
             nonsharedkeys();
