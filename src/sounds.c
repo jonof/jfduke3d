@@ -30,6 +30,41 @@ Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
 #include <string.h>
 #include "duke3d.h"
 
+/* thanks retroarch */
+static char *string_to_lower(char *s)
+{
+   char *cs = (char *)s;
+   for ( ; *cs != '\0'; cs++)
+      *cs = tolower((unsigned char)*cs);
+   return s;
+}
+
+int loadsoundoverride(char *base, char *fn)
+{
+    int fp = -1;
+
+    char name[64];
+    char ext[8];
+    char path[128];
+
+    sscanf(fn, "%[^.]%s", name, ext);
+
+    if (*ext) {
+        // we've been asked to load a file, but first
+        // let's see if there's an ogg with the same base name
+        // lying around
+        snprintf(path, sizeof(path), "%s/%s.ogg", base, name);
+        string_to_lower(path);
+        fp = kopen4load(path, 0);
+    }
+
+    if (fp < 0) {
+        // just use what we've been given
+        fp = kopen4load(fn, 0);
+    }
+
+    return fp;
+}
 
 #define LOUDESTVOLUME 150
 
@@ -263,36 +298,17 @@ void intomenusounds(void)
 void playmusic(char *fn)
 {
     int fp;
-    char * testfn, * extension;
 
-    if(MusicToggle == 0) return;
-    if(MusicDevice < 0) return;
+    if (MusicToggle == 0) return;
+    if (MusicDevice < 0) return;
 
     stopmusic();
-    
-    testfn = (char *) malloc( strlen(fn) + 5 );
-    strcpy(testfn, fn);
-    extension = strrchr(testfn, '.');
 
-    do {
-       if (extension && !Bstrcasecmp(extension, ".mid")) {
-	  // we've been asked to load a .mid file, but first
-	  // let's see if there's an ogg with the same base name
-	  // lying around
-	  strcpy(extension, ".ogg");
-	  fp = kopen4load(testfn, 0);
-	  if (fp >= 0) {
-             free(testfn);
-	     break;
-	  }
-       }
-       free(testfn);
+    fp = loadsoundoverride("music", fn);
 
-       // just use what we've been given
-       fp = kopen4load(fn, 0);
-    } while (0);
-
-    if (fp < 0) return;
+    if (fp == -1) {
+        return;
+    }
 
     MusicLen = kfilelength( fp );
     MusicPtr = (char *) malloc(MusicLen);
@@ -337,7 +353,8 @@ char loadsound(unsigned short num)
     if(num >= NUM_SOUNDS || SoundToggle == 0) return 0;
     if (FXDevice < 0) return 0;
 
-    fp = kopen4load(sounds[num],loadfromgrouponly);
+    fp = loadsoundoverride("sound", sounds[num]);
+
     if(fp == -1)
     {
         sprintf(&fta_quotes[113][0],"Sound %s(#%d) not found.",sounds[num],num);
@@ -745,4 +762,3 @@ int issoundplaying(int num, int xyz)
         return Sound[num].numall;
     }
 }
-
