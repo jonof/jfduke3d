@@ -41,6 +41,7 @@ extern int USRHOOKS_FreeMem(char *ptr);
 extern void intomenusounds(void );
 extern void playmusic(char *fn);
 extern void stopmusic(void);
+extern int loadsoundoverride(char *base, char *fn);
 extern char loadsound(unsigned short num);
 extern int xyzsound(short num,short i,int x,int y,int z);
 extern void sound(short num);

@@ -243,7 +243,7 @@ char getsound(unsigned short num)
     if (FXDevice < 0) return 0;
 
     if (!sounds[num][0]) return 0;
-    fp = kopen4load(sounds[num],loadfromgrouponly);
+    fp = loadsoundoverride("sound", sounds[num]);
     if(fp == -1) return 0;
 
     l = kfilelength( fp );
