@@ -7881,12 +7881,12 @@ int app_main(int argc, char const * const argv[])
 
     if (!loaddefinitionsfile(duke3ddef)) buildprintf("Definitions file loaded.\n");
 
+    ud.multimode = numplayers;
     if (!netsuccess && numplayers == 1 && CommandFakeMulti) {
         ud.multimode = CommandFakeMulti;
     }
     else if(numplayers >= 2)
     {
-        ud.multimode = numplayers;
         sendlogon();
     }
     else if(boardfilename[0] != 0)
