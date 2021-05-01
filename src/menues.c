@@ -1410,6 +1410,7 @@ if (VOLUMEALL) {
             if (uinfo.button1 || KB_KeyPressed(sc_N))
             {
                 KB_ClearKeyDown(sc_N);
+                CONTROL_ClearUserInput(&uinfo);
 
                 if(sprite[ps[myconnectindex].i].extra <= 0)
                 {
@@ -1429,6 +1430,7 @@ if (VOLUMEALL) {
             {
                 KB_FlushKeyboardQueue();
                 KB_ClearKeysDown();
+                CONTROL_ClearUserInput(&uinfo);
                 FX_StopAllSounds();
 
                 if(ud.multimode > 1)
@@ -1583,6 +1585,7 @@ if (VOLUMEALL) {
 
                 KB_FlushKeyboardQueue();
                 KB_ClearKeysDown();
+                CONTROL_ClearUserInput(&uinfo);
                 if(ud.multimode < 2 && ud.recstat != 2)
                 {
                     ready2send = 1;
@@ -1625,6 +1628,7 @@ if (VOLUMEALL) {
             if (uinfo.button1 || KB_KeyPressed(sc_N))
             {
                 KB_ClearKeyDown(sc_N);
+                CONTROL_ClearUserInput(&uinfo);
                 sound(EXITMENUSOUND);
                 if(ps[myconnectindex].gm&MODE_DEMO) cmenu(300);
                 else
@@ -1647,11 +1651,13 @@ if (VOLUMEALL) {
             if (uinfo.button0 || KB_KeyPressed(sc_Y))
             {
                 KB_FlushKeyboardQueue();
+                CONTROL_ClearUserInput(&uinfo);
                 cmenu(100);
             }
             if (uinfo.button1 || KB_KeyPressed(sc_N))
             {
                 KB_ClearKeyDown(sc_N);
+                CONTROL_ClearUserInput(&uinfo);
                 if(ud.multimode < 2 && ud.recstat != 2)
                 {
                     ready2send = 1;
@@ -1704,11 +1710,13 @@ if (VOLUMEALL) {
                 cmenu(current_menu-2000+360);
 
                 KB_FlushKeyboardQueue();
+                CONTROL_ClearUserInput(&uinfo);
                 break;
             }
             if(uinfo.button1 || KB_KeyPressed(sc_N))
             {
                 KB_ClearKeyDown(sc_N);
+                CONTROL_ClearUserInput(&uinfo);
                 cmenu(351);
                 sound(EXITMENUSOUND);
             }
