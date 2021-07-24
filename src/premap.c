@@ -398,7 +398,7 @@ void xyzmirror(short i,short wn)
 void vscrn(void)
 {
 #define ROUND16(f) (((f)>>16)+(((f)&0x8000)>>15))
-     int i, j, ss, x1, x2, y1, y2;
+     int ss, x1, x2, y1, y2;
      extern int sbarscale;
 
      if(ud.screen_size < 0) ud.screen_size = 0;
@@ -411,25 +411,22 @@ void vscrn(void)
      x1 = scale(ss,xdim,160);
      x2 = xdim-x1;
 
-     y1 = ss; y2 = 200;
+     y1 = scale(ss<<16, ydim, 200);
      if ( ud.screen_size > 0 && ud.coop != 1 && ud.multimode > 1)
      {
-         j = 0;
-         for(i=connecthead;i>=0;i=connectpoint2[i])
-             if(i > j) j = i;
-
-         if (j >= 1) y1 += 8;
-         if (j >= 4) y1 += 8;
-         if (j >= 8) y1 += 8;
-         if (j >= 12) y1 += 8;
+         int by = 0;
+         if (ud.multimode > 1) by += tilesizy[FRAGBAR];
+         if (ud.multimode > 4) by += tilesizy[FRAGBAR];
+         if (ud.multimode > 8) by += tilesizy[FRAGBAR];
+         if (ud.multimode > 12) by += tilesizy[FRAGBAR];
+         y1 += scale(by * sbarscale, ydim, 200);
      }
+     y1 = ROUND16(y1);
 
-     y1 = scale(y1,ydim,200);
-
-     if (ud.screen_size >= 8) y2 -= ss;
-     y2 = scale(y2<<16,ydim,200);
-     if (ud.screen_size >= 8) y2 -= mulscale16(scale(tilesizy[BOTTOMSTATUSBAR]<<16,ydim,200), sbarscale);
+     y2 = scale((200-ss)<<16,ydim,200);
+     if (ud.screen_size >= 8) y2 -= scale(tilesizy[BOTTOMSTATUSBAR] * sbarscale, ydim, 200);
      y2 = ROUND16(y2 + 32768);
+     if (y2 > ydim) y2 = ydim;
 
      setview(x1,y1,x2-1,y2-1);
 

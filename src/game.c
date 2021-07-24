@@ -89,6 +89,18 @@ void statusbarsprite(int x, int y, int z, short a, short picnum, signed char das
     rotatesprite(sx,sy,sc,a,picnum,dashade,dapalnum,dastat,cx1,cy1,cx2,cy2);
 }
 
+void fragbarsprite(int x, int y, int z, short a, short picnum, signed char dashade,
+    unsigned char dapalnum, unsigned char dastat, int cx1, int cy1, int cx2, int cy2)
+{
+    int sx, sy, sc;
+
+    sx = (160l<<16) - (160l - x) * sbarscale;
+    sy = y * sbarscale;
+    sc = mulscale16(z, sbarscale);
+
+    rotatesprite(sx,sy,sc,a,picnum,dashade,dapalnum,dastat,cx1,cy1,cx2,cy2);
+}
+
 void patchstatusbar(int x1, int y1, int x2, int y2)
 {
     int ty;
@@ -323,13 +335,15 @@ int gametextpart(int x,int y,const char *t,char s,short p)
     return (x);
 }
 
+#define MINITEXT_SBAR 0x0100
+#define MINITEXT_FBAR 0x0200
+
 int minitext(int x,int y,const char *t,unsigned char p,short sb)
 {
-    short ac;
-    char ch,cmode;
+    short ac,dastat;
+    char ch;
 
-    cmode = (sb&256)!=0;
-    sb &= 255;
+    dastat = sb & 255;
 
     while(*t)
     {
@@ -337,8 +351,9 @@ int minitext(int x,int y,const char *t,unsigned char p,short sb)
         if(ch == 32) {x+=5;t++;continue;}
         else ac = ch - '!' + MINIFONT;
 
-        if (cmode) statusbarsprite(x,y,65536L,0,ac,0,p,sb,0,0,xdim-1,ydim-1);
-        else rotatesprite(x<<16,y<<16,65536L,0,ac,0,p,sb,0,0,xdim-1,ydim-1);
+        if (sb & MINITEXT_SBAR) statusbarsprite(x,y,65536L,0,ac,0,p,dastat,0,0,xdim-1,ydim-1);
+        else if (sb & MINITEXT_FBAR) fragbarsprite(x,y,65536L,0,ac,0,p,dastat,0,0,xdim-1,ydim-1);
+        else rotatesprite(x<<16,y<<16,65536L,0,ac,0,p,dastat,0,0,xdim-1,ydim-1);
         x += 4; // tilesizx[ac]+1;
 
         t++;
@@ -348,11 +363,10 @@ int minitext(int x,int y,const char *t,unsigned char p,short sb)
 
 int minitextshade(int x,int y,const char *t,char s,unsigned char p,short sb)
 {
-    short ac;
-    char ch,cmode;
+    short ac,dastat;
+    char ch;
 
-    cmode = (sb&256)!=0;
-    sb &= 255;
+    dastat = sb & 255;
 
     while(*t)
     {
@@ -360,8 +374,9 @@ int minitextshade(int x,int y,const char *t,char s,unsigned char p,short sb)
         if(ch == 32) {x+=5;t++;continue;}
         else ac = ch - '!' + MINIFONT;
 
-        if (cmode) statusbarsprite(x,y,65536L,0,ac,s,p,sb,0,0,xdim-1,ydim-1);
-        else rotatesprite(x<<16,y<<16,65536L,0,ac,s,p,sb,0,0,xdim-1,ydim-1);
+        if (sb & MINITEXT_SBAR) statusbarsprite(x,y,65536L,0,ac,s,p,dastat,0,0,xdim-1,ydim-1);
+        else if (sb & MINITEXT_FBAR) fragbarsprite(x,y,65536L,0,ac,s,p,dastat,0,0,xdim-1,ydim-1);
+        else rotatesprite(x<<16,y<<16,65536L,0,ac,s,p,dastat,0,0,xdim-1,ydim-1);
         x += 4; // tilesizx[ac]+1;
 
         t++;
@@ -1343,7 +1358,7 @@ void orderweaponnum(short ind,int x,int y,int UNUSED(num1), int UNUSED(num2),cha
     statusbarsprite(x-7,y,65536L,0,THREEBYFIVE+ind+1,ha-10,7,10+128,0,0,xdim-1,ydim-1);
     statusbarsprite(x-3,y,65536L,0,THREEBYFIVE+10,ha,0,10+128,0,0,xdim-1,ydim-1);
 
-    minitextshade(x+1,y-4,"ORDER",26,6,2+8+16+128 + 256);
+    minitextshade(x+1,y-4,"ORDER",26,6,2+8+16+128 + MINITEXT_SBAR);
 }
 
 
@@ -1644,16 +1659,16 @@ void displayfragbar(void)
     for(i=connecthead;i>=0;i=connectpoint2[i])
         if(i > j) j = i;
 
-    rotatesprite(0,0,65600L,0,FRAGBAR,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
-    if(j >= 4) rotatesprite(319,(8)<<16,65600L,0,FRAGBAR,0,0,10+16+64+128,0,0,xdim-1,ydim-1);
-    if(j >= 8) rotatesprite(319,(16)<<16,65600L,0,FRAGBAR,0,0,10+16+64+128,0,0,xdim-1,ydim-1);
-    if(j >= 12) rotatesprite(319,(24)<<16,65600L,0,FRAGBAR,0,0,10+16+64+128,0,0,xdim-1,ydim-1);
+    fragbarsprite(0,0,65536L,0,FRAGBAR,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+    if(j >= 4) fragbarsprite(0,tilesizy[FRAGBAR],65536L,0,FRAGBAR,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+    if(j >= 8) fragbarsprite(0,tilesizy[FRAGBAR]*2,65536L,0,FRAGBAR,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
+    if(j >= 12) fragbarsprite(0,tilesizy[FRAGBAR]*3,65536L,0,FRAGBAR,0,0,2+8+16+64+128,0,0,xdim-1,ydim-1);
 
     for(i=connecthead;i>=0;i=connectpoint2[i])
     {
-        minitext(21+(73*(i&3)),2+((i&28)<<1),&ud.user_name[i][0],sprite[ps[i].i].pal,2+8+16+128);
+        minitext(21+(73*(i&3)),2+((i&28)<<1),&ud.user_name[i][0],sprite[ps[i].i].pal,2+8+16+128 + MINITEXT_FBAR);
         sprintf(buf,"%d",ps[i].frag-ps[i].fraggedself);
-        minitext(17+50+(73*(i&3)),2+((i&28)<<1),buf,sprite[ps[i].i].pal,2+8+16+128);
+        minitext(17+50+(73*(i&3)),2+((i&28)<<1),buf,sprite[ps[i].i].pal,2+8+16+128 + MINITEXT_FBAR);
     }
 }
 
@@ -1720,7 +1735,7 @@ void coolgaugetext(short snum)
                 }
                 if (i >= 0) statusbarsprite(231-o,200-21,65536L,0,i,0,0,10+16,0,0,xdim-1,ydim-1);
 
-                minitext(292-30-o,190,"%",6,10+16 + 256);
+                minitext(292-30-o,190,"%",6,10+16 + MINITEXT_SBAR);
 
                 j = 0x80000000;
                 switch(p->inven_icon)
@@ -1734,9 +1749,9 @@ void coolgaugetext(short snum)
                      case 7: i = (p->boot_amount>>1); break;
                 }
                 invennum(284-30-o,200-6,(char)i,0,10);
-                if (j > 0) minitext(288-30-o,180,"ON",0,10+16 + 256);
-                else if ((unsigned int)j != 0x80000000) minitext(284-30-o,180,"OFF",2,10+16 + 256);
-                if (p->inven_icon >= 6) minitext(284-35-o,180,"AUTO",2,10+16 + 256);
+                if (j > 0) minitext(288-30-o,180,"ON",0,10+16 + MINITEXT_SBAR);
+                else if ((unsigned int)j != 0x80000000) minitext(284-30-o,180,"OFF",2,10+16 + MINITEXT_SBAR);
+                if (p->inven_icon >= 6) minitext(284-35-o,180,"AUTO",2,10+16 + MINITEXT_SBAR);
           }
           pus = 0;
           return;
@@ -1872,8 +1887,8 @@ void coolgaugetext(short snum)
                           case 7: i = BOOT_ICON; break;
                      }
                      statusbarsprite(231-o,SBY+13,65536L,0,i,0,0,10+16+128,0,0,xdim-1,ydim-1);
-                     minitext(292-30-o,SBY+24,"%",6,10+16+128 + 256);
-                     if (p->inven_icon >= 6) minitext(284-35-o,SBY+14,"AUTO",2,10+16+128 + 256);
+                     minitext(292-30-o,SBY+24,"%",6,10+16+128 + MINITEXT_SBAR);
+                     if (p->inven_icon >= 6) minitext(284-35-o,SBY+14,"AUTO",2,10+16+128 + MINITEXT_SBAR);
                 }
                 if (u&(2048+4096))
                 {
@@ -1884,8 +1899,8 @@ void coolgaugetext(short snum)
                           case 5: j = p->heat_on; break;
                           default: j = 0x80000000;
                      }
-                     if (j > 0) minitext(288-30-o,SBY+14,"ON",0,10+16+128 + 256);
-                     else if ((unsigned int)j != 0x80000000) minitext(284-30-o,SBY+14,"OFF",2,10+16+128 + 256);
+                     if (j > 0) minitext(288-30-o,SBY+14,"ON",0,10+16+128 + MINITEXT_SBAR);
+                     else if ((unsigned int)j != 0x80000000) minitext(284-30-o,SBY+14,"OFF",2,10+16+128 + MINITEXT_SBAR);
                 }
                 if (u&8192)
                 {
@@ -2625,11 +2640,14 @@ void drawbackground(void)
     {
         if(ud.coop != 1)
         {
-            if (ud.multimode > 1) y1 += scale(ydim,8,200);
-            if (ud.multimode > 4) y1 += scale(ydim,8,200);
+            if (ud.multimode > 1) y1 += tilesizy[FRAGBAR];
+            if (ud.multimode > 4) y1 += tilesizy[FRAGBAR];
+            if (ud.multimode > 8) y1 += tilesizy[FRAGBAR];
+            if (ud.multimode > 12) y1 += tilesizy[FRAGBAR];
         }
+        y1 = scale(y1 * sbarscale, ydim, 200)>>16;
         if (ud.screen_size >= 8)
-            y2 = ROUND16(scale(200<<16,ydim,200)-mulscale16(scale(tilesizy[BOTTOMSTATUSBAR]<<16,ydim,200), sbarscale) + 32768);
+            y2 = ROUND16(scale(200<<16,ydim,200)-scale(tilesizy[BOTTOMSTATUSBAR] * sbarscale,ydim,200) + 32768);
     } else {
         // when not rendering a game, fullscreen wipe
         for(y=0;y<ydim;y+=tilesizy[dapicnum])
@@ -2638,16 +2656,13 @@ void drawbackground(void)
         return;
     }
 
-    if(ud.screen_size > 8 || y1 > 0)
-    {
-        // across top
-        for (y=0; y<windowy1; y+=tilesizy[dapicnum])
-            for (x=0; x<xdim; x+=tilesizx[dapicnum])
-                rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,0,0,xdim-1,windowy1-1);
-    }
-
     if(ud.screen_size > 8)
     {
+        // across top
+        for (y=y1-(y1%tilesizy[dapicnum]); y<windowy1; y+=tilesizy[dapicnum])
+            for (x=0; x<xdim; x+=tilesizx[dapicnum])
+                rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,0,y1,xdim-1,windowy1-1);
+
         // sides
         rx = windowx2-windowx2%tilesizx[dapicnum];
         for (y=windowy1-windowy1%tilesizy[dapicnum]; y<windowy2; y+=tilesizy[dapicnum])
@@ -2662,23 +2677,29 @@ void drawbackground(void)
                 rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,0,windowy2+1,xdim-1,y2-1);
     }
 
-    // draw in the bits to the left and right of the status bar
-    if (ud.screen_size >= 8) {
+    // draw in the bits to the left and right of the status bar and fragbar
+    if (ud.screen_size >= 8 || ud.multimode > 1) {
         int cl, cr, barw;
-        barw = mulscale16(scale(320<<16,ydim<<16,200*pixelaspect), sbarscale);
-        y1 = y2;
-        y2 = ydim-1;
-        x1 = 0;
-        x2 = xdim-1;
+        barw = scale(320*sbarscale,ydim<<16,200*pixelaspect);
         cl = ((xdim<<16)-barw)>>17;
         cr = ((xdim<<16)+barw)>>17;
-        for(y=y1-y1%tilesizy[dapicnum]; y<y2; y+=tilesizy[dapicnum])
-            for(x=0;x<=x2; x+=tilesizx[dapicnum]) {
+
+        for(y=0; y<y1; y+=tilesizy[dapicnum])
+            for(x=0;x<=xdim-1; x+=tilesizx[dapicnum]) {
                 if (x<cl)
-                    rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,x1,y1,cl,y2);
+                    rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,0,0,cl,y1);
                 else if (x+tilesizx[dapicnum]>cr)
-                    rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,cr,y1,x2,y2);
+                    rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,cr,0,xdim-1,y1);
             }
+
+        if (ud.screen_size >= 8)
+            for(y=y2-y2%tilesizy[dapicnum]; y<ydim-1; y+=tilesizy[dapicnum])
+                for(x=0;x<=xdim-1; x+=tilesizx[dapicnum]) {
+                    if (x<cl)
+                        rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,0,y2,cl,ydim-1);
+                    else if (x+tilesizx[dapicnum]>cr)
+                        rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,cr,y2,xdim-1,ydim-1);
+                }
     }
 
      if(ud.screen_size > 8)
