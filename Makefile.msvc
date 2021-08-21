@@ -45,6 +45,9 @@ USE_ASM=0
 !else
 flags_cl=/arch:IA32
 !endif
+!if "$(PLATFORM)" == ""
+PLATFORM=x86
+!endif
 
 !if $(RELEASE)
 # release options
