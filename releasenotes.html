@@ -84,6 +84,7 @@
 				<ul>
 					<li><a href="#requirements">System Requirements</a></li>
 					<li><a href="#install">Installation and Setup</a></li>
+					<li><a href="#music">Music</a></li>
 					<li><a href="#multiplayer">Multiplayer</a></li>
 					<li><a href="#nam">NAM Support</a></li>
 					<li><a href="#console">Console Commands</a></li>
@@ -328,6 +329,46 @@ alt="The initial startup window as it appears on macOS" width="626" height="446"
 			<li>(Windows) <code>C:\Users\<em>your-name</em>\AppData\JFDuke3D</code></li>
 			</ul>
 			<p>To have the game instead store these files in the working directory where the game was started, create an empty file named <code>user_profiles_disabled</code> (no extension) beside the executable. You can put the <code>duke3d.grp</code> file in the same location, thus making everything self-contained and 'portable'.</p>
+
+			<h1 id="music">Music</h1>
+			<p>Music playback with JFDuke3D has some extra features that may be of interest.
+
+			<h2 id="music-fluidsynth">FluidSynth MIDI (Linux, BSD)</h2>
+			<p>JFDuke3D supports the software MIDI synthesiser <a href="https://www.fluidsynth.org">FluidSynth</a> if it is available at compile time. Two challenges typically affect getting FluidSynth to output music. The first is providing a SoundFont for the synthesiser to use, and the second is setting the correct audio device for FluidSynth to output its audio.</p>
+			<p>Starting with the SoundFont: if when you start JFDuke3D no music is playing, and you see messages like so in the terminal after exiting, then you will need to provide a SoundFont.</p>
+			<pre>Checking music inits.
+MUSIC_Init: trying FluidSynth
+FluidSynthDrv: using version 2.1.7, built with 2.1.7
+fluidsynth: error: Unable to open file "/usr/share/soundfonts/default.sf2"
+fluidsynth: error: Couldn't load soundfont file
+fluidsynth: error: Failed to load SoundFont "/usr/share/soundfonts/default.sf2"
+MUSIC_Init: trying ALSA</pre>
+			<p>The simplest option here is to <a href="https://archive.org/download/free-soundfonts-sf2-2019-04/merlin_gold%28v4.10%29.sf2">fetch this freely-available one</a> and copy it to the same directory as <code>duke3d.cfg</code> (normally <code>~/.jfduke3d</code>). Other places the game will search for <code>.sf2</code> files include <code>/usr/share/soundfonts</code> and <code>/usr/share/sounds/sf2</code>, and the first one found will be used. When successfully installed, the messages from the game will look like so.</p>
+			<pre>Checking music inits.
+MUSIC_Init: trying FluidSynth
+FluidSynthDrv: using version 2.1.7, built with 2.1.7
+FluidSynthDrv: using found soundfont ./merlin_gold(v4.10).sf2</pre>
+			<p>Now, if you still don't have music and see a message like <em>fluidsynth: error: Failed to connect to Jack server</em> then a different audio device needs to be set, and that means editing the <code>duke3d.cfg</code> file. Find the line with <code>MusicParams = ""</code> and between the quotes add <code>audio.driver=sdl2</code>. Save the change, then start the game to test. If that doesn't work, try alternatives like <code>audio.driver=pulseaudio</code> or <code>audio.driver=portaudio</code> or <code>audio.driver=alsa</code> or <code>audio.driver=oss</code>.</p>
+
+			<h2 id="music-overrides">Music Overrides</h2>
+			<p>Ogg Vorbis alternatives to MIDI music can be automatically used by the game providing certain conditions are met. Files must have the same base filename as the MIDI track but with a <code>.ogg</code> (lowercase) extension. For example, <code>GRABBAG.ogg</code> will override <code>GRABBAG.MID</code>, and <code>dethtoll.ogg</code> will override <code>dethtoll.mid</code>. Note that filename case may matter to you here.</p>
+			<p>On systems without filename case-sensitivity concerns, like Windows and typical macOS setups, you can copy the files to the same directory as <code>duke3d.grp</code> or <code>duke3d.cfg</code>. On case-sensitive filesystems though, the base part of the filename must match case as it is given in the game's <code>USER.CON</code> file, noting that in the default Duke Nukem 3D game data the filenames are not consistent in their case. For instance, from Duke3D Atomic Ed.:</p>
+			<pre>// Music for title and end
+music 0 GRABBAG.MID BRIEFING.MID
+
+// Music for the individual levels
+music 1 stalker.mid dethtoll.mid streets.mid watrwld1.mid snake1.mid
+        thecall.mid ahgeez.mid dethtoll.mid streets.mid watrwld1.mid snake1.mid
+
+music 2 futurmil.mid storm.mid gutwrnch.mid robocrep.mid stalag.mid
+       pizzed.mid alienz.mid xplasma.mid alfredh.mid gloomy.mid intents.mid
+
+music 3 inhiding.mid FATCMDR.mid NAMES.MID subway.mid invader.mid gotham.mid
+        233c.mid lordofla.mid urban.mid spook.mid whomp.mid
+
+music 4 missimp.mid prepd.mid bakedgds.mid cf.mid lemchill.mid
+       pob.mid warehaus.mid layers.mid floghorn.mid depart.mid restrict.mid</pre>
+       		<p>Having said all this, a quick way to avoid a lot of problems is to simply ZIP up the Vorbis files you want to use (e.g. as <code>music.zip</code>), put that ZIP file in the same directory as <code>duke3d.grp</code> or <code>duke3d.cfg</code>, and launch the game with a <code>-gmusic.zip</code> parameter as relevant to your operating system.</p>
 
 			<h1 id="multiplayer">Multiplayer</h1>
 

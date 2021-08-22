@@ -664,6 +664,7 @@ void CONFIG_WriteSetup( void )
     SCRIPT_PutNumber( scripthandle, "Sound Setup", "NumBits", NumBits, false, false);
     SCRIPT_PutNumber( scripthandle, "Sound Setup", "MixRate", MixRate, false, false);
     SCRIPT_PutNumber( scripthandle, "Sound Setup", "ReverseStereo",ReverseStereo,false,false);
+    SCRIPT_PutString( scripthandle, "Sound Setup", "MusicParams", MusicParams);
 
     SCRIPT_PutNumber( scripthandle, "Setup", "ForceSetup",ForceSetup,false,false);
     SCRIPT_PutNumber( scripthandle, "Misc", "Executions",ud.executions,false,false);
