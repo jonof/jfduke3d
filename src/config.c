@@ -505,30 +505,6 @@ void CONFIG_SetupJoystick( void )
       }
    }
 
-void readsavenames(void)
-{
-    int bv, dummy;
-    short i;
-    char fn[13];
-    BFILE *fil;
-
-    Bstrcpy(fn,"game_.sav");
-
-    for (i=0;i<10;i++)
-    {
-        fn[4] = i+'0';
-        if ((fil = Bfopen(fn,"rb")) == NULL ) continue;
-        do
-        {
-            if (dfread(&bv,4,1,fil) != 1) break;
-            if (bv != BYTEVERSION) break;
-            if (dfread(&dummy,4,1,fil) != 1) break;
-            if (dfread(&ud.savegame[i][0],19,1,fil) != 1) ud.savegame[i][0] = 0;
-        } while(0);
-        Bfclose(fil);
-    }
-}
-
 /*
 ===================
 =

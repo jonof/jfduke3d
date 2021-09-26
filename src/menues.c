@@ -100,6 +100,31 @@ void getangplayers(short snum)
     }
 }
 
+void readsavenames(void)
+{
+    int bv, dummy;
+    short i;
+    char fn[13];
+    int fil;
+
+    strcpy(fn,"game_.sav");
+
+    for (i=0;i<10;i++)
+    {
+        fn[4] = i+'0';
+        ud.savegame[i][0] = 0;
+        if ((fil = kopen4load(fn,0)) == -1) continue;
+        do
+        {
+            if (kdfread(&bv,sizeof(int),1,fil) != 1) break;
+            if (bv != BYTEVERSION) break;
+            if (kdfread(&dummy,sizeof(int),1,fil) != 1) break;
+            if (kdfread(&ud.savegame[i][0],19,1,fil) != 1) ud.savegame[i][0] = 0;
+        } while(0);
+        kclose(fil);
+    }
+}
+
 int loadpheader(char spot,struct savehead *saveh)
 {
     int i;
@@ -3720,6 +3745,7 @@ if (PLUTOPAK) {
                 if(x == -1)
                 {
             //        readsavenames();
+                    memcpy(ud.savegame[current_menu-360], ud.baksavegame, sizeof(ud.baksavegame));
                     ps[myconnectindex].gm = MODE_GAME;
                     if(ud.multimode < 2  && ud.recstat != 2)
                     {
@@ -3842,14 +3868,15 @@ if (PLUTOPAK) {
                     }
                     else
                     {
+                        memcpy(ud.baksavegame, ud.savegame[x], sizeof(ud.baksavegame));
                         if( ud.savegame[x][0] != 0)
                             current_menu = 2000+x;
                         else
                         {
                             KB_FlushKeyboardQueue();
                             current_menu = (360+x);
-                            ud.savegame[x][0] = 0;
-                            inputloc = 0;
+                            sprintf(ud.savegame[x], "GAME %d", x + 1);
+                            inputloc = strlen(ud.savegame[x]);
                         }
                     }
                     break;

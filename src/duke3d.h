@@ -297,7 +297,7 @@ struct user_defs
     unsigned char show_help,scrollmode,clipping;
     char user_name[MAXPLAYERS][32];
     char ridecule[10][40];
-    char savegame[10][22];
+    char savegame[10][22], baksavegame[22];
     char pwlockout[128],rtsname[128];
     unsigned char overhead_on,last_overhead,showweapons;
 
