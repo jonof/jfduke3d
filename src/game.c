@@ -42,7 +42,7 @@ Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
 #define TIMERUPDATESIZ 32
 
 int cameradist = 0, cameraclock = 0;
-int sbarscale = -1;
+int sbarscale = 65536;
 unsigned char playerswhenstarted;
 char qe;
 
