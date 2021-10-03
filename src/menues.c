@@ -2575,7 +2575,7 @@ if (PLUTOPAK) {
         menutext(160,c-18,      0,0,"VIDEO SETTINGS");
         menutext(160,c,         0,0,"KEYS SETUP");
         menutext(160,c+18,      0,0,"MOUSE SETUP");
-        menutext(160,c+18+18,   0,CONTROL_JoyPresent==0,"JOYSTICK SETUP");
+        menutext(160,c+18+18,   0,CONTROL_JoyPresent==0,"CONTROLLER SETUP");
         if (!NAM) {
 #ifndef AUSTRALIA
         menutext(160,c+18+18+18,0,0,"PARENTAL LOCK");
@@ -3017,8 +3017,8 @@ if (PLUTOPAK) {
          rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             if (function == 0) menutext(320>>1,15,0,0,"MOUSE SETUP");
             else if (function == 1) menutext(320>>1,15,0,0,"ADVANCED MOUSE");
-            else if (function == 2) menutext(320>>1,15,0,0,"JOYSTICK BUTTONS");
-            else if (function == 3) menutext(320>>1,15,0,0,"JOYSTICK AXES");
+            else if (function == 2) menutext(320>>1,15,0,0,"CONTROLLER BUTTONS");
+            else if (function == 3) menutext(320>>1,15,0,0,"CONTROLLER AXES");
     
         x = probe(0,0,0,NUMGAMEFUNCTIONS);
 
@@ -3265,7 +3265,7 @@ if (PLUTOPAK) {
 
     case 206:
          rotatesprite(320<<15,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
-            menutext(320>>1,24,0,0,"JOYSTICK SETUP");
+            menutext(320>>1,24,0,0,"CONTROLLER SETUP");
 
         x = probe(160,100-18,18,3);
 
@@ -3291,7 +3291,7 @@ if (PLUTOPAK) {
 
     case 207:
          rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
-            menutext(320>>1,15,0,0,"JOYSTICK BUTTONS");
+            menutext(320>>1,15,0,0,"CONTROLLER BUTTONS");
 
         c = 2*joynumbuttons;
 
@@ -3346,7 +3346,7 @@ if (PLUTOPAK) {
     case 222: {
         int thispage, twothispage;
          rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
-            menutext(320>>1,15,0,0,"JOYSTICK AXES");
+            menutext(320>>1,15,0,0,"CONTROLLER AXES");
 
         thispage = (current_menu < 217) ? (current_menu-208) : (current_menu-217)+2;
         twothispage = (thispage*2+1 < joynumaxes);
@@ -3504,7 +3504,7 @@ if (PLUTOPAK) {
     case 216: { // Pray this is enough pages for now :-|
         int first,last;
          rotatesprite(320<<15,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
-            menutext(320>>1,24,0,0,"JOY DEAD ZONES");
+            menutext(320>>1,24,0,0,"CTLR. DEAD ZONES");
 
             first = 4*(current_menu-213);
             last  = min(4*(current_menu-213)+4,joynumaxes);

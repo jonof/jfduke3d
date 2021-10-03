@@ -228,7 +228,7 @@
                             </child>
                             <child>
                               <object class="GtkCheckButton" id="usejoystickcheck">
-                                <property name="label" translatable="yes">_Joystick</property>
+                                <property name="label" translatable="yes">Cont_roller</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>

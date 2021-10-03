@@ -432,7 +432,7 @@ if (VOLUMEONE) {
     OSD_RegisterFunction("vidmode","vidmode [xdim ydim] [bpp] [fullscreen]: immediately change the video mode",osdcmd_vidmode);
 
     OSD_RegisterFunction("usemouse","usemouse: enables input from the mouse if it is present",osdcmd_usemousejoy);
-    OSD_RegisterFunction("usejoystick","usejoystick: enables input from the joystick if it is present",osdcmd_usemousejoy);
+    OSD_RegisterFunction("usejoystick","usejoystick: enables input from the controller if it is present",osdcmd_usemousejoy);
     
     //baselayer_onvideomodechange = onvideomodechange;
 
