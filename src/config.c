@@ -53,7 +53,7 @@ int32 MixRate;
 int32 ReverseStereo;
 char MusicParams[BMAX_PATH] = {0};
 
-int32 UseJoystick = 0, UseMouse = 1;
+int32 UseJoystick = 1, UseMouse = 1;
 int32 RunMode;
 int32 AutoAim;  // JBF 20031125
 int32 ShowOpponentWeapons;
@@ -210,7 +210,7 @@ void CONFIG_SetDefaults( void )
     ud.mouseaiming = 0;
     ud.weaponswitch = 3;    // new+empty
     AutoAim = 1;
-    UseJoystick = 0;
+    UseJoystick = 1;
     UseMouse = 1;
     ud.mouseflip = 0;
     ud.runkey_mode = 0;
