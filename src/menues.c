@@ -1173,7 +1173,7 @@ void menus(void)
             menutext(160,24,0,0,"ADULT MODE");
 
             x = probe(60,50+16,16,2);
-            if(x == -1) { cmenu(202); probey = 6; break; }
+            if(x == -1) { cmenu(200); probey = 4; break; }
 
             menutext(c,50+16,SHX(-2),PHX(-2),"ADULT MODE");
             menutext(c,50+16+16,SHX(-3),PHX(-3),"ENTER PASSWORD");
@@ -1695,7 +1695,7 @@ cheat_for_port_credits:
                             cmenu(100);
                             break;
 
-                        case 1: cmenu(202);break;   // JBF 20031205: was 200
+                        case 1: cmenu(200);break;
                         case 2:
                             if(movesperpacket == 4 && connecthead != myconnectindex)
                                 break;
@@ -1780,7 +1780,7 @@ cheat_for_port_credits:
                     break;
                 case 3:
                     last_fifty = 3;
-                    cmenu(202);     // JBF 20031205: was 200
+                    cmenu(200);
                     break;
                 case 4:
                     last_fifty = 4;
@@ -2086,8 +2086,7 @@ if (PLUTOPAK) {
             menutext(c,70+19+19+19,SHX(-5),PHX(-5),skill_names[3]);
             break;
 
-        case 200:
-
+        case 201:   // Game options.
             rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,15,0,0,"GAME OPTIONS");
 
@@ -2130,7 +2129,7 @@ if (PLUTOPAK) {
             onbar = (probey == 2 || probey == 9);
             x = probesm(c,yy+5,0,io);
 
-            if (x == -1) { cmenu(202); break; }
+            if (x == -1) { cmenu(200); break; }
 #define OFFSHADE 16 
             yy = 31;
             for (ii=io=0; opts[ii]; ii++) {
@@ -2203,15 +2202,14 @@ if (PLUTOPAK) {
         }
         break;
             
-        // JBF 20031205: Second level options menu selection
-    case 202:
-            rotatesprite(320<<15,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
-            menutext(320>>1,24,0,0,"OPTIONS");
+    case 200:   // Options menu.
+        rotatesprite(320<<15,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
+        menutext(320>>1,24,0,0,"OPTIONS");
 
-        c = 200>>1;
+        c = (200 - 18*5)>>1;
 
-            onbar = 0;
-            x = probe(160,c-18-18-18,18,7-NAM);
+        onbar = 0;
+        x = probe(160,c,18,5-NAM);
 
         switch (x) {
         case -1:
@@ -2219,7 +2217,7 @@ if (PLUTOPAK) {
             break;
 
         case 0:
-            cmenu(200);
+            cmenu(201);
             break;
 
         case 1:
@@ -2258,37 +2256,59 @@ if (PLUTOPAK) {
             break;
             
         case 3:
-            currentlist = 0;
-        case 4:
-        case 5:
-            if (x==5 && !CONTROL_JoyPresent) break;
-            cmenu(204+x-3);
+            cmenu(202);
             break;
 
-        case 6:
+        case 4:
 #ifndef AUSTRALIA
             cmenu(10000);
 #endif
             break;
         }
 
-        menutext(160,c-18-18-18,0,0,"GAME OPTIONS");
-        menutext(160,c-18-18,   0,0,"SOUND OPTIONS");
-        menutext(160,c-18,      0,0,"VIDEO SETTINGS");
-        menutext(160,c,         0,0,"KEYS SETUP");
-        menutext(160,c+18,      0,0,"MOUSE SETUP");
-        menutext(160,c+18+18,   0,CONTROL_JoyPresent==0,"CONTROLLER SETUP");
+        menutext(160,c,0,0,"GAME OPTIONS");
+        menutext(160,c+18,0,0,"SOUND OPTIONS");
+        menutext(160,c+18+18,0,0,"VIDEO SETTINGS");
+        menutext(160,c+18+18+18,0,0,"INPUT SETTINGS");
         if (!NAM) {
 #ifndef AUSTRALIA
-        menutext(160,c+18+18+18,0,0,"PARENTAL LOCK");
+        menutext(160,c+18+18+18+18,0,0,"PARENTAL LOCK");
 #else
-        menutext(160,c+18+18+18,0,1,"PARENTAL LOCK");
+        menutext(160,c+18+18+18+18,0,1,"PARENTAL LOCK");
 #endif
         }
         break;
 
-        // JBF 20031206: Video settings menu
-    case 203:
+    case 202:   // Input settings.
+        rotatesprite(320<<15,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
+        menutext(320>>1,24,0,0,"INPUT SETTINGS");
+
+        c = (200 - 18*3)>>1;
+
+        onbar = 0;
+        x = probe(160,c,18,3);
+
+        switch (x) {
+        case -1:
+            cmenu(200);
+            probey = 3;
+            break;
+
+        case 0:
+            currentlist = 0;
+        case 1:
+        case 2:
+            if (x==2 && !CONTROL_JoyPresent) break;
+            cmenu(204+x);
+            break;
+        }
+
+        menutext(160,c,         0,0,"KEYS SETUP");
+        menutext(160,c+18,      0,0,"MOUSE SETUP");
+        menutext(160,c+18+18,   0,CONTROL_JoyPresent==0,"CONTROLLER SETUP");
+        break;
+
+    case 203:   // Video settings.
             rotatesprite(320<<15,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,24,0,0,"VIDEO SETTINGS");
 
@@ -2313,7 +2333,7 @@ if (PLUTOPAK) {
         }
         switch (x) {
         case -1:
-            cmenu(202);
+            cmenu(200);
             probey = 2;
             break;
 
@@ -2548,7 +2568,7 @@ if (PLUTOPAK) {
 
         if (x==-1) {
             cmenu(202);
-            probey = 3;
+            probey = 0;
         } else if (x>=0) {
             function = probey;
             whichkey = currentlist;
@@ -2652,7 +2672,7 @@ if (PLUTOPAK) {
 
         if (x==-1) {
             cmenu(202);
-            probey = 4;
+            probey = 1;
             break;
         } else if (x == (MAXMOUSEBUTTONS-2)*2+2) {
             // sensitivity
@@ -2732,10 +2752,10 @@ if (PLUTOPAK) {
                 cmenu(212);
                 probey = 2+(whichkey^2);
             } else if (function == 2) { // joystick button/hat
-                cmenu(207);
+                cmenu(213);
                 probey = whichkey;
-            } else if (function == 3) { // joystick digital axis
-                cmenu((whichkey>>2)+208);
+            } else if (function == 3) { // joystick digital axis (max 12)
+                cmenu((whichkey>>2)+214);
                 probey = 1+((whichkey>>1)&1)*4+(whichkey&1);
             }
             break;
@@ -2760,16 +2780,12 @@ if (PLUTOPAK) {
             } else if (function == 2) {
 				JoystickFunctions[whichkey>>1][whichkey&1] = x;
 				CONTROL_MapButton( x, whichkey>>1, whichkey&1, controldevice_joystick);
-                cmenu(207);
+                cmenu(213);
                 probey = whichkey;
             } else if (function == 3) {
                 JoystickDigitalFunctions[whichkey>>1][whichkey&1] = x;
                 CONTROL_MapDigitalAxis(whichkey>>1, x, whichkey&1, controldevice_joystick);
-				if ((whichkey>>2) < 2) {
-					cmenu(208+(whichkey>>2));
-				} else {
-					cmenu(217+(whichkey>>2)-2);
-				}
+				cmenu(214+(whichkey>>2));
                 probey = 1+((whichkey>>1)&1)*4+(whichkey&1);
             }
             break;
@@ -2974,14 +2990,14 @@ if (PLUTOPAK) {
         switch (x) {
             case -1:
                 cmenu(202);
-                probey = 5;
+                probey = 2;
                 break;
             case 0:
             case 1:
-                cmenu(207+x);
+                cmenu(213+x);
                 break;
             case 2:
-                cmenu(213);
+                cmenu(220);
                 break;
         }
 
@@ -2991,7 +3007,7 @@ if (PLUTOPAK) {
 
         break;
 
-    case 207:
+    case 213:
          rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,15,0,0,"CONTROLLER BUTTONS");
 
@@ -3038,19 +3054,17 @@ if (PLUTOPAK) {
         gametext(160,149+9,"ENTER = MODIFY",0,2+8+16);
         break;
 
-    case 208:
-    case 209:
+    case 214:
+    case 215:
+    case 216:
     case 217:
     case 218:
-    case 219:
-    case 220:
-    case 221:
-    case 222: {
+    case 219: { // Two per page, 12 axes maximum.
         int thispage, twothispage;
          rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,15,0,0,"CONTROLLER AXES");
 
-        thispage = (current_menu < 217) ? (current_menu-208) : (current_menu-217)+2;
+        thispage = current_menu-214;
         twothispage = (thispage*2+1 < joynumaxes);
         
         onbar = 0;
@@ -3073,17 +3087,16 @@ if (PLUTOPAK) {
                 break;
             case 8:
                 if (joynumaxes > 2) {
-                    if (thispage == ((joynumaxes+1)/2)-1) cmenu(208);
+                    if (thispage == ((joynumaxes+1)/2)-1) cmenu(214);
                     else {
-                        if (current_menu == 209) cmenu(217);
-                        else cmenu( current_menu+1 );
+                        cmenu( current_menu+1 );
                     }
                 }
                 break;
 
             case 4: // bar
                 if (!twothispage && joynumaxes > 2)
-                    cmenu(208);
+                    cmenu(214);
             case 0: break;
 
             case 1: // digitals
@@ -3193,64 +3206,66 @@ if (PLUTOPAK) {
         }
         
         if (joynumaxes > 2) {
-            menutext(320>>1,twothispage?158:108,SHX(-10),(joynumaxes<=2),"NEXT...");
+            menutext(42,twothispage?158:108,SHX(-10),(joynumaxes<=2),"NEXT...");
             sprintf(buf,"Page %d of %d",thispage+1,(joynumaxes+1)/2);
             gametext(320-100,158,buf,0,2+8+16);
         }
         break;
     }
 
-    case 213:
-    case 214:
-    case 215:
-    case 216: { // Pray this is enough pages for now :-|
-        int first,last;
-         rotatesprite(320<<15,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
-            menutext(320>>1,24,0,0,"CTLR. DEAD ZONES");
+    case 220:
+    case 221:
+    case 222: { // Four per page, 12 axes maximum.
+        int first, last, haspages;
+        unsigned short odx,dx,ody,dy;
 
-            first = 4*(current_menu-213);
-            last  = min(4*(current_menu-213)+4,joynumaxes);
+        rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
+        menutext(320>>1,15,0,0,"CTLR. DEAD ZONES");
 
-            onbar = 1;
-            x = probe(320,48,15,2*(last-first)+(joynumaxes>4));
+        first = 4*(current_menu-220);
+        last  = min(4*(current_menu-220)+3, joynumaxes-1);
+        haspages = joynumaxes>4;
 
-            if (x==-1) {
-                cmenu(206);
-                probey = 2;
-                break;
-            } else if (x==2*(last-first) && joynumaxes>4) {
-                cmenu( (current_menu-213) == (joynumaxes/4) ? 213 : (current_menu+1) );
-                probey = 0;
-                break;
+        onbar = 1;
+        if (probey == 2*(last-first+1))
+            x = probe(60,38,15,2*(last-first+1)+haspages);
+        else x = probe(320,38,15,2*(last-first+1)+haspages);
+        if (x==-1) {
+            cmenu(206);
+            probey = 2;
+            break;
+        } else if (x==2*(last-first+1)+1 - 1) {    // +1 is 'next page' entry, -1 because 0-based.
+            cmenu( last == joynumaxes-1 ? 220 : (current_menu+1) );
+            probey = 0;
+            break;
+        }
+
+        for (m=first;m<=last;m++) {
+            menutext(42,38+30*(m-first),0,0,getjoyname(0,m));
+
+            gametext(128,38+30*(m-first)-8,"DEAD",0,2+8+16);
+            gametext(128,38+30*(m-first)-8+15,"SATU",0,2+8+16);
+
+            dx = odx = min(64,64l*JoystickAnalogueDead[m]/32767l);
+            dy = ody = min(64,64l*JoystickAnalogueSaturate[m]/32767l);
+
+            bar(217,38+30*(m-first),(short*)&dx,4,x==((m-first)*2),0,0);
+            bar(217,38+30*(m-first)+15,(short*)&dy,4,x==((m-first)*2+1),0,0);
+
+            Bsprintf(buf,"%3d%%",100*dx/64); gametext(217-49,38+30*(m-first)-8,buf,0,2+8+16);
+            Bsprintf(buf,"%3d%%",100*dy/64); gametext(217-49,38+30*(m-first)-8+15,buf,0,2+8+16);
+
+            if (dx != odx) JoystickAnalogueDead[m]     = 32767l*dx/64l;
+            if (dy != ody) JoystickAnalogueSaturate[m] = 32767l*dy/64l;
+            if (dx != odx || dy != ody) {
+                CONTROL_SetJoyAxisDead(m, JoystickAnalogueDead[m]);
+                CONTROL_SetJoyAxisSaturate(m, JoystickAnalogueSaturate[m]);
             }
-
-            for (m=first;m<last;m++) {
-                unsigned short odx,dx,ody,dy;
-                menutext(32,48+30*(m-first),0,0,getjoyname(0,m));
-
-                gametext(128,48+30*(m-first)-8,"DEAD",0,2+8+16);
-                gametext(128,48+30*(m-first)-8+15,"SATU",0,2+8+16);
-                
-                dx = odx = min(64,64l*JoystickAnalogueDead[m]/32767l);
-                dy = ody = min(64,64l*JoystickAnalogueSaturate[m]/32767l);
-
-                bar(217,48+30*(m-first),(short*)&dx,4,x==((m-first)*2),0,0);
-                bar(217,48+30*(m-first)+15,(short*)&dy,4,x==((m-first)*2+1),0,0);
-
-                Bsprintf(buf,"%3d%%",100*dx/64); gametext(217-49,48+30*(m-first)-8,buf,0,2+8+16);
-                Bsprintf(buf,"%3d%%",100*dy/64); gametext(217-49,48+30*(m-first)-8+15,buf,0,2+8+16);
-
-                if (dx != odx) JoystickAnalogueDead[m]     = 32767l*dx/64l;
-                if (dy != ody) JoystickAnalogueSaturate[m] = 32767l*dy/64l;
-                if (dx != odx || dy != ody) {
-                    CONTROL_SetJoyAxisDead(m, JoystickAnalogueDead[m]);
-                    CONTROL_SetJoyAxisSaturate(m, JoystickAnalogueSaturate[m]);
-                }
-            }
+        }
         //gametext(160,158,"DEAD = DEAD ZONE, SAT. = SATURATION",0,2+8+16);
-        if (joynumaxes>4) {
-            menutext(32,48+30*(last-first),0,0,"NEXT...");
-            sprintf(buf,"Page %d of %d", 1+(current_menu-213), (joynumaxes+3)/4);
+        if (haspages) {
+            menutext(42,38+30*(last-first+1),0,0,"NEXT...");
+            sprintf(buf,"Page %d of %d", 1+(current_menu-220), (joynumaxes+3)/4);
             gametext(320-100,158,buf,0,2+8+16);
         }
         break;      
@@ -3277,7 +3292,7 @@ if (PLUTOPAK) {
                         }
                     }
 
-                    else cmenu(202);
+                    else cmenu(200);
                     probey = 1;
                     break;
                 case 0:
