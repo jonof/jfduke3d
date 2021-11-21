@@ -578,6 +578,12 @@ extern unsigned char useprecache;
 #define NAM_GRENADE_LIFETIME	120
 #define NAM_GRENADE_LIFETIME_VAR	30
 
+#define STRGET_NOECHO (1<<8)
+#define STRGET_NOCONTROLLER (2<<8)
+#define STRGET_PASSWORD (4<<8)
+#define STRGET_NUMERIC (8<<8)
+#define STRGET_SHADE(c) ((short)(((signed char)(c))&255))
+
 #ifdef __cplusplus
 }
 #endif

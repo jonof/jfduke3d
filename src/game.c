@@ -181,7 +181,7 @@ void setgamepalette(struct player_struct *player, unsigned char *pal, int set)
     player->palette = pal;
 }
 
-int gametext(int x,int y,const char *t,char s,short dabits)
+int gametext(int x,int y,const char *t,signed char s,short dabits)
 {
     short ac,newx;
     char centre;
@@ -230,7 +230,7 @@ int gametext(int x,int y,const char *t,char s,short dabits)
     return (x);
 }
 
-int gametextpal(int x,int y,const char *t,char s,unsigned char p)
+int gametextpal(int x,int y,const char *t,signed char s,unsigned char p)
 {
     short ac,newx;
     char centre;
@@ -278,7 +278,7 @@ int gametextpal(int x,int y,const char *t,char s,unsigned char p)
     return (x);
 }
 
-int gametextpart(int x,int y,const char *t,char s,short p)
+int gametextpart(int x,int y,const char *t,signed char s,short p)
 {
     short ac,newx, cnt;
     char centre;
@@ -361,7 +361,7 @@ int minitext(int x,int y,const char *t,unsigned char p,short sb)
     return (x);
 }
 
-int minitextshade(int x,int y,const char *t,char s,unsigned char p,short sb)
+int minitextshade(int x,int y,const char *t,signed char s,unsigned char p,short sb)
 {
     short ac,dastat;
     char ch;
@@ -384,7 +384,7 @@ int minitextshade(int x,int y,const char *t,char s,unsigned char p,short sb)
     return (x);
 }
 
-void gamenumber(int x,int y,int n,char s)
+void gamenumber(int x,int y,int n,signed char s)
 {
     char b[10];
     //ltoa(n,b,10);
@@ -2045,7 +2045,6 @@ void FTA(short q,struct player_struct *p)
 void showtwoscreens(void)
 {
     short i;
-    UserInput uinfo;
 
     if (!VOLUMEALL) {
         setview(0,0,xdim-1,ydim-1);
@@ -2116,7 +2115,7 @@ void gameexit(const char *t)
 short inputloc = 0;
 short strget(short x,short y,char *t,short dalen,short c)
 {
-    short ch;
+    short ch, sh, didinput = 0;
 
     while((ch = KB_Getch()) != 0)
     {
@@ -2144,28 +2143,37 @@ short strget(short x,short y,char *t,short dalen,short c)
             else if ( ch >= 32 && inputloc < dalen && ch < 127)
             {
                 ch = Btoupper(ch);
-                if (c != 997 || (ch >= '0' && ch <= '9')) { // JBF 20040508: so we can have numeric only if we want
+                if (!(c & STRGET_NUMERIC) || (ch >= '0' && ch <= '9')) {
                     *(t+inputloc) = ch;
                     *(t+inputloc+1) = 0;
                     inputloc++;
                 }
+                didinput = 1;
             }
         }
     }
 
-    if( c == 999 ) return(0);
-    if( c == 998 )
+    if (!(c & STRGET_NOCONTROLLER) && !didinput)
+    {
+        extern UserInput uinfo;  // menues.c
+        if (uinfo.button0) return (1);
+        else if (uinfo.button1) return (-1);
+    }
+
+    sh = (signed char)(c & 255);
+    if( c & STRGET_NOECHO ) return(0);
+    if( c & STRGET_PASSWORD )
     {
         char b[41];
         int ii;
         for(ii=0;ii<inputloc;ii++)
             b[ii] = '*';
         b[ii] = 0;
-        x = gametext(x,y,b,c,2+8+16);
+        x = gametext(x,y,b,sh,2+8+16);
     }
-    else x = gametext(x,y,t,c,2+8+16);
-    c = 4-(sintable[(totalclock<<4)&2047]>>11);
-    rotatesprite((x+8)<<16,(y+4)<<16,32768L,0,SPINNINGNUKEICON+((totalclock>>3)%7),c,0,2+8,0,0,xdim-1,ydim-1);
+    else x = gametext(x,y,t,sh,2+8+16);
+    sh = 4-(sintable[(totalclock<<4)&2047]>>11);
+    rotatesprite((x+8)<<16,(y+4)<<16,32768L,0,SPINNINGNUKEICON+((totalclock>>3)%7),sh,0,2+8,0,0,xdim-1,ydim-1);
 
     return (0);
 }
@@ -2273,7 +2281,7 @@ void typemode(void)
      else
      {
           if(ud.screen_size > 0) j = 200-45; else j = 200-8;
-          hitstate = strget(320>>1,j,typebuf,30,1);
+          hitstate = strget(320>>1,j,typebuf,30,STRGET_SHADE(1)|STRGET_NOCONTROLLER);
 
           if(hitstate == 1)
           {
@@ -9107,7 +9115,6 @@ char domovethings(void)
 void doorders(void)
 {
     short i;
-    UserInput uinfo;
 
     setview(0,0,xdim-1,ydim-1);
 

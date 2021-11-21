@@ -653,8 +653,6 @@ static int probe_(int type,int x,int y,int i,int n)
         centre = 320>>2;
     else centre = 0;
 
-    CONTROL_ClearUserInput(&uinfo);
-
     if (uinfo.dir == dir_North)
     {
         sound(KICK_HIT);
@@ -1065,6 +1063,7 @@ void menus(void)
     }
 
     CONTROL_GetUserInput(&uinfo);
+    CONTROL_ClearUserInput(&uinfo);
 
     ps[myconnectindex].gm &= (0xff-MODE_TYPE);
     ps[myconnectindex].fta = 0;
@@ -1391,7 +1390,7 @@ if (VOLUMEALL) {
                     current_menu = 20020;
                 }
             } else if (current_menu == 20022) {
-                x = strget(40+100,50+20-9,buf,5,997);
+                x = strget(40+100,50+20-9,buf,5,STRGET_NUMERIC);
                 if (x) {
                     if (x == 1) {
                         //strcpy(myname,buf);
@@ -1435,7 +1434,6 @@ if (VOLUMEALL) {
             if (uinfo.button1 || KB_KeyPressed(sc_N))
             {
                 KB_ClearKeyDown(sc_N);
-                CONTROL_ClearUserInput(&uinfo);
 
                 if(sprite[ps[myconnectindex].i].extra <= 0)
                 {
@@ -1455,7 +1453,6 @@ if (VOLUMEALL) {
             {
                 KB_FlushKeyboardQueue();
                 KB_ClearKeysDown();
-                CONTROL_ClearUserInput(&uinfo);
                 FX_StopAllSounds();
 
                 if(ud.multimode > 1)
@@ -1495,7 +1492,7 @@ if (VOLUMEALL) {
             if(current_menu == 10001)
             {
                 gametext(160,50+16+16+16+16-12,"ENTER PASSWORD",0,2+8+16);
-                x = strget((320>>1),50+16+16+16+16,buf,19, 998);
+                x = strget((320>>1),50+16+16+16+16,buf,19, STRGET_PASSWORD);
 
                 if( x )
                 {
@@ -1610,7 +1607,6 @@ if (VOLUMEALL) {
 
                 KB_FlushKeyboardQueue();
                 KB_ClearKeysDown();
-                CONTROL_ClearUserInput(&uinfo);
                 if(ud.multimode < 2 && ud.recstat != 2)
                 {
                     ready2send = 1;
@@ -1653,7 +1649,6 @@ if (VOLUMEALL) {
             if (uinfo.button1 || KB_KeyPressed(sc_N))
             {
                 KB_ClearKeyDown(sc_N);
-                CONTROL_ClearUserInput(&uinfo);
                 sound(EXITMENUSOUND);
                 if(ps[myconnectindex].gm&MODE_DEMO) cmenu(300);
                 else
@@ -1676,13 +1671,11 @@ if (VOLUMEALL) {
             if (uinfo.button0 || KB_KeyPressed(sc_Y))
             {
                 KB_FlushKeyboardQueue();
-                CONTROL_ClearUserInput(&uinfo);
                 cmenu(100);
             }
             if (uinfo.button1 || KB_KeyPressed(sc_N))
             {
                 KB_ClearKeyDown(sc_N);
-                CONTROL_ClearUserInput(&uinfo);
                 if(ud.multimode < 2 && ud.recstat != 2)
                 {
                     ready2send = 1;
@@ -1735,13 +1728,11 @@ if (VOLUMEALL) {
                 cmenu(current_menu-2000+360);
 
                 KB_FlushKeyboardQueue();
-                CONTROL_ClearUserInput(&uinfo);
                 break;
             }
             if(uinfo.button1 || KB_KeyPressed(sc_N))
             {
                 KB_ClearKeyDown(sc_N);
-                CONTROL_ClearUserInput(&uinfo);
                 cmenu(351);
                 sound(EXITMENUSOUND);
             }
@@ -3740,7 +3731,7 @@ if (PLUTOPAK) {
                 if (ud.volume_number == 0 && ud.level_number == 7)
                     gametext(160,180,boardfilename,0,2+8+16);
 
-                x = strget((320>>1),184,&ud.savegame[current_menu-360][0],19, 999 );
+                x = strget((320>>1),184,&ud.savegame[current_menu-360][0],19, STRGET_NOECHO );
 
                 if(x == -1)
                 {
