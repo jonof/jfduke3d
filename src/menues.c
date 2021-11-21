@@ -54,8 +54,13 @@ static int numdirs=0, numfiles=0;
 static int currentlist=0;
 
 static int function, whichkey;
-static int changesmade, newvidmode, curvidmode, newfullscreen;
-static int vidsets[16] = { -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 }, curvidset, newvidset = 0;
+static int changesmade, newvidmode, curvidmode;
+#define MAXVIDSETS 16
+static struct vidset {
+    unsigned char bpp;
+    unsigned char fs;
+} vidsets[MAXVIDSETS];
+static int curvidset, newvidset, numvidsets;
 
 static const char *mousebuttonnames[] = { "Left", "Right", "Middle", "Thumb", "Wheel Down", "Wheel Up" };
 
@@ -2222,31 +2227,31 @@ if (PLUTOPAK) {
 
         case 2:
             {
-                int dax = xdim, day = ydim, daz;
+                int dax = xdim, day = ydim, vm, vs;
+
                 curvidmode = newvidmode = checkvideomode(&dax,&day,bpp,fullscreen,0);
-                if (newvidmode == 0x7fffffffl) newvidmode = validmodecnt;
-                newfullscreen = fullscreen;
+                curvidset = newvidset = -1;
                 changesmade = 0;
 
-                dax = 0;
-                for (day = 0; day < validmodecnt; day++) {
-                    if (dax == sizeof(vidsets)/sizeof(vidsets[1])) break;
-                    for (daz = 0; daz < dax; daz++)
-                        if ((validmode[day].bpp|((validmode[day].fs&1)<<16)) == (vidsets[daz]&0x1ffffl)) break;
-                    if (vidsets[daz] != -1) continue;
-                    if (validmode[day].bpp == 8) {
-                        vidsets[dax++] = 8|((validmode[day].fs&1)<<16);
-#if USE_POLYMOST
-                        vidsets[dax++] = 0x20000|8|((validmode[day].fs&1)<<16);
-#endif
-                    } else
-                        vidsets[dax++] = 0x20000|validmode[day].bpp|((validmode[day].fs&1)<<16);
+                // Work out each available combination of colour depth and fullscreen.
+                numvidsets = 0;
+                for (vm = 0; vm < validmodecnt && numvidsets < MAXVIDSETS; vm++) {
+                    for (vs = 0; vs < numvidsets; vs++)
+                        if (validmode[vm].bpp == vidsets[vs].bpp && (validmode[vm].fs&1) == vidsets[vs].fs)
+                            break;
+                    if (vs == numvidsets) {
+                        vidsets[vs].bpp = validmode[vm].bpp;
+                        vidsets[vs].fs = (validmode[vm].fs&1);
+                        numvidsets++;
+                    }
+                    if (newvidset < 0 && vidsets[vs].bpp == bpp && vidsets[vs].fs == fullscreen) {
+                        newvidset = vs;
+                        if (newvidmode == 0x7fffffffl) newvidmode = vm;
+                    }
                 }
-                for (dax = 0; dax < (int)(sizeof(vidsets)/sizeof(vidsets[1])) && vidsets[dax] != -1; dax++)
-                    if (vidsets[dax] == ((POLYMOST_RENDERMODE_POLYMOST()<<17)|(fullscreen<<16)|bpp)) break;
-                if (dax < (int)(sizeof(vidsets)/sizeof(vidsets[1]))) newvidset = dax;
+                if (newvidset < 0) newvidset = numvidsets - 1;
                 curvidset = newvidset;
-                
+
                 cmenu(203);
             }
             break;
@@ -2328,226 +2333,147 @@ if (PLUTOPAK) {
         break;
 
     case 203:   // Video settings.
-            rotatesprite(320<<15,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
-            menutext(320>>1,24,0,0,"VIDEO SETTINGS");
+        rotatesprite(320<<15,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
+        menutext(320>>1,24,0,0,"VIDEO SETTINGS");
 
-        c = (320>>1)-120;
+        {
+            int vs, vm;
 
+            changesmade = 0;
+
+            c = (320>>1)-120;
 #if USE_POLYMOST && USE_OPENGL
-        x = 7;
+            i = 7;
 #else
-        x = 5;
+            i = 5;
 #endif
-        onbar = (probey == 4);
-        if (probey == 0 || probey == 1 || probey == 2)
-            x = probe(c+6,50,16,x);
-        else if (probey == 3)
-            x = probe(c+6,50+16+16+22,0,x);
-        else
-            x = probe(c+6,50+62-16-16-16,16,x);
-
-        if (probey==0 && (uinfo.dir == dir_West || uinfo.dir == dir_East)) {
-            sound(PISTOL_BODYHIT);
-            x=0;
-        }
-        switch (x) {
-        case -1:
-            cmenu(200);
-            probey = 2;
-            break;
-
-        case 0:
-            do {
-                if (uinfo.dir == dir_West) {
-                    newvidmode--;
-                    if (newvidmode < 0) newvidmode = validmodecnt-1;
-                } else {
-                    newvidmode++;
-                    if (newvidmode >= validmodecnt) newvidmode = 0;
-                }
-            } while ((validmode[newvidmode].fs&1) != ((vidsets[newvidset]>>16)&1) || validmode[newvidmode].bpp != (vidsets[newvidset] & 0x0ffff));
-            //buildprintf("New mode is %dx%dx%d-%d %d\n",validmode[newvidmode].xdim,validmode[newvidmode].ydim,validmode[newvidmode].bpp,validmode[newvidmode].fs,newvidmode);
-            if ((curvidmode == 0x7fffffffl && newvidmode == validmodecnt) || curvidmode == newvidmode)
-                changesmade &= ~1;
+            onbar = (probey == 4);
+            if (probey <= 2)
+                x = probe(c+6,50,16,i);
+            else if (probey == 3)
+                x = probe(c+6,50+16+16+22,0,i);
             else
-                changesmade |= 1;
-            break;
+                x = probe(c+6,50+62-16-16-16,16,i);
 
-        case 1:
-            {
-                int lastvidset, lastvidmode, safevidmode = -1;
-                lastvidset = newvidset;
-                lastvidmode = newvidmode;
-                // find the next vidset compatible with the current fullscreen setting
-                while (vidsets[0] != -1) {
-                    newvidset++;
-                    if (newvidset == sizeof(vidsets)/sizeof(vidsets[0]) || vidsets[newvidset] == -1) { newvidset = -1; continue; }
-                    if (((vidsets[newvidset]>>16)&1) != newfullscreen) continue;
-                    break;
-                }
-
-                if ((vidsets[newvidset] & 0x0ffff) != (vidsets[lastvidset] & 0x0ffff)) {
-                    // adjust the video mode to something legal for the new vidset
-                    do {
-                        newvidmode++;
-                        if (newvidmode == lastvidmode) break;   // end of cycle
-                        if (newvidmode >= validmodecnt) newvidmode = 0;
-                        if (validmode[newvidmode].bpp == (vidsets[newvidset]&0x0ffff) &&
-                            validmode[newvidmode].fs == newfullscreen &&
-                            validmode[newvidmode].xdim <= validmode[lastvidmode].xdim &&
-                               (safevidmode==-1?1:(validmode[newvidmode].xdim>=validmode[safevidmode].xdim)) &&
-                            validmode[newvidmode].ydim <= validmode[lastvidmode].ydim &&
-                               (safevidmode==-1?1:(validmode[newvidmode].ydim>=validmode[safevidmode].ydim))
-                            )
-                            safevidmode = newvidmode;
-                    } while (1);
-                    if (safevidmode == -1) {
-                        //buildputs("No best fit!\n");
-                        newvidmode = lastvidmode;
-                        newvidset = lastvidset;
-                    } else {
-                        //buildprintf("Best fit is %dx%dx%d-%d %d\n",validmode[safevidmode].xdim,validmode[safevidmode].ydim,validmode[safevidmode].bpp,validmode[safevidmode].fs,safevidmode);
-                        newvidmode = safevidmode;
-                    }
-                }
-                if (newvidset != curvidset) changesmade |= 4; else changesmade &= ~4;
-                if (newvidmode != curvidmode) changesmade |= 1; else changesmade &= ~1;
+            if ((probey >= 0 && probey <= 2) && (uinfo.dir == dir_West || uinfo.dir == dir_East)) {
+                sound(PISTOL_BODYHIT);
+                x = probey;
             }
-            break;
 
-        case 2:
-            newfullscreen = !newfullscreen;
-            {
-                int lastvidset, lastvidmode, safevidmode = -1, safevidset = -1;
-                lastvidset = newvidset;
-                lastvidmode = newvidmode;
-                // find the next vidset compatible with the current fullscreen setting
-                while (vidsets[0] != -1) {
-                    newvidset++;
-                    if (newvidset == lastvidset) break;
-                    if (newvidset == sizeof(vidsets)/sizeof(vidsets[0]) || vidsets[newvidset] == -1) { newvidset = -1; continue; }
-                    if (((vidsets[newvidset]>>16)&1) != newfullscreen) continue;
-                    if ((vidsets[newvidset] & 0x2ffff) != (vidsets[lastvidset] & 0x2ffff)) {
-                        if ((vidsets[newvidset] & 0x20000) == (vidsets[lastvidset] & 0x20000)) safevidset = newvidset;
-                        continue;
-                    }
+            switch (x) {
+                case -1:
+                    cmenu(200);
+                    probey = 2;
                     break;
-                }
-                if (newvidset == lastvidset) {
-                    if (safevidset == -1) {
-                        newfullscreen = !newfullscreen;
+
+                case 0: // Resolution.
+                    if (uinfo.dir == dir_West) changesmade = -1;
+                    else changesmade = 1;
+                    break;
+
+                case 1: // Colour mode.
+                case 2: // Fullscreen.
+                    for (vs = (newvidset + 1) % numvidsets; vs != newvidset; vs = (vs + 1) % numvidsets) {
+                        if (x == 1 && vidsets[vs].fs != vidsets[newvidset].fs) continue;
+                        if (x == 2 && vidsets[vs].bpp != vidsets[newvidset].bpp) continue;
+                        changesmade = 1;
                         break;
-                    } else {
-                        newvidset = safevidset;
                     }
-                }
+                    newvidset = vs;
+                    break;
 
-                // adjust the video mode to something legal for the new vidset
-                do {
-                    newvidmode++;
-                    if (newvidmode == lastvidmode) break;   // end of cycle
-                    if (newvidmode >= validmodecnt) newvidmode = 0;
-                    if (validmode[newvidmode].bpp == (vidsets[newvidset]&0x0ffff) &&
-                        validmode[newvidmode].fs == newfullscreen &&
-                        validmode[newvidmode].xdim <= validmode[lastvidmode].xdim &&
-                           (safevidmode==-1?1:(validmode[newvidmode].xdim>=validmode[safevidmode].xdim)) &&
-                        validmode[newvidmode].ydim <= validmode[lastvidmode].ydim &&
-                           (safevidmode==-1?1:(validmode[newvidmode].ydim>=validmode[safevidmode].ydim))
-                        )
-                        safevidmode = newvidmode;
-                } while (1);
-                if (safevidmode == -1) {
-                    //buildputs("No best fit!\n");
-                    newvidmode = lastvidmode;
-                    newvidset = lastvidset;
-                    newfullscreen = !newfullscreen;
-                } else {
-                    //buildprintf("Best fit is %dx%dx%d-%d %d\n",validmode[safevidmode].xdim,validmode[safevidmode].ydim,validmode[safevidmode].bpp,validmode[safevidmode].fs,safevidmode);
-                    newvidmode = safevidmode;
-                }
-                if (newvidset != curvidset) changesmade |= 4; else changesmade &= ~4;
-                if (newvidmode != curvidmode) changesmade |= 1; else changesmade &= ~1;
-            }
-            if (newfullscreen == fullscreen) changesmade &= ~2; else changesmade |= 2;
-            break;
+                case 3: // Apply changes.
+                    if (newvidmode != curvidmode) {
+                        int pxdim, pydim, pfs, pbpp;
+                        int nxdim, nydim, nfs, nbpp;
 
-        case 3:
-            if (!changesmade) break;
-            {
-                int pxdim, pydim, pfs, pbpp, prend;
-                int nxdim, nydim, nfs, nbpp, nrend;
+                        pxdim = xdim; pydim = ydim; pbpp = bpp; pfs = fullscreen;
+                        nxdim = validmode[newvidmode].xdim;
+                        nydim = validmode[newvidmode].ydim;
+                        nfs   = validmode[newvidmode].fs;
+                        nbpp  = validmode[newvidmode].bpp;
 
-                pxdim = xdim; pydim = ydim; pbpp = bpp; pfs = fullscreen;
-#if USE_POLYMOST
-                prend = getrendermode();
-#endif
-                nxdim = (newvidmode==validmodecnt)?xdim:validmode[newvidmode].xdim;
-                nydim = (newvidmode==validmodecnt)?ydim:validmode[newvidmode].ydim;
-                nfs   = newfullscreen;
-                nbpp  = (newvidmode==validmodecnt)?bpp:validmode[newvidmode].bpp;
-                nrend = (vidsets[newvidset] & 0x20000) ? (nbpp==8?2:3) : 0;
+                        if (setgamemode(nfs, nxdim, nydim, nbpp) < 0) {
+                            if (setgamemode(pfs, pxdim, pydim, pbpp) < 0) {
+                                gameexit("Failed restoring old video mode.");
+                            }
+                        }
+                        onvideomodechange(bpp > 8);
+                        vscrn();
 
-                if (setgamemode(nfs, nxdim, nydim, nbpp) < 0) {
-                    if (setgamemode(pfs, pxdim, pydim, pbpp) < 0) {
-#if USE_POLYMOST
-                        setrendermode(prend);
-#endif
-                        gameexit("Failed restoring old video mode.");
-                    } else onvideomodechange(pbpp > 8);
-                } else onvideomodechange(nbpp > 8);
-                vscrn();
-#if USE_POLYMOST
-                setrendermode(nrend);
-#endif
+                        curvidmode = newvidmode; curvidset = newvidset;
 
-                curvidmode = newvidmode; curvidset = newvidset;
-                changesmade = 0;
+                        ScreenMode = fullscreen;
+                        ScreenWidth = xdim;
+                        ScreenHeight = ydim;
+                        ScreenBPP = bpp;
+                    }
+                    break;
 
-                ScreenMode = fullscreen;
-                ScreenWidth = xdim;
-                ScreenHeight = ydim;
-                ScreenBPP = bpp;
-            }
-            break;
-
-        case 4:
-            break;
+                case 4: // Brightness.
+                    break;
 
 #if USE_POLYMOST && USE_OPENGL
-        case 5:
-            if (bpp==8) break;
-            switch (gltexfiltermode) {
-                case 0: gltexfiltermode = 3; break;
-                case 3: gltexfiltermode = 5; break;
-                case 5: gltexfiltermode = 0; break;
-                default: gltexfiltermode = 3; break;
-            }
-            gltexapplyprops();
-            break;
+                case 5: // Filtering.
+                    if (bpp==8) break;
+                    switch (gltexfiltermode) {
+                        case 0: gltexfiltermode = 3; break;
+                        case 3: gltexfiltermode = 5; break;
+                        case 5: gltexfiltermode = 0; break;
+                        default: gltexfiltermode = 3; break;
+                    }
+                    gltexapplyprops();
+                    break;
 
-        case 6:
-            if (bpp==8) break;
-            glanisotropy *= 2;
-            if (glanisotropy > glinfo.maxanisotropy) glanisotropy = 1;
-            gltexapplyprops();
-            break;
+                case 6: // Anisotropy.
+                    if (bpp==8) break;
+                    glanisotropy *= 2;
+                    if (glanisotropy > glinfo.maxanisotropy) glanisotropy = 1;
+                    gltexapplyprops();
+                    break;
 #endif
+            }
+            if (changesmade) {
+                // Find the next/prev video mode matching the new vidset.
+                int bestvm = newvidmode, besterr = INT_MAX, vmerr;
+                for (vm = (newvidmode + changesmade) % validmodecnt; vm != newvidmode;
+                        vm = (vm + changesmade) % validmodecnt) {
+                    if ((validmode[vm].fs&1) != vidsets[newvidset].fs) continue;
+                    if (validmode[vm].bpp != vidsets[newvidset].bpp) continue;
+                    if (x == 0) {   // Resolution change.
+                        bestvm = vm;
+                        break;
+                    }
+                    if (validmode[vm].xdim == validmode[newvidmode].xdim &&
+                            validmode[vm].ydim == validmode[newvidmode].ydim) {
+                        bestvm = vm;
+                        break;
+                    }
+                    vmerr = klabs((validmode[vm].xdim * validmode[vm].ydim) -
+                        (validmode[newvidmode].xdim * validmode[newvidmode].ydim));
+                    if (vmerr < besterr) {
+                        bestvm = vm;
+                        besterr = vmerr;
+                    }
+                }
+                newvidmode = bestvm;
+                changesmade = 0;
+            }
         }
 
         menutext(c,50,0,0,"RESOLUTION");
-        sprintf(buf,"%d x %d",
-                (newvidmode==validmodecnt)?xdim:validmode[newvidmode].xdim,
-                (newvidmode==validmodecnt)?ydim:validmode[newvidmode].ydim);
+        sprintf(buf,"%d x %d", validmode[newvidmode].xdim, validmode[newvidmode].ydim);
             gametext(c+154,50-8,buf,0,2+8+16);
         
         menutext(c,50+16,0,0,"VIDEO MODE");
-            sprintf(buf, "%dbit %s", vidsets[newvidset]&0x0ffff, (vidsets[newvidset]&0x20000)?"Polymost":"Classic");
+            sprintf(buf, "%dbit %s", validmode[newvidmode].bpp,
+                validmode[newvidmode].bpp > 8 ? "Polymost" : "Classic");
             gametext(c+154,50+16-8,buf,0,2+8+16);
 
         menutext(c,50+16+16,0,0,"FULLSCREEN");
-            menutext(c+154,50+16+16,0,0,newfullscreen?"YES":"NO");
+            menutext(c+154,50+16+16,0,0,(validmode[newvidmode].fs&1)?"YES":"NO");
 
-        menutext(c+16,50+16+16+22,0,changesmade==0,"APPLY CHANGES");
+        menutext(c+16,50+16+16+22,0,newvidmode==curvidmode,"APPLY CHANGES");
         
         menutext(c,50+62+16,SHX(-6),PHX(-6),"BRIGHTNESS");
         {
