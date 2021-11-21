@@ -1053,6 +1053,7 @@ void menus(void)
     short c,x,i;
     int l,m;
     char *p = NULL;
+    static int mappingsapplied = -1;
 
     getpackets();
 
@@ -2257,6 +2258,7 @@ if (PLUTOPAK) {
             
         case 3:
             cmenu(202);
+            mappingsapplied = -1;
             break;
 
         case 4:
@@ -2283,10 +2285,13 @@ if (PLUTOPAK) {
         rotatesprite(320<<15,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
         menutext(320>>1,24,0,0,"INPUT SETTINGS");
 
-        c = (200 - 18*3)>>1;
+        c = (200 - 18*5)>>1;
 
         onbar = 0;
-        x = probe(160,c,18,3);
+        if (probey >= 3)
+            x = probe(160,c+9,18,5);
+        else
+            x = probe(160,c,18,5);
 
         switch (x) {
         case -1:
@@ -2301,11 +2306,30 @@ if (PLUTOPAK) {
             if (x==2 && !CONTROL_JoyPresent) break;
             cmenu(204+x);
             break;
+
+        case 3:
+            CONFIG_SetDefaultKeyDefinitions(CONFIG_DEFAULTS_MODERN);
+            CONFIG_SetMouseDefaults(CONFIG_DEFAULTS_MODERN);
+            CONFIG_SetJoystickDefaults(CONFIG_DEFAULTS_MODERN);
+            mappingsapplied = CONFIG_DEFAULTS_MODERN;
+            break;
+        case 4:
+            CONFIG_SetDefaultKeyDefinitions(CONFIG_DEFAULTS_CLASSIC);
+            CONFIG_SetMouseDefaults(CONFIG_DEFAULTS_CLASSIC);
+            CONFIG_SetJoystickDefaults(CONFIG_DEFAULTS_CLASSIC);
+            mappingsapplied = CONFIG_DEFAULTS_CLASSIC;
+            break;
         }
 
         menutext(160,c,         0,0,"KEYS SETUP");
         menutext(160,c+18,      0,0,"MOUSE SETUP");
         menutext(160,c+18+18,   0,CONTROL_JoyPresent==0,"CONTROLLER SETUP");
+        menutext(160,c+18+18+18+9, 0,0,"USE MODERN DEFAULTS");
+        menutext(160,c+18+18+18+18+9,0,0,"USE CLASSIC DEFAULTS");
+        if (mappingsapplied == CONFIG_DEFAULTS_MODERN)
+            gametext(160,158,"Modern defaults applied",0,2+8+16);
+        else if (mappingsapplied == CONFIG_DEFAULTS_CLASSIC)
+            gametext(160,158,"Classic defaults applied",0,2+8+16);
         break;
 
     case 203:   // Video settings.

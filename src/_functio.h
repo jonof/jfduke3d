@@ -156,6 +156,63 @@ static char * keydefaults[] =
    "Show_Console", "NumLck", ""
    };
 
+static char * keydefaults_modern[] =
+   {
+   "Move_Forward", "W", "",
+   "Move_Backward", "S", "",
+   "Turn_Left", "", "",
+   "Turn_Right", "", "",
+   "Strafe", "", "",
+   "Fire", "", "",
+   "Open", "E", "",
+   "Run", "LShift", "",
+   "AutoRun", "CapLck", "",
+   "Jump", "Space", "",
+   "Crouch", "LAlt", "",
+   "Look_Up", "", "",
+   "Look_Down", "", "",
+   "Look_Left", "", "",
+   "Look_Right", "", "",
+   "Strafe_Left", "A", "",
+   "Strafe_Right", "D", "",
+   "Aim_Up", "", "",
+   "Aim_Down", "", "",
+   "Weapon_1", "1", "",
+   "Weapon_2", "2", "",
+   "Weapon_3", "3", "",
+   "Weapon_4", "4", "",
+   "Weapon_5", "5", "",
+   "Weapon_6", "6", "",
+   "Weapon_7", "7", "",
+   "Weapon_8", "8", "",
+   "Weapon_9", "9", "",
+   "Weapon_10", "0", "",
+   "Inventory", "Enter", "",
+   "Inventory_Left", "[", "",
+   "Inventory_Right", "]", "",
+   "Holo_Duke", "H", "",
+   "Jetpack", "J", "",
+   "NightVision", "N", "",
+   "MedKit", "M", "",
+   "TurnAround", "BakSpc", "",
+   "SendMessage", "T", "",
+   "Map", "Tab", "",
+   "Shrink_Screen", "-", "",
+   "Enlarge_Screen", "=", "",
+   "Center_View", "", "",
+   "Holster_Weapon", "L", "",
+   "Show_Opponents_Weapon", "W", "",
+   "Map_Follow_Mode", "F", "",
+   "See_Coop_View", "K", "",
+   "Mouse_Aiming", "U", "",
+   "Toggle_Crosshair", "I", "",
+   "Steroids", "R", "",
+   "Quick_Kick", "`", "",
+   "Next_Weapon", "", "",
+   "Previous_Weapon", "", "",
+   "Show_Console", "NumLck", ""
+   };
+
 
 static char * mousedefaults[MAXMOUSEBUTTONS] =
    {
@@ -165,6 +222,16 @@ static char * mousedefaults[MAXMOUSEBUTTONS] =
    "",
    "",
    "",
+   };
+
+static char * mousedefaults_modern[MAXMOUSEBUTTONS] =
+   {
+   "Fire",
+   "Open",
+   "",
+   "",
+   "Next_Weapon",
+   "Previous_Weapon"
    };
 
 
@@ -178,6 +245,16 @@ static char * mouseclickeddefaults[MAXMOUSEBUTTONS] =
    "",
    };
 
+static char * mouseclickeddefaults_modern[MAXMOUSEBUTTONS] =
+   {
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+   };
+
 
 static char * joystickdefaults[MAXJOYBUTTONS] =
    {
@@ -187,7 +264,7 @@ static char * joystickdefaults[MAXJOYBUTTONS] =
    "Open",        // Y
    "",            // Back
    "",            // Guide
-   "",            // Start
+   "Show_Menu",   // Start
    "",            // L thumb
    "",            // R thumb
    "",            // L shoulder
@@ -222,6 +299,80 @@ static char * joystickclickeddefaults[MAXJOYBUTTONS] =
    "Inventory",   // B
    "Jump",        // X
    "Crouch",      // Y
+   "",            // Back
+   "",            // Guide
+   "",            // Start
+   "",            // L thumb
+   "",            // R thumb
+   "",            // L shoulder
+   "",            // R shoulder
+   "",            // DP up
+   "",            // DP down
+   "",            // DP left
+   "",            // DP right
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   };
+
+
+static char * joystickdefaults_modern[MAXJOYBUTTONS] =
+   {
+   "Jump",        // A
+   "Crouch",      // B
+   "Open",        // X
+   "",            // Y
+   "Map",         // Back
+   "",            // Guide
+   "Show_Menu",   // Start
+   "Quick_Kick",  // L thumb
+   "",            // R thumb
+   "Previous_Weapon", // L shoulder
+   "Next_Weapon", // R shoulder
+   "Inventory",   // DP up
+   "MedKit",      // DP down
+   "Inventory_Left", // DP left
+   "Inventory_Right", // DP right
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   };
+
+
+static char * joystickclickeddefaults_modern[MAXJOYBUTTONS] =
+   {
+   "",            // A
+   "",            // B
+   "",            // X
+   "",            // Y
    "",            // Back
    "",            // Guide
    "",            // Start
@@ -300,6 +451,52 @@ static char * joystickdigitaldefaults[MAXJOYAXES*2] =
    "",
    "",
    "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   };
+
+
+static char * joystickanalogdefaults_modern[MAXJOYAXES] =
+   {
+   "analog_strafing",
+   "analog_moving",
+   "analog_turning",
+   "analog_lookingupanddown",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   };
+
+
+static char * joystickdigitaldefaults_modern[MAXJOYAXES*2] =
+   {
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "Fire",
    "",
    "",
    "",

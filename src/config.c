@@ -240,26 +240,9 @@ void CONFIG_SetDefaults( void )
     Bstrcpy(ud.ridecule[8], "You suck!");
     Bstrcpy(ud.ridecule[9], "AARRRGHHHHH!!!");
  
-    memset(KeyboardKeys, 0xff, sizeof(KeyboardKeys));
-    for (i=0; i < (int32)(sizeof(keydefaults)/sizeof(keydefaults[0])); i+=3) {
-        f = CONFIG_FunctionNameToNum( keydefaults[i+0] );
-        if (f == -1) continue;
-        KeyboardKeys[f][0] = KB_StringToScanCode( keydefaults[i+1] );
-        KeyboardKeys[f][1] = KB_StringToScanCode( keydefaults[i+2] );
-
-        if (f == gamefunc_Show_Console) OSD_CaptureKey(KeyboardKeys[f][0]);
-        else CONTROL_MapKey( f, KeyboardKeys[f][0], KeyboardKeys[f][1] );
-    }
-
-    memset(MouseFunctions, -1, sizeof(MouseFunctions));
-    for (i=0; i<MAXMOUSEBUTTONS; i++) {
-        MouseFunctions[i][0] = CONFIG_FunctionNameToNum( mousedefaults[i] );
-        CONTROL_MapButton( MouseFunctions[i][0], i, 0, controldevice_mouse );
-        if (i>=4) continue;
-
-        MouseFunctions[i][1] = CONFIG_FunctionNameToNum( mouseclickeddefaults[i] );
-        CONTROL_MapButton( MouseFunctions[i][1], i, 1, controldevice_mouse );
-    }
+    CONFIG_SetDefaultKeyDefinitions(CONFIG_DEFAULTS_CLASSIC);
+    CONFIG_SetMouseDefaults(CONFIG_DEFAULTS_CLASSIC);
+    CONFIG_SetJoystickDefaults(CONFIG_DEFAULTS_CLASSIC);
 
     memset(MouseDigitalFunctions, -1, sizeof(MouseDigitalFunctions));
     for (i=0; i<MAXMOUSEAXES; i++) {
@@ -276,15 +259,6 @@ void CONFIG_SetDefaults( void )
     }
     CONTROL_SetMouseSensitivity(32768);
 
-    memset(JoystickFunctions, -1, sizeof(JoystickFunctions));
-    for (i=0; i<MAXJOYBUTTONS; i++) {
-        JoystickFunctions[i][0] = CONFIG_FunctionNameToNum( joystickdefaults[i] );
-        JoystickFunctions[i][1] = CONFIG_FunctionNameToNum( joystickclickeddefaults[i] );
-        CONTROL_MapButton( JoystickFunctions[i][0], i, 0, controldevice_joystick );
-        CONTROL_MapButton( JoystickFunctions[i][1], i, 1, controldevice_joystick );
-    }
-
-    memset(JoystickDigitalFunctions, -1, sizeof(JoystickDigitalFunctions));
     for (i=0; i<MAXJOYAXES; i++) {
         JoystickAnalogueScale[i] = 65536;
         JoystickAnalogueDead[i] = 1024;
@@ -292,16 +266,101 @@ void CONFIG_SetDefaults( void )
         CONTROL_SetAnalogAxisScale( i, JoystickAnalogueScale[i], controldevice_joystick );
         CONTROL_SetJoyAxisDead(i, JoystickAnalogueDead[i]);
         CONTROL_SetJoyAxisSaturate(i, JoystickAnalogueSaturate[i]);
+    }
+}
 
-        JoystickDigitalFunctions[i][0] = CONFIG_FunctionNameToNum( joystickdigitaldefaults[i*2] );
-        JoystickDigitalFunctions[i][1] = CONFIG_FunctionNameToNum( joystickdigitaldefaults[i*2+1] );
+void CONFIG_SetDefaultKeyDefinitions(int style)
+{
+    int numkeydefaults;
+    char **keydefaultset;
+    int i, f, k1, k2;
+
+    if (style) {
+        numkeydefaults = sizeof(keydefaults_modern) / sizeof(char *) / 3;
+        keydefaultset = keydefaults_modern;
+    } else {
+        numkeydefaults = sizeof(keydefaults) / sizeof(char *) / 3;
+        keydefaultset = keydefaults;
+    }
+
+    memset(KeyboardKeys, 0xff, sizeof(KeyboardKeys));
+    for (i=0; i < numkeydefaults; i++) {
+        f = CONFIG_FunctionNameToNum( keydefaultset[3*i+0] );
+        if (f == -1) continue;
+        KeyboardKeys[f][0] = KB_StringToScanCode( keydefaultset[3*i+1] );
+        KeyboardKeys[f][1] = KB_StringToScanCode( keydefaultset[3*i+2] );
+
+        if (f == gamefunc_Show_Console) OSD_CaptureKey(KeyboardKeys[f][0]);
+        else CONTROL_MapKey( i, KeyboardKeys[f][0], KeyboardKeys[f][1] );
+    }
+}
+
+void CONFIG_SetMouseDefaults(int style)
+{
+    char **mousedefaultset, **mouseclickeddefaultset;
+    int i;
+
+    if (style) {
+        mousedefaultset = mousedefaults_modern;
+        mouseclickeddefaultset = mouseclickeddefaults_modern;
+        ud.mouseflip = 1;
+        if (!ud.mouseaiming) myaimmode = 1; // Enable mouse aiming if aiming type is toggle.
+    } else {
+        mousedefaultset = mousedefaults;
+        mouseclickeddefaultset = mouseclickeddefaults;
+        ud.mouseflip = 0;
+        if (!ud.mouseaiming) myaimmode = 0; // Disable mouse aiming if aiming type is toggle.
+    }
+
+    memset(MouseFunctions, -1, sizeof(MouseFunctions));
+    for (i=0; i < MAXMOUSEBUTTONS; i++) {
+        MouseFunctions[i][0] = CONFIG_FunctionNameToNum( mousedefaultset[i] );
+        CONTROL_MapButton( MouseFunctions[i][0], i, FALSE, controldevice_mouse );
+        if (i>=4) continue;
+
+        MouseFunctions[i][1] = CONFIG_FunctionNameToNum( mouseclickeddefaultset[i] );
+        CONTROL_MapButton( MouseFunctions[i][1], i, TRUE,  controldevice_mouse );
+   }
+}
+
+void CONFIG_SetJoystickDefaults(int style)
+{
+    char **joydefaultset, **joyclickeddefaultset;
+    char **joydigitaldefaultset, **joyanalogdefaultset;
+    int i;
+
+    if (style) {
+        joydefaultset = joystickdefaults_modern;
+        joyclickeddefaultset = joystickclickeddefaults_modern;
+        joydigitaldefaultset = joystickdigitaldefaults_modern;
+        joyanalogdefaultset = joystickanalogdefaults_modern;
+    } else {
+        joydefaultset = joystickdefaults;
+        joyclickeddefaultset = joystickclickeddefaults;
+        joydigitaldefaultset = joystickdigitaldefaults;
+        joyanalogdefaultset = joystickanalogdefaults;
+    }
+
+    memset(JoystickFunctions, -1, sizeof(JoystickFunctions));
+    for (i=0; i < MAXJOYBUTTONS; i++) {
+        JoystickFunctions[i][0] = CONFIG_FunctionNameToNum( joydefaultset[i] );
+        JoystickFunctions[i][1] = CONFIG_FunctionNameToNum( joyclickeddefaultset[i] );
+        CONTROL_MapButton( JoystickFunctions[i][0], i, FALSE, controldevice_joystick );
+        CONTROL_MapButton( JoystickFunctions[i][1], i, TRUE,  controldevice_joystick );
+    }
+
+    memset(JoystickDigitalFunctions, -1, sizeof(JoystickDigitalFunctions));
+    for (i=0; i < MAXJOYAXES; i++) {
+        JoystickDigitalFunctions[i][0] = CONFIG_FunctionNameToNum( joydigitaldefaultset[i*2] );
+        JoystickDigitalFunctions[i][1] = CONFIG_FunctionNameToNum( joydigitaldefaultset[i*2+1] );
         CONTROL_MapDigitalAxis( i, JoystickDigitalFunctions[i][0], 0, controldevice_joystick );
         CONTROL_MapDigitalAxis( i, JoystickDigitalFunctions[i][1], 1, controldevice_joystick );
 
-        JoystickAnalogueAxes[i] = CONFIG_AnalogNameToNum( joystickanalogdefaults[i] );
+        JoystickAnalogueAxes[i] = CONFIG_AnalogNameToNum( joyanalogdefaultset[i] );
         CONTROL_MapAnalogAxis(i, JoystickAnalogueAxes[i], controldevice_joystick);
     }
 }
+
 /*
 ===================
 =

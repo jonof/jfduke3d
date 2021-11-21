@@ -63,6 +63,14 @@ extern int32 JoystickAnalogueScale[MAXJOYAXES];
 extern int32 JoystickAnalogueDead[MAXJOYAXES];
 extern int32 JoystickAnalogueSaturate[MAXJOYAXES];
 
+enum {
+    CONFIG_DEFAULTS_CLASSIC,
+    CONFIG_DEFAULTS_MODERN
+};
+void CONFIG_SetMouseDefaults(int style);
+void CONFIG_SetJoystickDefaults(int style);
+void CONFIG_SetDefaultKeyDefinitions(int style);
+
 int32 CONFIG_ReadSetup( void );
 void CONFIG_GetSetupFilename( void );
 void CONFIG_WriteSetup( void );
