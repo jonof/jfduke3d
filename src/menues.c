@@ -1113,314 +1113,6 @@ void menus(void)
             if( x >= -1 ) cmenu(100);
             break;
 
-        case 20001:
-            rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
-            menutext(160,24,0,0,"NETWORK GAME");
-
-            x = probe(160,100-18,18,3);
-
-            if (x == -1) cmenu(0);
-            else if (x == 2) cmenu(20010);
-            else if (x == 1) cmenu(20020);
-            else if (x == 0) cmenu(20002);
-            
-            menutext(160,100-18,0,0,"PLAYER SETUP");
-            menutext(160,100,0,0,"JOIN GAME");
-            menutext(160,100+18,0,0,"HOST GAME");
-            break;
-
-        case 20002:
-        case 20003:
-            rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
-            menutext(160,24,0,0,"PLAYER SETUP");
-
-            if (current_menu == 20002) {
-                x = probe(46,50,20,2);
-
-                if (x == -1) cmenu(20001);                  
-                else if (x == 0) {
-                    strcpy(buf, myname);
-                    inputloc = strlen(buf);
-                    current_menu = 20003;
-
-                    KB_ClearKeyDown(sc_Enter);
-                    KB_ClearKeyDown(sc_kpad_Enter);
-                    KB_FlushKeyboardQueue();
-                } else if (x == 1) {
-                    // send colour update
-                }
-            } else {
-                x = strget(40+100,50-9,buf,31,0);
-                if (x) {
-                    if (x == 1) {
-                        strcpy(myname,buf);
-                        // send name update
-                    }
-
-                    KB_ClearKeyDown(sc_Enter);
-                    KB_ClearKeyDown(sc_kpad_Enter);
-                    KB_FlushKeyboardQueue();
-
-                    current_menu = 20002;
-                }
-            }
-            
-            menutext(40,50,0,0,"NAME");
-            if (current_menu == 20002) gametext(40+100,50-9,myname,0,2+8+16);
-
-            menutext(40,50+20,0,0,"COLOR");
-            rotatesprite((40+120)<<16,(50+20+(tilesizy[APLAYER]>>1))<<16,65536L,0,APLAYER,0,0,10,0,0,xdim-1,ydim-1);
-
-            break;
-
-        case 20010:
-            rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
-            menutext(160,24,0,0,"HOST NETWORK GAME");
-
-            x = probe(46,50,80,2);
-
-            if (x == -1) {
-                cmenu(20001);
-                probey = 2;
-            }
-            else if (x == 0) cmenu(20011);
-
-            menutext(40,50,0,0,"GAME OPTIONS");
-                minitext(90,60,            "GAME TYPE"    ,2,26);
-                minitext(90,60+8,          "EPISODE"      ,2,26);
-                minitext(90,60+8+8,        "LEVEL"        ,2,26);
-                minitext(90,60+8+8+8,      "MONSTERS"     ,2,26);
-                if (ud.m_coop == 0)
-                minitext(90,60+8+8+8+8,    "MARKERS"      ,2,26);
-                else if (ud.m_coop == 1)
-                minitext(90,60+8+8+8+8,    "FRIENDLY FIRE",2,26);
-                minitext(90,60+8+8+8+8+8,  "USER MAP"     ,2,26);
-
-                if (ud.m_coop == 1) minitext(90+60,60,"COOPERATIVE PLAY",0,26);
-                else if (ud.m_coop == 2) minitext(90+60,60,"DUKEMATCH (NO SPAWN)",0,26);
-                else minitext(90+60,60,"DUKEMATCH (SPAWN)",0,26);
-                minitext(90+60,60+8,      volume_names[ud.m_volume_number],0,26);
-                minitext(90+60,60+8+8,    level_names[11*ud.m_volume_number+ud.m_level_number],0,26);
-                if (ud.m_monsters_off == 0 || ud.m_player_skill > 0)
-                minitext(90+60,60+8+8+8,  skill_names[ud.m_player_skill],0,26);
-                else minitext(90+60,60+8+8+8,  "NONE",0,28);
-                if (ud.m_coop == 0) {
-                    if (ud.m_marker) minitext(90+60,60+8+8+8+8,"ON",0,26);
-                    else minitext(90+60,60+8+8+8+8,"OFF",0,26);
-                } else if (ud.m_coop == 1) {
-                    if (ud.m_ffire) minitext(90+60,60+8+8+8+8,"ON",0,26);
-                    else minitext(90+60,60+8+8+8+8,"OFF",0,26);
-                }
-            
-            menutext(40,50+80,0,0,"LAUNCH GAME");
-            break;
-
-        case 20011:
-            c = (320>>1) - 120;
-            rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
-            menutext(160,24,0,0,"NET GAME OPTIONS");
-
-            x = probe(c,57-8,16,8);
-
-            switch(x)
-            {
-                case -1:
-                    cmenu(20010);
-                    break;
-                case 0:
-                    ud.m_coop++;
-                    if(ud.m_coop == 3) ud.m_coop = 0;
-                    break;
-                case 1:
-if (!VOLUMEONE) {
-                    ud.m_volume_number++;
-if (PLUTOPAK) {
-                    if(ud.m_volume_number > 3) ud.m_volume_number = 0;
-} else {
-                    if(ud.m_volume_number > 2) ud.m_volume_number = 0;
-}
-                    if(ud.m_volume_number == 0 && ud.m_level_number > 6)
-                        ud.m_level_number = 0;
-                    if(ud.m_level_number > 10) ud.m_level_number = 0;
-}
-                    break;
-                case 2:
-                    ud.m_level_number++;
-if (!VOLUMEONE) {
-                    if(ud.m_volume_number == 0 && ud.m_level_number > 6)
-                        ud.m_level_number = 0;
-} else {
-                    if(ud.m_volume_number == 0 && ud.m_level_number > 5)
-                        ud.m_level_number = 0;
-}
-                    if(ud.m_level_number > 10) ud.m_level_number = 0;
-                    break;
-                case 3:
-                    if(ud.m_monsters_off == 1 && ud.m_player_skill > 0)
-                        ud.m_monsters_off = 0;
-
-                    if(ud.m_monsters_off == 0)
-                    {
-                        ud.m_player_skill++;
-                        if(ud.m_player_skill > 3)
-                        {
-                            ud.m_player_skill = 0;
-                            ud.m_monsters_off = 1;
-                        }
-                    }
-                    else ud.m_monsters_off = 0;
-
-                    break;
-
-                case 4:
-                    if(ud.m_coop == 0)
-                        ud.m_marker = !ud.m_marker;
-                    break;
-
-                case 5:
-                    if(ud.m_coop == 1)
-                        ud.m_ffire = !ud.m_ffire;
-                    break;
-
-                case 6:
-                    // pick the user map
-                    break;
-
-                case 7:
-                    cmenu(20010);
-                    break;
-            }
-
-            c += 40;
-
-            if(ud.m_coop==1) gametext(c+70,57-7-9,"COOPERATIVE PLAY",0,2+8+16);
-            else if(ud.m_coop==2) gametext(c+70,57-7-9,"DUKEMATCH (NO SPAWN)",0,2+8+16);
-            else gametext(c+70,57-7-9,"DUKEMATCH (SPAWN)",0,2+8+16);
-
-            gametext(c+70,57+16-7-9,volume_names[ud.m_volume_number],0,2+8+16);
-
-            gametext(c+70,57+16+16-7-9,&level_names[11*ud.m_volume_number+ud.m_level_number][0],0,2+8+16);
-
-            if(ud.m_monsters_off == 0 || ud.m_player_skill > 0)
-                gametext(c+70,57+16+16+16-7-9,skill_names[ud.m_player_skill],0,2+8+16);
-            else gametext(c+70,57+16+16+16-7-9,"NONE",0,2+8+16);
-
-            if(ud.m_coop == 0)
-            {
-                if(ud.m_marker)
-                    gametext(c+70,57+16+16+16+16-7-9,"ON",0,2+8+16);
-                else gametext(c+70,57+16+16+16+16-7-9,"OFF",0,2+8+16);
-            }
-
-            if(ud.m_coop == 1)
-            {
-                if(ud.m_ffire)
-                    gametext(c+70,57+16+16+16+16+16-7-9,"ON",0,2+8+16);
-                else gametext(c+70,57+16+16+16+16+16-7-9,"OFF",0,2+8+16);
-            }
-
-            c -= 44;
-
-            menutext(c,57-9,SHX(-2),PHX(-2),"GAME TYPE");
-
-            sprintf(buf,"EPISODE %d",ud.m_volume_number+1);
-            menutext(c,57+16-9,SHX(-3),PHX(-3),buf);
-
-            sprintf(buf,"LEVEL %d",ud.m_level_number+1);
-            menutext(c,57+16+16-9,SHX(-4),PHX(-4),buf);
-            
-            menutext(c,57+16+16+16-9,SHX(-5),PHX(-5),"MONSTERS");
-
-            if(ud.m_coop == 0)
-                menutext(c,57+16+16+16+16-9,SHX(-6),PHX(-6),"MARKERS");
-            else
-                menutext(c,57+16+16+16+16-9,SHX(-6),1,"MARKERS");
-
-            if(ud.m_coop == 1)
-                menutext(c,57+16+16+16+16+16-9,SHX(-6),PHX(-6),"FR. FIRE");
-            else menutext(c,57+16+16+16+16+16-9,SHX(-6),1,"FR. FIRE");
-
-if (VOLUMEALL) {
-            menutext(c,57+16+16+16+16+16+16-9,SHX(-7),boardfilename[0] == 0,"USER MAP");
-            if( boardfilename[0] != 0 )
-                gametext(c+70+44,57+16+16+16+16+16,boardfilename,0,2+8+16);
-} else {
-            menutext(c,57+16+16+16+16+16+16-9,SHX(-7),1,"USER MAP");
-}
-
-            menutext(c,57+16+16+16+16+16+16+16-9,SHX(-8),PHX(-8),"ACCEPT");
-            break;
-
-        case 20020:
-        case 20021: // editing server
-        case 20022: // editing port
-            rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
-            menutext(160,24,0,0,"JOIN NETWORK GAME");
-
-            if (current_menu == 20020) {
-                x = probe(46,50,20,3);
-
-                if (x == -1) {
-                    cmenu(20001);
-                    probey = 1;
-                } else if (x == 0) {
-                    strcpy(buf, "localhost");
-                    inputloc = strlen(buf);
-                    current_menu = 20021;
-                } else if (x == 1) {
-                    strcpy(buf, "19014");
-                    inputloc = strlen(buf);
-                    current_menu = 20022;
-                } else if (x == 2) {
-                }
-                KB_ClearKeyDown(sc_Enter);
-                KB_ClearKeyDown(sc_kpad_Enter);
-                KB_FlushKeyboardQueue();
-            } else if (current_menu == 20021) {
-                x = strget(40+100,50-9,buf,31,0);
-                if (x) {
-                    if (x == 1) {
-                        //strcpy(myname,buf);
-                    }
-
-                    KB_ClearKeyDown(sc_Enter);
-                    KB_ClearKeyDown(sc_kpad_Enter);
-                    KB_FlushKeyboardQueue();
-
-                    current_menu = 20020;
-                }
-            } else if (current_menu == 20022) {
-                x = strget(40+100,50+20-9,buf,5,STRGET_NUMERIC);
-                if (x) {
-                    if (x == 1) {
-                        //strcpy(myname,buf);
-                    }
-
-                    KB_ClearKeyDown(sc_Enter);
-                    KB_ClearKeyDown(sc_kpad_Enter);
-                    KB_FlushKeyboardQueue();
-
-                    current_menu = 20020;
-                }
-            }
-            
-            menutext(40,50,0,0,"SERVER");
-            if (current_menu != 20021) gametext(40+100,50-9,"server",0,2+8+16);
-
-            menutext(40,50+20,0,0,"PORT");
-            if (current_menu != 20022) {
-                sprintf(buf,"%d",19014);
-                gametext(40+100,50+20-9,buf,0,2+8+16);
-            }
-
-            menutext(160,50+20+20,0,0,"CONNECT");
-
-
-            // ADDRESS
-            // PORT
-            // CONNECT
-            break;
-
         case 15001:
         case 15000:
 
@@ -2003,8 +1695,7 @@ cheat_for_port_credits:
                             cmenu(100);
                             break;
 
-            //case 1: break;//cmenu(20001);break;   // JBF 20031128: I'm taking over the TEN menu option
-            case 1: cmenu(202);break;   // JBF 20031205: was 200
+                        case 1: cmenu(202);break;   // JBF 20031205: was 200
                         case 2:
                             if(movesperpacket == 4 && connecthead != myconnectindex)
                                 break;
@@ -2039,29 +1730,24 @@ cheat_for_port_credits:
             else
                 menutext(c,67,SHX(-2),PHX(-2),"NEW GAME");
 
-    //    menutext(c,67+16,0,1,"NETWORK GAME");
-
-            menutext(c,67+16/*+16*/,SHX(-3),PHX(-3),"OPTIONS");
+            menutext(c,67+16,SHX(-3),PHX(-3),"OPTIONS");
 
             if(movesperpacket == 4 && connecthead != myconnectindex)
-                menutext(c,67+16+16/*+16*/,SHX(-4),1,"LOAD GAME");
-            else menutext(c,67+16+16/*+16*/,SHX(-4),PHX(-4),"LOAD GAME");
+                menutext(c,67+16+16,SHX(-4),1,"LOAD GAME");
+            else menutext(c,67+16+16,SHX(-4),PHX(-4),"LOAD GAME");
 
-if (!VOLUMEALL) {
-            menutext(c,67+16+16+16/*+16*/,SHX(-5),PHX(-5),"HOW TO ORDER");
-} else {
-            menutext(c,67+16+16+16/*+16*/,SHX(-5),PHX(-5),"HELP");
-}
-            menutext(c,67+16+16+16+16/*+16*/,SHX(-6),PHX(-6),"CREDITS");
+            menutext(c,67+16+16+16,SHX(-5),PHX(-5), VOLUMEALL ? "HELP" : "HOW TO ORDER");
 
-            menutext(c,67+16+16+16+16+16/*+16*/,SHX(-7),PHX(-7),"QUIT");
+            menutext(c,67+16+16+16+16,SHX(-6),PHX(-6),"CREDITS");
+
+            menutext(c,67+16+16+16+16+16,SHX(-7),PHX(-7),"QUIT");
             break;
 
         case 50:
             c = (320>>1);
             rotatesprite(c<<16,32<<16,65536L,0,INGAMEDUKETHREEDEE,0,0,10,0,0,xdim-1,ydim-1);
-        if (PLUTOPAK)   // JBF 20030804
-            rotatesprite((c+100)<<16,36<<16,65536L,0,PLUTOPAKSPRITE+2,(sintable[(totalclock<<4)&2047]>>11),0,2+8,0,0,xdim-1,ydim-1);
+            if (PLUTOPAK)
+                rotatesprite((c+100)<<16,36<<16,65536L,0,PLUTOPAKSPRITE+2,(sintable[(totalclock<<4)&2047]>>11),0,2+8,0,0,xdim-1,ydim-1);
             x = probe(c,67,16,7);
             switch(x)
             {
