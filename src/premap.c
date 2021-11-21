@@ -1525,6 +1525,8 @@ if (!VOLUMEONE) {
             ps[myconnectindex].gm = MODE_DEMO;
         else ps[myconnectindex].gm = MODE_GAME;
     }
+    else if (g&MODE_DEMO)
+        ps[myconnectindex].gm = MODE_DEMO;
 
     if( (ud.recstat == 1) && (g&MODE_RESTART) != MODE_RESTART )
         opendemowrite();

@@ -682,12 +682,16 @@ static int probe_(int type,int x,int y,int i,int n)
     {
         if(current_menu != 110)
             sound(PISTOL_BODYHIT);
+        KB_ClearKeyDown(sc_Space);
+        KB_ClearKeyDown(sc_Enter);
+        KB_ClearKeyDown(sc_kpad_Enter);
         return(probey);
     }
     else if(uinfo.button1)
     {
         onbar = 0;
         sound(EXITMENUSOUND);
+        KB_ClearKeyDown(sc_Escape);
         return(-1);
     }
     else
@@ -1053,7 +1057,6 @@ void menus(void)
     short c,x,i;
     int l,m;
     char *p = NULL;
-    static int mappingsapplied = -1;
 
     getpackets();
 
@@ -1342,17 +1345,8 @@ void menus(void)
             if (uinfo.button1 || KB_KeyPressed(sc_N))
             {
                 KB_ClearKeyDown(sc_N);
-                sound(EXITMENUSOUND);
-                if(ps[myconnectindex].gm&MODE_DEMO) cmenu(300);
-                else
-                {
-                    ps[myconnectindex].gm &= ~MODE_MENU;
-                    if(ud.multimode < 2 && ud.recstat != 2)
-                    {
-                        ready2send = 1;
-                        totalclock = ototalclock;
-                    }
-                }
+                cmenu(300);
+                break;
             }
 
             probe(186,124+9,0,0);
@@ -1428,6 +1422,7 @@ void menus(void)
                 KB_ClearKeyDown(sc_N);
                 cmenu(351);
                 sound(EXITMENUSOUND);
+                break;
             }
 
             probe(186,124,0,0);
@@ -2258,7 +2253,7 @@ if (PLUTOPAK) {
             
         case 3:
             cmenu(202);
-            mappingsapplied = -1;
+            changesmade = -1;
             break;
 
         case 4:
@@ -2311,13 +2306,13 @@ if (PLUTOPAK) {
             CONFIG_SetDefaultKeyDefinitions(CONFIG_DEFAULTS_MODERN);
             CONFIG_SetMouseDefaults(CONFIG_DEFAULTS_MODERN);
             CONFIG_SetJoystickDefaults(CONFIG_DEFAULTS_MODERN);
-            mappingsapplied = CONFIG_DEFAULTS_MODERN;
+            changesmade = CONFIG_DEFAULTS_MODERN;
             break;
         case 4:
             CONFIG_SetDefaultKeyDefinitions(CONFIG_DEFAULTS_CLASSIC);
             CONFIG_SetMouseDefaults(CONFIG_DEFAULTS_CLASSIC);
             CONFIG_SetJoystickDefaults(CONFIG_DEFAULTS_CLASSIC);
-            mappingsapplied = CONFIG_DEFAULTS_CLASSIC;
+            changesmade = CONFIG_DEFAULTS_CLASSIC;
             break;
         }
 
@@ -2326,9 +2321,9 @@ if (PLUTOPAK) {
         menutext(160,c+18+18,   0,CONTROL_JoyPresent==0,"CONTROLLER SETUP");
         menutext(160,c+18+18+18+9, 0,0,"USE MODERN DEFAULTS");
         menutext(160,c+18+18+18+18+9,0,0,"USE CLASSIC DEFAULTS");
-        if (mappingsapplied == CONFIG_DEFAULTS_MODERN)
+        if (changesmade == CONFIG_DEFAULTS_MODERN)
             gametext(160,158,"Modern defaults applied",0,2+8+16);
-        else if (mappingsapplied == CONFIG_DEFAULTS_CLASSIC)
+        else if (changesmade == CONFIG_DEFAULTS_CLASSIC)
             gametext(160,158,"Classic defaults applied",0,2+8+16);
         break;
 
@@ -3296,7 +3291,6 @@ if (PLUTOPAK) {
     }
         
         case 700:
-        case 701:   // JBF 20041220: A hack to stop the game exiting the menu directly to the game if one is running
             c = (320>>1)-120;
             rotatesprite(320<<15,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,24,0,0,"SOUNDS");
@@ -3306,17 +3300,7 @@ if (PLUTOPAK) {
             switch(x)
             {
                 case -1:
-                    if(ps[myconnectindex].gm&MODE_GAME && current_menu == 701)
-                    {
-                        ps[myconnectindex].gm &= ~MODE_MENU;
-                        if(ud.multimode < 2  && ud.recstat != 2)
-                        {
-                            ready2send = 1;
-                            totalclock = ototalclock;
-                        }
-                    }
-
-                    else cmenu(200);
+                    cmenu(200);
                     probey = 1;
                     break;
                 case 0:
