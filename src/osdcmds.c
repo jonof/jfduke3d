@@ -280,12 +280,19 @@ static int osdcmd_spawn(const osdfuncparm_t *parm)
             y = Batol(parm->parms[5]);
             z = Batol(parm->parms[6]);
             set |= 8;
+            // fall through
         case 4: // ang
-            ang = Batol(parm->parms[3]) & 2047; set |= 4;
+            ang = Batol(parm->parms[3]) & 2047;
+            set |= 4;
+            // fall through
         case 3: // cstat
-            cstat = (unsigned short)Batol(parm->parms[2]); set |= 2;
+            cstat = (unsigned short)Batol(parm->parms[2]);
+            set |= 2;
+            // fall through
         case 2: // pal
-            pal = (unsigned char)Batol(parm->parms[1]); set |= 1;
+            pal = (unsigned char)Batol(parm->parms[1]);
+            set |= 1;
+            // fall through
         case 1: // tile number
             if (isdigit(parm->parms[0][0])) {
                 picnum = (unsigned short)Batol(parm->parms[0]);

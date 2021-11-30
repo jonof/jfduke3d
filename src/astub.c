@@ -94,7 +94,7 @@ static int clockval[16], clockcnt = 0;
 #define NUMOPTIONS 9
 
 char option[NUMOPTIONS] = {0,0,0,0,0,0,1,0,0};
-char keys[NUMBUILDKEYS] =
+int keys[NUMBUILDKEYS] =
     {
         0xc8,0xd0,0xcb,0xcd,0x2a,0x9d,0x1d,0x39,
         0x1e,0x2c,0xd1,0xc9,0x47,0x49,
@@ -1082,7 +1082,8 @@ void ExtShowWallData(short wallnum)       //F6
                     case BOSS1LOB:
                     case BOSSTOP:
                         if(sprite[i].pal!=0) multisprite[BOSS1]++;
-                        else numsprite[BOSS1]++; break;
+                        else numsprite[BOSS1]++;
+                        break;
                     case COMMANDER:
                     case COMMANDERSTAYPUT:
                         numsprite[COMMANDER]++; break;
@@ -1980,7 +1981,7 @@ int ExtInit(void)
 	*/
     bpp = 8;
 	if (loadsetup("build.cfg") < 0) buildputs("Configuration file not found, using defaults.\n"), rv = 1;
-	memcpy((void *)buildkeys,(void *)keys,NUMBUILDKEYS);   //Trick to make build use setup.dat keys
+	memcpy((void *)buildkeys,(void *)keys,sizeof(buildkeys));   //Trick to make build use setup.dat keys
 
 #if USE_POLYMOST && USE_OPENGL
 	polymosttexfullbright = 240;
@@ -2054,6 +2055,7 @@ void ExtAnalyzeSprites(void)
 // 5-frame walk
         case 1550 :             // Shark
         frames=5;
+        // fall through
 
 
 // 2-frame walk
@@ -2066,6 +2068,7 @@ void ExtAnalyzeSprites(void)
             case BOSS1SHOOT :
             case BOSS1LOB :
         if(frames==0) frames=2;
+        // fall through
 
 // 4-frame walk
                  case 1491 :             // duke crawl
@@ -2077,6 +2080,7 @@ void ExtAnalyzeSprites(void)
         case BOSS2 :
             case BOSS3 :
                 if(frames==0) frames=4;
+                // fall through
 
         case LIZTROOPJETPACK :
         case OCTABRAIN :
@@ -2084,6 +2088,7 @@ void ExtAnalyzeSprites(void)
         case COMMANDER :
         case RECON :
         if(frames==0) frames=10;
+        // fall through
 
         case GREENSLIME :
         case EGG :
@@ -2098,6 +2103,7 @@ void ExtAnalyzeSprites(void)
                     if(tspr->lotag>skill)
                     { tspr->xrepeat=0; break; }
                 }
+                // fall through
             case APLAYER :
 
                 if(nosprites==2||nosprites==3)

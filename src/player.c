@@ -120,20 +120,20 @@ void tracers(int x1,int y1,int z1,int x2,int y2,int z2,int n)
      int i, xv, yv, zv;
      short sect = -1;
 
-	 i = n+1;
-	 xv = (x2-x1)/i;
-	 yv = (y2-y1)/i;
-	 zv = (z2-z1)/i;
+     i = n+1;
+     xv = (x2-x1)/i;
+     yv = (y2-y1)/i;
+     zv = (z2-z1)/i;
 
      if( ( klabs(x1-x2)+klabs(y1-y2) ) < 3084 )
          return;
 
-	 for(i=n;i>0;i--)
-	 {
-		  x1 += xv;
-		  y1 += yv;
-		  z1 += zv;
-		  updatesector(x1,y1,&sect);
+     for(i=n;i>0;i--)
+     {
+          x1 += xv;
+          y1 += yv;
+          z1 += zv;
+          updatesector(x1,y1,&sect);
           if(sect >= 0)
           {
               if(sector[sect].lotag == 2)
@@ -141,7 +141,7 @@ void tracers(int x1,int y1,int z1,int x2,int y2,int z2,int n)
               else
                   EGS(sect,x1,y1,z1,SMALLSMOKE,-32,14,14,0,0,0,ps[0].i,5);
           }
-	 }
+     }
 }
 
 int hits(short i)
@@ -362,6 +362,7 @@ void shoot(short i,short atwith)
                 sa += 64 - (TRAND&127);
             else sa += 1024 + 64 - (TRAND&127);
             zvel = 1024-(TRAND&2047);
+            // fall through
         case KNEE:
             if(atwith == KNEE )
             {
@@ -854,6 +855,7 @@ void shoot(short i,short atwith)
 
         case FREEZEBLAST:
             sz += (3<<8);
+            // fall through
         case RPG:
 
             if( s->extra >= 0 ) s->shade = -96;
@@ -1512,6 +1514,7 @@ void displayweapon(short snum)
                 case 2:
                     myospal(weapon_xoffset+168-(p->look_ang>>1),looking_arc+201-gun_pos,
                        SHOTGUN+2,-128,o,pal);
+                    // fall through
                 case 0:
                 case 6:
                 case 7:

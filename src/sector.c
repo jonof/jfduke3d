@@ -1229,6 +1229,7 @@ char checkhitswitch(short snum,int w,char switchtype)
 
                 return 0;
             }
+            // fall through
         case DIPSWITCH2:
         case DIPSWITCH2+1:
         case DIPSWITCH3:
@@ -1413,6 +1414,7 @@ char checkhitswitch(short snum,int w,char switchtype)
     {
         default:
             if(isadoorwall(picnum) == 0) break;
+            // fall through
         case DIPSWITCH:
         case DIPSWITCH+1:
         case TECHSWITCH:
@@ -1438,6 +1440,7 @@ char checkhitswitch(short snum,int w,char switchtype)
                 if(numdips != correctdips) break;
                 xyzsound(END_OF_LEVEL_WARN,ps[snum].i,sx,sy,ps[snum].posz);
             }
+            // fall through
         case DIPSWITCH2:
         case DIPSWITCH2+1:
         case DIPSWITCH3:
@@ -1600,6 +1603,7 @@ void checkhitwall(short spr,short dawallnum,int x,int y,int z,short atwith)
         case W_FORCEFIELD+1:
         case W_FORCEFIELD+2:
             wal->extra = 1; // tell the forces to animate
+            // fall through
         case BIGFORCE:
             updatesector(x,y,&sn);
             if( sn < 0 ) return;
@@ -2125,6 +2129,7 @@ void checkhitsprite(short i,short sn)
             }
             spritesound(GLASS_HEAVYBREAK,i);
             spritesound(SQUISHED,i);
+            // fall through
         case BOTTLE7:
             spritesound(GLASS_BREAKING,i);
             lotsofglass(i,-1,10);
@@ -2230,6 +2235,7 @@ void checkhitsprite(short i,short sn)
         case JURYGUY:
             spritesound(SLT,i);
             spawn(i,SHT);
+            // fall through
         case SPACEMARINE:
             sprite[i].extra -= sprite[sn].extra;
             if(sprite[i].extra > 0) break;
@@ -2280,6 +2286,7 @@ void checkhitsprite(short i,short sn)
             break;
         case PLAYERONWATER:
             i = OW;
+            // fall through
         default:
             if( (sprite[i].cstat&16) && SHT == 0 && SLT == 0 && sprite[i].statnum == 0)
                 break;

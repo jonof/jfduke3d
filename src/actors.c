@@ -2363,6 +2363,7 @@ void moveweapons(void)
                     sprite[j].yrepeat = 32;
                     KILLIT(i);
                 }
+                // fall through
             case SHRINKSPARK:
             case RPG:
             case FIRELASER:
@@ -2829,6 +2830,7 @@ void movetransports(void)
                             if(sprite[j].extra > 0)
                                 goto JBOLT;
                     }
+                    // fall through
                 case 4:
                 case 5:
                 case 12:
@@ -2874,9 +2876,11 @@ void movetransports(void)
                                     sprite[j].cstat &= 32767;
                                     break;
                                 }
+                                // fall through
                             default:
                                 if(sprite[j].statnum == 5 && !(sectlotag == 1 || sectlotag == 2) )
                                     break;
+                                // fall through
 
                             case WATERBUBBLE:
 //                                if( rnd(192) && sprite[j].picnum == WATERBUBBLE)
@@ -3840,6 +3844,7 @@ void moveactors(void)
             case MORTER:
                 j = spawn(i, (PLUTOPAK ? FRAMEEFFECT1 : FRAMEEFFECT1_13) );
                 hittype[j].temp_data[0] = 3;
+                // fall through
 
             case HEAVYHBOMB:
 
@@ -4390,7 +4395,8 @@ void moveexplosions(void)  // STATNUM 5
                 goto BOLT;
 
             case FRAMEEFFECT1_13:
-        if (PLUTOPAK) goto BOLT;    // JBF: ideally this should never happen...
+                if (PLUTOPAK) goto BOLT;    // JBF: ideally this should never happen...
+                // fall through
             case FRAMEEFFECT1:
 
                 if(s->owner >= 0)
@@ -4421,6 +4427,7 @@ void moveexplosions(void)  // STATNUM 5
                     ps[p].pals[2] = 0;
                     sprite[ps[p].i].extra -= 4;
                 }
+                // fall through
 
             case FIRELASER:
                 if(s->extra != 999)
@@ -5033,6 +5040,7 @@ void moveeffectors(void)   //STATNUM 3
                     j = nextspritestat[j];
                 }
                 x = 0;
+                // fall through
 
 
             case 14:
@@ -5731,6 +5739,7 @@ void moveeffectors(void)   //STATNUM 3
                                 case 26:
                                   if( getanimationgoal(&sector[s->sectnum].ceilingz) >= 0 )
                                       break;
+                                  // fall through
                                 default:
                                   activatebysector(s->sectnum,i);
                                   t[0] = 0;
@@ -6429,8 +6438,10 @@ void moveeffectors(void)   //STATNUM 3
                                     j = nextj;
                                     continue;
                             }
+                            // fall through
                         case 6:
                             if(sprite[j].picnum == TRIPBOMB) break;
+                            // fall through
                         case 1:
                         case 0:
                             if(

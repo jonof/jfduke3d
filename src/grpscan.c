@@ -251,7 +251,7 @@ enum {
 // Copy the contents of 'fh' to file 'fname', but only if 'fname' doesn't already exist.
 static int CopyFile(int fh, int size, const char *fname, struct importgroupsmeta *cbs)
 {
-    int ofh, b, rv = COPYFILE_OK;
+    int ofh, b=0, rv = COPYFILE_OK;
     char buf[16384];
 
     ofh = open(fname, O_WRONLY|O_BINARY|O_CREAT|O_EXCL, BS_IREAD|BS_IWRITE);

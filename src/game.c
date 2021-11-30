@@ -714,6 +714,7 @@ void getpackets(void)
             case 16:
                 movefifoend[other] = movefifoplc = movefifosendplc = fakemovefifoplc = 0;
                 syncvalhead[other] = syncvaltottail = 0L;
+                // fall through
             case 17:
                 j = 1;
 
@@ -3437,10 +3438,12 @@ short spawn( short j, short pn )
                         sp->ang = sprite[j].ang;
                 }
                 break;
+
             case FOF:
                 sp->xrepeat = sp->yrepeat = 0;
                 changespritestat(i,5);
                 break;
+
             case WATERSPLASH2:
                 if(j >= 0)
                 {
@@ -3465,6 +3468,7 @@ short spawn( short j, short pn )
                 if(sector[sect].floorpicnum == FLOORSLIME ||
                     sector[sect].ceilingpicnum == FLOORSLIME)
                         sp->pal = 7;
+                // fall through
             case NEON1:
             case NEON2:
             case NEON3:
@@ -3474,9 +3478,11 @@ short spawn( short j, short pn )
             case DOMELITE:
                 if(sp->picnum != WATERSPLASH2)
                     sp->cstat |= 257;
+                // fall through
             case NUKEBUTTON:
                 if(sp->picnum == DOMELITE)
                     sp->cstat |= 257;
+                // fall through
             case JIBS1:
             case JIBS2:
             case JIBS3:
@@ -3494,6 +3500,7 @@ short spawn( short j, short pn )
             case DUKELEG:
                 changespritestat(i,5);
                 break;
+
             case TONGUE:
                 if(j >= 0)
                     sp->ang = sprite[j].ang;
@@ -3502,10 +3509,12 @@ short spawn( short j, short pn )
                 sp->xvel = 64-(TRAND&127);
                 changespritestat(i,4);
                 break;
+
             case NATURALLIGHTNING:
                 sp->cstat &= ~257;
                 sp->cstat |= 32768;
                 break;
+
             case TRANSPORTERSTAR:
             case TRANSPORTERBEAM:
                 if(j == -1) break;
@@ -3543,6 +3552,7 @@ short spawn( short j, short pn )
 
             case FRAMEEFFECT1_13:
                 if (PLUTOPAK) break;
+                // fall through
             case FRAMEEFFECT1:
                 if(j >= 0)
                 {
@@ -3594,6 +3604,7 @@ short spawn( short j, short pn )
                    sp->pal = 6;
                changespritestat(i,5);
                break;
+
             case BLOODPOOL:
             case PUKE:
                 {
@@ -3642,6 +3653,7 @@ short spawn( short j, short pn )
                         sp->shade = 127;
                 }
                 sp->cstat |= 32;
+                // fall through
             case FECES:
                 if( j >= 0)
                     sp->xrepeat = sp->yrepeat = 1;
@@ -3681,7 +3693,7 @@ short spawn( short j, short pn )
                 hittype[i].temp_data[0] = 17;
                 hittype[i].temp_data[2] = 0;
                 hittype[i].temp_data[5] = sp->ang;
-
+                // fall through
             case SPACEMARINE:
                 if(sp->picnum == SPACEMARINE)
                 {
@@ -3758,14 +3770,17 @@ short spawn( short j, short pn )
             case PIPE6:
                 sp->clipdist = 32;
                 sp->cstat |= 257;
+                // fall through
             case OCEANSPRITE4:
                 changespritestat(i,0);
                 break;
+
             case FEMMAG1:
             case FEMMAG2:
                 sp->cstat &= ~257;
                 changespritestat(i,0);
                 break;
+
             case DUKETAG:
             case SIGN1:
             case SIGN2:
@@ -3776,6 +3791,7 @@ short spawn( short j, short pn )
                 }
                 else sp->pal = 0;
                 break;
+
             case MASKWALL1:
             case MASKWALL2:
             case MASKWALL3:
@@ -3795,6 +3811,7 @@ short spawn( short j, short pn )
                 sp->cstat = j|1;
                 changespritestat(i,0);
                 break;
+
             case FOOTPRINTS:
             case FOOTPRINTS2:
             case FOOTPRINTS3:
@@ -3852,6 +3869,7 @@ short spawn( short j, short pn )
                 sp->yvel = sp->hitag;
                 sp->hitag = -1;
                 if(sp->picnum == PODFEM1) sp->extra <<= 1;
+                // fall through
             case BLOODYPOLE:
 
             case QUEBALL:
@@ -3879,6 +3897,7 @@ short spawn( short j, short pn )
                     sp->shade = sprite[j].shade;
                     sp->pal = ps[sprite[j].yvel].palookup;
                 }
+                // fall through
             case DUKECAR:
             case HELECOPT:
 //                if(sp->picnum == HELECOPT || sp->picnum == DUKECAR) sp->xvel = 1024;
@@ -3886,6 +3905,7 @@ short spawn( short j, short pn )
                 sp->extra = 1;
                 sp->xvel = 292;
                 sp->zvel = 360;
+                // fall through
             case RESPAWNMARKERRED:
             case BLIMP:
 
@@ -3899,9 +3919,11 @@ short spawn( short j, short pn )
                     sp->cstat |= 257;
                     sp->clipdist = 128;
                 }
+                // fall through
             case MIKE:
                 if(sp->picnum == MIKE)
                     sp->yvel = sp->hitag;
+                // fall through
             case WEATHERWARN:
                 changespritestat(i,1);
                 break;
@@ -3910,10 +3932,12 @@ short spawn( short j, short pn )
                 T1 = sp->x;
                 T2 = sp->y;
                 break;
+
             case BULLETHOLE:
                 sp->xrepeat = sp->yrepeat = 3;
                 sp->cstat = 16+(krand()&12);
                 insertspriteq(i);
+                // fall through
             case MONEY:
             case MAIL:
             case PAPER:
@@ -3980,6 +4004,7 @@ short spawn( short j, short pn )
 
             case RESPAWN:
                 sp->extra = 66-13;
+                // fall through
             case MUSICANDSFX:
                 if( ud.multimode < 2 && sp->pal == 1)
                 {
@@ -4063,6 +4088,7 @@ short spawn( short j, short pn )
                 else
                     changespritestat(i,10);
                 break;
+
             case WATERBUBBLE:
                 if(j >= 0 && sprite[j].picnum == APLAYER)
                     sp->z -= (16<<8);
@@ -4141,11 +4167,12 @@ short spawn( short j, short pn )
                     T1 = sp->z;
                     T2 = TRAND&127;
                 }
+                // fall through
             case TRASH:
 
                 if(sp->picnum != WATERDRIP)
                     sp->ang = TRAND&2047;
-
+                // fall through
             case WATERDRIPSPLASH:
 
                 sp->xrepeat = 24;
@@ -4159,6 +4186,7 @@ short spawn( short j, short pn )
                 sp->lotag = 9999;
                 changespritestat(i,6);
                 break;
+
             case TOUCHPLATE:
                 T3 = sector[sect].floorz;
                 if(sector[sect].lotag != 1 && sector[sect].lotag != 2)
@@ -4169,15 +4197,17 @@ short spawn( short j, short pn )
                     changespritestat(i,5);
                     break;
                 }
+                // fall through
             case WATERBUBBLEMAKER:
-        if (sp->hitag && sp->picnum == WATERBUBBLEMAKER) {  // JBF 20030913: Pisses off move(), eg. in bobsp2
-            buildprintf("WARNING: WATERBUBBLEMAKER %d @ %d,%d with hitag!=0. Applying fixup.\n",
-                    i,sp->x,sp->y);
-            sp->hitag = 0;
-        }
+                if (sp->hitag && sp->picnum == WATERBUBBLEMAKER) {  // JBF 20030913: Pisses off move(), eg. in bobsp2
+                    buildprintf("WARNING: WATERBUBBLEMAKER %d @ %d,%d with hitag!=0. Applying fixup.\n",
+                            i,sp->x,sp->y);
+                    sp->hitag = 0;
+                }
                 sp->cstat |= 32768;
                 changespritestat(i,6);
                 break;
+
             case BOLT1:
             case BOLT1+1:
             case BOLT1+2:
@@ -4188,12 +4218,14 @@ short spawn( short j, short pn )
             case SIDEBOLT1+3:
                 T1 = sp->xrepeat;
                 T2 = sp->yrepeat;
+                // fall through
             case MASTERSWITCH:
                 if(sp->picnum == MASTERSWITCH)
                     sp->cstat |= 32768;
                 sp->yvel = 0;
                 changespritestat(i,6);
                 break;
+
             case TARGET:
             case DUCK:
             case LETTER:
@@ -4201,6 +4233,7 @@ short spawn( short j, short pn )
                 sp->cstat |= 257;
                 changespritestat(i,1);
                 break;
+
             case OCTABRAINSTAYPUT:
             case LIZTROOPSTAYPUT:
             case PIGCOPSTAYPUT:
@@ -4210,6 +4243,7 @@ short spawn( short j, short pn )
             case COMMANDERSTAYPUT:
             case BOSS4STAYPUT:
                 hittype[i].actorstayput = sp->sectnum;
+                // fall through
             case BOSS1:
             case BOSS2:
             case BOSS3:
@@ -4218,6 +4252,7 @@ short spawn( short j, short pn )
             case GREENSLIME:
                 if(sp->picnum == GREENSLIME)
                     sp->extra = 1;
+                // fall through
             case DRONE:
             case LIZTROOPONTOILET:
             case LIZTROOPJUSTSIT:
@@ -4377,6 +4412,7 @@ short spawn( short j, short pn )
                 else sp->owner = i;
                 sp->xrepeat = sp->yrepeat = 9;
                 sp->yvel = 4;
+                // fall through
             case REACTOR2:
             case REACTOR:
             case RECON:
@@ -4470,6 +4506,7 @@ short spawn( short j, short pn )
                 }
 
                 sp->pal = 0;
+                // fall through
 
             case ACCESSCARD:
 
@@ -4501,6 +4538,7 @@ short spawn( short j, short pn )
 
             case WATERFOUNTAIN:
                 SLT = 1;
+                // fall through
 
             case TREE1:
             case TREE2:
@@ -4536,6 +4574,7 @@ short spawn( short j, short pn )
 
                 if(camerashitable) sp->cstat = 257;
                 else sp->cstat = 0;
+                // fall through
 
             case GENERICPOLE:
 
@@ -4550,6 +4589,7 @@ short spawn( short j, short pn )
                 sp->picnum = CAMERA1;
                 changespritestat(i,1);
                 break;
+
             case STEAM:
                 if(j >= 0)
                 {
@@ -4559,6 +4599,7 @@ short spawn( short j, short pn )
                     sp->xvel = -8;
                     ssp(i,CLIPMASK0);
                 }
+                // fall through
             case CEILINGSTEAM:
                 changespritestat(i,6);
                 break;
@@ -4833,6 +4874,7 @@ short spawn( short j, short pn )
                         if( sector[sect].lotag &&
                             labs(sector[sect].ceilingz-sp->z) > 1024)
                                 sector[sect].lotag |= 32768; //If its open
+                        // fall through
                     case 8:
                         //First, get the ceiling-floor shade
 
@@ -4853,6 +4895,7 @@ short spawn( short j, short pn )
                     case 11://Pivitor rotater
                         if(sp->ang>1024) T4 = 2;
                         else T4 = -2;
+                        // fall through
                     case 0:
                     case 2://Earthquakemakers
                     case 5://Boss Creature
@@ -4978,8 +5021,10 @@ short spawn( short j, short pn )
                         j = callsound(sect,i);
                         if(j == -1) j = SUBWAY;
                         hittype[i].lastvx = j;
+                        // fall through
                     case 30:
                         if(numplayers > 1) break;
+                        // fall through
                     case 0:
                     case 1:
                     case 5:
@@ -5061,12 +5106,14 @@ short spawn( short j, short pn )
                 sp->clipdist = 8;
                 sp->owner = i;
                 break;
+
             case CANWITHSOMETHING:
             case CANWITHSOMETHING2:
             case CANWITHSOMETHING3:
             case CANWITHSOMETHING4:
             case RUBBERCAN:
                 sp->extra = 0;
+                // fall through
             case EXPLODINGBARREL:
             case HORSEONSIDE:
             case FIREBARREL:
@@ -5083,6 +5130,7 @@ short spawn( short j, short pn )
                 if(j >= 0)
                     sp->owner = j;
                 else sp->owner = i;
+                // fall through
             case EGG:
                 if( ud.monsters_off == 1 && sp->picnum == EGG )
                 {
@@ -5167,6 +5215,7 @@ void animatesprites(int x,int y,short a,int smoothratio)
                     t->shade = -127;
                     continue;
                 }
+                // fall through
             case BULLETHOLE:
             case CRACK1:
             case CRACK2:
@@ -5323,6 +5372,7 @@ void animatesprites(int x,int y,short a,int smoothratio)
             case FOOTPRINTS4:
                 if(t->pal == 6)
                     t->shade = -127;
+                // fall through
             case PUKE:
             case MONEY:
             case MONEY+1:
@@ -5590,7 +5640,7 @@ void animatesprites(int x,int y,short a,int smoothratio)
                     continue;
                 }
                 if(t->pal == 6) t->shade = -120;
-
+                // fall through
             case SCRAP1:
             case SCRAP2:
             case SCRAP3:
@@ -5620,6 +5670,7 @@ void animatesprites(int x,int y,short a,int smoothratio)
                     t->pal = 7;
                     break;
                 }
+                // fall through
             default:
 
                 if( sector[sect].floorpal )
@@ -5764,6 +5815,7 @@ void animatesprites(int x,int y,short a,int smoothratio)
                 t->z = sprite[s->owner].z-(3<<8);
                 if(lasermode == 2 && ps[screenpeek].heat_on == 0 )
                     t->yrepeat = 0;
+                // fall through
             case EXPLOSION2:
             case EXPLOSION2BOT:
             case FREEZEBLAST:
@@ -5825,6 +5877,7 @@ void animatesprites(int x,int y,short a,int smoothratio)
                 break;
             case SHELL:
                 t->picnum = s->picnum+(T1&1);
+                // fall through
             case SHOTGUNSHELL:
                 t->cstat |= 12;
                 if(T1 > 1) t->cstat &= ~4;
@@ -5832,6 +5885,7 @@ void animatesprites(int x,int y,short a,int smoothratio)
                 break;
             case FRAMEEFFECT1_13:
                 if (PLUTOPAK) break;
+                // fall through
             case FRAMEEFFECT1:
                 if(s->owner >= 0 && sprite[s->owner].statnum < MAXSTATUS)
                 {
@@ -9151,29 +9205,33 @@ void dobonus(char bonusonly)
     short t, r, tinc,gfx_offset;
     int i, y,xfragtotal,yfragtotal;
     short bonuscnt;
-    int clockpad = 2;
+    char clockpad;
     char *lastmapname;
     int32 playerbest = -1;
+    const int MAXTIME = 999*60*26 + 59*26;  // ~16.6 hours.
     char *yourtime = "Your Time:", *besttime = "Your Best Time:";
     UserInput uinfo;
 
-    int breathe[] =
-    {
-         0,  30,VICTORY1+1,176,59,
-        30,  60,VICTORY1+2,176,59,
-        60,  90,VICTORY1+1,176,59,
-        90, 120,0         ,176,59
+    struct {
+        int tmin, tmax;
+        int pic;
+        int x, y;
+    }
+    breathe[] = {
+        {  0,  30,VICTORY1+1,176,59 },
+        { 30,  60,VICTORY1+2,176,59 },
+        { 60,  90,VICTORY1+1,176,59 },
+        { 90, 120,0         ,176,59 }
+    },
+    bossmove[] = {
+        {   0, 120,VICTORY1+3,86,59 },
+        { 220, 260,VICTORY1+4,86,59 },
+        { 260, 290,VICTORY1+5,86,59 },
+        { 290, 320,VICTORY1+6,86,59 },
+        { 320, 350,VICTORY1+7,86,59 },
+        { 350, 380,VICTORY1+8,86,59 }
     };
-
-    int bossmove[] =
-    {
-         0, 120,VICTORY1+3,86,59,
-       220, 260,VICTORY1+4,86,59,
-       260, 290,VICTORY1+5,86,59,
-       290, 320,VICTORY1+6,86,59,
-       320, 350,VICTORY1+7,86,59,
-       350, 380,VICTORY1+8,86,59
-    };
+    #define NUM_BONUS_MOVES(set) (int)(sizeof(set)/sizeof(set[0]))
 
     if (ud.volume_number == 0 && ud.last_level == 8 && boardfilename[0]) {
         lastmapname = Bstrrchr(boardfilename,'\\');
@@ -9219,10 +9277,11 @@ void dobonus(char bonusonly)
 
                     // boss
                     if( totalclock > 390 && totalclock < 780 )
-                        for(t=0;t<35;t+=5) if( bossmove[t+2] && (totalclock%390) > bossmove[t] && (totalclock%390) <= bossmove[t+1] )
+                        for(t=0;t<NUM_BONUS_MOVES(bossmove);t++)
+                            if( bossmove[t].pic && (totalclock%390) > bossmove[t].tmin && (totalclock%390) <= bossmove[t].tmax )
                     {
-                        if(t==10 && bonuscnt == 1) { sound(SHOTGUN_FIRE);sound(SQUISHED); bonuscnt++; }
-                        rotatesprite(bossmove[t+3]<<16,bossmove[t+4]<<16,65536L,0,bossmove[t+2],0,0,2+8+16+64,0,0,xdim-1,ydim-1);
+                        if(t==2 && bonuscnt == 1) { sound(SHOTGUN_FIRE);sound(SQUISHED); bonuscnt++; }
+                        rotatesprite(bossmove[t].x<<16,bossmove[t].y<<16,65536L,0,bossmove[t].pic,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
                     }
 
                     // Breathe
@@ -9233,15 +9292,15 @@ void dobonus(char bonusonly)
                             rotatesprite(86<<16,59<<16,65536L,0,VICTORY1+8,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
                             if(totalclock >= 750 && bonuscnt == 2) { sound(DUKETALKTOBOSS); bonuscnt++; }
                         }
-                        for(t=0;t<20;t+=5)
-                            if( breathe[t+2] && (totalclock%120) > breathe[t] && (totalclock%120) <= breathe[t+1] )
+                        for(t=0;t<NUM_BONUS_MOVES(breathe);t++)
+                            if( breathe[t].pic && (totalclock%120) > breathe[t].tmin && (totalclock%120) <= breathe[t].tmax )
                         {
-                                if(t==5 && bonuscnt == 0)
+                                if(t==1 && bonuscnt == 0)
                                 {
                                     sound(BOSSTALKTODUKE);
                                     bonuscnt++;
                                 }
-                                rotatesprite(breathe[t+3]<<16,breathe[t+4]<<16,65536L,0,breathe[t+2],0,0,2+8+16+64,0,0,xdim-1,ydim-1);
+                                rotatesprite(breathe[t].x<<16,breathe[t].y<<16,65536L,0,breathe[t].pic,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
                         }
                     }
 
@@ -9592,16 +9651,15 @@ void dobonus(char bonusonly)
     }
 
     {
-        int ii, ij;
+        int longesttime;
 
-        for (ii=ps[myconnectindex].player_par/(26*60), ij=1; ii>9; ii/=10, ij++) ;
-            clockpad = max(clockpad,ij);
-        for (ii=partime[ud.volume_number*11+ud.last_level-1]/(26*60), ij=1; ii>9; ii/=10, ij++) ;
-            clockpad = max(clockpad,ij);
-        for (ii=designertime[ud.volume_number*11+ud.last_level-1]/(26*60), ij=1; ii>9; ii/=10, ij++) ;
-            clockpad = max(clockpad,ij);
-        if (playerbest > 0) for (ii=playerbest/(26*60), ij=1; ii>9; ii/=10, ij++) ;
-            clockpad = max(clockpad,ij);
+        longesttime = max(ps[myconnectindex].player_par, playerbest);
+        longesttime = max(partime[ud.volume_number*11+ud.last_level-1], longesttime);
+        longesttime = max(designertime[ud.volume_number*11+ud.last_level-1], longesttime);
+        longesttime = min(MAXTIME, longesttime);
+
+        for (clockpad=1, longesttime/=26*60; longesttime>9; longesttime/=10) clockpad++;
+        clockpad = max(2, clockpad);
     }
 
     uinfo.dir = dir_None;
@@ -9644,6 +9702,7 @@ void dobonus(char bonusonly)
                                     break;
                             }
                         }
+                        // fall through
                     case 1:
                     case 4:
                     case 5:
@@ -9677,6 +9736,8 @@ void dobonus(char bonusonly)
 
             if( totalclock > (60*3) )
             {
+                int ttime;
+
                 yy = zz = 59;
                 gametext(10,yy+9,yourtime,0,2+8+16); yy+=10;
                 gametext(10,yy+9,"Par Time:",0,2+8+16); yy+=10;
@@ -9695,27 +9756,23 @@ void dobonus(char bonusonly)
                         sound(PIPEBOMB_EXPLODE);
                     }
 
-                    sprintf(buf,"%0*d:%02d",clockpad,
-                        (ps[myconnectindex].player_par/(26*60)),
-                        (ps[myconnectindex].player_par/26)%60);
+                    ttime = min(MAXTIME, ps[myconnectindex].player_par);
+                    sprintf(buf,"%0*d:%02d",clockpad, ttime/(26*60), (ttime/26)%60);
                     gametext((320>>2)+71,yy+9,buf,0,2+8+16); yy+=10;
 
-                    sprintf(buf,"%0*d:%02d",clockpad,
-                        (partime[ud.volume_number*11+ud.last_level-1]/(26*60)),
-                        (partime[ud.volume_number*11+ud.last_level-1]/26)%60);
+                    ttime = min(MAXTIME, partime[ud.volume_number*11+ud.last_level-1]);
+                    sprintf(buf,"%0*d:%02d",clockpad, ttime/(26*60), (ttime/26)%60);
                     gametext((320>>2)+71,yy+9,buf,0,2+8+16); yy+=10;
 
                     if (!NAM) {
-                        sprintf(buf,"%0*d:%02d",clockpad,
-                            (designertime[ud.volume_number*11+ud.last_level-1]/(26*60)),
-                            (designertime[ud.volume_number*11+ud.last_level-1]/26)%60);
+                        ttime = min(MAXTIME, designertime[ud.volume_number*11+ud.last_level-1]);
+                        sprintf(buf,"%0*d:%02d",clockpad, ttime/(26*60), (ttime/26)%60);
                         gametext((320>>2)+71,yy+9,buf,0,2+8+16); yy+=10;
                     }
 
                     if (playerbest > 0) {
-                        sprintf(buf,"%0*d:%02d",clockpad,
-                            (playerbest/(26*60)),
-                            (playerbest/26)%60);
+                        ttime = min(MAXTIME, playerbest);
+                        sprintf(buf,"%0*d:%02d",clockpad, ttime/(26*60), (ttime/26)%60);
                     } else {
                         strcpy(buf,"None");
                     }

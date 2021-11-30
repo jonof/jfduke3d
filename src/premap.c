@@ -906,6 +906,7 @@ void prelevel(unsigned char g)
             case W_FORCEFIELD:
                 for(j=0;j<3;j++)
                     tloadtile(W_FORCEFIELD+j, 0);
+                // fall through
             case W_FORCEFIELD+1:
             case W_FORCEFIELD+2:
                 if(wal->shade > 31)
@@ -916,7 +917,7 @@ void prelevel(unsigned char g)
                 if(wal->lotag && wal->nextwall >= 0)
                     wall[wal->nextwall].lotag =
                         wal->lotag;
-
+                // fall through
             case BIGFORCE:
 
                 animwall[numanimwalls].wallnum = i;

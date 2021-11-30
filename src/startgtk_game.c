@@ -113,6 +113,11 @@ static GObject * get_and_connect_signal(GtkBuilder *builder, const char *name, c
     return object;
 }
 
+static void foreach_gtk_widget_set_sensitive(GtkWidget *widget, gpointer data)
+{
+    gtk_widget_set_sensitive(widget, (gboolean)(intptr_t)data);
+}
+
 static void populate_video_modes(gboolean firsttime)
 {
     int i, mode3d = -1;
@@ -239,7 +244,7 @@ static void setup_config_mode(void)
 
     // Enable all the controls on the Configuration page.
     gtk_container_foreach(GTK_CONTAINER(controls.configbox),
-            (GtkCallback)gtk_widget_set_sensitive, (gpointer)TRUE);
+            foreach_gtk_widget_set_sensitive, (gpointer)TRUE);
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(controls.alwaysshowcheck), settings->forcesetup);
     gtk_widget_set_sensitive(controls.alwaysshowcheck, TRUE);
 
@@ -291,7 +296,7 @@ static void setup_messages_mode(gboolean allowcancel)
 
     // Disable all the controls on the Configuration page.
     gtk_container_foreach(GTK_CONTAINER(controls.configbox),
-            (GtkCallback)gtk_widget_set_sensitive, (gpointer)FALSE);
+            foreach_gtk_widget_set_sensitive, (gpointer)FALSE);
     gtk_widget_set_sensitive(controls.alwaysshowcheck, FALSE);
 
     gtk_widget_set_sensitive(controls.gametable, FALSE);
@@ -689,6 +694,8 @@ int startwin_settitle(const char *title)
 
 int startwin_idle(void *s)
 {
+    (void)s;
+
     return 0;
 }
 

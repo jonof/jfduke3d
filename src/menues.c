@@ -1674,8 +1674,8 @@ cheat_for_port_credits:
         case 0:
             c = (320>>1);
             rotatesprite(c<<16,28<<16,65536L,0,INGAMEDUKETHREEDEE,0,0,10,0,0,xdim-1,ydim-1);
-        if (PLUTOPAK)   // JBF 20030804
-            rotatesprite((c+100)<<16,36<<16,65536L,0,PLUTOPAKSPRITE+2,(sintable[(totalclock<<4)&2047]>>11),0,2+8,0,0,xdim-1,ydim-1);
+            if (PLUTOPAK)   // JBF 20030804
+                rotatesprite((c+100)<<16,36<<16,65536L,0,PLUTOPAKSPRITE+2,(sintable[(totalclock<<4)&2047]>>11),0,2+8,0,0,xdim-1,ydim-1);
             x = probe(c,67,16,6);
             if(x >= 0)
             {
@@ -1926,6 +1926,7 @@ if (PLUTOPAK) {
         getfilenames(boardfilename,"*.map");
         cmenu(102);
         KB_FlushKeyboardQueue();
+        // fall through
     case 102:
             rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(160,24,0,0,"SELECT A USER MAP");
@@ -2301,6 +2302,7 @@ if (PLUTOPAK) {
 
         case 0:
             currentlist = 0;
+            // fall through
         case 1:
         case 2:
             if (x==2 && !CONTROL_JoyPresent) break;
@@ -3514,7 +3516,8 @@ if (PLUTOPAK) {
 
         case 400:
         case 401:
-        if (VOLUMEALL) goto VOLUME_ALL_40x;
+            if (VOLUMEALL) goto VOLUME_ALL_40x;
+            // fall through
         case 402:
         case 403:
 
@@ -3695,6 +3698,7 @@ VOLUME_ALL_40x:
                 if (menunamecnt == 0)
                     cmenu(600);
             }
+            // fall through
         case 603:
             c = (320>>1) - 120;
             displayfragbar();
@@ -3834,7 +3838,7 @@ if (!VOLUMEONE) {
                     break;
 
                 case 6:
-if (VOLUMEALL) {
+                if (VOLUMEALL) {
                     if(boardfilename[0] == 0) break;
 
                     tempbuf[0] = 5;
@@ -3876,7 +3880,8 @@ if (VOLUMEALL) {
                     if (enterlevel(MODE_GAME)) backtomenu();
 
                     return;
-}
+                }
+                // fall through
                 case 7:
 
                     tempbuf[0] = 5;

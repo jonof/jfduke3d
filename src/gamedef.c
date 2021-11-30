@@ -1137,6 +1137,7 @@ char parsecommand(void)
 
         case 75:    //ifpinventory
             transnum(LABEL_DEFINE);
+            // fall through
         case 3:     //ifrnd
         case 8:     //ifpdistl
         case 9:     //ifpdistg
@@ -1162,6 +1163,7 @@ char parsecommand(void)
                 case 41: transnum(LABEL_MOVE); break;
                 default: transnum(LABEL_DEFINE); break;
             }
+            // fall through
         case 43:    //ifonwater
         case 44:    //ifinwater
         case 49:    //ifactornotstayput
@@ -3085,10 +3087,8 @@ char parse(void)
                         }
                         break;
                     case 7:if(ps[g_p].heat_amount != *insptr) j = 1;break;
-                    case 9:
-                        if(ps[g_p].firstaid_amount != *insptr) j = 1;break;
-                    case 10:
-                        if(ps[g_p].boot_amount != *insptr) j = 1;break;
+                    case 9:if(ps[g_p].firstaid_amount != *insptr) j = 1;break;
+                    case 10:if(ps[g_p].boot_amount != *insptr) j = 1;break;
                 }
 
                 parseifelse(j);
