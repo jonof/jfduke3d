@@ -7985,11 +7985,17 @@ int app_main(int argc, char const * const argv[])
         setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP);
     }
 
-   buildprintf("Checking sound inits.\n");
-   SoundStartup();
-   buildprintf("Checking music inits.\n");
-   MusicStartup();
-   loadtmb();
+    {
+        // Send JFAudioLib output into the JFBuild console.
+        extern void (*ASS_MessageOutputString)(const char *);
+        ASS_MessageOutputString = buildputs;
+
+        buildprintf("Checking sound inits.\n");
+        SoundStartup();
+        buildprintf("Checking music inits.\n");
+        MusicStartup();
+        loadtmb();
+    }
 
 if (VOLUMEONE) {
         if(numplayers > 4 || ud.multimode > 4)
