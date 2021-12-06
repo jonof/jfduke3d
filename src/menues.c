@@ -1059,7 +1059,7 @@ int quittimer = 0;
 void menus(void)
 {
     CACHE1D_FIND_REC *dir;
-    short c,x,i;
+    short c,x,i,s;
     int l,m;
     char *p = NULL;
 
@@ -2149,7 +2149,7 @@ if (PLUTOPAK) {
                         {
                             short sbs, sbsl;
                             sbs = sbsl = scale(min(7,max(0,ud.statusbarscale-1)),63,7);
-                            barsm(d+8,yy+7, (short *)&sbs,9,x==io,SHX(-5),PHX(-5));
+                            barsm(d+8,yy+7, &sbs,9,x==io,SHX(-5),PHX(-5));
                             if (x == io && sbs != sbsl) {
                                 sbs = 1+sbs/9;
                                 ud.statusbarscale = sbs;
@@ -2179,7 +2179,13 @@ if (PLUTOPAK) {
                              { static const char *s[] = { "Off", "New", "Empty", "New+Empty" };
                                  gametextpal(d,yy, s[ud.weaponswitch], enabled?0:OFFSHADE, 0); break; }
                          break;
-                    case 9:  barsm(d+8,yy+7, (short *)&ud.screen_size,-4,x==io,SHX(-5),PHX(-5)); break;
+                    case 9:
+                        {
+                            s = ud.screen_size;
+                            barsm(d+8,yy+7, &s,-4,x==io,SHX(-5),PHX(-5));
+                            ud.screen_size = s;
+                        }
+                        break;
                     case 10: if (x==io) ud.detail = 1-ud.detail;
                          gametextpal(d,yy, ud.detail ? "High" : "Low", 0, 0); break;
                     case 11: if (x==io) ud.shadows = 1-ud.shadows;
@@ -2847,9 +2853,9 @@ if (PLUTOPAK) {
         }
 
         menutext(c,40,0,0,"X-AXIS SCALE");
-        l = (MouseAnalogueScale[0]+262144) >> 13;
-        bar(c+160+40,40,(short *)&l,1,x==0,0,0);
-        l = (l<<13)-262144;
+        s = (MouseAnalogueScale[0]+262144) >> 13;
+        bar(c+160+40,40,&s,1,x==0,0,0);
+        l = ((int)s<<13)-262144;
         if (l != MouseAnalogueScale[0]) {
             CONTROL_SetAnalogAxisScale( 0, l, controldevice_mouse );
             MouseAnalogueScale[0] = l;
@@ -2858,9 +2864,9 @@ if (PLUTOPAK) {
         gametext(c+160-16,40-8,buf,0,2+8+16);
         
         menutext(c,40+16,0,0,"Y-AXIS SCALE");
-        l = (MouseAnalogueScale[1]+262144) >> 13;
-        bar(c+160+40,40+16,(short *)&l,1,x==1,0,0);
-        l = (l<<13)-262144;
+        s = (MouseAnalogueScale[1]+262144) >> 13;
+        bar(c+160+40,40+16,&s,1,x==1,0,0);
+        l = ((int)s<<13)-262144;
         if (l != MouseAnalogueScale[1]) {
             CONTROL_SetAnalogAxisScale( 1, l, controldevice_mouse );
             MouseAnalogueScale[1] = l;
@@ -3075,9 +3081,9 @@ if (PLUTOPAK) {
         if (twothispage) menutext(42,32+64,0,0,getjoyname(0,thispage*2+1));
 
         gametext(76,38,"SCALE",0,2+8+16);
-        l = (JoystickAnalogueScale[thispage*2]+262144) >> 13;
-        bar(140+56,38+8,(short *)&l,1,x==0,0,0);
-        l = (l<<13)-262144;
+        s = (JoystickAnalogueScale[thispage*2]+262144) >> 13;
+        bar(140+56,38+8,&s,1,x==0,0,0);
+        l = ((int)s<<13)-262144;
         if (l != JoystickAnalogueScale[thispage*2]) {
             CONTROL_SetAnalogAxisScale( thispage*2, l, controldevice_joystick );
             JoystickAnalogueScale[thispage*2] = l;
@@ -3114,9 +3120,9 @@ if (PLUTOPAK) {
         
         if (twothispage) {
             gametext(76,38+64,"SCALE",0,2+8+16);
-            l = (JoystickAnalogueScale[thispage*2+1]+262144) >> 13;
-            bar(140+56,38+8+64,(short *)&l,1,x==4,0,0);
-            l = (l<<13)-262144;
+            s = (JoystickAnalogueScale[thispage*2+1]+262144) >> 13;
+            bar(140+56,38+8+64,&s,1,x==4,0,0);
+            l = ((int)s<<13)-262144;
             if (l != JoystickAnalogueScale[thispage*2+1]) {
                 CONTROL_SetAnalogAxisScale( thispage*2+1, l, controldevice_joystick );
                 JoystickAnalogueScale[thispage*2+1] = l;
@@ -3294,10 +3300,9 @@ if (PLUTOPAK) {
             menutext(c,50+16+16,SHX(-4),(FXDevice<0)||SoundToggle==0,"SOUND VOLUME");
             {
                 l = FXVolume;
-                FXVolume >>= 2;
-                bar(c+167+40,50+16+16,(short *)&FXVolume,4,(FXDevice>=0)&&x==2,SHX(-4),SoundToggle==0||(FXDevice<0));
-                if(l != FXVolume)
-                    FXVolume <<= 2;
+                s = FXVolume >> 2;
+                bar(c+167+40,50+16+16,&s,4,(FXDevice>=0)&&x==2,SHX(-4),SoundToggle==0||(FXDevice<0));
+                FXVolume = s << 2;
                 if(l != FXVolume)
                     FX_SetVolume( (short) FXVolume );
             }
@@ -3305,12 +3310,12 @@ if (PLUTOPAK) {
             menutext(c,50+16+16+16,SHX(-5),(MusicDevice<0)||MusicToggle==0,"MUSIC VOLUME");
             {
                 l = MusicVolume;
-                MusicVolume >>= 2;
+                s = MusicVolume >> 2;
                 bar(c+167+40,50+16+16+16,
-                    (short *)&MusicVolume,4,
+                    &s,4,
                     (MusicDevice>=0) && x==3,SHX(-5),
                     MusicToggle==0||(MusicDevice<0));
-                MusicVolume <<= 2;
+                MusicVolume = s << 2;
                 if(l != MusicVolume)
                     MusicSetVolume( (short) MusicVolume );
 
