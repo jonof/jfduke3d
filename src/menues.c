@@ -4243,8 +4243,8 @@ void drawoverheadmap(int cposx, int cposy, int czoom, short cang)
           ox = sprite[ps[p].i].x-cposx; oy = sprite[ps[p].i].y-cposy;
                   daang = (sprite[ps[p].i].ang-cang)&2047;
                   if (p == screenpeek) { ox = 0; oy = 0; daang = 0; }
-                  x1 = mulscale(ox,xvect,16) - mulscale(oy,yvect,16);
-                  y1 = mulscale(oy,xvect2,16) + mulscale(ox,yvect2,16);
+                  x1 = mulscale16(ox,xvect) - mulscale16(oy,yvect);
+                  y1 = mulscale16(oy,xvect2) + mulscale16(ox,yvect2);
 
           if(p == screenpeek || ud.coop == 1 )
           {
@@ -4254,7 +4254,7 @@ void drawoverheadmap(int cposx, int cposy, int czoom, short cang)
                     i = APLAYERTOP;
 
                 j = klabs(ps[p].truefz-ps[p].posz)>>8;
-                j = mulscale(czoom*(sprite[ps[p].i].yrepeat+j),yxaspect,16);
+                j = mulscale16(czoom*(sprite[ps[p].i].yrepeat+j),yxaspect);
 
                 if(j < 22000) j = 22000;
                 else if(j > (65536<<1)) j = (65536<<1);

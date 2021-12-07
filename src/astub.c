@@ -2293,7 +2293,7 @@ void faketimerhandler(void)
   dist = ksqrt(oposx*oposx+oposy*oposy);
   if (ototalclock > timoff+32) dist = 0;
 
-  daang = mulscale(dist,angvel,9);
+  daang = mulscale9(dist,angvel);
         posz += (daang<<6);
         if (posz > loz-(4<<8)) posz = loz-(4<<8), hvel = 0;
         if (posz < hiz+(4<<8)) posz = hiz+(4<<8), hvel = 0;

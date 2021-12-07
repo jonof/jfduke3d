@@ -283,7 +283,7 @@ short aim(spritetype *s,short aang)
                 if( (dy1*xv) <= (dx1*yv) )
                     if( ( dy2*xv ) >= (dx2*yv) )
                 {
-                    sdist = mulscale(dx3,xv,14) + mulscale(dy3,yv,14);
+                    sdist = mulscale14(dx3,xv) + mulscale14(dy3,yv);
                     if( sdist > 512 && sdist < smax )
                     {
                         if(s->picnum == APLAYER)
@@ -3270,20 +3270,20 @@ void processinput(short snum)
 
         if( ( p->curr_weapon == KNEE_WEAPON && *kb > 10 && p->on_ground ) || ( p->on_ground && (sb_snum&2) ) )
         {
-            p->posxv = mulscale(p->posxv,dukefriction-0x2000,16);
-            p->posyv = mulscale(p->posyv,dukefriction-0x2000,16);
+            p->posxv = mulscale16(p->posxv,dukefriction-0x2000);
+            p->posyv = mulscale16(p->posyv,dukefriction-0x2000);
         }
         else
         {
             if(psectlotag == 2)
             {
-                p->posxv = mulscale(p->posxv,dukefriction-0x1400,16);
-                p->posyv = mulscale(p->posyv,dukefriction-0x1400,16);
+                p->posxv = mulscale16(p->posxv,dukefriction-0x1400);
+                p->posyv = mulscale16(p->posyv,dukefriction-0x1400);
             }
             else
             {
-                p->posxv = mulscale(p->posxv,dukefriction,16);
-                p->posyv = mulscale(p->posyv,dukefriction,16);
+                p->posxv = mulscale16(p->posxv,dukefriction);
+                p->posyv = mulscale16(p->posyv,dukefriction);
             }
         }
 
@@ -3736,7 +3736,7 @@ void processinput(short snum)
 						int lGrenadeLifetimeVar=NAM_GRENADE_LIFETIME_VAR;
 						// set timer.  blows up when at zero....
 						sprite[j].extra=lGrenadeLifetime	// FIXME: bug
-								+ mulscale(krand(),lGrenadeLifetimeVar, 14)
+								+ mulscale14(krand(),lGrenadeLifetimeVar)
 								- lGrenadeLifetimeVar;
 					}
 
