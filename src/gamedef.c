@@ -2071,8 +2071,8 @@ void move()
                 }
                 else
                 {
-                    ps[g_p].posxv = mulscale(ps[g_p].posxv,dukefriction-0x2000,16);
-                    ps[g_p].posyv = mulscale(ps[g_p].posyv,dukefriction-0x2000,16);
+                    ps[g_p].posxv = mulscale16(ps[g_p].posxv,dukefriction-0x2000);
+                    ps[g_p].posyv = mulscale16(ps[g_p].posyv,dukefriction-0x2000);
                 }
             }
             else if(g_sp->picnum != DRONE && g_sp->picnum != SHARK && g_sp->picnum != COMMANDER)
