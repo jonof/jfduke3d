@@ -150,7 +150,7 @@ build$(EXESUFFIX): $(EDITOROBJS) $(ELIB)\$(ENGINELIB) $(ELIB)\$(EDITORLIB)
 
 enginelib editorlib: AlwaysBuild
 	cd "$(EROOT)"
-	$(MAKE) /f Makefile.msvc /$(MAKEFLAGS) USE_POLYMOST=$(USE_POLYMOST) USE_OPENGL=$(USE_OPENGL) USE_ASM=$(USE_ASM) $@
+	$(MAKE) /f Makefile.msvc /$(MAKEFLAGS) USE_POLYMOST=$(USE_POLYMOST) USE_OPENGL=$(USE_OPENGL) USE_ASM=$(USE_ASM) RELEASE=$(RELEASE) $@
 	cd "$(MAKEDIR)"
 
 jfaudiolib: AlwaysBuild
