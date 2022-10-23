@@ -615,6 +615,9 @@ int32 CONFIG_ReadSetup( void )
 #if USE_POLYMOST && USE_OPENGL
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLTextureMode", &gltexfiltermode);
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLAnisotropy", &glanisotropy);
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLMultisample", &glmultisample);
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLMultisampleNvidia", &glnvmultisamplehint);
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLSupersample", &glsampleshading);
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLUseTextureCompr", &glusetexcompr);
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLUseCompressedTextureCache", &glusetexcache);
 #endif
@@ -704,6 +707,9 @@ void CONFIG_WriteSetup( void )
 #if USE_POLYMOST && USE_OPENGL
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLTextureMode",gltexfiltermode,false,false);
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLAnisotropy",glanisotropy,false,false);
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLMultisample",glmultisample,false,false);
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLMultisampleNvidia",glnvmultisamplehint,false,false);
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLSupersample",glsampleshading,false,false);
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLUseTextureCompr",glusetexcompr,false,false);
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLUseCompressedTextureCache", glusetexcache,false,false);
 #endif
