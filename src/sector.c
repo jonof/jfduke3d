@@ -553,10 +553,8 @@ void operatesectors(short sn,short ii)
 {
     int j=0, l, q, startwall, endwall;
     short i;
-    char sect_error;
     sectortype *sptr;
 
-    sect_error = 0;
     sptr = &sector[sn];
 
     switch(sptr->lotag&(0xffff-49152))
@@ -1016,7 +1014,7 @@ void operaterespawns(short low)
 
 void operateactivators(short low,short snum)
 {
-    short i, j, k, *p, nexti;
+    short i, j, k, *p;
     walltype *wal;
 
     for(i=numcyclers-1;i>=0;i--)
@@ -1568,10 +1566,7 @@ void breakwall(short newpn,short spr,short dawallnum)
 void checkhitwall(short spr,short dawallnum,int x,int y,int z,short atwith)
 {
     short j, i, sn = -1, darkestwall;
-    signed char nfloors,nceilings;
-    short nextj;
     walltype *wal;
-    spritetype *s;
 
     wal = &wall[dawallnum];
 
@@ -1875,9 +1870,7 @@ void checkplayerhurt(struct player_struct *p,short j)
 
 char checkhitceiling(short sn)
 {
-    short i, j, q, darkestwall, darkestceiling;
-    signed char nfloors,nceilings;
-    walltype *wal;
+    short i, j;
 
     switch(sector[sn].ceilingpicnum)
     {
@@ -1950,7 +1943,7 @@ char checkhitceiling(short sn)
 
 void checkhitsprite(short i,short sn)
 {
-    short j, k, l, nextj, p;
+    short j, k, p;
     spritetype *s;
 
     i &= (MAXSPRITES-1);

@@ -235,7 +235,6 @@ unsigned char menunum=0;
 
 void intomenusounds(void)
 {
-    short i;
     short menusnds[] =
     {
         LASERTRIP_EXPLODE,
@@ -494,7 +493,6 @@ void sound(short num)
 {
     short pitch,pitche,pitchs,cx;
     int voice;
-    int start;
 
     if (FXDevice < 0) return;
     if(SoundToggle==0) return;
@@ -546,8 +544,9 @@ int spritesound(unsigned short num, short i)
     return xyzsound(num,i,SX,SY,SZ);
 }
 
-void stopspritesound(short num, short UNUSED(i))
+void stopspritesound(short num, short i)
 {
+	(void)i;
 	stopsound(num);
 }
 

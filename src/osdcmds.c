@@ -27,20 +27,20 @@ int osdcmd_quit(const osdfuncparm_t *parm)
 
 int osdcmd_changelevel(const osdfuncparm_t *parm)
 {
-    int volume=0,level,i;
+    int volume=0,level;
     char *p;
 
     if (!VOLUMEONE) {
         if (parm->numparms != 2) return OSDCMD_SHOWHELP;
 
-        volume = strtol(parm->parms[0], &p, 10) - 1;
+        volume = (int)strtol(parm->parms[0], &p, 10) - 1;
         if (p[0]) return OSDCMD_SHOWHELP;
-        level = strtol(parm->parms[1], &p, 10) - 1;
+        level = (int)strtol(parm->parms[1], &p, 10) - 1;
         if (p[0]) return OSDCMD_SHOWHELP;
     } else {
         if (parm->numparms != 1) return OSDCMD_SHOWHELP;
 
-        level = strtol(parm->parms[0], &p, 10) - 1;
+        level = (int)strtol(parm->parms[0], &p, 10) - 1;
         if (p[0]) return OSDCMD_SHOWHELP;
     }
 
@@ -200,9 +200,10 @@ int osdcmd_fileinfo(const osdfuncparm_t *parm)
     return OSDCMD_OK;
 }
 
-static int osdcmd_restartvid(const osdfuncparm_t *UNUSED(parm))
+static int osdcmd_restartvid(const osdfuncparm_t *parm)
 {
     extern int qsetmode;
+    (void)parm;
     
     resetvideomode();
     if (setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP))
@@ -220,19 +221,19 @@ static int osdcmd_vidmode(const osdfuncparm_t *parm)
 
     switch (parm->numparms) {
         case 1: // bpp switch
-            newbpp = Batol(parm->parms[0]);
+            newbpp = atoi(parm->parms[0]);
             break;
         case 2: // res switch
-            newwidth = Batol(parm->parms[0]);
-            newheight = Batol(parm->parms[1]);
+            newwidth = atoi(parm->parms[0]);
+            newheight = atoi(parm->parms[1]);
             break;
         case 3: // res & bpp switch
         case 4:
-            newwidth = Batol(parm->parms[0]);
-            newheight = Batol(parm->parms[1]);
-            newbpp = Batol(parm->parms[2]);
+            newwidth = atoi(parm->parms[0]);
+            newheight = atoi(parm->parms[1]);
+            newbpp = atoi(parm->parms[2]);
             if (parm->numparms == 4)
-                newfs = (Batol(parm->parms[3]) != 0);
+                newfs = (atoi(parm->parms[3]) != 0);
             break;
     }
 
@@ -250,7 +251,7 @@ static int osdcmd_vidmode(const osdfuncparm_t *parm)
 static int osdcmd_setstatusbarscale(const osdfuncparm_t *parm)
 {
     if (parm->numparms == 1) {
-        ud.statusbarscale = max(1, min(8, Batol(parm->parms[0])));
+        ud.statusbarscale = max(1, min(8, atoi(parm->parms[0])));
         setstatusbarscale(ud.statusbarscale);
         vscrn();
     } else if (parm->numparms > 1) return OSDCMD_SHOWHELP;
@@ -274,26 +275,26 @@ static int osdcmd_spawn(const osdfuncparm_t *parm)
     
     switch (parm->numparms) {
         case 7: // x,y,z
-            x = Batol(parm->parms[4]);
-            y = Batol(parm->parms[5]);
-            z = Batol(parm->parms[6]);
+            x = atoi(parm->parms[4]);
+            y = atoi(parm->parms[5]);
+            z = atoi(parm->parms[6]);
             set |= 8;
             // fall through
         case 4: // ang
-            ang = Batol(parm->parms[3]) & 2047;
+            ang = atoi(parm->parms[3]) & 2047;
             set |= 4;
             // fall through
         case 3: // cstat
-            cstat = (unsigned short)Batol(parm->parms[2]);
+            cstat = (unsigned short)atoi(parm->parms[2]);
             set |= 2;
             // fall through
         case 2: // pal
-            pal = (unsigned char)Batol(parm->parms[1]);
+            pal = (unsigned char)atoi(parm->parms[1]);
             set |= 1;
             // fall through
         case 1: // tile number
             if (isdigit(parm->parms[0][0])) {
-                picnum = (unsigned short)Batol(parm->parms[0]);
+                picnum = (unsigned short)atoi(parm->parms[0]);
             } else {
                 int i,j;
                 for (j=0; j<2; j++) {

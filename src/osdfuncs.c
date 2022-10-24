@@ -63,10 +63,11 @@ void GAME_onshowosd(int shown)
 #define BITS 8+16+64        // solid
 #define SHADE 16
 #define PALETTE 0
-void GAME_clearbackground(int UNUSED(c), int r)
+void GAME_clearbackground(int c, int r)
 {
     int x, y, xsiz, ysiz, tx2, ty2;
     int daydim, bits;
+    (void)c;
 
     if (!POLYMOST_RENDERMODE_POLYGL()) bits = BITS; else bits = BITSTL;
 

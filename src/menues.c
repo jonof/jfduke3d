@@ -47,7 +47,7 @@ short sh,onbar,deletespot;
 short last_zero,last_fifty,last_threehundred = 0;
 UserInput uinfo;
 
-static char fileselect = 1, menunamecnt, menuname[256][64], curpath[80], menupath[80];
+static char fileselect = 1, menunamecnt, menuname[256][64];
 
 static CACHE1D_FIND_REC *finddirs=NULL, *findfiles=NULL, *finddirshigh=NULL, *findfileshigh=NULL;
 static int numdirs=0, numfiles=0;
@@ -132,7 +132,6 @@ void readsavenames(void)
 
 int loadpheader(char spot,struct savehead *saveh)
 {
-    int i;
     char fn[13];
     int fil;
     int bv;
@@ -181,7 +180,7 @@ int loadplayer(signed char spot)
     char fn[13];
     char mpfn[13];
     char *fnptr;
-    int fil, bv, i, j, x;
+    int fil, bv, i, x;
     int32 nump;
     int ptrbuf[MAXTILES];
     
@@ -304,7 +303,7 @@ int loadplayer(signed char spot)
     if (kdfread(&msy[0],sizeof(int),sizeof(msy)/sizeof(int),fil) != sizeof(msy)/sizeof(int)) goto corrupt;
     if (kdfread((short *)&spriteqloc,sizeof(short),1,fil) != 1) goto corrupt;
     if (kdfread((short *)&spriteqamount,sizeof(short),1,fil) != 1) goto corrupt;
-    if (kdfread((short *)&spriteq[0],sizeof(short),spriteqamount,fil) != spriteqamount) goto corrupt;
+    if (kdfread((short *)&spriteq[0],sizeof(short),spriteqamount,fil) != (unsigned)spriteqamount) goto corrupt;
     if (kdfread(&mirrorcnt,sizeof(short),1,fil) != 1) goto corrupt;
     if (kdfread(&mirrorwall[0],sizeof(short),64,fil) != 64) goto corrupt;
     if (kdfread(&mirrorsector[0],sizeof(short),64,fil) != 64) goto corrupt;
@@ -490,7 +489,7 @@ corrupt:
 
 int saveplayer(signed char spot)
 {
-    int i, j;
+    int i;
     char fn[13];
     char mpfn[13];
     char *fnptr;
@@ -1082,7 +1081,6 @@ void menus(void)
     CACHE1D_FIND_REC *dir;
     short c,x,i,s;
     int l,m;
-    char *p = NULL;
 
     getpackets();
 
@@ -1628,16 +1626,16 @@ void menus(void)
                    l = 0;
 cheat_for_port_credits:
                    gametext(160,40-l,"GAME AND ENGINE PORT",0,2+8+16);
-                   p = "Jonathon \"JonoF\" Fowler";
-                   minitext(160-(Bstrlen(p)<<1), 40+10-l, p, 12, 10+16+128);
+                   const char credit1[] = "Jonathon \"JonoF\" Fowler";
+                   minitext(160-(sizeof credit1)*2, 40+10-l, credit1, 12, 10+16+128);
                    
                    gametext(160,60-l,"\"POLYMOST\" 3D RENDERER",0,2+8+16);
                    gametext(160,60+8-l,"NETWORKING, OTHER CODE",0,2+8+16);
-                   p = "Ken \"Awesoken\" Silverman";
-                   minitext(160-(Bstrlen(p)<<1), 60+8+10-l, p, 12, 10+16+128);
+                   const char credit2[] = "Ken \"Awesoken\" Silverman";
+                   minitext(160-(sizeof credit2)*2, 60+8+10-l, credit2, 12, 10+16+128);
 
-                   p = "Icon and startup graphics by Lachlan \"NetNessie\" McDonald";
-                   minitext(160-(Bstrlen(p)<<1), 92-l, p, 12, 10+16+128);
+                   const char credit3[] = "Icon and startup graphics by Lachlan \"NetNessie\" McDonald";
+                   minitext(160-(sizeof credit3)*2, 92-l, credit3, 12, 10+16+128);
 
                    {
                         const char *scroller[] = {
@@ -1674,20 +1672,17 @@ cheat_for_port_credits:
                             "",
                             ""
                         };
-                        const int numlines = sizeof(scroller)/sizeof(char *);
+                        const int numlines = sizeof(scroller)/sizeof(scroller[0]);
                         for (m=0,i=(totalclock/104)%numlines; m<4; m++,i++) {
                             if (i==numlines) i=0;
-                            minitext(160-(Bstrlen(scroller[i])<<1), 100+10+(m*7)-l, scroller[i], 8, 10+16+128);
+                            minitext(160-(int)Bstrlen(scroller[i])*2, 100+10+(m*7)-l, scroller[i], 8, 10+16+128);
                         }
                    }
 
-                   for (i=0;i<2;i++) {
-                       switch (i) {
-                           case 0: p = "Visit http://www.jonof.id.au/jfduke3d for"; break;
-                           case 1: p = "the source code, latest news, and updates of this port."; break;
-                       }
-                       minitext(160-(Bstrlen(p)<<1), 135+10+(i*7)-l, p, 8, 10+16+128);
-                   }
+                   const char credit4[] = "Visit http://www.jonof.id.au/jfduke3d for";
+                   const char credit5[] = "the source code, latest news, and updates of this port.";
+                   minitext(160-(sizeof credit4)*2, 135+10+(0*7)-l, credit4, 8, 10+16+128);
+                   minitext(160-(sizeof credit5)*2, 135+10+(1*7)-l, credit5, 8, 10+16+128);
                    break;
             }
             break;
@@ -2778,7 +2773,6 @@ if (!VOLUMEALL) {
                 case 3: Bstrcat(buf, "DOWN"); break;
             }
         } else if (function == 2) {
-            static const char *directions[] = { "UP", "RIGHT", "DOWN", "LEFT" };
 			Bsprintf(buf,"TO %s%s", (whichkey&1)?"DOUBLE-CLICKED ":"", getjoyname(1,whichkey>>1));
         } else if (function == 3) {
             Bsprintf(buf,"TO DIGITAL %s %s",getjoyname(0,whichkey>>1),(whichkey&1)?"POSITIVE":"NEGATIVE");
@@ -3433,7 +3427,7 @@ if (!VOLUMEALL) {
 
                 rotatesprite(101<<16,97<<16,65536>>1,512,TILE_SAVESHOT,-32,0,2+4+8+64,0,0,xdim-1,ydim-1);
                 dispnames();
-                rotatesprite((c+67+strlen(&ud.savegame[current_menu-360][0])*4)<<16,(50+12*probey)<<16,32768L-10240,0,SPINNINGNUKEICON+(((totalclock)>>3)%7),0,0,10,0,0,xdim-1,ydim-1);
+                rotatesprite((c+67+(int)strlen(&ud.savegame[current_menu-360][0])*4)<<16,(50+12*probey)<<16,32768L-10240,0,SPINNINGNUKEICON+(((totalclock)>>3)%7),0,0,10,0,0,xdim-1,ydim-1);
                 break;
             }
 
@@ -4465,7 +4459,7 @@ void endanimvol43(int fr)
 void playanm(const char *fn,char t)
 {
     unsigned char *animbuf, *palptr, palbuf[768];
-    int i, j, k, length=0, numframes=0;
+    int i, j, length=0, numframes=0;
     int32 handle=-1;
     UserInput uinfo;
 

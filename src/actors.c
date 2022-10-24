@@ -459,7 +459,7 @@ void hitradius( short i, int  r, int  hp1, int  hp2, int  hp3, int  hp4 )
 int movesprite(short spritenum, int xchange, int ychange, int zchange, unsigned int cliptype)
 {
     int daz,h, oldx, oldy;
-    short retval, dasectnum, a, cd;
+    short retval, dasectnum, cd;
     char bg;
 
     bg = badguy(&sprite[spritenum]);
@@ -643,7 +643,7 @@ void guts(spritetype *s,short gtype, short n, short p)
 void gutsdir(spritetype *s,short gtype, short n, short p)
 {
     int gutz,floorz;
-    short i,a,j;
+    short a,j;
     char sx,sy;
 
     if(badguy(s) && s->xrepeat < 16)
@@ -662,7 +662,7 @@ void gutsdir(spritetype *s,short gtype, short n, short p)
     for(j=0;j<n;j++)
     {
         a = TRAND&2047;
-        i = EGS(s->sectnum,s->x,s->y,gutz,gtype,-32,sx,sy,a,256+(TRAND&127),-512-(TRAND&2047),ps[p].i,5);
+        EGS(s->sectnum,s->x,s->y,gutz,gtype,-32,sx,sy,a,256+(TRAND&127),-512-(TRAND&2047),ps[p].i,5);
     }
 }
 
@@ -852,7 +852,7 @@ short ifhitsectors(short sectnum)
 
 short ifhitbyweapon(short sn)
 {
-    short j, k, p;
+    short j, p;
     spritetype *npc;
 
     if( hittype[sn].extra >= 0 )
@@ -1357,8 +1357,8 @@ void movefallers(void)
 
 void movestandables(void)
 {
-    short i, j, k, m, nexti, nextj, nextk, p=0, q, sect;
-    int l=0, x, *t, x1, y1;
+    short i, j, k, m, nexti, nextj, p=0, sect;
+    int l=0, x, *t;
     spritetype *s;
 
     i = headspritestat[6];
@@ -2297,8 +2297,8 @@ void bounce(short i)
 
 void moveweapons(void)
 {
-    short i, j, k, nexti, p, q, tempsect;
-    int dax,day,daz, x, l, ll, x1, y1;
+    short i, j, k, nexti, p, q;
+    int dax,day,daz, x, ll;
     unsigned int qq;
     spritetype *s;
 
@@ -2644,7 +2644,7 @@ void moveweapons(void)
 void movetransports(void)
 {
     char warpspriteto;
-    short i, j, k, l, p, sect, sectlotag, nexti, nextj, nextk;
+    short i, j, k, l, p, sect, sectlotag, nexti, nextj;
     int ll,onfloorz,q;
 
     i = headspritestat[9]; //Transporters
@@ -4267,7 +4267,7 @@ void moveactors(void)
 
 void moveexplosions(void)  // STATNUM 5
 {
-    short i, j, k, nexti, sect, p;
+    short i, j, nexti, sect, p;
     int l, x, *t;
     spritetype *s;
 

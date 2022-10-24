@@ -62,7 +62,6 @@ void fadepal(int r, int g, int b, int start, int end, int step)
 void incur_damage( struct player_struct *p )
 {
     int damage = 0L, shield_damage = 0L;
-    short i, damage_source;
 
     sprite[p->i].extra -= p->extra_extra8>>8;
 
@@ -1278,7 +1277,7 @@ int lastvisinc;
 
 void displaymasks(short snum)
 {
-    short i, p;
+    short p;
 
     if(sprite[ps[snum].i].pal == 1)
         p = 1;
@@ -1356,7 +1355,7 @@ short fistsign;
 void displayweapon(short snum)
 {
     int gun_pos, looking_arc, cw;
-    int weapon_xoffset, i, j, x1, y1, x2;
+    int weapon_xoffset, i, j;
     char o,pal;
     signed char gs;
     struct player_struct *p;
@@ -2131,7 +2130,7 @@ if (!VOLUMEONE) {
 
 char doincrements(struct player_struct *p)
 {
-    int /*j,*/i,snum;
+    int /*j,*/snum;
 
     snum = sprite[p->i].yvel;
 //    j = sync[snum].avel;
@@ -2321,7 +2320,7 @@ short weapon_sprites[MAX_WEAPONS] = { KNEE, FIRSTGUNSPRITE, SHOTGUNSPRITE,
 
 void checkweapons(struct player_struct *p)
 {
-    short j,cw;
+    short cw;
 
     cw = p->curr_weapon;
 

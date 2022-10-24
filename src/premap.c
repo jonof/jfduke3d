@@ -280,8 +280,7 @@ void precachenecessarysounds(void)
 
 void cacheit(void)
 {
-    int i,j,k;
-    int tc;
+    int i,j;
     unsigned int starttime, endtime;
 
     starttime = getticks();
@@ -455,7 +454,6 @@ void pickrandomspot(short snum)
 void resetplayerstats(short snum)
 {
     struct player_struct *p;
-    short i;
 
     p = &ps[snum];
 
@@ -587,7 +585,6 @@ void resetweapons(short snum)
 void resetinventory(short snum)
 {
     struct player_struct *p;
-    short i;
 
     p = &ps[snum];
 
@@ -1095,8 +1092,7 @@ void newgame(char vn,char ln,char sk)
 
 void resetpspritevars(unsigned char g)
 {
-    short i, j, nexti,circ;
-    int firstx,firsty;
+    short i, j, nexti;
     spritetype *s;
     char aimmode[MAXPLAYERS],autoaim[MAXPLAYERS],weaponswitch[MAXPLAYERS];
     STATUSBARTYPE tsbar[MAXPLAYERS];
@@ -1163,7 +1159,6 @@ void resetpspritevars(unsigned char g)
     }
 
     numplayersprites = 0;
-    circ = 2048/ud.multimode;
 
     which_palookup = 9;
     j = connecthead;
@@ -1175,12 +1170,6 @@ void resetpspritevars(unsigned char g)
 
         if( numplayersprites == MAXPLAYERS)
             gameexit("\nToo many player sprites (max 16.)");
-
-        if(numplayersprites == 0)
-        {
-            firstx = ps[0].posx;
-            firsty = ps[0].posy;
-        }
 
         po[numplayersprites].ox = s->x;
         po[numplayersprites].oy = s->y;
@@ -1324,7 +1313,7 @@ void waitforeverybody()
 
 void dofrontscreens(const char *statustext)
 {
-    int tincs,i=0,j;
+    int i=0;
 
     if(ud.recstat != 2)
     {
@@ -1418,7 +1407,7 @@ void resetmys(void)
 
 int enterlevel(unsigned char g)
 {
-    short i,j;
+    short i;
     int l;
     char levname[BMAX_PATH+1], *path, *dot;
 
