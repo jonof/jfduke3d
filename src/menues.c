@@ -2351,7 +2351,7 @@ if (PLUTOPAK) {
 
             c = (320>>1)-120;
 #if USE_POLYMOST && USE_OPENGL
-            i = 7;
+            i = 6;
 #else
             i = 5;
 #endif
@@ -2425,18 +2425,11 @@ if (PLUTOPAK) {
                 case 5: // Filtering.
                     if (bpp==8) break;
                     switch (gltexfiltermode) {
-                        case 0: gltexfiltermode = 3; break;
+                        case 0: gltexfiltermode = 5; break;
                         case 3: gltexfiltermode = 5; break;
                         case 5: gltexfiltermode = 0; break;
-                        default: gltexfiltermode = 3; break;
+                        default: gltexfiltermode = 5; break;
                     }
-                    gltexapplyprops();
-                    break;
-
-                case 6: // Anisotropy.
-                    if (bpp==8) break;
-                    glanisotropy *= 2;
-                    if (glanisotropy > glinfo.maxanisotropy) glanisotropy = 1;
                     gltexapplyprops();
                     break;
 #endif
@@ -2502,11 +2495,6 @@ if (PLUTOPAK) {
                 default: strcpy(buf,"OTHER"); break;
             }
             menutext(c+154,50+62+16+16,0,bpp==8,buf);
-
-        menutext(c,50+62+16+16+16,0,bpp==8,"ANISOTROPY");
-            if (glanisotropy == 1) strcpy(buf,"NONE");
-            else sprintf(buf,"%d-tap",glanisotropy);
-            menutext(c+154,50+62+16+16+16,0,bpp==8,buf);
 #endif
         break;
 
