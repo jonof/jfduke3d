@@ -32,7 +32,7 @@
             row:(NSInteger)rowIndex
 {
     int row;
-    struct grpfile *fg = foundgrps;
+    struct grpfile const *fg = GroupsFound();
 
     for (row = 0; row < rowIndex && fg; fg = fg->next) {
         if (fg->ref) row++;
@@ -59,20 +59,20 @@
 - (int)numberOfRowsInTableView:(NSTableView *)aTableView
 {
     int count = 0;
-    struct grpfile *fg = foundgrps;
+    struct grpfile const *fg = GroupsFound();
 
-    for (count = 0, fg = foundgrps; fg; fg = fg->next) {
+    for (count = 0; fg; fg = fg->next) {
         if (fg->ref) count++;
     }
     return count;
 }
 
-- (int)indexForGrp:(struct grpfile *)grpFile
+- (int)indexForGrp:(struct grpfile const *)grpFile
 {
     int index;
-    struct grpfile *fg;
+    struct grpfile const *fg = GroupsFound();
 
-    for (fg = foundgrps, index = 0; fg; fg = fg->next) {
+    for (index = 0; fg; fg = fg->next) {
         if (fg == grpFile) return index;
         if (fg->ref) index++;
     }

@@ -1840,50 +1840,37 @@ if (!VOLUMEALL) {
         case 100:
             rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(160,24,0,0,"SELECT AN EPISODE");
-//            if(boardfilename[0])
-if (PLUTOPAK)
+            if (VOLUMEONE)
+                x = probe(160,60,20,3 + PLUTOPAK);
+            else if (PLUTOPAK)
                 x = probe(160,60,20,5);
-//            else x = probe(160,60,20,4);
-//            if(boardfilename[0])
-else
-                x = probe(160,60,20,VOLUMEONE?3:4);
-//            else x = probe(160,60,20,3);
+            else
+                x = probe(160,60,20,4);
             if(x >= 0)
             {
-if (VOLUMEONE) {
-                if(x > 0)
-                    cmenu(20000);
+                if (VOLUMEONE)
+                {
+                    if(x > 0)
+                        cmenu(20000);
+                    else
+                    {
+                        ud.m_volume_number = x;
+                        ud.m_level_number = 0;
+                        cmenu(110);
+                    }
+                }
+                else if ((!PLUTOPAK && x == 3) || (PLUTOPAK && x == 4))
+                {
+                    // User map menu.
+                    currentlist = 1;
+                    cmenu(101);
+                }
                 else
                 {
                     ud.m_volume_number = x;
                     ud.m_level_number = 0;
                     cmenu(110);
                 }
-}
-
-if (!VOLUMEONE) {
-                if(!PLUTOPAK && x == 3 /*&& boardfilename[0]*/)
-                {
-                    //ud.m_volume_number = 0;
-                    //ud.m_level_number = 7;
-            currentlist = 1;
-            cmenu(101);
-                }
-        else if(PLUTOPAK && x == 4 /*&& boardfilename[0]*/)
-                {
-                    //ud.m_volume_number = 0;
-                    //ud.m_level_number = 7;
-            currentlist = 1;
-            cmenu(101);
-                }
-
-                else
-                {
-                    ud.m_volume_number = x;
-                    ud.m_level_number = 0;
-                    cmenu(110);
-                }
-}
             }
             else if(x == -1)
             {
@@ -1894,30 +1881,21 @@ if (!VOLUMEONE) {
             menutext(160,60,SHX(-2),PHX(-2),volume_names[0]);
 
             c = 80;
-if (VOLUMEONE) {
-            menutext(160,60+20,SHX(-3),1,volume_names[1]);
-            menutext(160,60+20+20,SHX(-4),1,volume_names[2]);
-if (PLUTOPAK)
-            menutext(160,60+20+20,SHX(-5),1,volume_names[3]);
-} else {
-            menutext(160,60+20,SHX(-3),PHX(-3),volume_names[1]);
-            menutext(160,60+20+20,SHX(-4),PHX(-4),volume_names[2]);
-if (PLUTOPAK) {
-        menutext(160,60+20+20+20,SHX(-5),PHX(-5),volume_names[3]);
-//            if(boardfilename[0])
-//            {
-                menutext(160,60+20+20+20+20,SHX(-6),PHX(-6),"USER MAP");
-//                gametextpal(160,60+20+20+20+20+3,boardfilename,16+(sintable[(totalclock<<4)&2047]>>11),2);
-//            }
-} else {
-//            if(boardfilename[0])
-//            {
-                menutext(160,60+20+20+20,SHX(-6),PHX(-6),"USER MAP");
-//                gametext(160,60+20+20+20+6,boardfilename,2,2+8+16);
-//            }
-}
-
-}
+            if (VOLUMEONE) {
+                menutext(160,60+20,SHX(-3),1,volume_names[1]);
+                menutext(160,60+20+20,SHX(-4),1,volume_names[2]);
+                if (PLUTOPAK)
+                    menutext(160,60+20+20+20,SHX(-5),1,volume_names[3]);
+            } else {
+                menutext(160,60+20,SHX(-3),PHX(-3),volume_names[1]);
+                menutext(160,60+20+20,SHX(-4),PHX(-4),volume_names[2]);
+                if (PLUTOPAK) {
+                    menutext(160,60+20+20+20,SHX(-5),PHX(-5),volume_names[3]);
+                    menutext(160,60+20+20+20+20,SHX(-6),PHX(-6),"USER MAP");
+                } else {
+                    menutext(160,60+20+20+20,SHX(-6),PHX(-6),"USER MAP");
+                }
+            }
             break;
 
     case 101:

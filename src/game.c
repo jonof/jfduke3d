@@ -2047,13 +2047,14 @@ void showtwoscreens(void)
 {
     short i;
 
-    if (!VOLUMEALL) {
+    if (VOLUMEONE) {
         setview(0,0,xdim-1,ydim-1);
         flushperms();
         //ps[myconnectindex].palette = palette;
         setgamepalette(&ps[myconnectindex], palette, 1);
 
         fadepal(0,0,0, 0,64,7);
+        clearallviews(0L);
         rotatesprite(0,0,65536L,0,3291,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
         IFISSOFTMODE fadepal(0,0,0, 63,0,-7); else nextpage();
 
@@ -7664,15 +7665,14 @@ void backtomenu(void)
 #include "osdcmds.h"
 #include "grpscan.h"
 
-int shareware = 0;
-int gametype = 0;
+int gametype = GAMEGRP_GAME_DUKE;
 const char *gameeditionname = "Unknown edition";
 
 int app_main(int argc, char const * const argv[])
 {
     int i, j, k, l;
     int configloaded;
-    struct grpfile *gamegrp = NULL;
+    struct grpfile const *gamegrp = NULL;
 
 #ifdef RENDERTYPEWIN
     if (win_checkinstance()) {
@@ -7781,22 +7781,7 @@ int app_main(int argc, char const * const argv[])
     }
 
     ScanGroups();
-    {
-        // Try and identify duke3dgrp in the set of GRPs.
-        struct grpfile *first = NULL;
-        for (gamegrp = foundgrps; gamegrp; gamegrp = gamegrp->next) {
-            if (!gamegrp->ref) continue;     // Not a recognised game file.
-            if (!first) first = gamegrp;
-            if (!Bstrcasecmp(gamegrp->name, duke3dgrp)) {
-                // Found it.
-                break;
-            }
-        }
-        if (!gamegrp && first) {
-            // It wasn't found, so use the first recognised one scanned.
-            gamegrp = first;
-        }
-    }
+    gamegrp = IdentifyGroup(duke3dgrp);
 
     if (netparam) { // -net parameter on command line.
         netsuccess = initmultiplayersparms(endnetparam - netparam, &argv[netparam]);
@@ -7869,7 +7854,7 @@ int app_main(int argc, char const * const argv[])
         gametype = gamegrp->game;
         gameeditionname = gamegrp->ref->name;  // Points to static data, so won't be lost in FreeGroups().
     }
-    if (gametype == GAMENAM) {
+    if (gametype == GAMEGRP_GAME_NAM) {
         strcpy(defaultconfilename, "nam.con");
     }
 
@@ -7877,10 +7862,16 @@ int app_main(int argc, char const * const argv[])
 
     buildprintf("GRP file: %s\n", duke3dgrp);
     initgroupfile(duke3dgrp);
-    i = kopen4load("DUKESW.BIN",1);
-    if (i!=-1) {
-        shareware = 1;
-        kclose(i);
+
+    if (!gamegrp) {
+        // Couldn't identify the game by checksum of known released
+        // content, so guess at registered/shareware state by probing
+        // for DOS end screens.
+        i = kopen4load("DUKESW.BIN",1);
+        if (i >= 0) {
+            gametype = GAMEGRP_GAME_DUKESW;
+            kclose(i);
+        }
     }
 
     {

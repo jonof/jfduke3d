@@ -24,11 +24,6 @@
 #ifndef __grpscan_h__
 #define __grpscan_h__
 
-#ifndef GAMEDUKE
-#define GAMEDUKE 0
-#define GAMENAM 1
-#endif
-
 // List of internally-known GRP files
 struct grpfile {
     const char *name;
@@ -40,7 +35,6 @@ struct grpfile {
     struct grpfile *next;
 };
 extern struct grpfile grpfiles[];
-extern struct grpfile *foundgrps;
 
 struct importgroupsmeta {
     void *data;
@@ -56,6 +50,8 @@ enum {
 };
 
 int ScanGroups(void);
+struct grpfile const * IdentifyGroup(const char *grpfilename);
+struct grpfile const * GroupsFound(void);
 void FreeGroups(void);
 int ImportGroupsFromPath(const char *path, struct importgroupsmeta *cbs);
 

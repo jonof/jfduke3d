@@ -5,7 +5,7 @@ struct startwin_settings {
     int usemouse, usejoy;
     int samplerate, bitspersample, channels;
 
-    struct grpfile *selectedgrp;
+    struct grpfile const *selectedgrp;
 
     int numplayers;
     char *joinhost;

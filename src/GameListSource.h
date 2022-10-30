@@ -28,6 +28,6 @@
     objectValueForTableColumn:(NSTableColumn *)aTableColumn
 	    row:(NSInteger)rowIndex;
 - (int)numberOfRowsInTableView:(NSTableView *)aTableView;
-- (int)indexForGrp:(struct grpfile *)grpFile;
+- (int)indexForGrp:(struct grpfile const *)grpFile;
 @end
 
