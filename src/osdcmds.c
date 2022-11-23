@@ -207,8 +207,7 @@ static int osdcmd_restartvid(const osdfuncparm_t *UNUSED(parm))
     resetvideomode();
     if (setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP))
         gameexit("restartvid: Reset failed...\n");
-    onvideomodechange(ScreenBPP>8);
-    vscrn();
+    onvideomodechange();
 
     return OSDCMD_OK;
 }
@@ -244,8 +243,7 @@ static int osdcmd_vidmode(const osdfuncparm_t *parm)
     }
     ScreenBPP = newbpp; ScreenWidth = newwidth; ScreenHeight = newheight;
     ScreenMode = newfs;
-    onvideomodechange(ScreenBPP>8);
-    vscrn();
+    onvideomodechange();
     return OSDCMD_OK;
 }
 
@@ -370,25 +368,6 @@ static int osdcmd_vars(const osdfuncparm_t *parm)
     return OSDCMD_SHOWHELP;
 }
 
-void onvideomodechange(int newmode)
-{
-    unsigned char *pal;
-
-    if (newmode) {
-        if (ps[screenpeek].palette == palette ||
-            ps[screenpeek].palette == waterpal ||
-            ps[screenpeek].palette == slimepal)
-            pal = palette;
-        else
-            pal = ps[screenpeek].palette;
-    } else {
-        pal = ps[screenpeek].palette;
-    }
-
-    setbrightness(ud.brightness>>2, pal, 0);
-    restorepalette = 1;
-}
-
 int osdcmd_usemousejoy(const osdfuncparm_t *parm)
 {
     int showval = (parm->numparms < 1);
@@ -441,8 +420,6 @@ if (VOLUMEONE) {
     OSD_RegisterFunction("usemouse","usemouse: enables input from the mouse if it is present",osdcmd_usemousejoy);
     OSD_RegisterFunction("usejoystick","usejoystick: enables input from the controller if it is present",osdcmd_usemousejoy);
     
-    //baselayer_onvideomodechange = onvideomodechange;
-
     return 0;
 }
 

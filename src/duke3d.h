@@ -568,8 +568,6 @@ extern int myaimmode, myaimstat, omyaimstat;
 #define IFISGLMODE if (POLYMOST_RENDERMODE_POLYGL())
 #define IFISSOFTMODE if (!POLYMOST_RENDERMODE_POLYGL())
 
-void onvideomodechange(int newmode);
-
 #define TILE_SAVESHOT (MAXTILES-1)
 #define TILE_LOADSHOT (MAXTILES-3)
 #define TILE_TILT     (MAXTILES-2)

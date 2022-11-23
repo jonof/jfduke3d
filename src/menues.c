@@ -650,6 +650,27 @@ int saveplayer(signed char spot)
     return(0);
 }
 
+void onvideomodechange(void)
+{
+    unsigned char *pal;
+
+    if (ScreenBPP > 8) {
+        if (ps[screenpeek].palette == palette ||
+            ps[screenpeek].palette == waterpal ||
+            ps[screenpeek].palette == slimepal)
+            pal = palette;
+        else
+            pal = ps[screenpeek].palette;
+    } else {
+        pal = ps[screenpeek].palette;
+    }
+
+    setbrightness(ud.brightness>>2, pal, 0);
+    restorepalette = 1;
+
+    vscrn();
+}
+
 static int probe_(int type,int x,int y,int i,int n)
 {
     short centre;
@@ -2384,8 +2405,6 @@ if (!VOLUMEALL) {
                                 gameexit("Failed restoring old video mode.");
                             }
                         }
-                        onvideomodechange(bpp > 8);
-                        vscrn();
 
                         curvidmode = newvidmode; curvidset = newvidset;
 
@@ -2393,6 +2412,8 @@ if (!VOLUMEALL) {
                         ScreenWidth = xdim;
                         ScreenHeight = ydim;
                         ScreenBPP = bpp;
+
+                        onvideomodechange();
                     }
                     break;
 

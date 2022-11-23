@@ -139,6 +139,7 @@ extern void getangplayers(short snum);
 //extern int loadpheader(char spot,int32 *vn,int32 *ln,int32 *psk,char *bfn,int32 *numplr);
 extern int loadplayer(signed char spot);
 extern int saveplayer(signed char spot);
+extern void onvideomodechange(void);
 extern void sendgameinfo(void );
 extern int probe(int x,int y,int i,int n);
 extern int menutext(int x,int y,short s,short p,const char *t);
