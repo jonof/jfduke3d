@@ -2035,6 +2035,29 @@ if (!VOLUMEALL) {
         }
         break;
         
+        case 103:
+            {
+                char *path;
+                if(boardfilename[0] != 0 && ud.m_level_number == 7 && ud.m_volume_number == 0 )
+                    path = boardfilename;
+                else
+                    path = level_file_names[ (ud.volume_number*11)+ud.level_number];
+
+                c = (320>>1);
+                rotatesprite(c<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
+                menutext(c,24,0,0,"MAP ERROR");
+
+                gametext(160,90,path,0,2+8+16);
+                gametext(160,90+9,"IS NOT COMPATIBLE",0,2+8+16);
+
+                x = probe(186,124,0,0);
+                if(x >= -1)
+                {
+                    backtomenu();
+                    ps[myconnectindex].gm |= MODE_DEMO;
+                }
+            }
+            break;
 
         case 110:
             c = (320>>1);
@@ -2073,7 +2096,15 @@ if (!VOLUMEALL) {
                 }
 
                 newgame(ud.m_volume_number,ud.m_level_number,ud.m_player_skill);
-                if (enterlevel(MODE_GAME)) backtomenu();
+                switch (enterlevel(MODE_GAME)) {
+                    case 0: break;
+                    case 2:
+                        ps[myconnectindex].gm |= MODE_MENU;
+                        cmenu(103);
+                        break;
+                    default:
+                        backtomenu();
+                }
             }
             else if(x == -1)
             {

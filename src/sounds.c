@@ -498,6 +498,7 @@ void sound(short num)
 
     if (FXDevice < 0) return;
     if(SoundToggle==0) return;
+    if (num<0 || num >= NUM_SOUNDS) return;
     if(VoiceToggle==0 && (soundm[num]&4) ) return;
     if( (soundm[num]&8) && ud.lockout ) return;
     if(FX_VoiceAvailable(soundpr[num]) == 0) return;

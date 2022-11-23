@@ -1420,7 +1420,7 @@ int enterlevel(unsigned char g)
 {
     short i,j;
     int l;
-    char levname[BMAX_PATH];
+    char levname[BMAX_PATH+1], *path, *dot;
 
     if( (g&MODE_DEMO) != MODE_DEMO ) ud.recstat = ud.m_recstat;
     ud.respawn_monsters = ud.m_respawn_monsters;
@@ -1444,58 +1444,33 @@ int enterlevel(unsigned char g)
     vscrn();
     ud.screen_size = i;
 
-if (!VOLUMEONE) {
+    if(!VOLUMEONE && boardfilename[0] != 0 && ud.m_level_number == 7 && ud.m_volume_number == 0 )
+        path = boardfilename;
+    else
+        path = level_file_names[ (ud.volume_number*11)+ud.level_number];
 
-    if( boardfilename[0] != 0 && ud.m_level_number == 7 && ud.m_volume_number == 0 )
+    l = loadboard( path, VOLUMEONE, &ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum );
+    if(l == 0)
     {
-        if ( loadboard( boardfilename,0,&ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum ) == -1 )
-        {
-            buildprintf("Map %s not found!\n",boardfilename);
-            //gameexit(tempbuf);
-            return 1;
-        } else {
-            char *p;
-            strcpy(levname, boardfilename);
-            p = Bstrrchr(levname,'.');
-            if (!p) strcat(levname,".mhk");
-            else { strcpy(p, ".mhk"); }
-            if (!loadmaphack(levname)) buildprintf("Loaded map hack file %s\n",levname);
-        }
+        strcpy(levname, path);
+
+        dot = Bstrrchr(levname,'.');
+        if (!dot) strcat(levname,".mhk");
+        else strcpy(dot, ".mhk");
+
+        if (!loadmaphack(levname))
+            buildprintf("Loaded map hack file %s\n",levname);
     }
-    else if ( loadboard( level_file_names[ (ud.volume_number*11)+ud.level_number],0,&ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum ) == -1)
+    else if(l == -1)
     {
-        buildprintf("Map %s not found!\n",level_file_names[(ud.volume_number*11)+ud.level_number]);
-        //gameexit(tempbuf);
+        buildprintf("Map %s not found!\n", path);
         return 1;
-    } else {
-        char *p;
-        strcpy(levname, level_file_names[ (ud.volume_number*11)+ud.level_number]);
-        p = Bstrrchr(levname,'.');
-        if (!p) strcat(levname,".mhk");
-        else { strcpy(p, ".mhk"); }
-        if (!loadmaphack(levname)) buildprintf("Loaded map hack file %s\n",levname);
     }
-
-} else {
-
-    l = strlen(level_file_names[ (ud.volume_number*11)+ud.level_number]);
-    copybufbyte( level_file_names[ (ud.volume_number*11)+ud.level_number],&levname[0],l);
-    levname[l] = 255;
-    levname[l+1] = 0;
-
-    if ( loadboard( levname,1,&ps[0].posx, &ps[0].posy, &ps[0].posz, &ps[0].ang,&ps[0].cursectnum ) == -1)
+    else
     {
-        buildprintf("Map %s not found!\n",level_file_names[(ud.volume_number*11)+ud.level_number]);
-        //gameexit(tempbuf);
-        return 1;
-    } else {
-        char *p;
-        p = Bstrrchr(levname,'.');
-        if (!p) strcat(levname,".mhk");
-        else { strcpy(p, ".mhk"); }
-        if (!loadmaphack(levname)) buildprintf("Loaded map hack file %s\n",levname);
+        buildprintf("Map %s is not compatible!\n", path);
+        return 2;
     }
-}
 
     clearbufbyte(gotpic,sizeof(gotpic),0L);
     //clearbufbyte(hittype,sizeof(hittype),0l); // JBF 20040531: yes? no?

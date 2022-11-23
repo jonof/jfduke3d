@@ -689,6 +689,7 @@ int32 CONFIG_ReadSetup( void )
 void CONFIG_WriteSetup( void )
 {
     int32 dummy;
+    char buf[64];
 
     if (!setupread) return;
     if (scripthandle < 0)

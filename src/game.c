@@ -4934,8 +4934,9 @@ short spawn( short j, short pn )
                             }
                             if(j == MAXSPRITES)
                             {
-                                sprintf(buf,"Found lonely Sector Effector (lotag 0) at (%d,%d)\n",sp->x,sp->y);
-                                gameexit(buf);
+                                buildprintf("Found lonely Sector Effector (lotag 0) at (%d,%d)\n",sp->x,sp->y);
+                                deletesprite(i);
+                                break;
                             }
                             sp->owner = j;
                         }
