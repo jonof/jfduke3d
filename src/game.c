@@ -7887,16 +7887,9 @@ int app_main(int argc, char const * const argv[])
     RegisterShutdownFunction( Shutdown );
 
     OSD_SetFunctions(
-        GAME_drawosdchar,
-        GAME_drawosdstr,
-        GAME_drawosdcursor,
-        GAME_getcolumnwidth,
-        GAME_getrowheight,
-        GAME_clearbackground,
-        (int(*)(void))GetTime,
-        GAME_onshowosd
+        NULL, NULL, NULL, NULL, NULL,
+        osdfunc_clearbackground, NULL, osdfunc_onshowosd
     );
-    OSD_SetParameters(0,2, 0,0, 4,0);
     registerosdcommands();
 
     Startup();
