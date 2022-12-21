@@ -7546,7 +7546,7 @@ void Startup(void)
     CONTROL_JoystickEnabled = (UseJoystick && CONTROL_JoyPresent);
     CONTROL_MouseEnabled = (UseMouse && CONTROL_MousePresent);
 
-    inittimer(TICRATE);
+    inittimer(TICRATE, NULL);
 
     //buildprintf("* Hold Esc to Abort. *\n");
     buildprintf("Loading art header.\n");

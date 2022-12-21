@@ -221,8 +221,6 @@ static unsigned char sidemode=0;
 extern int vel, svel, hvel, angvel;
 int xvel, yvel, timoff;
 
-static unsigned char once=0;
-
 
 
 void SearchSectorsForward();
@@ -590,7 +588,7 @@ const char *ExtGetSpriteCaption(short spritenum)
 void TotalMem()
 {
     char incache[MAXTILES];
-    int i,j,tottiles,totsprites,totactors;
+    int i,tottiles,totsprites,totactors;
 
     memset(incache, 0, sizeof(incache));
 
@@ -698,9 +696,7 @@ void TotalMem()
 
 
     clearmidstatbar16();
-    begindrawing();
-    printext16(1*8,ydim16+4*8,11,-1,"Memory Status",0);
-    enddrawing();
+    printext16(1*8,4*8,11,-1,"Memory Status",0);
 
     PrintStatus("Total Tiles   = ",tottiles,2,6,11);
     PrintStatus("Total Sprites = ",totsprites,2,7,11);
@@ -717,10 +713,13 @@ void ExtShowSectorData(short sectnum)   //F5
     short statnum=0;
     int x,x2,y;
     int nexti;
-    int i,c=0;
+    int i;
     int secrets=0;
     int totalactors1=0,totalactors2=0,totalactors3=0,totalactors4=0;
     int totalrespawn=0;
+
+    (void)sectnum;
+
     for(i=0;i<numsectors;i++)
     { if(sector[i].lotag==32767) secrets++;
     }
@@ -791,9 +790,7 @@ void ExtShowSectorData(short sectnum)   //F5
          printmessage16(tempbuf);
 
      x=1; x2=14; y=4;
-     begindrawing();
-     printext16(x*8,ydim16+y*8,11,-1,"Item Count",0);
-     enddrawing();
+     printext16(x*8,y*8,11,-1,"Item Count",0);
      PrintStatus("10%health=",numsprite[COLA],x,y+2,11);
       PrintStatus("",multisprite[COLA],x2,y+2,1);
      PrintStatus("30%health=",numsprite[SIXPAK],x,y+3,11);
@@ -806,9 +803,7 @@ void ExtShowSectorData(short sectnum)   //F5
       PrintStatus("",multisprite[SHIELD],x2,y+6,1);
 
      x=17; x2=30; y=4;
-     begindrawing();
-     printext16(x*8,ydim16+y*8,11,-1,"Inventory",0);
-     enddrawing();
+     printext16(x*8,y*8,11,-1,"Inventory",0);
      PrintStatus("Steroids =",numsprite[STEROIDS],x,y+2,11);
       PrintStatus("",multisprite[STEROIDS],x2,y+2,1);
      PrintStatus("Airtank  =",numsprite[AIRTANK],x,y+3,11);
@@ -824,9 +819,7 @@ void ExtShowSectorData(short sectnum)   //F5
      PrintStatus("Multi D  =",numsprite[APLAYER],x,y+8,11);
 
      x=33; x2=46; y=4;
-     begindrawing();
-     printext16(x*8,ydim16+y*8,11,-1,"Weapon Count",0);
-     enddrawing();
+     printext16(x*8,y*8,11,-1,"Weapon Count",0);
      PrintStatus("Pistol   =",numsprite[FIRSTGUNSPRITE],x,y+2,11);
       PrintStatus("",multisprite[FIRSTGUNSPRITE],x2,y+2,1);
      PrintStatus("Shotgun  =",numsprite[SHOTGUNSPRITE],x,y+3,11);
@@ -847,9 +840,7 @@ void ExtShowSectorData(short sectnum)   //F5
       PrintStatus("",multisprite[FREEZESPRITE],x2,y+10,1);
 
       x=49; x2=62; y=4;
-      begindrawing();
-     printext16(x*8,ydim16+y*8,11,-1,"Ammo Count",0);
-     enddrawing();
+     printext16(x*8,y*8,11,-1,"Ammo Count",0);
      PrintStatus("Pistol   =",numsprite[AMMO],x,y+2,11);
       PrintStatus("",multisprite[AMMO],x2,y+2,1);
      PrintStatus("Shot     =",numsprite[SHOTGUNAMMO],x,y+3,11);
@@ -867,13 +858,9 @@ void ExtShowSectorData(short sectnum)   //F5
      PrintStatus("Freezeray=",numsprite[FREEZEAMMO],x,y+9,11);
       PrintStatus("",multisprite[FREEZEAMMO],x2,y+9,1);
 
-      begindrawing();
-     printext16(65*8,ydim16+4*8,11,-1,"MISC",0);
-     enddrawing();
+     printext16(65*8,4*8,11,-1,"MISC",0);
      PrintStatus("Secrets =",secrets,65,6,11);
-     begindrawing();
-     printext16(65*8,ydim16+7*8,11,-1,"ACTORS",0);
-     enddrawing();
+     printext16(65*8,7*8,11,-1,"ACTORS",0);
      PrintStatus("Skill 1 =",totalactors1,65,8,11);
      PrintStatus("Skill 2 =",totalactors2,65,9,11);
      PrintStatus("Skill 3 =",totalactors3,65,10,11);
@@ -887,6 +874,8 @@ void ExtShowWallData(short wallnum)       //F6
 {
  int i,nextfreetag=0,total=0;
  char x,y;
+
+ (void)wallnum;
 
  for(i=0;i<MAXSPRITES;i++)
  {
@@ -1027,9 +1016,7 @@ void ExtShowWallData(short wallnum)       //F6
  printmessage16(tempbuf);
 
  Bsprintf(tempbuf,"Level %s Status",levelname);
- begindrawing();
- printext16(1*8,ydim16+4*8,11,-1,tempbuf,0);
- enddrawing();
+ printext16(1*8,4*8,11,-1,tempbuf,0);
 
  PrintStatus("Next Available Tag =",nextfreetag,35,4,11);
 
@@ -1131,19 +1118,17 @@ void ExtShowWallData(short wallnum)       //F6
 
 void Show2dText(char *name)
 {
- int i,fp;
+ int fp;
  int t;
  unsigned char x=0,y=4,xmax=0,xx=0,col=0;
  clearmidstatbar16();
  if((fp=kopen4load(name,0)) == -1)
- {begindrawing();
-	 printext16(1*4,ydim16+4*8,11,-1,"ERROR: file not found.",0);
-	 enddrawing();
+ {
+	 printext16(1*4,4*8,11,-1,"ERROR: file not found.",0);
   return;
  }
 
  t=65;
- begindrawing();
  while(t!=EOF && col<5)
  {
   t = 0; if (kread(fp,&t,1)<=0) t = EOF;
@@ -1154,11 +1139,10 @@ void Show2dText(char *name)
      x++; if(x>xmax) xmax=x;
   }
   tempbuf[x]=0;
-  printext16(xx*4,ydim16+(y*6)+2,11,-1,tempbuf,1);
+  printext16(xx*4,(y*6)+2,11,-1,tempbuf,1);
   x=0; y++;
   if(y>18) {col++; y=6; xx+=xmax; xmax=0;}
  }
- enddrawing();
 
  kclose(fp);
 
@@ -1166,18 +1150,15 @@ void Show2dText(char *name)
 
 void Show3dText(char *name)
 {
- int i,fp;
+ int fp;
  unsigned char x=0,y=4,xmax=0,xx=0,col=0;
  int t;
  if((fp=kopen4load(name,0)) == -1)
  {
-	 begindrawing();
     printext256(1*4,4*8,11,-1,"ERROR: file not found.",0);
-    enddrawing();
     return;
  }
  t=65;
- begindrawing();
  while(t!=EOF && col<5)
  {
   t = 0; if (kread(fp,&t,1)<=0) t = EOF;
@@ -1192,7 +1173,6 @@ void Show3dText(char *name)
   x=0; y++;
   if(y>18) {col++; y=6; xx+=xmax; xmax=0;}
  }
- enddrawing();
 
  kclose(fp);
 }// end Show3dText
@@ -1201,13 +1181,13 @@ void Show3dText(char *name)
 void ShowHelpText(char *name)
 {
     BFILE *fp;
-    int i,t;
-    unsigned char x=0,y=4,xmax=0,xx=0,col=0;
+    unsigned char x=0,y=4;
+
+    (void)name;
+
     if((fp=fopenfrompath("helpdoc.txt","rb")) == NULL)
     {
-	    begindrawing();
         printext256(1*4,4*8,11,-1,"ERROR: file not found.",0);
-	enddrawing();
         return;
     }
 /*
@@ -1220,7 +1200,6 @@ void ShowHelpText(char *name)
     y=2;
     Bfgets(tempbuf,80,fp);
     Bstrcat(tempbuf,"\n");
-    begindrawing();
     while(!Bfeof(fp) && !(Bstrcmp(tempbuf,"SectorEffector")==0))
     {
         Bfgets(tempbuf,80,fp);
@@ -1228,7 +1207,6 @@ void ShowHelpText(char *name)
         printext256(x*4,(y*6)+2,11,-1,tempbuf,1);
         y++;
     }
-    enddrawing();
 
     Bfclose(fp);
 }// end ShowHelpText
@@ -1241,12 +1219,14 @@ void ShowHelpText(char *name)
 
 void ExtShowSpriteData(short spritenum)   //F6
 {
+	(void)spritenum;
 	if (qsetmode == 200) Show3dText("sehelp.hlp");
 	else Show2dText("sehelp.hlp");
 }// end ExtShowSpriteData
 
 void ExtEditSectorData(short sectnum)    //F7
 {
+	(void)sectnum;
 	if (qsetmode == 200) Show3dText("sthelp.hlp");
 	else Show2dText("sthelp.hlp");
 }// end ExtEditSectorData
@@ -1287,9 +1267,7 @@ void ExtEditSpriteData(short spritenum)   //F8
 void PrintStatus(char *string,int num,char x,char y,char color)
 {
      Bsprintf(tempbuf,"%s %d",string,num);
-     begindrawing();
-     printext16(x*8,ydim16+y*8,color,-1,tempbuf,0);
-     enddrawing();
+     printext16(x*8,y*8,color,-1,tempbuf,0);
 }
 
 void SpriteName(short spritenum, char *lo2)
@@ -1316,7 +1294,7 @@ void ReadGamePalette()
 
 void ReadPaletteTable()
 {
- int i,j,fp;
+ int j,fp;
  unsigned char num_tables,lookup_num;
  if((fp=kopen4load("lookup.dat",0)) == -1) return;
  kread(fp,&num_tables,1);
@@ -1353,13 +1331,13 @@ void Keys3d(void)
 			if(rate<MinRate)
 			{
 				Bsprintf(tempbuf,"%d WARNING : %s",rate,Slow[rate/MinD]);
-				begindrawing(); printext256(0*8,0*8,255,-1,tempbuf,1); enddrawing();
+				printext256(0*8,0*8,255,-1,tempbuf,1);
 			}
 			else
 #endif
 			{
 				Bsprintf(tempbuf,"%d",rate);
-				begindrawing(); printext256(0*8,0*8,15,-1,tempbuf,1); enddrawing();
+				printext256(0*8,0*8,15,-1,tempbuf,1);
 			}
 		}
 	}
@@ -1368,7 +1346,6 @@ void Keys3d(void)
 
 	if(helpon==1)
 	{
-		begindrawing();
 		for(i=0;i<MAXHELP3D;i++)
 		{
 			printext256(0*8,8+(i*8),15,-1,Help3d[i],1);
@@ -1383,11 +1360,10 @@ void Keys3d(void)
 			}
 			printext256(20*8,8+(i*8),15,-1,tempbuf,1);
 		}
-		enddrawing();
 		Ver();
 	}
 
-	if(purpleon) { begindrawing(); printext256(1*4,1*8,11,-1,"Purple ON",0); enddrawing(); }
+	if(purpleon) { printext256(1*4,1*8,11,-1,"Purple ON",0); }
 
 	if(sector[cursectnum].lotag==2)
 	{
@@ -1411,7 +1387,6 @@ void Keys3d(void)
 		printext256(1*4,1*8,11,-1,tempbuf,0);
 	}
 */
-	begindrawing();
 	if(keystatus[0x28]==1 && keystatus[0x22]==1) // ' g
 	{
 		keystatus[0x22] = 0;
@@ -1443,7 +1418,6 @@ void Keys3d(void)
 		if(purpleon) printext256(1*4,1*8,11,-1,"Purple ON",0);
 		else printext256(1*4,1*8,11,-1,"Purple OFF",0);
 	}
-	enddrawing();
 	if(keystatus[0x28]==1 && keystatus[0x2e]==1) // ' C
 	{
 		keystatus[0x2e] = 0;
@@ -1608,9 +1582,7 @@ void Keys3d(void)
 
 	if(keystatus[0x28]==1 && keystatus[0x1c]==1) // ' ENTER
 	{
-		begindrawing();
 		printext256(0,0,15,0,"Put Graphic ONLY",0);
-		enddrawing();
 		keystatus[0x1c]=0;
 		switch(searchstat)
 		{
@@ -1681,7 +1653,7 @@ void Keys3d(void)
 void Keys2d(void)
 {
     short temp=0;
-    int i=0, j;
+    int i=0;
 /*
    for(i=0;i<0x50;i++)
    {if(keystatus[i]==1) {Bsprintf(tempbuf,"key %ld",i); printmessage16(tempbuf);}}
@@ -1691,9 +1663,7 @@ void Keys2d(void)
     {
         keystatus[0x23]=0;
         clearmidstatbar16();
-	begindrawing();
-        for(i=0;i<MAXHELP2D;i++) {printext16(0*8,ydim16+32+(i*8),15,-1,Help2d[i],0);}
-	enddrawing();
+        for(i=0;i<MAXHELP2D;i++) {printext16(0*8,32+(i*8),15,-1,Help2d[i],0);}
         Ver();
     }
 
@@ -1788,7 +1758,7 @@ void Keys2d(void)
    Bsprintf(tempbuf,"Mode %d %s",onnames,Mode32d[onnames]);
    printmessage16(tempbuf);
 //   clearmidstatbar16();
-//   for(i=0;i<MAXMODE32D;i++) {printext16(0*8,ydim16+32+(i*8),15,-1,Mode32d[i],0);}
+//   for(i=0;i<MAXMODE32D;i++) {printext16(0*8,32+(i*8),15,-1,Mode32d[i],0);}
 //   Ver();
  }
 
@@ -1868,7 +1838,7 @@ void Keys2d(void)
 
 int ExtInit(void)
 {
-    int fil, rv = 0;
+    int rv = 0;
     char *duke3dgrp = "duke3d.grp";
 
     /*
@@ -1941,13 +1911,12 @@ int ExtInit(void)
         int asperr;
 
         if ((supportdir = Bgetsupportdir(FALSE))) {
-            Bsnprintf(dirpath, sizeof(dirpath), "%s/"
 #if defined(_WIN32) || defined(__APPLE__)
-                "JFDuke3D"
+            const char *dirname = "JFDuke3D";
 #else
-                ".jfduke3d"
+            const char *dirname = ".jfduke3d";
 #endif
-            , supportdir);
+            Bsnprintf(dirpath, sizeof(dirpath), "%s/%s", supportdir, dirname);
             asperr = addsearchpath(dirpath);
             if (asperr == -2) {
                 if (Bmkdir(dirpath, S_IRWXU) == 0) {
@@ -1970,38 +1939,26 @@ int ExtInit(void)
     }
     initgroupfile(duke3dgrp);
 
-    /*
-    if ((fil = kopen4load("setup.dat",0)) != -1)
-                {
-          kread(fil,option,NUMOPTIONS);
-          kread(fil,keys,NUMKEYS);
-                  memcpy((void *)buildkeys,(void *)keys,NUMKEYS);   //Trick to make build use setup.dat keys
-          kclose(fil);
-                }
-	*/
     bpp = 8;
 	if (loadsetup("build.cfg") < 0) buildputs("Configuration file not found, using defaults.\n"), rv = 1;
 	memcpy((void *)buildkeys,(void *)keys,sizeof(buildkeys));   //Trick to make build use setup.dat keys
 
-#if USE_POLYMOST && USE_OPENGL
-	polymosttexfullbright = 240;
-#endif
-
-        if (initengine()) {
+	if (initengine()) {
 		wm_msgbox("Build Engine Initialisation Error",
 				"There was a problem initialising the Build engine: %s", engineerrstr);
 		return -1;
 	}
-	if (initinput()) return -1;
-	// if (option[3] != 0) moustat =
-                initmouse();
 
-        kensplayerheight = 40; //32
-         zmode = 1;
-         zlock = kensplayerheight<<8;
-        defaultspritecstat = 0;
+    kensplayerheight = 40; //32
+    zmode = 1;
+    zlock = kensplayerheight<<8;
+    defaultspritecstat = 0;
 
-        ReadPaletteTable();
+#if USE_POLYMOST && USE_OPENGL
+    polymosttexfullbright = 240;
+#endif
+
+    ReadPaletteTable();
 //  InitWater();
 	return rv;
 }
@@ -2033,7 +1990,7 @@ void ExtPreCheckKeys(void) // just before drawrooms
 
 void ExtAnalyzeSprites(void)
 {
-        int i, j, k;
+        int i, k;
         spritetype *tspr;
     char frames=0;
 
@@ -2207,7 +2164,6 @@ void ExtCheckKeys(void)
 				}
 			}
 
-			begindrawing();
 			printext256(70*8+1,0*8+1,0,-1,names[temppicnum],1);
 			printext256(70*8+1,0*8,15,-1,names[temppicnum],1);
 
@@ -2227,7 +2183,6 @@ void ExtCheckKeys(void)
 			Bsprintf(tempbuf,"MEM  = %d",count);
 			printext256(70*8+1,4*8+1,0,-1,tempbuf,1);
 			printext256(70*8,4*8,15,-1,tempbuf,1);
-			enddrawing();
 		}// end if usedcount
 	}
 	else
@@ -2238,7 +2193,7 @@ void ExtCheckKeys(void)
 
 void faketimerhandler(void)
 {
-  int i, j, dax, day, dist;
+  int i, dist;
         int hiz, hihit, loz, lohit, oposx, oposy;
         short hitwall, daang;
 
@@ -2315,12 +2270,12 @@ void Ver()
 	Bsprintf(tempbuf,"DUKE NUKEM BUILD: V032696");
 	if (qsetmode == 200)    //In 3D mode
 	{
-		begindrawing(); printext256(60*8,24*8,11,-1,tempbuf,1); enddrawing();
+		printext256(60*8,24*8,11,-1,tempbuf,1);
 		rotatesprite((320-8)<<16,(200-8)<<16,64<<9,0,SPINNINGNUKEICON+(((4-(totalclock>>3)))&7),0,0,0,0,0,xdim-1,ydim-1);
 	}
 	else
 	{
-		begindrawing(); printext16(0,ydim16+0,15,-1,tempbuf,0); enddrawing();
+		printext16(0,0,15,-1,tempbuf,0);
 	}
 }
 
@@ -2381,7 +2336,7 @@ int ActorMem(int i)
 static int acurpalette=0;
 
 void SetBOSS1Palette()
-{int x;
+{
  if(acurpalette==3) return;
  acurpalette=3;
  kensetpalette(BOSS1palette);
@@ -2389,14 +2344,14 @@ void SetBOSS1Palette()
 
 
 void SetSLIMEPalette()
-{int x;
+{
  if(acurpalette==2) return;
  acurpalette=2;
  kensetpalette(SLIMEpalette);
 }
 
 void SetWATERPalette()
-{int x;
+{
  if(acurpalette==1) return;
  acurpalette=1;
  kensetpalette(WATERpalette);
@@ -2404,7 +2359,7 @@ void SetWATERPalette()
 
 
 void SetGAMEPalette()
-{int x;
+{
  if(acurpalette==0) return;
  acurpalette=0;
  kensetpalette(GAMEpalette);
