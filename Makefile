@@ -10,32 +10,25 @@
 ##
 ##
 
-# Debugging options
-RELEASE ?= 1
-
-# Path where game data is installed
-DATADIR ?= /usr/local/share/games/jfduke3d
-
-# Engine source code path
-ENGINEROOT ?= jfbuild
-
-# JMACT library source path
-MACTROOT ?= jfmact
-
-# JFAudioLib source path
-AUDIOLIBROOT ?= jfaudiolib
-
 # Engine options
 #  USE_POLYMOST   - enables Polymost renderer
 #  USE_OPENGL     - enables OpenGL support in Polymost
 #     Define as 0 to disable OpenGL
 #     Define as USE_GL2 (or 1 or 2) for GL 2.0/2.1 profile
+#     Define as USE_GL3 (or 3) for GL 3.2 Core profile
 #     Define as USE_GLES2 (or 12) for GLES 2.0 profile
-#  USE_ASM        - enables the use of assembly code
+#  USE_ASM        - enables the use of assembly code if supported
+#
 USE_POLYMOST ?= 1
 USE_OPENGL ?= 1
 USE_ASM ?= 1
 
+# Debugging options
+#  RELEASE - 1 = optimised release build, no debugging aids
+RELEASE ?= 1
+
+# Path where game data is installed
+DATADIR ?= /usr/local/share/games/jfduke3d
 
 ##
 ##
@@ -43,46 +36,46 @@ USE_ASM ?= 1
 ##
 ##
 
-# build locations
+ENGINEROOT=jfbuild
+ENGINEINC=$(ENGINEROOT)/include
+MACTROOT=jfmact
+AUDIOLIBROOT=jfaudiolib
 SRC=src
 RSRC=rsrc
-EINC=$(ENGINEROOT)/include
-ELIB=$(ENGINEROOT)
-INC=$(SRC)
-o=o
-res=o
-
-ifneq (0,$(RELEASE))
-  # debugging disabled
-  debug=-fomit-frame-pointer -O1
-else
-  # debugging enabled
-  debug=-ggdb -Og #-Werror
-endif
-
-include $(AUDIOLIBROOT)/Makefile.shared
 
 CC?=gcc
 CXX?=g++
-NASM?=nasm
 RC?=windres
-OURCFLAGS=$(debug) -W -Wall -Wimplicit -Wno-unused \
-	-fno-strict-aliasing -DNO_GCC_BUILTINS \
-	-I$(INC) -I$(EINC) -I$(MACTROOT) -I$(AUDIOLIBROOT)/include
-OURCXXFLAGS=-fno-exceptions -fno-rtti
-LIBS=-lm
-GAMELIBS=
-NASMFLAGS=-s #-g
-EXESUFFIX=
 
-JMACTOBJ=$(MACTROOT)/util_lib.$o \
-	$(MACTROOT)/file_lib.$o \
-	$(MACTROOT)/control.$o \
-	$(MACTROOT)/keyboard.$o \
-	$(MACTROOT)/mouse.$o \
-	$(MACTROOT)/mathutil.$o \
-	$(MACTROOT)/scriplib.$o \
-	$(MACTROOT)/animlib.$o
+OURCFLAGS=-g -W -Wall -fno-strict-aliasing -std=c99
+OURCXXFLAGS=-g -W -Wall -fno-exceptions -fno-rtti -std=c++98
+OURCPPFLAGS=-I$(SRC) -I$(ENGINEINC) -I$(MACTROOT) -I$(AUDIOLIBROOT)/include
+OURLDFLAGS=
+
+ifneq ($(RELEASE),0)
+	# Default optimisation settings
+	CFLAGS?=-fomit-frame-pointer -O1
+	CXXFLAGS?=-fomit-frame-pointer -O1
+else
+	CFLAGS?=-Og
+	CXXFLAGS?=-Og
+endif
+
+# Filename extensions, used in Makefile.deps etc
+o=o
+res=o
+
+include $(ENGINEROOT)/Makefile.shared
+
+# Apply shared flags
+OURCFLAGS+= $(BUILDCFLAGS)
+OURCXXFLAGS+= $(BUILDCXXFLAGS)
+OURCPPFLAGS+= $(BUILDCPPFLAGS)
+OURLDFLAGS+= $(BUILDLDFLAGS)
+
+include $(AUDIOLIBROOT)/Makefile.shared
+
+OURLDFLAGS+= $(JFAUDIOLIB_LDFLAGS)
 
 GAMEOBJS=$(SRC)/game.$o \
 	$(SRC)/actors.$o \
@@ -97,40 +90,55 @@ GAMEOBJS=$(SRC)/game.$o \
 	$(SRC)/osdfuncs.$o \
 	$(SRC)/osdcmds.$o \
 	$(SRC)/grpscan.$o \
-	$(SRC)/sounds.$o \
-	$(JMACTOBJ)
+	$(SRC)/sounds.$o
+
+GAMEOBJS+= \
+	$(MACTROOT)/util_lib.$o \
+	$(MACTROOT)/file_lib.$o \
+	$(MACTROOT)/control.$o \
+	$(MACTROOT)/keyboard.$o \
+	$(MACTROOT)/mouse.$o \
+	$(MACTROOT)/mathutil.$o \
+	$(MACTROOT)/scriplib.$o \
+	$(MACTROOT)/animlib.$o
 
 EDITOROBJS=$(SRC)/astub.$o
 
-include $(ENGINEROOT)/Makefile.shared
-
+# Specialise for the platform
 ifeq ($(PLATFORM),LINUX)
-	NASMFLAGS+= -f elf
-	GAMELIBS+= $(JFAUDIOLIB_LDFLAGS)
+	OURLDFLAGS+= $(JFAUDIOLIB_LDFLAGS)
+	OURCPPFLAGS+= -DDATADIR=\"$(DATADIR)\"
 endif
 ifeq ($(PLATFORM),BSD)
-	NASMFLAGS+= -f elf
-	GAMELIBS+= $(JFAUDIOLIB_LDFLAGS) -pthread
+	OURLDFLAGS+= $(JFAUDIOLIB_LDFLAGS) -pthread
+	OURCPPFLAGS+= -DDATADIR=\"$(DATADIR)\"
 endif
 ifeq ($(PLATFORM),WINDOWS)
-	OURCFLAGS+= -I$(DXROOT)/include
-	NASMFLAGS+= -f win32 --prefix _
-	GAMEOBJS+= $(SRC)/gameres.$(res) $(SRC)/winbits.$o $(SRC)/startwin_game.$o
+	GAMEOBJS+= $(SRC)/gameres.$(res) \
+		$(SRC)/winbits.$o \
+		$(SRC)/startwin_game.$o
 	EDITOROBJS+= $(SRC)/buildres.$(res)
-	GAMELIBS+= -ldsound \
+	OURLDFLAGS+= -lole32 -ldsound \
 	       $(AUDIOLIBROOT)/third-party/mingw32/lib/libvorbisfile.a \
 	       $(AUDIOLIBROOT)/third-party/mingw32/lib/libvorbis.a \
 	       $(AUDIOLIBROOT)/third-party/mingw32/lib/libogg.a
 endif
+ifeq ($(PLATFORM),DARWIN)
+	GAMEOBJS+= $(SRC)/StartupWinController.$o \
+		$(SRC)/GameListSource.$o
+	OURLDFLAGS+= -framework AppKit
+endif
 
 ifeq ($(RENDERTYPE),SDL)
 	OURCFLAGS+= $(SDLCONFIG_CFLAGS)
-	LIBS+= $(SDLCONFIG_LIBS)
+	OURLDFLAGS+= $(SDLCONFIG_LIBS)
 
 	ifeq (1,$(HAVE_GTK))
 		OURCFLAGS+= $(GTKCONFIG_CFLAGS)
-		LIBS+= $(GTKCONFIG_LIBS)
-		GAMEOBJS+= $(SRC)/startgtk_game.$o $(RSRC)/startgtk_game_gresource.$o
+		OURLDFLAGS+= $(GTKCONFIG_LIBS)
+
+		GAMEOBJS+= $(SRC)/startgtk_game.$o \
+			$(RSRC)/startgtk_game_gresource.$o
 		EDITOROBJS+= $(RSRC)/startgtk_build_gresource.$o
 	endif
 
@@ -147,106 +155,64 @@ GAMEOBJS+= $(SRC)/version.$o
 EDITOROBJS+= $(SRC)/version.$o
 endif
 
-OURCFLAGS+= $(BUILDCFLAGS)
-LIBS+= $(BUILDLIBS)
-
-ifneq ($(PLATFORM),WINDOWS)
-	OURCFLAGS+= -DDATADIR=\"$(DATADIR)\"
-endif
-
-.PHONY: clean all engine $(ELIB)/$(ENGINELIB) $(ELIB)/$(EDITORLIB) $(AUDIOLIBROOT)/$(JFAUDIOLIB)
-
 # TARGETS
-
-# Invoking Make from the terminal in OSX just chains the build on to xcode
-ifeq ($(PLATFORM),DARWIN)
-ifeq ($(RELEASE),0)
-style=Debug
-else
-style=Release
-endif
-.PHONY: alldarwin
-alldarwin:
-	cd xcode && xcodebuild -parallelizeTargets -project duke3d.xcodeproj -target all -configuration $(style)
-endif
-
+.PHONY: clean veryclean all
 all: duke3d$(EXESUFFIX) build$(EXESUFFIX)
-
-duke3d$(EXESUFFIX): $(GAMEOBJS) $(ELIB)/$(ENGINELIB) $(AUDIOLIBROOT)/$(JFAUDIOLIB)
-	$(CXX) $(CXXFLAGS) $(OURCXXFLAGS) $(OURCFLAGS) -o $@ $^ $(LIBS) $(GAMELIBS) -Wl,-Map=$@.map
-
-build$(EXESUFFIX): $(EDITOROBJS) $(ELIB)/$(EDITORLIB) $(ELIB)/$(ENGINELIB)
-	$(CXX) $(CXXFLAGS) $(OURCXXFLAGS) $(OURCFLAGS) -o $@ $^ $(LIBS) -Wl,-Map=$@.map
 
 include Makefile.deps
 
-.PHONY: enginelib editorlib
-enginelib editorlib:
-	$(MAKE) -C $(ENGINEROOT) \
+$(ENGINEROOT)/%:
+	$(MAKE) -C $(@D) -f Makefile \
 		USE_POLYMOST=$(USE_POLYMOST) \
 		USE_OPENGL=$(USE_OPENGL) \
 		USE_ASM=$(USE_ASM) \
-		RELEASE=$(RELEASE) $@
-$(ENGINEROOT)/generatesdlappicon$(EXESUFFIX):
-	$(MAKE) -C $(ENGINEROOT) generatesdlappicon$(EXESUFFIX)
+		RELEASE=$(RELEASE) $(@F)
 
-$(ELIB)/$(ENGINELIB): enginelib
-$(ELIB)/$(EDITORLIB): editorlib
-$(AUDIOLIBROOT)/$(JFAUDIOLIB):
-	$(MAKE) -C $(AUDIOLIBROOT) RELEASE=$(RELEASE)
+$(AUDIOLIBROOT)/%:
+	$(MAKE) -C $(@D) \
+		RELEASE=$(RELEASE) $(@F)
+
+duke3d$(EXESUFFIX): $(GAMEOBJS) $(ENGINEROOT)/$(ENGINELIB) $(AUDIOLIBROOT)/$(JFAUDIOLIB)
+	$(CXX) $(CPPFLAGS) $(OURCPPFLAGS) $(CXXFLAGS) $(OURCXXFLAGS) -o $@ $^ $(LDFLAGS) $(OURLDFLAGS)
+
+build$(EXESUFFIX): $(EDITOROBJS) $(ENGINEROOT)/$(EDITORLIB) $(ENGINEROOT)/$(ENGINELIB)
+	$(CXX) $(CPPFLAGS) $(OURCPPFLAGS) $(CXXFLAGS) $(OURCXXFLAGS) -o $@ $^ $(LDFLAGS) $(OURLDFLAGS)
 
 # RULES
-$(SRC)/%.$o: $(SRC)/%.nasm
-	$(NASM) $(NASMFLAGS) $< -o $@
-
 $(SRC)/%.$o: $(SRC)/%.c
-	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
-$(SRC)/%.$o: $(SRC)/%.cpp
-	$(CXX) $(CXXFLAGS) $(OURCXXFLAGS) $(OURCFLAGS) -c $< -o $@
+	$(CC) $(CPPFLAGS) $(OURCPPFLAGS) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
+
+$(SRC)/%.$o: $(SRC)/%.m
+	$(CC) $(CPPFLAGS) $(OURCPPFLAGS) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
+
 $(MACTROOT)/%.$o: $(MACTROOT)/%.c
-	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
-
-$(SRC)/%.$(res): $(SRC)/%.rc
-	$(RC) -i $< -o $@ --include-dir=$(EINC) --include-dir=$(SRC)
-
-$(SRC)/%.$o: $(SRC)/util/%.c
-	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
+	$(CC) $(CPPFLAGS) $(OURCPPFLAGS) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
 
 $(RSRC)/%.$o: $(RSRC)/%.c
-	$(CC) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
+	$(CC) $(CPPFLAGS) $(OURCPPFLAGS) $(CFLAGS) $(OURCFLAGS) -c $< -o $@
 
-$(RSRC)/%_gresource.c: $(RSRC)/%.gresource.xml
+$(SRC)/%.$(res): $(SRC)/%.rc
+	$(RC) -i $< -o $@ --include-dir=$(SRC) --include-dir=$(ENGINEINC)
+
+$(RSRC)/%_gresource.c $(RSRC)/%_gresource.h: $(RSRC)/%.gresource.xml
 	glib-compile-resources --generate --manual-register --c-name=startgtk --target=$@ --sourcedir=$(RSRC) $<
-$(RSRC)/%_gresource.h: $(RSRC)/%.gresource.xml
-	glib-compile-resources --generate --manual-register --c-name=startgtk --target=$@ --sourcedir=$(RSRC) $<
-$(RSRC)/sdlappicon_%.c: $(RSRC)/%.png $(ENGINEROOT)/generatesdlappicon$(EXESUFFIX)
+$(RSRC)/sdlappicon_%.c: $(RSRC)/%.png | $(ENGINEROOT)/generatesdlappicon$(EXESUFFIX)
 	$(ENGINEROOT)/generatesdlappicon$(EXESUFFIX) $< > $@
 
 # PHONIES
-clean:
-ifeq ($(PLATFORM),DARWIN)
-	cd xcode && xcodebuild -target all clean
-else
+clean::
 	-rm -f $(GAMEOBJS) $(EDITOROBJS)
-	$(MAKE) -C $(ENGINEROOT) clean
-	$(MAKE) -C $(AUDIOLIBROOT) clean
-endif
-
-veryclean: clean
-ifeq ($(PLATFORM),DARWIN)
-else
+veryclean:: clean
 	-rm -f duke3d$(EXESUFFIX) build$(EXESUFFIX) core*
-	$(MAKE) -C $(ENGINEROOT) veryclean
-endif
+
+clean::
+	$(MAKE) -C $(ENGINEROOT) $@
+	$(MAKE) -C $(AUDIOLIBROOT) $@
+veryclean::
+	$(MAKE) -C $(ENGINEROOT) $@
 
 .PHONY: $(SRC)/version-auto.c
 $(SRC)/version-auto.c:
 	printf "const char *game_version = \"%s\";\n" "$(shell git describe --always || echo git error)" > $@
 	echo "const char *game_date = __DATE__;" >> $@
 	echo "const char *game_time = __TIME__;" >> $@
-
-ifeq ($(PLATFORM),WINDOWS)
-.PHONY: datainst
-datainst:
-	cd datainst && $(MAKE) GAME=DUKE3D
-endif

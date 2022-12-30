@@ -7662,12 +7662,19 @@ void backtomenu(void)
 int gametype = GAMEGRP_GAME_DUKE;
 const char *gameeditionname = "Unknown edition";
 
+#if defined RENDERTYPEWIN || (defined RENDERTYPESDL && (defined __APPLE__ || defined HAVE_GTK))
+# define HAVE_STARTWIN
+#endif
+
 int app_main(int argc, char const * const argv[])
 {
     int i, j;
     int configloaded;
     struct grpfile const *gamegrp = NULL;
 
+#ifndef HAVE_STARTWIN
+    (void)configloaded;
+#endif
 #ifdef RENDERTYPEWIN
     if (win_checkinstance()) {
         if (!wm_ynbox("JFDuke3D","Another Build game is currently running. "
@@ -7743,11 +7750,12 @@ int app_main(int argc, char const * const argv[])
                 if (Bmkdir(dirpath, S_IRWXU) == 0) {
                     asperr = addsearchpath(dirpath);
                 } else {
+                    buildprintf("warning: could not create directory %s\n", dirpath);
                     asperr = -1;
                 }
             }
-            if (asperr == 0) {
-                chdir(dirpath);
+            if (asperr == 0 && chdir(dirpath) < 0) {
+                buildprintf("warning: could not change directory to %s\n", dirpath);
             }
             free(supportdir);
         }
@@ -7780,7 +7788,7 @@ int app_main(int argc, char const * const argv[])
         netsuccess = initmultiplayersparms(endnetparam - netparam, &argv[netparam]);
     }
 
-#if defined RENDERTYPEWIN || (defined RENDERTYPESDL && (defined __APPLE__ || defined HAVE_GTK))
+#ifdef HAVE_STARTWIN
     {
         struct startwin_settings settings;
 

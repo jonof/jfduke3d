@@ -34,6 +34,10 @@ unsigned char useprecache = 1;
 
 static void tloadtile(short tilenume, char type)
 {
+#if !(USE_POLYMOST && USE_OPENGL)
+    (void)type;
+#endif
+
     if ((picanm[tilenume]&63) > 0) {
         int i,j;
 

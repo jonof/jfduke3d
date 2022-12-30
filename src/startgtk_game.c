@@ -21,16 +21,10 @@
  */
 //-------------------------------------------------------------------------
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "compat.h"
 
 #include <gtk/gtk.h>
 
-#include "compat.h"
 #include "baselayer.h"
 #include "build.h"
 #include "startwin.h"
@@ -215,6 +209,8 @@ static void populate_game_list(gboolean firsttime)
     GtkTreeIter iter;
     GtkTreeSelection *sel;
 
+    (void)firsttime;
+
     gtk_list_store_clear(controls.gamelist);
 
     for (fg = GroupsFound(); fg; fg = fg->next) {
@@ -311,11 +307,13 @@ static void setup_messages_mode(gboolean allowcancel)
 
 static void on_fullscreencheck_toggled(GtkToggleButton *togglebutton, gpointer user_data)
 {
+    (void)togglebutton; (void)user_data;
     populate_video_modes(FALSE);
 }
 
 static void on_multiplayerradio_toggled(GtkRadioButton *radiobutton, gpointer user_data)
 {
+    (void)radiobutton; (void)user_data;
     //gboolean singleactive = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(controls.singleplayerbutton));
     gboolean joinmultiactive = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(controls.joinmultibutton));
     gboolean hostmultiactive = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(controls.hostmultibutton));
@@ -326,6 +324,7 @@ static void on_multiplayerradio_toggled(GtkRadioButton *radiobutton, gpointer us
 
 static void on_cancelbutton_clicked(GtkButton *button, gpointer user_data)
 {
+    (void)button; (void)user_data;
     startwinloop = FALSE;   // Break the loop.
     retval = STARTWIN_CANCEL;
     quitevent = quitevent || quiteventonclose;
@@ -336,6 +335,8 @@ static void on_startbutton_clicked(GtkButton *button, gpointer user_data)
     int mode = -1;
     GtkTreeIter iter;
     GtkTreeSelection *sel;
+
+    (void)button; (void)user_data;
 
     if (gtk_combo_box_get_active_iter(GTK_COMBO_BOX(controls.vmode3dcombo), &iter)) {
         gtk_tree_model_get(GTK_TREE_MODEL(controls.vmode3dlist), &iter, 1 /*index*/, &mode, -1);
@@ -386,6 +387,7 @@ static void on_startbutton_clicked(GtkButton *button, gpointer user_data)
 
 static gboolean on_startgtk_delete_event(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
+    (void)widget; (void)event; (void)user_data;
     startwinloop = FALSE;   // Break the loop.
     retval = STARTWIN_CANCEL;
     quitevent = quitevent || quiteventonclose;
@@ -394,6 +396,7 @@ static gboolean on_startgtk_delete_event(GtkWidget *widget, GdkEvent *event, gpo
 
 static void on_importstatus_cancelbutton_clicked(GtkButton *button, gpointer user_data)
 {
+    (void)button;
     g_cancellable_cancel((GCancellable *)user_data);
 }
 
@@ -425,6 +428,7 @@ static void import_thread_func(GTask *task, gpointer source_object, gpointer tas
         importmeta_progress,
         importmeta_cancelled
     };
+    (void)source_object;
     g_task_return_int(task, ImportGroupsFromPath(filename, &meta));
 }
 
@@ -433,6 +437,8 @@ static void on_chooseimportbutton_clicked(GtkButton *button, gpointer user_data)
     GtkWidget *dialog;
     GtkFileFilter *filter;
     char *filename = NULL;
+
+    (void)button; (void)user_data;
 
     dialog = gtk_file_chooser_dialog_new("Import game data", startwin,
         GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
@@ -497,6 +503,8 @@ static void on_importinfobutton_clicked(GtkButton *button, gpointer user_data)
 {
     GtkWidget *dialog;
     const char *sharewareurl = "https://www.jonof.id.au/files/jfduke3d/dn3dsw13.zip";
+
+    (void)button; (void)user_data;
 
     dialog = gtk_message_dialog_new(startwin, GTK_DIALOG_DESTROY_WITH_PARENT,
         GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE,
@@ -695,13 +703,12 @@ int startwin_settitle(const char *title)
 int startwin_idle(void *s)
 {
     (void)s;
-
     return 0;
 }
 
 int startwin_run(struct startwin_settings *settings)
 {
-    if (!gtkenabled || !startwin) return 0;
+    if (!gtkenabled || !startwin) return STARTWIN_RUN;
 
     set_settings(settings);
     setup_config_mode();

@@ -1,20 +1,17 @@
 # Duke3D Makefile for Microsoft Make
 
-RELEASE=1
-
 # Engine options
 #  USE_POLYMOST   - enables Polymost renderer
 #  USE_OPENGL     - enables OpenGL support in Polymost
 #     Define as 0 to disable OpenGL
 #     Define as 1 (or 2) for GL 2.0/2.1 profile
-#  USE_ASM        - enables the use of assembly code
+#     Define as 3 for GL 3.2 Core profile
+#  USE_ASM        - enables the use of assembly code if supported
 USE_POLYMOST=1
 USE_OPENGL=1
 USE_ASM=1
 
-EROOT=jfbuild
-MACTROOT=jfmact
-AUDIOLIBROOT=jfaudiolib
+RELEASE=1
 
 # Create Makefile.msvcuser yourself to provide your own overrides
 # for configurable values
@@ -22,75 +19,50 @@ AUDIOLIBROOT=jfaudiolib
 !include Makefile.msvcuser
 !endif
 
+ENGINEROOT=jfbuild
+ENGINEINC=$(ENGINEROOT)\include
 SRC=src
 RSRC=rsrc
-EINC=$(EROOT)\include
-ELIB=$(EROOT)\src
-INC=$(SRC)
-
-o=obj
-res=res
-
-ENGINELIB=engine.lib
-EDITORLIB=build.lib
-
-flags_cl=
-flags_rc=
-!if "$(PLATFORM)" == "X64" || "$(PLATFORM)" == "x64"
-flags_rc=/d_M_AMD64
-USE_ASM=0
-!elseif "$(PLATFORM)" == "ARM"
-# Some day, perhaps.
-USE_ASM=0
-!else
-flags_cl=/arch:IA32
-!endif
-!if "$(PLATFORM)" == ""
-PLATFORM=x86
-!endif
-
-!if $(RELEASE)
-# release options
-flags_cl=$(flags_cl) /Ox
-flags_link=/RELEASE
-!else
-# debugging options
-flags_cl=$(flags_cl) /Ot /Z7
-flags_link=/DEBUG
-!endif
-
-ENGINEOPTS=/DRENDERTYPEWIN=1
-!if $(USE_POLYMOST)
-ENGINEOPTS=$(ENGINEOPTS) /DUSE_POLYMOST=$(USE_POLYMOST)
-!endif
-!if $(USE_OPENGL)
-ENGINEOPTS=$(ENGINEOPTS) /DUSE_OPENGL=$(USE_OPENGL)
-!endif
-!if $(USE_ASM)
-ENGINEOPTS=$(ENGINEOPTS) /DUSE_ASM=$(USE_ASM)
-!endif
-
-!include $(AUDIOLIBROOT)/Makefile.msvcshared
+MACTROOT=jfmact
+AUDIOLIBROOT=jfaudiolib
 
 CC=cl
 RC=rc
 LINK=link
-OURCFLAGS=/nologo /MD /J $(flags_cl)  \
-	/I$(INC) /I$(EINC) /I$(MACTROOT) /I$(AUDIOLIBROOT)\include \
-	$(ENGINEOPTS)
-LIBS=user32.lib gdi32.lib shell32.lib ws2_32.lib comctl32.lib comdlg32.lib ole32.lib uxtheme.lib xinput9_1_0.lib
-LINKFLAGS=/opt:ref /nologo $(flags_link) /LIBPATH:$(AUDIOLIBROOT)\third-party\msvc\lib$(PLATFORM)
-RFLAGS=/nologo /i$(EINC) /i$(SRC) $(flags_rc)
-EXESUFFIX=.exe
 
-JMACTOBJ=$(MACTROOT)\util_lib.$o \
-	$(MACTROOT)\file_lib.$o \
-	$(MACTROOT)\control.$o \
-	$(MACTROOT)\keyboard.$o \
-	$(MACTROOT)\mouse.$o \
-	$(MACTROOT)\mathutil.$o \
-	$(MACTROOT)\scriplib.$o \
-	$(MACTROOT)\animlib.$o
+OURCFLAGS=/nologo /MD /Zl
+OURCXXFLAGS=/nologo /MD /Zl /EHsc
+OURCPPFLAGS=/I$(SRC) /I$(ENGINEINC) /I$(MACTROOT) /I$(AUDIOLIBROOT)\include
+OURLINKFLAGS=/opt:ref /nologo
+OURRFLAGS=/nologo /i$(SRC) /i$(ENGINEINC)
+OURLIBS=msvcrt.lib ole32.lib
+
+!if $(RELEASE)
+# release options
+OURCFLAGS=$(OURCFLAGS) /Ox
+OURCXXFLAGS=$(OURCXXFLAGS) /Ox
+OURLINKFLAGS=$(OURLINKFLAGS) /RELEASE
+!else
+# debugging options
+OURCFLAGS=$(OURCFLAGS) /Ot /Z7
+OURCXXFLAGS=$(OURXXCFLAGS) /Ot /Z7
+OURLINKFLAGS=$(OURLINKFLAGS) /DEBUG
+!endif
+
+o=obj
+res=res
+
+!include $(ENGINEROOT)/Makefile.msvcshared
+
+OURCFLAGS=$(OURCFLAGS) $(BUILDCFLAGS)
+OURCXXFLAGS=$(OURCXXFLAGS) $(BUILDCXXFLAGS)
+OURCPPFLAGS=$(OURCPPFLAGS) $(BUILDCPPFLAGS)
+OURLIBS=$(OURLIBS) $(BUILDLIBS)
+OURRFLAGS=$(OURRFLAGS) $(BUILDRFLAGS)
+
+!include $(AUDIOLIBROOT)/Makefile.msvcshared
+
+OURLINKFLAGS=$(OURLINKFLAGS) /LIBPATH:$(AUDIOLIBROOT)\third-party\msvc\lib$(PLATFORM)
 
 GAMEOBJS=$(SRC)\game.$o \
 	$(SRC)\actors.$o \
@@ -108,8 +80,17 @@ GAMEOBJS=$(SRC)\game.$o \
 	$(SRC)\grpscan.$o \
 	$(SRC)\winbits.$o \
 	$(SRC)\gameres.$(res) \
-	$(SRC)\startwin_game.$o \
-	$(JMACTOBJ)
+	$(SRC)\startwin_game.$o
+
+GAMEOBJS=$(GAMEOBJS) \
+	$(MACTROOT)\util_lib.$o \
+	$(MACTROOT)\file_lib.$o \
+	$(MACTROOT)\control.$o \
+	$(MACTROOT)\keyboard.$o \
+	$(MACTROOT)\mouse.$o \
+	$(MACTROOT)\mathutil.$o \
+	$(MACTROOT)\scriplib.$o \
+	$(MACTROOT)\animlib.$o
 
 EDITOROBJS=$(SRC)\astub.$o \
 	$(SRC)\buildres.$(res)
@@ -124,60 +105,54 @@ EDITOROBJS=$(EDITOROBJS) $(SRC)\version.$o
 !endif
 
 # RULES
-{$(MACTROOT)}.c{$(MACTROOT)}.$o:
-	$(CC) /c $(CFLAGS) $(OURCFLAGS) /Fo$@ $<
-
 {$(SRC)}.c{$(SRC)}.$o:
-	$(CC) /c $(CFLAGS) $(OURCFLAGS) /Fo$@ $<
-
-{$(SRC)}.cpp{$(SRC)}.$o:
-	$(CC) /c $(CFLAGS) $(OURCFLAGS) /Fo$@ $<
+	$(CC) /TC /c $(CPPFLAGS) $(OURCPPFLAGS) $(CFLAGS) $(OURCFLAGS) /Fo$@ $<
 
 {$(SRC)}.rc{$(SRC)}.$(res):
-	$(RC) $(RFLAGS) /fo$@ /r $<
+	$(RC) $(OURRFLAGS) /fo$@ /r $<
 
+{$(MACTROOT)}.c{$(MACTROOT)}.$o:
+	$(CC) /TC /c $(CPPFLAGS) $(OURCPPFLAGS) $(CFLAGS) $(OURCFLAGS) /Fo$@ $<
 
 # TARGETS
 all: duke3d$(EXESUFFIX) build$(EXESUFFIX) ;
 
-duke3d$(EXESUFFIX): $(GAMEOBJS) $(ELIB)\$(ENGINELIB) $(AUDIOLIBROOT)\$(JFAUDIOLIB)
-	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS $(LINKFLAGS) /MAP $** $(LIBS) $(JFAUDIOLIB_LINKFLAGS) msvcrt.lib
+duke3d$(EXESUFFIX): $(GAMEOBJS) $(ENGINEROOT)\$(ENGINELIB) $(AUDIOLIBROOT)\$(JFAUDIOLIB)
+	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS $(LINKFLAGS) $(OURLINKFLAGS) $** $(JFAUDIOLIB_LINKFLAGS) $(OURLIBS)
 
-build$(EXESUFFIX): $(EDITOROBJS) $(ELIB)\$(ENGINELIB) $(ELIB)\$(EDITORLIB)
-	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS $(LINKFLAGS) /MAP $** $(LIBS) msvcrt.lib
+build$(EXESUFFIX): $(EDITOROBJS) $(ENGINEROOT)\$(ENGINELIB) $(ENGINEROOT)\$(EDITORLIB)
+	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS $(LINKFLAGS) $(OURLINKFLAGS) $** $(OURLIBS)
 
-!include Makefile.deps
-
-enginelib editorlib: AlwaysBuild
-	cd "$(EROOT)"
-	$(MAKE) /f Makefile.msvc /$(MAKEFLAGS) USE_POLYMOST=$(USE_POLYMOST) USE_OPENGL=$(USE_OPENGL) USE_ASM=$(USE_ASM) RELEASE=$(RELEASE) $@
+$(ENGINEROOT)\$(ENGINELIB) $(ENGINEROOT)\$(EDITORLIB): ALWAYSBUILD
+	cd "$(@D)"
+	$(MAKE) /nologo /f Makefile.msvc /$(MAKEFLAGS) USE_POLYMOST=$(USE_POLYMOST) USE_OPENGL=$(USE_OPENGL) USE_ASM=$(USE_ASM) RELEASE=$(RELEASE) $(@F)
 	cd "$(MAKEDIR)"
 
-jfaudiolib: AlwaysBuild
-	cd "$(AUDIOLIBROOT)"
-	$(MAKE) /f Makefile.msvc /$(MAKEFLAGS) RELEASE=$(RELEASE)
+$(AUDIOLIBROOT)\$(JFAUDIOLIB): ALWAYSBUILD
+	cd "$(@D)"
+	$(MAKE) /nologo /f Makefile.msvc /$(MAKEFLAGS) RELEASE=$(RELEASE) $(@F)
 	cd "$(MAKEDIR)"
 
-$(SRC)\version-auto.c: AlwaysBuild
+$(SRC)\version-auto.c: ALWAYSBUILD
 	cmd /c tools\generateversion.cmd > $@
 
-AlwaysBuild: ;
-$(ELIB)\$(EDITORLIB): editorlib ;
-$(ELIB)\$(ENGINELIB): enginelib ;
-$(AUDIOLIBROOT)\$(JFAUDIOLIB): jfaudiolib ;
+ALWAYSBUILD: ;
+
+# DEPENDENCIES
+!include Makefile.deps
 
 # PHONIES
-clean:
+clean::
 	-del /q $(GAMEOBJS) $(EDITOROBJS)
-	cd "$(EROOT)"
-	$(MAKE) /f Makefile.msvc $@
-	cd "$(MAKEDIR)"
-	cd "$(AUDIOLIBROOT)"
-	$(MAKE) /f Makefile.msvc $@
+veryclean:: clean
+	-del /q duke3d$(EXESUFFIX) build$(EXESUFFIX)
+
+clean veryclean::
+	cd "$(ENGINEROOT)"
+	-$(MAKE) /nologo /f Makefile.msvc $@
 	cd "$(MAKEDIR)"
 
-veryclean: clean
-	-del /q duke3d$(EXESUFFIX) build$(EXESUFFIX)
-	cd "$(EROOT)"
-	$(MAKE) /f Makefile.msvc $@
+clean::
+	cd "$(AUDIOLIBROOT)"
+	-$(MAKE) /nologo /f Makefile.msvc $@
 	cd "$(MAKEDIR)"

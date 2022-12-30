@@ -202,7 +202,6 @@ int osdcmd_fileinfo(const osdfuncparm_t *parm)
 
 static int osdcmd_restartvid(const osdfuncparm_t *parm)
 {
-    extern int qsetmode;
     (void)parm;
     
     resetvideomode();

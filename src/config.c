@@ -609,7 +609,9 @@ int32 CONFIG_ReadSetup( void )
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenBPP", &ScreenBPP);
     if (ScreenBPP < 8) ScreenBPP = 8;
 #ifdef RENDERTYPEWIN
-    SCRIPT_GetNumber( scripthandle, "Screen Setup", "MaxRefreshFreq", (int32*)&maxrefreshfreq);
+    int32 tmpmaxrefreshfreq;
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "MaxRefreshFreq", &tmpmaxrefreshfreq);
+    win_setmaxrefreshfreq(tmpmaxrefreshfreq);
 #endif
 #if USE_POLYMOST && USE_OPENGL
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLTextureMode", &gltexfiltermode);
@@ -705,7 +707,7 @@ void CONFIG_WriteSetup( void )
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenMode",ScreenMode,false,false);
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenBPP",ScreenBPP,false,false);
 #ifdef RENDERTYPEWIN
-    SCRIPT_PutNumber( scripthandle, "Screen Setup", "MaxRefreshFreq",maxrefreshfreq,false,false);
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "MaxRefreshFreq",win_getmaxrefreshfreq(),false,false);
 #endif
 #if USE_POLYMOST && USE_OPENGL
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLTextureMode",gltexfiltermode,false,false);
