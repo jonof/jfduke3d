@@ -670,7 +670,7 @@ void onvideomodechange(void)
     vscrn();
 }
 
-static int probe_(int type,int x,int y,int i,int n)
+static int probe_(int type,int x,int y,int i,int n,const int *keys)
 {
     short centre;
 
@@ -721,16 +721,33 @@ static int probe_(int type,int x,int y,int i,int n)
     }
     else
     {
-        if(onbar == 0) return(-probey-2);
-        if (uinfo.dir == dir_West)
+        if (onbar && uinfo.dir == dir_West)
             return(probey);
-        else if (uinfo.dir == dir_East)
+        else if (onbar && uinfo.dir == dir_East)
             return(probey);
-        else return(-probey-2);
+        else
+        {
+            if (keys)
+            {
+                // 'keys' points to a 0-terminated list of scan codes in sequence
+                // to be mapped to probey values.
+                for (int k = 0; keys[k]; k++)
+                {
+                    if (KB_KeyPressed(keys[k])) {
+                        KB_ClearKeyDown(keys[k]);
+                        probey = k;
+                        sound(PISTOL_BODYHIT);
+                        break;
+                    }
+                }
+            }
+            return(-probey-2);
+        }
     }
 }
-int probe(int x,int y,int i,int n) { return probe_(0,x,y,i,n); }
-int probesm(int x,int y,int i,int n) { return probe_(1,x,y,i,n); }
+int probe(int x,int y,int i,int n) { return probe_(0,x,y,i,n,NULL); }
+int probekeys(int x,int y,int i,int n,const int *keys) { return probe_(0,x,y,i,n,keys); }
+int probesm(int x,int y,int i,int n) { return probe_(1,x,y,i,n,NULL); }
 
 int menutext(int x,int y,short s,short p,const char *t)
 {
@@ -1692,7 +1709,7 @@ cheat_for_port_credits:
             rotatesprite(c<<16,28<<16,65536L,0,INGAMEDUKETHREEDEE,0,0,10,0,0,xdim-1,ydim-1);
             if (PLUTOPAK)   // JBF 20030804
                 rotatesprite((c+100)<<16,36<<16,65536L,0,PLUTOPAKSPRITE+2,(sintable[(totalclock<<4)&2047]>>11),0,2+8,0,0,xdim-1,ydim-1);
-            x = probe(c,67,16,6);
+            x = probekeys(c,67,16,6, (int[]){ sc_N, sc_O, sc_L, sc_H, sc_C, sc_Q, 0 });
             if(x >= 0)
             {
                 if( ud.multimode > 1 && x == 0 && ud.recstat != 2)
@@ -1724,8 +1741,6 @@ cheat_for_port_credits:
                     }
                 }
             }
-
-            if(KB_KeyPressed(sc_Q)) cmenu(500);
 
             if(x == -1)
             {
@@ -1765,7 +1780,7 @@ cheat_for_port_credits:
             rotatesprite(c<<16,32<<16,65536L,0,INGAMEDUKETHREEDEE,0,0,10,0,0,xdim-1,ydim-1);
             if (PLUTOPAK)
                 rotatesprite((c+100)<<16,36<<16,65536L,0,PLUTOPAKSPRITE+2,(sintable[(totalclock<<4)&2047]>>11),0,2+8,0,0,xdim-1,ydim-1);
-            x = probe(c,67,16,7);
+            x = probekeys(c,67,16,7, (int[]){sc_N, sc_S, sc_L, sc_O, sc_H, sc_U, sc_Q, 0});
             switch(x)
             {
                 case 0:
@@ -1825,9 +1840,6 @@ cheat_for_port_credits:
                     break;
             }
 
-            if( KB_KeyPressed(sc_Q) )
-                cmenu(500);
-
             if(movesperpacket == 4 && connecthead != myconnectindex)
             {
                 menutext(c,67                  ,SHX(-2),1,"NEW GAME");
@@ -1856,12 +1868,14 @@ if (!VOLUMEALL) {
         case 100:
             rotatesprite(160<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(160,24,0,0,"SELECT AN EPISODE");
-            if (VOLUMEONE)
-                x = probe(160,60,20,3 + PLUTOPAK);
+            if (VOLUMEONE && PLUTOPAK)
+                x = probekeys(160,60,20,4,(int[]){sc_1, sc_2, sc_3, sc_4, 0});
+            else if (VOLUMEONE)
+                x = probekeys(160,60,20,3,(int[]){sc_1, sc_2, sc_3, 0});
             else if (PLUTOPAK)
-                x = probe(160,60,20,5);
+                x = probekeys(160,60,20,5,(int[]){sc_1, sc_2, sc_3, sc_4, sc_U, 0});
             else
-                x = probe(160,60,20,4);
+                x = probekeys(160,60,20,4,(int[]){sc_1, sc_2, sc_3, sc_U, 0});
             if(x >= 0)
             {
                 if (VOLUMEONE)
@@ -2058,7 +2072,7 @@ if (!VOLUMEALL) {
             c = (320>>1);
             rotatesprite(c<<16,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(c,24,0,0,"SELECT SKILL");
-            x = probe(c,70,19,4);
+            x = probekeys(c,70,19,4,(int[]){sc_1, sc_2, sc_3, sc_4, 0});
             if(x >= 0)
             {
                 switch(x)
@@ -2242,7 +2256,8 @@ if (!VOLUMEALL) {
         c = (200 - 18*5)>>1;
 
         onbar = 0;
-        x = probe(160,c,18,5-NAM);
+        if (NAM) x = probekeys(160,c,18,4,(int[]){sc_G, sc_S, sc_V, sc_I, 0});
+        else x = probekeys(160,c,18,5,(int[]){sc_G, sc_S, sc_V, sc_I, sc_P, 0});
 
         switch (x) {
         case -1:
@@ -2320,10 +2335,11 @@ if (!VOLUMEALL) {
         c = (200 - 18*5)>>1;
 
         onbar = 0;
+        const int keys[] = {sc_K, sc_M, sc_C, sc_U, sc_S, 0};
         if (probey >= 3)
-            x = probe(160,c+9,18,5);
+            x = probekeys(160,c+9,18,5,keys);
         else
-            x = probe(160,c,18,5);
+            x = probekeys(160,c,18,5,keys);
 
         switch (x) {
         case -1:
@@ -2377,16 +2393,18 @@ if (!VOLUMEALL) {
             c = (320>>1)-120;
 #if USE_POLYMOST && USE_OPENGL
             i = 6;
+            const int keys[] = {sc_R, sc_V, sc_F, sc_A, sc_B, sc_I, 0};
 #else
             i = 5;
+            const int keys[] = {sc_R, sc_V, sc_F, sc_A, sc_B, 0};
 #endif
             onbar = (probey == 4);
             if (probey <= 2)
-                x = probe(c+6,50,16,i);
+                x = probekeys(c+6,50,16,i,keys);
             else if (probey == 3)
-                x = probe(c+6,50+16+16+22,0,i);
+                x = probekeys(c+6,50+16+16+22,0,i,keys);
             else
-                x = probe(c+6,50+62-16-16-16,16,i);
+                x = probekeys(c+6,50+62-16-16-16,16,i,keys);
 
             if ((probey >= 0 && probey <= 2) && (uinfo.dir == dir_West || uinfo.dir == dir_East)) {
                 sound(PISTOL_BODYHIT);
@@ -3242,7 +3260,7 @@ if (!VOLUMEALL) {
             menutext(320>>1,24,0,0,"SOUNDS");
             onbar = ( probey == 2 || probey == 3 );
 
-            x = probe(c,50,16,7);
+            x = probekeys(c,50,16,7,(int[]){sc_S, sc_M, sc_O, sc_U, sc_D, sc_A, sc_F, 0});
             switch(x)
             {
                 case -1:
@@ -3433,7 +3451,7 @@ if (!VOLUMEALL) {
 
            last_threehundred = probey;
 
-            x = probe(c+68,54,12,10);
+          x = probekeys(c+68,54,12,10,(int[]){sc_1, sc_2, sc_3, sc_4, sc_5, sc_6, sc_7, sc_8, sc_9, sc_0, 0});
 
           if(current_menu == 300)
           {
