@@ -2,8 +2,8 @@ name: CI
 on: [ push, pull_request, workflow_dispatch ]
 
 jobs:
-  build:
-    name: polymost=${{ matrix.use_polymost }} gl=${{ matrix.use_opengl }} nogtk=${{ matrix.without_gtk || 0 }}
+  build-linux:
+    name: Linux polymost=${{ matrix.use_polymost }} gl=${{ matrix.use_opengl }} nogtk=${{ matrix.without_gtk || 1 }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -15,12 +15,14 @@ jobs:
             use_opengl: 0
         include:
           - use_polymost: 1
+            use_opengl: 3
+          - use_polymost: 1
             use_opengl: 'USE_GLES2'
-            without_gtk: 1
+            without_gtk: '0'
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Install dependencies
@@ -32,6 +34,37 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           make USE_POLYMOST=${{ matrix.use_polymost }} \
                USE_OPENGL=${{ matrix.use_opengl }} \
-               WITHOUT_GTK=${{ matrix.without_gtk || 0 }} \
+               WITHOUT_GTK=${{ matrix.without_gtk || 1 }} \
                USE_ASM=0 \
                all
+
+  build-windows:
+    name: Windows polymost=${{ matrix.use_polymost }} gl=${{ matrix.use_opengl }}
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        use_polymost: [ 0, 1 ]
+        use_opengl: [ 0, 1 ]
+        exclude:
+          - use_polymost: 1
+            use_opengl: 0
+        include:
+          - use_polymost: 1
+            use_opengl: 3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          sdk: 10.0.19041.0
+      - name: Make
+        shell: cmd
+        run: |
+          echo USE_POLYMOST=${{ matrix.use_polymost }} > Makefile.msvcuser
+          echo USE_OPENGL=${{ matrix.use_opengl }} >> Makefile.msvcuser
+          nmake /f Makefile.msvc all
