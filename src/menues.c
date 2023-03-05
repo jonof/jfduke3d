@@ -2481,7 +2481,7 @@ if (!VOLUMEALL) {
                 // Find the next/prev video mode matching the new vidset.
                 int bestvm = newvidmode, besterr = INT_MAX, vmerr;
                 for (vm = (newvidmode + changesmade) % validmodecnt; vm != newvidmode;
-                        vm = (vm + changesmade) % validmodecnt) {
+                        vm = (vm + changesmade + validmodecnt) % validmodecnt) {
                     if ((validmode[vm].fs&1) != vidsets[newvidset].fs) continue;
                     if (validmode[vm].bpp != vidsets[newvidset].bpp) continue;
                     if (x == 0) {   // Resolution change.
