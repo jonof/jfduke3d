@@ -172,7 +172,7 @@ static int importmeta_cancelled(void *data);
         bpp  = settings->bpp3d;
         fullscreen = settings->fullscreen;
     } else {
-        fullscreen = ([fullscreenButton state] == NSOnState);
+        fullscreen = ([fullscreenButton state] == NSControlStateValueOn);
         mode3d = (int)[[videoMode3DPUButton selectedItem] tag];
         if (mode3d >= 0) {
             xdim = validmode[mode3d].xdim;
@@ -277,12 +277,12 @@ static int importmeta_cancelled(void *data);
 
 - (IBAction)multiPlayerModeClicked:(id)sender
 {
-    [singlePlayerButton setState:(sender == singlePlayerButton ? NSOnState : NSOffState)];
+    [singlePlayerButton setState:(sender == singlePlayerButton ? NSControlStateValueOn : NSControlStateValueOff)];
 
-    [joinMultiButton setState:(sender == joinMultiButton ? NSOnState : NSOffState)];
+    [joinMultiButton setState:(sender == joinMultiButton ? NSControlStateValueOn : NSControlStateValueOff)];
     [hostField setEnabled:(sender == joinMultiButton)];
 
-    [hostMultiButton setState:(sender == hostMultiButton ? NSOnState : NSOffState)];
+    [hostMultiButton setState:(sender == hostMultiButton ? NSControlStateValueOn : NSControlStateValueOff)];
     [numPlayersField setEnabled:(sender == hostMultiButton)];
     [numPlayersStepper setEnabled:(sender == hostMultiButton)];
 }
@@ -302,7 +302,7 @@ static int importmeta_cancelled(void *data);
         [panel setShowsHiddenFiles:TRUE];
         [panel beginSheetModalForWindow:[self window]
                       completionHandler:^void (NSModalResponse resp) {
-            if (resp == NSFileHandlingPanelOKButton) {
+            if (resp == NSModalResponseOK) {
                 NSURL *file = [panel URL];
                 if ([file isFileURL]) {
                     [self doImport:[file path]];
@@ -330,11 +330,8 @@ static int importmeta_cancelled(void *data);
     }
 
     // Put up the status sheet which becomes modal.
-    [NSApp beginSheet:importStatusWindow
-       modalForWindow:[self window]
-        modalDelegate:self
-       didEndSelector:nil
-          contextInfo:NULL];
+    [[self window] beginSheet:importStatusWindow
+            completionHandler:nil];
 
     // Spawn a thread to do the scan.
     importthread = [[NSThread alloc] initWithBlock:^void(void) {
@@ -358,7 +355,8 @@ static int importmeta_cancelled(void *data);
         [self populateGameList:NO];
     }
     [importStatusWindow orderOut:nil];
-    [NSApp endSheet:importStatusWindow returnCode:1];
+    [[self window] endSheet:importStatusWindow
+                 returnCode:1];
 }
 
 // Report on whether the import thread has been been cancelled early.
@@ -417,8 +415,8 @@ static int importmeta_cancelled(void *data);
         settings->fullscreen = validmode[mode].fs;
     }
 
-    settings->usemouse = [useMouseButton state] == NSOnState;
-    settings->usejoy = [useJoystickButton state] == NSOnState;
+    settings->usemouse = [useMouseButton state] == NSControlStateValueOn;
+    settings->usejoy = [useJoystickButton state] == NSControlStateValueOn;
 
     mode = (int)[[soundQualityPUButton selectedItem] tag];
     if (mode >= 0) {
@@ -429,13 +427,13 @@ static int importmeta_cancelled(void *data);
 
     settings->numplayers = 0;
     settings->joinhost = NULL;
-    if ([singlePlayerButton state] == NSOnState) {
+    if ([singlePlayerButton state] == NSControlStateValueOn) {
         settings->numplayers = 1;
-    } else if ([joinMultiButton state] == NSOnState) {
+    } else if ([joinMultiButton state] == NSControlStateValueOn) {
         NSString *host = [hostField stringValue];
         settings->numplayers = 2;
         settings->joinhost = strdup([host cStringUsingEncoding:NSUTF8StringEncoding]);
-    } else if ([hostMultiButton state] == NSOnState) {
+    } else if ([hostMultiButton state] == NSControlStateValueOn) {
         settings->numplayers = [numPlayersField intValue];
     }
 
@@ -448,7 +446,7 @@ static int importmeta_cancelled(void *data);
         settings->selectedgrp = (struct grpfile *)[grpvalue pointerValue];
     }
 
-    settings->forcesetup = [alwaysShowButton state] == NSOnState;
+    settings->forcesetup = [alwaysShowButton state] == NSControlStateValueOn;
 
     if (inmodal) {
         [NSApp stopModalWithCode:STARTWIN_RUN];
@@ -457,34 +455,34 @@ static int importmeta_cancelled(void *data);
 
 - (void)setupConfigMode
 {
-    [alwaysShowButton setState: (settings->forcesetup ? NSOnState : NSOffState)];
+    [alwaysShowButton setState: (settings->forcesetup ? NSControlStateValueOn : NSControlStateValueOff)];
     [alwaysShowButton setEnabled:YES];
 
     [videoMode3DPUButton setEnabled:YES];
     [self populateVideoModes:YES];
     [fullscreenButton setEnabled:YES];
-    [fullscreenButton setState: (settings->fullscreen ? NSOnState : NSOffState)];
+    [fullscreenButton setState: (settings->fullscreen ? NSControlStateValueOn : NSControlStateValueOff)];
 
     [soundQualityPUButton setEnabled:YES];
     [self populateSoundQuality:YES];
     [useMouseButton setEnabled:YES];
-    [useMouseButton setState: (settings->usemouse ? NSOnState : NSOffState)];
+    [useMouseButton setState: (settings->usemouse ? NSControlStateValueOn : NSControlStateValueOff)];
     [useJoystickButton setEnabled:YES];
-    [useJoystickButton setState: (settings->usejoy ? NSOnState : NSOffState)];
+    [useJoystickButton setState: (settings->usejoy ? NSControlStateValueOn : NSControlStateValueOff)];
 
     if (!settings->netoverride) {
         [singlePlayerButton setEnabled:YES];
-        [singlePlayerButton setState:NSOnState];
+        [singlePlayerButton setState:NSControlStateValueOn];
 
         [hostMultiButton setEnabled:YES];
-        [hostMultiButton setState:NSOffState];
+        [hostMultiButton setState:NSControlStateValueOff];
         [numPlayersField setEnabled:NO];
         [numPlayersField setIntValue:2];
         [numPlayersStepper setEnabled:NO];
         [numPlayersStepper setMaxValue:MAXPLAYERS];
 
         [joinMultiButton setEnabled:YES];
-        [joinMultiButton setState:NSOffState];
+        [joinMultiButton setState:NSControlStateValueOff];
         [hostField setEnabled:NO];
     } else {
         [singlePlayerButton setEnabled:NO];
