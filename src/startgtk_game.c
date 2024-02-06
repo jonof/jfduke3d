@@ -404,6 +404,7 @@ static int set_importstatus_text(void *text)
 {
     // Called in the main thread via g_main_context_invoke in the import thread.
     gtk_label_set_text(GTK_LABEL(controls.importstatustext), text);
+    free(text);
     return 0;
 }
 
@@ -411,7 +412,7 @@ static void importmeta_progress(void *data, const char *path)
 {
     // Called in the import thread.
     (void)data;
-    g_main_context_invoke(NULL, set_importstatus_text, (void*)path);
+    g_main_context_invoke(NULL, set_importstatus_text, (gpointer)strdup(path));
 }
 
 static int importmeta_cancelled(void *data)
@@ -435,7 +436,6 @@ static void import_thread_func(GTask *task, gpointer source_object, gpointer tas
 static void on_chooseimportbutton_clicked(GtkButton *button, gpointer user_data)
 {
     GtkWidget *dialog;
-    GtkFileFilter *filter;
     char *filename = NULL;
 
     (void)button; (void)user_data;
@@ -647,20 +647,17 @@ int startwin_close(void)
     return 0;
 }
 
-int startwin_puts(const char *str)
+static gboolean startwin_puts_inner(gpointer str)
 {
     GtkTextBuffer *textbuffer;
     GtkTextIter enditer;
     GtkTextMark *mark;
     const char *aptr, *bptr;
 
-    if (!gtkenabled || !str) return 0;
-    if (!startwin) return 1;
-
     textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(controls.messagestext));
 
     gtk_text_buffer_get_end_iter(textbuffer, &enditer);
-    for (aptr = bptr = str; *aptr != 0; ) {
+    for (aptr = bptr = (const char *)str; *aptr != 0; ) {
         switch (*bptr) {
             case '\b':
                 if (bptr > aptr) {
@@ -685,6 +682,18 @@ int startwin_puts(const char *str)
     mark = gtk_text_buffer_create_mark(textbuffer, NULL, &enditer, 1);
     gtk_text_view_scroll_to_mark(GTK_TEXT_VIEW(controls.messagestext), mark, 0.0, FALSE, 0.0, 1.0);
     gtk_text_buffer_delete_mark(textbuffer, mark);
+
+    free(str);
+    return FALSE;
+}
+
+int startwin_puts(const char *str)
+{
+    // Called in either the main thread or the import thread via buildprintf.
+    if (!gtkenabled || !str) return 0;
+    if (!startwin) return 1;
+
+    g_main_context_invoke(NULL, startwin_puts_inner, (gpointer)strdup(str));
 
     return 0;
 }
