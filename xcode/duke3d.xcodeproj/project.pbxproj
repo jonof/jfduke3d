@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 48;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -23,7 +23,7 @@
 			isa = PBXAggregateTarget;
 			buildConfigurationList = ABD2DF5A21AA3E1600BDB555 /* Build configuration list for PBXAggregateTarget "Version stamp" */;
 			buildPhases = (
-				ABD2DF5B21AA3E1A00BDB555 /* Generate version-auto.c */,
+				ABD2DF5B21AA3E1A00BDB555 /* Generate version.c */,
 			);
 			dependencies = (
 			);
@@ -58,12 +58,12 @@
 		AB69BD2F0A73C36100F3DCB8 /* sector.c in Sources */ = {isa = PBXBuildFile; fileRef = AB69BD1F0A73C36100F3DCB8 /* sector.c */; };
 		AB69BD370A73C3EC00F3DCB8 /* startwin.game.nib in Resources */ = {isa = PBXBuildFile; fileRef = AB69BD340A73C3EC00F3DCB8 /* startwin.game.nib */; };
 		AB7AF6151BE46EDC00935B15 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB7AF6141BE46EDC00935B15 /* Images.xcassets */; };
+		AB7EA5DB2B76550500F0EEA3 /* version.c in Sources */ = {isa = PBXBuildFile; fileRef = AB7EA5DA2B76550500F0EEA3 /* version.c */; };
+		AB7EA5DC2B76550500F0EEA3 /* version.c in Sources */ = {isa = PBXBuildFile; fileRef = AB7EA5DA2B76550500F0EEA3 /* version.c */; };
 		ABB4AAD20C64BD9E00F28920 /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL2.framework */; };
 		ABB4AAD70C64BDC400F28920 /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ABD769030A73CBDE006C27C1 /* SDL2.framework */; };
 		ABD2DF2621A582F500BDB555 /* gamecontrollerdb.txt in Resources */ = {isa = PBXBuildFile; fileRef = ABD2DF2521A582DD00BDB555 /* gamecontrollerdb.txt */; };
 		ABD2DF2721A582FD00BDB555 /* gamecontrollerdb.txt in Resources */ = {isa = PBXBuildFile; fileRef = ABD2DF2521A582DD00BDB555 /* gamecontrollerdb.txt */; };
-		ABD2DF6121AA3F0E00BDB555 /* version-auto.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD2DF6021AA3ED200BDB555 /* version-auto.c */; };
-		ABD2DF6221AA3F0E00BDB555 /* version-auto.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD2DF6021AA3ED200BDB555 /* version-auto.c */; };
 		ABD768EC0A73CB63006C27C1 /* animlib.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD768DA0A73CB63006C27C1 /* animlib.c */; };
 		ABD768ED0A73CB63006C27C1 /* control.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD768DC0A73CB63006C27C1 /* control.c */; };
 		ABD768EE0A73CB63006C27C1 /* file_lib.c in Sources */ = {isa = PBXBuildFile; fileRef = ABD768DF0A73CB63006C27C1 /* file_lib.c */; };
@@ -267,11 +267,11 @@
 		AB69BD340A73C3EC00F3DCB8 /* startwin.game.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = startwin.game.nib; sourceTree = "<group>"; };
 		AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = engine.xcodeproj; path = ../jfbuild/xcode/engine.xcodeproj; sourceTree = SOURCE_ROOT; };
 		AB7AF6141BE46EDC00935B15 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		AB7EA5DA2B76550500F0EEA3 /* version.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = version.c; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB81F9452590B9DE00306B8E /* Common.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Common.xcconfig; sourceTree = "<group>"; };
 		ABCA1DC2259084770093F3F5 /* Build Editor for JFDuke3D.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Build Editor for JFDuke3D.entitlements"; sourceTree = "<group>"; };
 		ABCA1DC3259084820093F3F5 /* JFDuke3D.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JFDuke3D.entitlements; sourceTree = "<group>"; };
 		ABD2DF2521A582DD00BDB555 /* gamecontrollerdb.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = gamecontrollerdb.txt; path = ../rsrc/gamecontrollerdb.txt; sourceTree = "<group>"; };
-		ABD2DF6021AA3ED200BDB555 /* version-auto.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "version-auto.c"; sourceTree = "<group>"; };
 		ABD768D80A73CB63006C27C1 /* _control.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _control.h; sourceTree = "<group>"; };
 		ABD768D90A73CB63006C27C1 /* _scrplib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _scrplib.h; sourceTree = "<group>"; };
 		ABD768DA0A73CB63006C27C1 /* animlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = animlib.c; sourceTree = "<group>"; };
@@ -292,7 +292,7 @@
 		ABD768E90A73CB63006C27C1 /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
 		ABD768EA0A73CB63006C27C1 /* util_lib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = util_lib.c; sourceTree = "<group>"; };
 		ABD768EB0A73CB63006C27C1 /* util_lib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util_lib.h; sourceTree = "<group>"; };
-		ABD769030A73CBDE006C27C1 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = /Users/jonof/Library/Frameworks/SDL2.framework; sourceTree = "<absolute>"; };
+		ABD769030A73CBDE006C27C1 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../jfbuild/xcode/frameworks/SDL2.framework; sourceTree = SOURCE_ROOT; };
 		ABD769170A73CDF6006C27C1 /* StartupWinController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StartupWinController.m; sourceTree = "<group>"; };
 		ABD769300A73CE6D006C27C1 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		ABD7695E0A73D116006C27C1 /* Build Editor for JFDuke3D.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Build Editor for JFDuke3D.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -376,6 +376,7 @@
 				AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */,
 				AB69BD000A73C1F700F3DCB8 /* Editor */,
 				AB69BCFF0A73C1F100F3DCB8 /* Game */,
+				AB7EA5DA2B76550500F0EEA3 /* version.c */,
 				AB81F9452590B9DE00306B8E /* Common.xcconfig */,
 				AB69BD060A73C21E00F3DCB8 /* Products */,
 				ABD769020A73CBC0006C27C1 /* Linked Frameworks */,
@@ -417,7 +418,6 @@
 				AB1DE7F410199FD200657779 /* GameListSource.h */,
 				AB1DE7F510199FD200657779 /* GameListSource.m */,
 				ABD769170A73CDF6006C27C1 /* StartupWinController.m */,
-				ABD2DF6021AA3ED200BDB555 /* version-auto.c */,
 			);
 			name = src;
 			path = ../src;
@@ -723,8 +723,9 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		ABD2DF5B21AA3E1A00BDB555 /* Generate version-auto.c */ = {
+		ABD2DF5B21AA3E1A00BDB555 /* Generate version.c */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -732,15 +733,16 @@
 			);
 			inputPaths = (
 			);
-			name = "Generate version-auto.c";
+			name = "Generate version.c";
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(SOURCE_ROOT)/../src/version-auto.c",
+				"$(BUILT_PRODUCTS_DIR)/version.c",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd $PROJECT_DIR/..\ngitdescribe=$(git describe --always 2>/dev/null || echo git error)\n\ncat >src/version-auto.c <<EOT\nconst char *game_version = \"$gitdescribe\";\nconst char *game_date = __DATE__;\nconst char *game_time = __TIME__;\nEOT\n";
+			shellScript = "cd $PROJECT_DIR/..\ngitdescribe=$(git describe --always 2>/dev/null || echo git error)\n\ncat >$BUILT_PRODUCTS_DIR/version.c <<EOT\nconst char *game_version = \"$gitdescribe\";\nconst char *game_date = __DATE__;\nconst char *game_time = __TIME__;\nEOT\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -769,10 +771,10 @@
 				ABD768F00A73CB63006C27C1 /* mathutil.c in Sources */,
 				ABD768F10A73CB63006C27C1 /* mouse.c in Sources */,
 				ABD768F20A73CB63006C27C1 /* scriplib.c in Sources */,
+				AB7EA5DB2B76550500F0EEA3 /* version.c in Sources */,
 				ABD768F30A73CB63006C27C1 /* util_lib.c in Sources */,
 				ABD769180A73CDF6006C27C1 /* StartupWinController.m in Sources */,
 				AB2EA109101215AE00DD2F1F /* sounds.c in Sources */,
-				ABD2DF6121AA3F0E00BDB555 /* version-auto.c in Sources */,
 				AB1DE7F610199FD200657779 /* GameListSource.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -781,8 +783,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB7EA5DC2B76550500F0EEA3 /* version.c in Sources */,
 				ABD769750A73D17A006C27C1 /* astub.c in Sources */,
-				ABD2DF6221AA3F0E00BDB555 /* version-auto.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -848,7 +850,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"../jfaudiolib/third-party",
-					"$(HOME)/Library/Frameworks",
+					../jfbuild/xcode/frameworks,
 				);
 				GCC_CHAR_IS_UNSIGNED_CHAR = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -886,7 +888,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"../jfaudiolib/third-party",
-					"$(HOME)/Library/Frameworks",
+					../jfbuild/xcode/frameworks,
 				);
 				GCC_CHAR_IS_UNSIGNED_CHAR = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -981,7 +983,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "Build Editor-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(LD_RUNPATH_SEARCH_PATHS_$(IS_MACCATALYST)) @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				OTHER_LDFLAGS = "-lc++";
 				PRODUCT_BUNDLE_IDENTIFIER = au.id.jonof.jfduke3d.build;
 				PRODUCT_NAME = "Build Editor for JFDuke3D";
@@ -997,7 +999,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "Build Editor-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(LD_RUNPATH_SEARCH_PATHS_$(IS_MACCATALYST)) @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				OTHER_LDFLAGS = "-lc++";
 				PRODUCT_BUNDLE_IDENTIFIER = au.id.jonof.jfduke3d.build;
 				PRODUCT_NAME = "Build Editor for JFDuke3D";
