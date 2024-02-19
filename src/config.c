@@ -604,6 +604,7 @@ int32 CONFIG_ReadSetup( void )
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenHeight",&ScreenHeight);
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenMode",&ScreenMode);
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenGamma",&ud.brightness);
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "UseGammaBrightness", &usegammabrightness);
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenSize",&ud.screen_size);
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "Out",&ud.lockout);
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenBPP", &ScreenBPP);
@@ -723,6 +724,7 @@ void CONFIG_WriteSetup( void )
 #endif
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenSize",ud.screen_size,false,false);
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenGamma",ud.brightness,false,false);
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "UseGammaBrightness",usegammabrightness,false,false);
 
     SCRIPT_PutNumber( scripthandle, "Sound Setup", "FXDevice", FXDevice, false, false);
     SCRIPT_PutNumber( scripthandle, "Sound Setup", "MusicDevice", MusicDevice, false, false);
