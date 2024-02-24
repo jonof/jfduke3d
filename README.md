@@ -20,7 +20,7 @@ Minimum system requirements
   * ARM 32-bit hard-float, 64-bit
 * A modern operating system:
   * Linux, BSD, possibly other systems supported by [SDL 2.0](http://libsdl.org/).
-  * macOS 10.9+
+  * macOS 10.15+
   * Windows Vista, 7, 8/10+
 * Optional: 3D acceleration with OpenGL 2.0 or OpenGL ES 2.0 capable hardware.
 
@@ -86,9 +86,11 @@ These options are available:
  * `RELEASE=0` – build for debugging.
  * `USE_POLYMOST=1` – enable the true 3D renderer.
  * `USE_POLYMOST=0` – disable the true 3D renderer.
- * `USE_OPENGL=1` – enable use of OpenGL 2.0 acceleration.
- * `USE_OPENGL=USE_GL2` – enable use of OpenGL 2.0 acceleration. (GCC/clang syntax.)
- * `USE_OPENGL=USE_GLES2` – enable use of OpenGL ES 2.0 acceleration. (GCC/clang syntax.)
+ * `USE_OPENGL=1` – enable use of OpenGL 2.x acceleration.
+ * `USE_OPENGL=3` – enable use of OpenGL 3.x acceleration.
+ * `USE_OPENGL=USE_GL2` – enable use of OpenGL 2.x acceleration. (Not a valid setting for MSVC.)
+ * `USE_OPENGL=USE_GL3` – enable use of OpenGL 3.x acceleration. (Not a valid setting for MSVC.)
+ * `USE_OPENGL=USE_GLES2` – enable use of OpenGL ES 2.0 acceleration. (Not a valid setting for MSVC.)
  * `USE_OPENGL=0` – disable use of OpenGL acceleration.
  * `WITHOUT_GTK=1` – disable use of GTK+ to provide launch windows and load/save file choosers.
 

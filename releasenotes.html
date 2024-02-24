@@ -99,17 +99,13 @@
 				<li>64-bit Intel, AMD, or compatible CPU</li>
 				<li>OpenGL 2.1 capable GPU</li>
 				<li>(Windows) Vista or newer (7, 8, 10)</li>
-				<li>(Mac) macOS 10.9 (Mavericks) or newer</li>
+				<li>(Mac) macOS 10.15 (Catalina) or newer</li>
 			</ul>
 
 			<p>Additionally, these platforms and architectures are supported when building from source code:</p>
 			<ul>
 				<li>32-bit Intel/AMD, and 32 or 64-bit ARM CPUs</li>
-				<li>OpenGL ES 2.0 capable GPUs, e.g.
-					<ul>
-						<li>Broadcom VideoCore IV (tested with Raspberry Pi 3 B+)</li>
-						<li>ARM Mali-T860 (tested with Libre Computer ROC-RK3399-PC)</li>
-					</ul></li>
+				<li>OpenGL ES 2.0 capable GPUs, e.g. Broadcom VideoCore IV (tested with Raspberry Pi 3 B+)</li>
 			</ul>
 
 			<h1 id="install">Installation and Setup</h1>
@@ -721,7 +717,10 @@ OP16AwXwb2NS6Y1O3MuXNVZPQ5bPR7aDFd7vz3GLMBISPo2ng8xdwAAAAASUVORK5CYII=" width="6
 				<dd>Reinitialise video to apply settings changes.</dd>
 
 				<dt>screencaptureformat &lt;0 or 1&gt;</dt>
-				<dd>0 = Targa, 1 = PCX</dd>
+				<dd>0 = Targa, 1 = PCX, 2 = PNG (default)</dd>
+
+				<dt>usegammabrightness &lt;0 or 1 or 2&gt;</dt>
+				<dd>Set brightness in one of several ways. 0 = palette-based, 1 = shader-based (default), 2 = system gamma. System gamma will brighten the whole display when in windowed mode.</dd>
 
 				<dt>usegoodalpha &lt;0 or 1&gt;</dt>
 				<dd>If 1, a lower alpha cutoff value is used when rendering textures with transparency, which
