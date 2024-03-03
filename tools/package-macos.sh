@@ -1,7 +1,7 @@
 #!/bin/bash
 
 APPLEID=appledev@jonof.id.au
-APPLEIDPW=@keychain:appledev-altool
+KEYCHAINPROFILE=default
 PRODUCT=jfduke3d
 BUNDLEID=au.id.jonof.$PRODUCT
 VERSION=$(date +%Y%m%d)
@@ -33,21 +33,22 @@ EOT
 elif [ "$1" = "notarise" ]; then
     set -xe
 
-    # Zip up the app bundles. Can't use 'zip' because it fscks with Apple's notarisation.
-    ditto -c -k --sequesterRsrc xcode/build/Release notarise.zip
+    # Zip up the app bundles.
+    mkdir -p xcode/build/Release/notarise
+    cp -R xcode/build/Release/*.app xcode/build/Release/notarise
+    ditto -c -k --sequesterRsrc xcode/build/Release/notarise notarise.zip
+    rm -rf xcode/build/Release/notarise
 
     # Send the zip to Apple.
-    xcrun altool --notarize-app --file notarise.zip \
-        --primary-bundle-id "$BUNDLEID" \
-        -u "$APPLEID" -p "$APPLEIDPW"
+    xcrun notarytool submit -p $KEYCHAINPROFILE --wait notarise.zip
 
 elif [ "$1" = "notarystatus" ]; then
     if [ -z "$2" ]; then
         set -xe
-        xcrun altool --notarization-history 0 -u "$APPLEID" -p "$APPLEIDPW"
+        xcrun notarytool history -p $KEYCHAINPROFILE
     else
         set -xe
-        xcrun altool --notarization-info "$2" -u "$APPLEID" -p "$APPLEIDPW"
+        xcrun notarytool log -p $KEYCHAINPROFILE "$2"
     fi
 
 elif [ "$1" = "finish" ]; then
