@@ -2958,8 +2958,10 @@ void displayrooms(short snum,int smoothratio)
         i = divscale22(1,sprite[p->i].yrepeat+28);
         if (i != oyrepeat)
         {
+            float xfov = 1.f;
+            if (widescreen) xfov = ((float)xdim / (float)ydim) / (4.f / 3.f);
             oyrepeat = i;
-            setaspect(oyrepeat,yxaspect);
+            setaspect((int)(i * xfov),yxaspect);
         }
 
         if(screencapt)
