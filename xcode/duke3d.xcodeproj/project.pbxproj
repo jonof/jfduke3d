@@ -194,6 +194,13 @@
 			remoteGlobalIDString = ABD7695D0A73D116006C27C1;
 			remoteInfo = "Build Editor for JFDuke3D";
 		};
+		ABA320942CD06C1B0002D2CD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = AB392FF52B9427BA002B0F5D;
+			remoteInfo = klist;
+		};
 		ABD2DF2121A5707900BDB555 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AB69BD500A73C45700F3DCB8 /* engine.xcodeproj */;
@@ -364,6 +371,7 @@
 				ABD2DF2221A5707900BDB555 /* bin2c */,
 				AB0FFB72172B981400400B2B /* kextract */,
 				AB0FFB74172B981400400B2B /* kgroup */,
+				ABA320952CD06C1B0002D2CD /* klist */,
 				AB98B2D41A69FC60009E8749 /* transpal */,
 			);
 			name = Products;
@@ -688,6 +696,13 @@
 			fileType = "compiled.mach-o.executable";
 			path = transpal;
 			remoteRef = AB98B2D31A69FC60009E8749 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		ABA320952CD06C1B0002D2CD /* klist */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = klist;
+			remoteRef = ABA320942CD06C1B0002D2CD /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		ABD2DF2221A5707900BDB555 /* bin2c */ = {
