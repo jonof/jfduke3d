@@ -347,24 +347,7 @@ FluidSynthDrv: using found soundfont ./merlin_gold(v4.10).sf2</pre>
 			<p>Now, if you still don't have music and see a message like <em>fluidsynth: error: Failed to connect to Jack server</em> then a different audio device needs to be set, and that means editing the <code>duke3d.cfg</code> file. Find the line with <code>MusicParams = ""</code> and between the quotes add <code>audio.driver=sdl2</code>. Save the change, then start the game to test. If that doesn't work, try alternatives like <code>audio.driver=pulseaudio</code> or <code>audio.driver=portaudio</code> or <code>audio.driver=alsa</code> or <code>audio.driver=oss</code>.</p>
 
 			<h2 id="music-overrides">Music Overrides</h2>
-			<p>Ogg Vorbis alternatives to MIDI music can be automatically used by the game providing certain conditions are met. Files must have the same base filename as the MIDI track but with a <code>.ogg</code> (lowercase) extension. For example, <code>GRABBAG.ogg</code> will override <code>GRABBAG.MID</code>, and <code>dethtoll.ogg</code> will override <code>dethtoll.mid</code>. Note that filename case may matter to you here.</p>
-			<p>On systems without filename case-sensitivity concerns, like Windows and typical macOS setups, you can copy the files to the same directory as <code>duke3d.grp</code> or <code>duke3d.cfg</code>. On case-sensitive filesystems though, the base part of the filename must match case as it is given in the game's <code>USER.CON</code> file, noting that in the default Duke Nukem 3D game data the filenames are not consistent in their case. For instance, from Duke3D Atomic Ed.:</p>
-			<pre>// Music for title and end
-music 0 GRABBAG.MID BRIEFING.MID
-
-// Music for the individual levels
-music 1 stalker.mid dethtoll.mid streets.mid watrwld1.mid snake1.mid
-        thecall.mid ahgeez.mid dethtoll.mid streets.mid watrwld1.mid snake1.mid
-
-music 2 futurmil.mid storm.mid gutwrnch.mid robocrep.mid stalag.mid
-       pizzed.mid alienz.mid xplasma.mid alfredh.mid gloomy.mid intents.mid
-
-music 3 inhiding.mid FATCMDR.mid NAMES.MID subway.mid invader.mid gotham.mid
-        233c.mid lordofla.mid urban.mid spook.mid whomp.mid
-
-music 4 missimp.mid prepd.mid bakedgds.mid cf.mid lemchill.mid
-       pob.mid warehaus.mid layers.mid floghorn.mid depart.mid restrict.mid</pre>
-       		<p>Having said all this, a quick way to avoid a lot of problems is to simply ZIP up the Vorbis files you want to use (e.g. as <code>music.zip</code>), put that ZIP file in the same directory as <code>duke3d.grp</code> or <code>duke3d.cfg</code>, and launch the game with a <code>-gmusic.zip</code> parameter as relevant to your operating system.</p>
+			<p>Ogg Vorbis alternatives to MIDI music can be automatically used by the game providing certain conditions are met. Files must have the same base filename as the MIDI track but with a <code>.ogg</code> (lowercase) extension. Files may also be placed in a <code>music</code> subdirectory beside <code>duke3d.grp</code> if you prefer, and the entire filename may be lowercased if you are using a case-sensitive filesystem (e.g. typically Linux or BSD). For example, <code>grabbag.ogg</code> will override <code>GRABBAG.MID</code>, and <code>music/stalker.mid</code> will override <code>stalker.mid</code>.</p>
 
 			<h1 id="multiplayer">Multiplayer</h1>
 

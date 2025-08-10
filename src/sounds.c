@@ -261,36 +261,32 @@ void intomenusounds(void)
 
 void playmusic(char *fn)
 {
-    int fp;
-    char * testfn, * extension;
+    int fp=-1;
+    char *ext;
 
     if(MusicToggle == 0) return;
     if(MusicDevice < 0) return;
 
     stopmusic();
     
-    testfn = (char *) malloc( strlen(fn) + 5 );
-    strcpy(testfn, fn);
-    extension = strrchr(testfn, '.');
+    ext = strrchr(fn, '.');
+    if (ext && !strcasecmp(ext, ".mid")) {
+        // We've been asked to load a midi file, but first let's see if there's an
+        // ogg version with the same base name lying around in various arrangements.
+        size_t testsz = 6 + strlen(fn) + 5; // "music/" + fn + ".ogg\0"
+        char *testfn = (char *)malloc(testsz);
+        if (testfn) {
+            for (int alt=0; alt<4 && fp<0; alt++) {
+                if (alt == 0) snprintf(testfn, testsz, "%.*s.ogg", (int)(ext-fn), fn);
+                else if (alt == 2) snprintf(testfn, testsz, "music/%.*s.ogg", (int)(ext-fn), fn);
+                if (alt == 1 || alt == 3) strlwr(testfn);
+                fp = kopen4load(testfn, 0);
+            }
+            free(testfn);
+        }
+    }
 
-    do {
-       if (extension && !Bstrcasecmp(extension, ".mid")) {
-	  // we've been asked to load a .mid file, but first
-	  // let's see if there's an ogg with the same base name
-	  // lying around
-	  strcpy(extension, ".ogg");
-	  fp = kopen4load(testfn, 0);
-	  if (fp >= 0) {
-             free(testfn);
-	     break;
-	  }
-       }
-       free(testfn);
-
-       // just use what we've been given
-       fp = kopen4load(fn, 0);
-    } while (0);
-
+    if (fp < 0) fp = kopen4load(fn, 0); // just use what we've been given
     if (fp < 0) return;
 
     MusicLen = kfilelength( fp );
