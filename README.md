@@ -53,12 +53,10 @@ Now, based on your chosen OS and compiler:
 ### macOS
 
 1. [Install Xcode from the Mac App Store](https://itunes.apple.com/au/app/xcode/id497799835?mt=12).
-2. Fetch and install the SDL 2.0 development package:
-   1. Fetch _SDL2-2.0.x.dmg_ from http://libsdl.org/download-2.0.php.
-   2. Copy _SDL2.framework_ found in the DMG file to `~/Library/Frameworks`. Create the
-      _Frameworks_ directory if it doesn't exist on your system.
-3. Open _duke3d.xcodeproj_ from within the JFDuke3D source code's _xcode_ folder.
-4. From the Product menu choose Run.
+2. Open _duke3d.xcodeproj_ from within the JFDuke3D source code's _xcode_ folder.
+3. Select the 'JFDuke3D' target and then from the Product menu choose Run.
+
+The _jfbuild_ submodule will automatically download the SDL2 framework upon first build.
 
 ### Windows using Microsoft Visual C++ 2015 (or newer) and NMAKE
 
