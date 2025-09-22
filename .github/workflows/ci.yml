@@ -61,7 +61,7 @@ jobs:
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
         with:
-          sdk: 10.0.19041.0
+          sdk: 10.0.26100.0
       - name: Make
         shell: cmd
         run: |
