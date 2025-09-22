@@ -9,6 +9,7 @@
 *.cfg
 *~
 *.pdb
+*.dll
 /src/version-auto.c
 
 /xcode/*.xcodeproj/*.mode1v3
