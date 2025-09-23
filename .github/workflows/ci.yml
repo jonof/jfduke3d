@@ -62,11 +62,14 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
         with:
           sdk: 10.0.26100.0
+      - name: Add XAudio2 redistributable
+        run: vcpkg install xaudio2redist:x64-windows
       - name: Make
         shell: cmd
         run: |
           echo USE_POLYMOST=${{ matrix.use_polymost }} > Makefile.msvcuser
           echo USE_OPENGL=${{ matrix.use_opengl }} >> Makefile.msvcuser
+          echo VCPKG_ROOT=%VCPKG_INSTALLATION_ROOT% > jfaudiolib/Makefile.msvcuser
           nmake /f Makefile.msvc all
 
   build-macos:
