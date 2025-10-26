@@ -2618,7 +2618,7 @@ if (!VOLUMEALL) {
         gametext(320>>1,90+9+9+9,"PRESS \"ESCAPE\" TO CANCEL",0,2+8+16);
 
         sc = KB_GetLastScanCode();
-        if ( sc != sc_None ) {
+        if ( sc > sc_None ) {
             if ( sc == sc_Escape ) {
                 sound(EXITMENUSOUND);
             } else {
