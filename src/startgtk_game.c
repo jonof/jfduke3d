@@ -60,6 +60,8 @@ static struct {
     GtkWidget *vmode3dcombo;
     GtkListStore *vmode3dlist;
     GtkWidget *fullscreencheck;
+    GtkWidget *displaycombo;
+    GtkListStore *displaylist;
 
     GtkWidget *usemousecheck;
     GtkWidget *usejoystickcheck;
@@ -87,6 +89,7 @@ static struct {
 static gboolean startwinloop = FALSE;
 static struct startwin_settings *settings;
 static gboolean quiteventonclose = FALSE;
+static gboolean ignoresignals = FALSE;
 static int retval = -1;
 
 
@@ -115,7 +118,7 @@ static void foreach_gtk_widget_set_sensitive(GtkWidget *widget, gpointer data)
 static void populate_video_modes(gboolean firsttime)
 {
     int i, mode3d = -1;
-    int xdim = 0, ydim = 0, bpp = 0, fullscreen = 0;
+    int xdim = 0, ydim = 0, bitspp = 0, display = 0, fullsc = 0;
     char modestr[64];
     int cd[] = { 32, 24, 16, 15, 8, 0 };
     GtkTreeIter iter;
@@ -124,39 +127,50 @@ static void populate_video_modes(gboolean firsttime)
         getvalidmodes();
         xdim = settings->xdim3d;
         ydim = settings->ydim3d;
-        bpp  = settings->bpp3d;
-        fullscreen = settings->fullscreen;
+        bitspp = settings->bpp3d;
+        fullsc = settings->fullscreen;
+        display = min(displaycnt-1, max(0, settings->display));
+
+        gtk_list_store_clear(controls.displaylist);
+        for (i = 0; i < displaycnt; i++) {
+            snprintf(modestr, sizeof(modestr), "Display %d \xe2\x80\x93 %s", i, getdisplayname(i));
+            gtk_list_store_insert_with_values(controls.displaylist, &iter, -1, 0, modestr, 1, i, -1);
+        }
+        if (displaycnt < 2) gtk_widget_set_visible(controls.displaycombo, FALSE);
     } else {
         // Read back the current resolution information selected in the combobox.
-        fullscreen = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(controls.fullscreencheck));
+        fullsc = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(controls.fullscreencheck));
+        if (gtk_combo_box_get_active_iter(GTK_COMBO_BOX(controls.displaycombo), &iter)) {
+            gtk_tree_model_get(GTK_TREE_MODEL(controls.displaylist), &iter, 1 /*index*/, &display, -1);
+        }
         if (gtk_combo_box_get_active_iter(GTK_COMBO_BOX(controls.vmode3dcombo), &iter)) {
             gtk_tree_model_get(GTK_TREE_MODEL(controls.vmode3dlist), &iter, 1 /*index*/, &mode3d, -1);
         }
         if (mode3d >= 0) {
             xdim = validmode[mode3d].xdim;
             ydim = validmode[mode3d].ydim;
-            bpp = validmode[mode3d].bpp;
+            bitspp = validmode[mode3d].bpp;
         }
     }
 
     // Find an ideal match.
-    mode3d = checkvideomode(&xdim, &ydim, bpp, fullscreen, 1);
-    if (mode3d < 0) {
-        for (i=0; cd[i]; ) { if (cd[i] >= bpp) i++; else break; }
-        for ( ; cd[i]; i++) {
-            mode3d = checkvideomode(&xdim, &ydim, cd[i], fullscreen, 1);
-            if (mode3d < 0) continue;
-            break;
-        }
+    mode3d = checkvideomode(&xdim, &ydim, bitspp, SETGAMEMODE_FULLSCREEN(display, fullsc), 1);
+    for (i=0; mode3d < 0 && cd[i]; i++) {
+        mode3d = checkvideomode(&xdim, &ydim, cd[i], SETGAMEMODE_FULLSCREEN(display, fullsc), 1);
     }
+    if (mode3d < 0) mode3d = 0;
+    fullsc = validmode[mode3d].fs;
+    display = validmode[mode3d].display;
 
     // Repopulate the list.
+    ignoresignals = TRUE;
     gtk_list_store_clear(controls.vmode3dlist);
     for (i = 0; i < validmodecnt; i++) {
-        if (validmode[i].fs != fullscreen) continue;
+        if (validmode[i].fs != fullsc) continue;
+        if (validmode[i].display != display) continue;
 
         sprintf(modestr, "%d \xc3\x97 %d %d-bpp",
-            validmode[i].xdim, validmode[i].ydim, validmode[i].bpp);
+                validmode[i].xdim, validmode[i].ydim, validmode[i].bpp);
         gtk_list_store_insert_with_values(controls.vmode3dlist,
             &iter, -1,
             0, modestr, 1, i, -1);
@@ -164,6 +178,19 @@ static void populate_video_modes(gboolean firsttime)
             gtk_combo_box_set_active_iter(GTK_COMBO_BOX(controls.vmode3dcombo), &iter);
         }
     }
+
+    for (gboolean valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(controls.displaylist), &iter);
+            (fullsc || firsttime) && valid; valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(controls.displaylist), &iter)) {
+        gint index;
+        gtk_tree_model_get(GTK_TREE_MODEL(controls.displaylist), &iter, 1, &index, -1);
+        if (index == validmode[mode3d].display) {
+            gtk_combo_box_set_active_iter(GTK_COMBO_BOX(controls.displaycombo), &iter);
+            break;
+        }
+    }
+    gtk_widget_set_sensitive(controls.displaycombo, validmode[mode3d].fs);
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(controls.fullscreencheck), validmode[mode3d].fs);
+    ignoresignals = FALSE;
 }
 
 static void populate_sound_quality(gboolean firsttime)
@@ -244,11 +271,10 @@ static void setup_config_mode(void)
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(controls.alwaysshowcheck), settings->forcesetup);
     gtk_widget_set_sensitive(controls.alwaysshowcheck, TRUE);
 
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(controls.fullscreencheck), settings->fullscreen);
-    gtk_widget_set_sensitive(controls.fullscreencheck, TRUE);
-
-    populate_video_modes(TRUE);
     gtk_widget_set_sensitive(controls.vmode3dcombo, TRUE);
+    gtk_widget_set_sensitive(controls.fullscreencheck, TRUE);
+    gtk_widget_set_sensitive(controls.displaycombo, TRUE);
+    populate_video_modes(TRUE);
 
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(controls.usemousecheck), settings->usemouse);
     gtk_widget_set_sensitive(controls.usemousecheck, TRUE);
@@ -308,7 +334,15 @@ static void setup_messages_mode(gboolean allowcancel)
 static void on_fullscreencheck_toggled(GtkToggleButton *togglebutton, gpointer user_data)
 {
     (void)togglebutton; (void)user_data;
-    populate_video_modes(FALSE);
+
+    if (!ignoresignals) populate_video_modes(FALSE);
+}
+
+static void on_displaycombo_changed(GtkComboBox *combobox, gpointer user_data)
+{
+    (void)combobox; (void)user_data;
+
+    if (!ignoresignals) populate_video_modes(FALSE);
 }
 
 static void on_multiplayerradio_toggled(GtkRadioButton *radiobutton, gpointer user_data)
@@ -346,6 +380,7 @@ static void on_startbutton_clicked(GtkButton *button, gpointer user_data)
         settings->ydim3d = validmode[mode].ydim;
         settings->bpp3d = validmode[mode].bpp;
         settings->fullscreen = validmode[mode].fs;
+        settings->display = validmode[mode].display;
     }
 
     settings->usemouse = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(controls.usemousecheck));
@@ -568,6 +603,9 @@ static GtkWindow *create_window(void)
     controls.vmode3dlist = GTK_LIST_STORE(gtk_builder_get_object(builder, "vmode3dlist"));
     controls.fullscreencheck = GTK_WIDGET(get_and_connect_signal(builder, "fullscreencheck",
         "toggled", G_CALLBACK(on_fullscreencheck_toggled)));
+    controls.displaycombo = GTK_WIDGET(get_and_connect_signal(builder, "displaycombo",
+        "changed", G_CALLBACK(on_displaycombo_changed)));
+    controls.displaylist = GTK_LIST_STORE(gtk_builder_get_object(builder, "displaylist"));
 
     controls.usemousecheck = GTK_WIDGET(gtk_builder_get_object(builder, "usemousecheck"));
     controls.usejoystickcheck = GTK_WIDGET(gtk_builder_get_object(builder, "usejoystickcheck"));

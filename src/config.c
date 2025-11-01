@@ -77,6 +77,7 @@ int32 JoystickAnalogueSaturate[MAXJOYAXES];
 //
 
 int32 ScreenMode = 1;
+int32 ScreenDisplay = 0;
 int32 ScreenWidth = 640;
 int32 ScreenHeight = 480;
 int32 ScreenBPP = 8;
@@ -603,6 +604,7 @@ int32 CONFIG_ReadSetup( void )
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenWidth",&ScreenWidth);
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenHeight",&ScreenHeight);
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenMode",&ScreenMode);
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenDisplay",&ScreenDisplay);
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenGamma",&ud.brightness);
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "UseGammaBrightness", &usegammabrightness);
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenSize",&ud.screen_size);
@@ -706,6 +708,7 @@ void CONFIG_WriteSetup( void )
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenWidth",ScreenWidth,false,false);
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenHeight",ScreenHeight,false,false);
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenMode",ScreenMode,false,false);
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenDisplay",ScreenDisplay,false,false);
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenBPP",ScreenBPP,false,false);
 #ifdef RENDERTYPEWIN
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "MaxRefreshFreq",win_getmaxrefreshfreq(),false,false);

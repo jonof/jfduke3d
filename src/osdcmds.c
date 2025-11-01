@@ -205,7 +205,7 @@ static int osdcmd_restartvid(const osdfuncparm_t *parm)
     (void)parm;
     
     resetvideomode();
-    if (setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP))
+    if (setgamemode(SETGAMEMODE_FULLSCREEN(ScreenDisplay,ScreenMode),ScreenWidth,ScreenHeight,ScreenBPP))
         gameexit("restartvid: Reset failed...\n");
     onvideomodechange();
 
@@ -215,8 +215,8 @@ static int osdcmd_restartvid(const osdfuncparm_t *parm)
 static int osdcmd_vidmode(const osdfuncparm_t *parm)
 {
     int newbpp = ScreenBPP, newwidth = ScreenWidth,
-        newheight = ScreenHeight, newfs = ScreenMode;
-    if (parm->numparms < 1 || parm->numparms > 4) return OSDCMD_SHOWHELP;
+        newheight = ScreenHeight, newfs = ScreenMode, newdisp = ScreenDisplay;
+    if (parm->numparms < 1 || parm->numparms > 5) return OSDCMD_SHOWHELP;
 
     switch (parm->numparms) {
         case 1: // bpp switch
@@ -226,23 +226,26 @@ static int osdcmd_vidmode(const osdfuncparm_t *parm)
             newwidth = atoi(parm->parms[0]);
             newheight = atoi(parm->parms[1]);
             break;
-        case 3: // res & bpp switch
+        case 3: // res, bpp, fullscreen, display switch
         case 4:
+        case 5:
             newwidth = atoi(parm->parms[0]);
             newheight = atoi(parm->parms[1]);
             newbpp = atoi(parm->parms[2]);
-            if (parm->numparms == 4)
+            if (parm->numparms >= 4)
                 newfs = (atoi(parm->parms[3]) != 0);
+            if (parm->numparms == 5)
+                newdisp = max(0,atoi(parm->parms[4]));
             break;
     }
 
-    if (setgamemode(newfs,newwidth,newheight,newbpp)) {
+    if (setgamemode(SETGAMEMODE_FULLSCREEN(newdisp,newfs),newwidth,newheight,newbpp)) {
         buildprintf("vidmode: Mode change failed!\n");
-        if (setgamemode(ScreenMode, ScreenWidth, ScreenHeight, ScreenBPP))
+        if (setgamemode(SETGAMEMODE_FULLSCREEN(ScreenDisplay,ScreenMode), ScreenWidth, ScreenHeight, ScreenBPP))
             gameexit("vidmode: Reset failed!\n");
     }
     ScreenBPP = newbpp; ScreenWidth = newwidth; ScreenHeight = newheight;
-    ScreenMode = newfs;
+    ScreenMode = newfs; ScreenDisplay = newdisp;
     onvideomodechange();
     return OSDCMD_OK;
 }
@@ -415,7 +418,7 @@ if (VOLUMEONE) {
     OSD_RegisterFunction("useprecache","useprecache: enable/disable the pre-level caching routine", osdcmd_vars);
 
     OSD_RegisterFunction("restartvid","restartvid: reinitialised the video mode",osdcmd_restartvid);
-    OSD_RegisterFunction("vidmode","vidmode [xdim ydim] [bpp] [fullscreen]: immediately change the video mode",osdcmd_vidmode);
+    OSD_RegisterFunction("vidmode","vidmode [xdim ydim] [bpp] [fullscreen] [display]: immediately change the video mode",osdcmd_vidmode);
 
     OSD_RegisterFunction("usemouse","usemouse: enables input from the mouse if it is present",osdcmd_usemousejoy);
     OSD_RegisterFunction("usejoystick","usejoystick: enables input from the controller if it is present",osdcmd_usemousejoy);

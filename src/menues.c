@@ -54,13 +54,7 @@ static int numdirs=0, numfiles=0;
 static int currentlist=0;
 
 static int function, whichkey;
-static int changesmade, newvidmode, curvidmode;
-#define MAXVIDSETS 16
-static struct vidset {
-    unsigned char bpp;
-    unsigned char fs;
-} vidsets[MAXVIDSETS];
-static int curvidset, newvidset, numvidsets;
+static int changesmade, newvidmode = -1, curvidmode = -1;
 
 static const char *mousebuttonnames[] = { "Left", "Right", "Middle", "Thumb", "Wheel Down", "Wheel Up" };
 
@@ -649,11 +643,26 @@ int saveplayer(signed char spot)
     return(0);
 }
 
+static void preparevideomenu(void)
+{
+    int dax, day;
+
+    dax = xdim; day = ydim;
+    curvidmode = newvidmode = checkvideomode(&dax,&day,bpp,fullscreen,1);
+    if (curvidmode < 0) {
+        dax = xdim; day = ydim;
+        curvidmode = newvidmode = checkvideomode(&dax,&day,bpp,fullscreen,0);
+    }
+    if (curvidmode == VIDEOMODE_RELAXED) {
+        curvidmode = newvidmode = 0;
+    }
+}
+
 void onvideomodechange(void)
 {
     unsigned char *pal;
 
-    if (ScreenBPP > 8) {
+    if (bpp > 8) {
         if (ps[screenpeek].palette == palette ||
             ps[screenpeek].palette == waterpal ||
             ps[screenpeek].palette == slimepal)
@@ -668,6 +677,8 @@ void onvideomodechange(void)
     restorepalette = 1;
 
     vscrn();
+
+    preparevideomenu();
 }
 
 static int probe_(int type,int x,int y,int i,int n,const int *keys)
@@ -1076,18 +1087,18 @@ void clearfilenames(void)
 int getfilenames(char *path, char kind[])
 {
     CACHE1D_FIND_REC *r;
-    
+
     clearfilenames();
     finddirs = klistpath(path,"*",CACHE1D_FIND_DIR);
     findfiles = klistpath(path,kind,CACHE1D_FIND_FILE);
     for (r = finddirs; r; r=r->next) numdirs++;
     for (r = findfiles; r; r=r->next) numfiles++;
-    
+
     finddirshigh = finddirs;
     findfileshigh = findfiles;
     currentlist = 0;
     if (findfileshigh) currentlist = 1;
-    
+
     return(0);
 }
 
@@ -1332,7 +1343,7 @@ void menus(void)
 
             if (savehead.volnum == 0 && savehead.levnum == 7)
                 gametext(160,180,savehead.boardfn,0,2+8+16);
-            
+
             gametext(160,90,"LOAD game:",0,2+8+16);
             sprintf(buf,"\"%s\"",ud.savegame[current_menu-1000]);
             gametext(160,99,buf,0,2+8+16);
@@ -1521,7 +1532,7 @@ void menus(void)
                     gametext(c,40,                      "ORIGINAL CONCEPT",0,2+8+16);
                     gametext(c,40+9,                    "TODD REPLOGLE",0,2+8+16);
                     gametext(c,40+9+9,                  "ALLEN H. BLUM III",0,2+8+16);
-                        
+
                     gametext(c,40+9+9+9+9,              "PRODUCED & DIRECTED BY",0,2+8+16);
                     gametext(c,40+9+9+9+9+9,            "GREG MALONE",0,2+8+16);
 
@@ -1534,7 +1545,7 @@ void menus(void)
                 case 991:
                     gametext(c,40,                      "GAME PROGRAMMING",0,2+8+16);
                     gametext(c,40+9,                    "TODD REPLOGLE",0,2+8+16);
-                        
+
                     gametext(c,40+9+9+9,                "3D ENGINE/TOOLS/NET",0,2+8+16);
                     gametext(c,40+9+9+9+9,              "KEN SILVERMAN",0,2+8+16);
 
@@ -1545,7 +1556,7 @@ void menus(void)
                     gametext(c,40,                      "MAP DESIGN",0,2+8+16);
                     gametext(c,40+9,                    "ALLEN H BLUM III",0,2+8+16);
                     gametext(c,40+9+9,                  "RICHARD GRAY",0,2+8+16);
-                        
+
                     gametext(c,40+9+9+9+9,              "3D MODELING",0,2+8+16);
                     gametext(c,40+9+9+9+9+9,            "CHUCK JONES",0,2+8+16);
                     gametext(c,40+9+9+9+9+9+9,          "SAPPHIRE CORPORATION",0,2+8+16);
@@ -1558,7 +1569,7 @@ void menus(void)
                 case 993:
                     gametext(c,40,                      "SOUND ENGINE",0,2+8+16);
                     gametext(c,40+9,                    "JIM DOSE",0,2+8+16);
-                        
+
                     gametext(c,40+9+9+9,                "SOUND & MUSIC DEVELOPMENT",0,2+8+16);
                     gametext(c,40+9+9+9+9,              "ROBERT PRINCE",0,2+8+16);
                     gametext(c,40+9+9+9+9+9,            "LEE JACKSON",0,2+8+16);
@@ -1572,7 +1583,7 @@ void menus(void)
                     gametext(c,60+9,                    "PACKAGING, MANUAL, ADS",0,2+8+16);
                     gametext(c,60+9+9,                  "ROBERT M. ATKINS",0,2+8+16);
                     gametext(c,60+9+9+9,                "MICHAEL HADWIN",0,2+8+16);
-                    
+
                     gametext(c,60+9+9+9+9+9,            "SPECIAL THANKS TO",0,2+8+16);
                     gametext(c,60+9+9+9+9+9+9,          "STEVEN BLACKBURN, TOM HALL",0,2+8+16);
                     gametext(c,60+9+9+9+9+9+9+9,        "SCOTT MILLER, JOE SIEGLER",0,2+8+16);
@@ -1602,7 +1613,7 @@ void menus(void)
                     gametext(c,32+9+9+9+9+9+9+9,        "FOR TONS OF SPEAKERS AND THE",0,2+8+16);
                     gametext(c,32+9+9+9+9+9+9+9+9,      "THX-LICENSED SOUND SYSTEM",0,2+8+16);
                     gametext(c,32+9+9+9+9+9+9+9+9+9,    "FOR INFO CALL 1-800-548-0620",0,2+8+16);
-                    
+
                     gametext(c,32+9+9+9+9+9+9+9+9+9+9+9,"CREATIVE LABS, INC.",0,2+8+16);
 
                     gametext(c,32+9+9+9+9+9+9+9+9+9+9+9+9+9,"THANKS FOR THE HARDWARE, GUYS.",0,2+8+16);
@@ -1610,7 +1621,7 @@ void menus(void)
                 case 997:
                     gametext(c,50,                      "DUKE NUKEM IS A TRADEMARK OF",0,2+8+16);
                     gametext(c,50+9,                    "3D REALMS ENTERTAINMENT",0,2+8+16);
-                        
+
                     gametext(c,50+9+9+9,                "DUKE NUKEM",0,2+8+16);
                     gametext(c,50+9+9+9+9,              "(C) 1996 3D REALMS ENTERTAINMENT",0,2+8+16);
 
@@ -1645,7 +1656,7 @@ cheat_for_port_credits:
                    gametext(160,40-l,"GAME AND ENGINE PORT",0,2+8+16);
                    const char credit1[] = "Jonathon \"JonoF\" Fowler";
                    minitext(160-(sizeof credit1)*2, 40+10-l, credit1, 12, 10+16+128);
-                   
+
                    gametext(160,60-l,"\"POLYMOST\" 3D RENDERER",0,2+8+16);
                    gametext(160,60+8-l,"NETWORKING, OTHER CODE",0,2+8+16);
                    const char credit2[] = "Ken \"Awesoken\" Silverman";
@@ -1966,9 +1977,9 @@ if (!VOLUMEALL) {
                 }
             }
         }
-        
+
         gametext(40+4,12+32,"DIRECTORIES",0,2+8+16);
-        
+
         if (finddirshigh) {
             dir = finddirshigh;
             for(i=0; i<2; i++) if (!dir->prev) break; else dir=dir->prev;
@@ -1995,7 +2006,7 @@ if (!VOLUMEALL) {
             currentlist = 1-currentlist;
             sound(KICK_HIT);
         }
-        
+
         onbar = 0;
         probey = 2;
         if (currentlist == 0) x = probe(50,12+32+16+4,0,3);
@@ -2043,7 +2054,7 @@ if (!VOLUMEALL) {
             clearfilenames();
         }
         break;
-        
+
         case 103:
             {
                 char *path;
@@ -2171,7 +2182,7 @@ if (!VOLUMEALL) {
             x = probesm(c,yy+5,0,io);
 
             if (x == -1) { cmenu(200); break; }
-#define OFFSHADE 16 
+#define OFFSHADE 16
             yy = 31;
             for (ii=io=0; opts[ii]; ii++) {
                 if (opts[ii][0] == '-' && !opts[ii][1]) {
@@ -2248,7 +2259,7 @@ if (!VOLUMEALL) {
             }
         }
         break;
-            
+
     case 200:   // Options menu.
         rotatesprite(320<<15,19<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
         menutext(320>>1,24,0,0,"OPTIONS");
@@ -2273,36 +2284,10 @@ if (!VOLUMEALL) {
             break;
 
         case 2:
-            {
-                int dax = xdim, day = ydim, vm, vs;
-
-                curvidmode = newvidmode = checkvideomode(&dax,&day,bpp,fullscreen,0);
-                curvidset = newvidset = -1;
-                changesmade = 0;
-
-                // Work out each available combination of colour depth and fullscreen.
-                numvidsets = 0;
-                for (vm = 0; vm < validmodecnt && numvidsets < MAXVIDSETS; vm++) {
-                    for (vs = 0; vs < numvidsets; vs++)
-                        if (validmode[vm].bpp == vidsets[vs].bpp && (validmode[vm].fs&1) == vidsets[vs].fs)
-                            break;
-                    if (vs == numvidsets) {
-                        vidsets[vs].bpp = validmode[vm].bpp;
-                        vidsets[vs].fs = (validmode[vm].fs&1);
-                        numvidsets++;
-                    }
-                    if (newvidset < 0 && vidsets[vs].bpp == bpp && vidsets[vs].fs == fullscreen) {
-                        newvidset = vs;
-                        if (newvidmode == 0x7fffffffl) newvidmode = vm;
-                    }
-                }
-                if (newvidset < 0) newvidset = numvidsets - 1;
-                curvidset = newvidset;
-
-                cmenu(203);
-            }
+            preparevideomenu();
+            cmenu(203);
             break;
-            
+
         case 3:
             cmenu(202);
             changesmade = -1;
@@ -2386,17 +2371,13 @@ if (!VOLUMEALL) {
         menutext(320>>1,24,0,0,"VIDEO SETTINGS");
 
         {
-            int vs, vm;
-
-            changesmade = 0;
-
             c = (320>>1)-120;
 #if USE_POLYMOST && USE_OPENGL
             i = 6;
-            const int keys[] = {sc_R, sc_V, sc_F, sc_A, sc_B, sc_I, 0};
+            const int keys[] = {sc_R, sc_V, sc_D, sc_A, sc_B, sc_I, 0};
 #else
             i = 5;
-            const int keys[] = {sc_R, sc_V, sc_F, sc_A, sc_B, 0};
+            const int keys[] = {sc_R, sc_V, sc_D, sc_A, sc_B, 0};
 #endif
             onbar = (probey == 4);
             if (probey <= 2)
@@ -2418,46 +2399,53 @@ if (!VOLUMEALL) {
                     break;
 
                 case 0: // Resolution.
-                    if (uinfo.dir == dir_West) changesmade = -1;
-                    else changesmade = 1;
-                    break;
-
                 case 1: // Colour mode.
-                case 2: // Fullscreen.
-                    for (vs = (newvidset + 1) % numvidsets; vs != newvidset; vs = (vs + 1) % numvidsets) {
-                        if (x == 1 && vidsets[vs].fs != vidsets[newvidset].fs) continue;
-                        if (x == 2 && vidsets[vs].bpp != vidsets[newvidset].bpp) continue;
-                        changesmade = 1;
-                        break;
+                case 2: // Fullscreen/display.
+                    {
+                        int dir = uinfo.dir == dir_West ? -1 : 1;
+                        int vs = validmode[newvidmode].validmodeset;
+                        int dax, day, mode;
+
+                        if (x == 0) {
+                            mode = newvidmode + dir;
+                            if (mode < validmodeset[vs].firstmode) mode = validmodeset[vs].firstmode;
+                            else if (mode > validmodeset[vs].lastmode) mode = validmodeset[vs].lastmode;
+                            newvidmode = mode;
+                        } else if (x == 1) {
+                            if (dir < 0) vs = validmodeset[vs].prevbppmodeset;
+                            else if (dir > 0) vs = validmodeset[vs].nextbppmodeset;
+                        } else if (x == 2) {
+                            if (dir < 0) vs = validmodeset[vs].prevfsmodeset;
+                            else if (dir > 0) vs = validmodeset[vs].nextfsmodeset;
+                        }
+                        if (vs < 0) vs = validmode[newvidmode].validmodeset;
+
+                        dax = validmode[newvidmode].xdim;
+                        day = validmode[newvidmode].ydim;
+                        newvidmode = checkvideomode(&dax, &day, validmodeset[vs].bpp,
+                            SETGAMEMODE_FULLSCREEN(validmodeset[vs].display, validmodeset[vs].fs), 1);
+                        if (newvidmode < 0) newvidmode = curvidmode;
                     }
-                    newvidset = vs;
                     break;
 
                 case 3: // Apply changes.
                     if (newvidmode != curvidmode) {
-                        int pxdim, pydim, pfs, pbpp;
-                        int nxdim, nydim, nfs, nbpp;
+                        int pxdim=xdim, pydim=ydim, pfs=fullscreen, pbpp=bpp;
 
-                        pxdim = xdim; pydim = ydim; pbpp = bpp; pfs = fullscreen;
-                        nxdim = validmode[newvidmode].xdim;
-                        nydim = validmode[newvidmode].ydim;
-                        nfs   = validmode[newvidmode].fs;
-                        nbpp  = validmode[newvidmode].bpp;
-
-                        if (setgamemode(nfs, nxdim, nydim, nbpp) < 0) {
+                        if (setgamemode(SETGAMEMODE_FULLSCREEN(validmode[newvidmode].display, validmode[newvidmode].fs),
+                                validmode[newvidmode].xdim, validmode[newvidmode].ydim, validmode[newvidmode].bpp) < 0) {
                             if (setgamemode(pfs, pxdim, pydim, pbpp) < 0) {
                                 gameexit("Failed restoring old video mode.");
                             }
+                        } else {
+                            curvidmode = newvidmode;
+                            ScreenMode = validmode[newvidmode].fs;
+                            ScreenDisplay = validmode[newvidmode].display;
+                            ScreenWidth = validmode[newvidmode].xdim;
+                            ScreenHeight = validmode[newvidmode].ydim;
+                            ScreenBPP = validmode[newvidmode].bpp;
+                            onvideomodechange();
                         }
-
-                        curvidmode = newvidmode; curvidset = newvidset;
-
-                        ScreenMode = fullscreen;
-                        ScreenWidth = xdim;
-                        ScreenHeight = ydim;
-                        ScreenBPP = bpp;
-
-                        onvideomodechange();
                     }
                     break;
 
@@ -2477,45 +2465,25 @@ if (!VOLUMEALL) {
                     break;
 #endif
             }
-            if (changesmade) {
-                // Find the next/prev video mode matching the new vidset.
-                int bestvm = newvidmode, besterr = INT_MAX, vmerr;
-                for (vm = (newvidmode + changesmade) % validmodecnt; vm != newvidmode;
-                        vm = (vm + changesmade + validmodecnt) % validmodecnt) {
-                    if ((validmode[vm].fs&1) != vidsets[newvidset].fs) continue;
-                    if (validmode[vm].bpp != vidsets[newvidset].bpp) continue;
-                    if (x == 0) {   // Resolution change.
-                        bestvm = vm;
-                        break;
-                    }
-                    if (validmode[vm].xdim == validmode[newvidmode].xdim &&
-                            validmode[vm].ydim == validmode[newvidmode].ydim) {
-                        bestvm = vm;
-                        break;
-                    }
-                    vmerr = klabs((validmode[vm].xdim * validmode[vm].ydim) -
-                        (validmode[newvidmode].xdim * validmode[newvidmode].ydim));
-                    if (vmerr < besterr) {
-                        bestvm = vm;
-                        besterr = vmerr;
-                    }
-                }
-                newvidmode = bestvm;
-                changesmade = 0;
-            }
         }
 
         menutext(c,50,0,0,"RESOLUTION");
-        sprintf(buf,"%d x %d", validmode[newvidmode].xdim, validmode[newvidmode].ydim);
-            gametext(c+154,50-8,buf,0,2+8+16);
+        snprintf(buf,sizeof(buf),"%d X %d",validmode[newvidmode].xdim,validmode[newvidmode].ydim);
+        gametext(c+154,50-8,buf,0,2+8+16);
         
         menutext(c,50+16,0,0,"VIDEO MODE");
-            sprintf(buf, "%dbit %s", validmode[newvidmode].bpp,
-                validmode[newvidmode].bpp > 8 ? "Polymost" : "Classic");
-            gametext(c+154,50+16-8,buf,0,2+8+16);
+        snprintf(buf,sizeof(buf),"%d-BPP",validmode[newvidmode].bpp);
+        gametext(c+154,50+16-8,buf,0,2+8+16);
 
-        menutext(c,50+16+16,0,0,"FULLSCREEN");
-            menutext(c+154,50+16+16,0,0,(validmode[newvidmode].fs&1)?"YES":"NO");
+        menutext(c,50+16+16,0,0,"DISPLAY");
+        if (!validmode[newvidmode].fs) gametext(c+154,50+16+16-8,"WINDOWED",0,2+8+16);
+        else if (displaycnt>1) {
+            int l = snprintf(buf,sizeof(buf),"%d: %s",validmode[newvidmode].display,
+                getdisplayname(validmode[newvidmode].display));
+            if (l>12) strcpy(&buf[12-3],"...");
+            gametext(c+154,50+16+16-8,buf,0,2+8+16);
+        }
+        else gametext(c+154,50+16+16-8,"FULLSCREEN",0,2+8+16);
 
         menutext(c+16,50+16+16+22,0,newvidmode==curvidmode,"APPLY CHANGES");
         

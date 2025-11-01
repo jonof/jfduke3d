@@ -2082,7 +2082,7 @@ void gameexit(const char *t)
     if(playerswhenstarted > 1 && ud.coop != 1 && *t == ' ')
     {
         dobonus(1);
-        setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP);
+        setgamemode(SETGAMEMODE_FULLSCREEN(ScreenDisplay,ScreenMode),ScreenWidth,ScreenHeight,ScreenBPP);
     }
 
     if( *t != 0 && *(t+1) != 'V' && *(t+1) != 'Y')
@@ -7796,6 +7796,7 @@ int app_main(int argc, char const * const argv[])
 
         memset(&settings, 0, sizeof(settings));
         settings.fullscreen = ScreenMode;
+        settings.display = ScreenDisplay;
         settings.xdim3d = ScreenWidth;
         settings.ydim3d = ScreenHeight;
         settings.bpp3d = ScreenBPP;
@@ -7816,6 +7817,7 @@ int app_main(int argc, char const * const argv[])
         }
 
         ScreenMode = settings.fullscreen;
+        ScreenDisplay = settings.display;
         ScreenWidth = settings.xdim3d;
         ScreenHeight = settings.ydim3d;
         ScreenBPP = settings.bpp3d;
@@ -7961,15 +7963,16 @@ int app_main(int argc, char const * const argv[])
    RTS_Init(ud.rtsname);
    if(numlumps) buildprintf("Using .RTS file:%s\n",ud.rtsname);
 
-    if( setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP) < 0 )
+    if( setgamemode(SETGAMEMODE_FULLSCREEN(ScreenDisplay,ScreenMode),ScreenWidth,ScreenHeight,ScreenBPP) < 0 )
     {
-        buildprintf("Failure setting video mode %dx%dx%d %s! Attempting safer mode...\n",
-                ScreenWidth,ScreenHeight,ScreenBPP,ScreenMode?"fullscreen":"windowed");
+        buildprintf("Failure setting video mode %dx%dx%d %s on display %d! Attempting safer mode...\n",
+                ScreenWidth,ScreenHeight,ScreenBPP,ScreenMode?"fullscreen":"windowed",ScreenDisplay);
         ScreenMode = 0;
+        ScreenDisplay = 0;
         ScreenWidth = 640;
         ScreenHeight = 480;
         ScreenBPP = 8;
-        setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP);
+        setgamemode(SETGAMEMODE_FULLSCREEN(ScreenDisplay,ScreenMode),ScreenWidth,ScreenHeight,ScreenBPP);
     }
 
     {
