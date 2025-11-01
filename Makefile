@@ -118,10 +118,6 @@ ifeq ($(PLATFORM),WINDOWS)
 		$(SRC)/winbits.$o \
 		$(SRC)/startwin_game.$o
 	EDITOROBJS+= $(SRC)/buildres.$(res)
-	OURLDFLAGS+= -lole32 -ldsound \
-	       $(AUDIOLIBROOT)/third-party/mingw32/lib/libvorbisfile.a \
-	       $(AUDIOLIBROOT)/third-party/mingw32/lib/libvorbis.a \
-	       $(AUDIOLIBROOT)/third-party/mingw32/lib/libogg.a
 endif
 ifeq ($(PLATFORM),DARWIN)
 	GAMEOBJS+= $(SRC)/StartupWinController.$o \
