@@ -7664,7 +7664,11 @@ void backtomenu(void)
 int gametype = GAMEGRP_GAME_DUKE;
 const char *gameeditionname = "Unknown edition";
 
-#if defined RENDERTYPEWIN || (defined RENDERTYPESDL && (defined __APPLE__ || defined HAVE_GTK))
+#if defined(RENDERTYPEWIN)
+# define HAVE_STARTWIN
+#elif defined(RENDERTYPESDL) && defined(__APPLE__) && defined(HAVE_OSX_FRAMEWORKS)
+# define HAVE_STARTWIN
+#elif defined(RENDERTYPESDL) && defined(HAVE_GTK)
 # define HAVE_STARTWIN
 #endif
 
@@ -7676,13 +7680,6 @@ int app_main(int argc, char const * const argv[])
 
 #ifndef HAVE_STARTWIN
     (void)configloaded;
-#endif
-#ifdef RENDERTYPEWIN
-    if (win_checkinstance()) {
-        if (!wm_ynbox("JFDuke3D","Another Build game is currently running. "
-                    "Do you wish to continue starting this copy?"))
-            return 0;
-    }
 #endif
 
 #if defined(DATADIR)
