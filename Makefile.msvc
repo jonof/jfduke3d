@@ -78,7 +78,6 @@ GAMEOBJS=$(SRC)\game.$o \
 	$(SRC)\osdfuncs.$o \
 	$(SRC)\osdcmds.$o \
 	$(SRC)\grpscan.$o \
-	$(SRC)\winbits.$o \
 	$(SRC)\gameres.$(res) \
 	$(SRC)\startwin_game.$o
 

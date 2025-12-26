@@ -611,11 +611,11 @@ int32 CONFIG_ReadSetup( void )
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "Out",&ud.lockout);
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenBPP", &ScreenBPP);
     if (ScreenBPP < 8) ScreenBPP = 8;
-#ifdef RENDERTYPEWIN
-    int32 tmpmaxrefreshfreq;
+
+    int32 tmpmaxrefreshfreq = 0;
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "MaxRefreshFreq", &tmpmaxrefreshfreq);
-    win_setmaxrefreshfreq(tmpmaxrefreshfreq);
-#endif
+    setmaxrefreshfreq(tmpmaxrefreshfreq);
+
 #if USE_POLYMOST && USE_OPENGL
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLTextureMode", &gltexfiltermode);
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLAnisotropy", &glanisotropy);
@@ -710,9 +710,7 @@ void CONFIG_WriteSetup( void )
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenMode",ScreenMode,false,false);
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenDisplay",ScreenDisplay,false,false);
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenBPP",ScreenBPP,false,false);
-#ifdef RENDERTYPEWIN
-    SCRIPT_PutNumber( scripthandle, "Screen Setup", "MaxRefreshFreq",win_getmaxrefreshfreq(),false,false);
-#endif
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "MaxRefreshFreq",max(0,(int)getmaxrefreshfreq()),false,false);
 #if USE_POLYMOST && USE_OPENGL
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLTextureMode",gltexfiltermode,false,false);
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLAnisotropy",glanisotropy,false,false);

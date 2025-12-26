@@ -30,6 +30,9 @@ Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
 #include <string.h>
 #include "duke3d.h"
 
+#ifdef RENDERTYPEWIN
+#include "winlayer.h"
+#endif
 
 #define LOUDESTVOLUME 150
 
@@ -67,7 +70,7 @@ void SoundStartup( void )
         fxdevicetype = FXDevice - 1;
     }
     
-    #ifdef _WIN32
+    #ifdef RENDERTYPEWIN
     initdata = (void *) win_gethwnd();
     #endif
 

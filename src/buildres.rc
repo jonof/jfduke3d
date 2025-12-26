@@ -14,7 +14,7 @@
 // Bitmap resources
 //
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDB_BMP           BITMAP         "rsrc/build.bmp"
+IDB_BMP           BITMAP         "rsrc/startwin_build.bmp"
 
 
 
