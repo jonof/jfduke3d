@@ -34,6 +34,7 @@ for ($arg = 1; $arg -lt $Args.Length; $arg++) {
         $workDir = New-Item "$PRODUCT-$VERSION-$DIRARCH" -ItemType Directory
         Copy-Item "duke3d.exe" $workDir
         Copy-Item "build.exe" $workDir
+        Copy-Item "xaudio2_9redist.dll" $workDir
         Copy-Item "jfbuild\buildlic.txt" $workDir
         Copy-Item "GPL.TXT" $workDir
         Set-Content "$workDir\readme.html" (Get-Content "releasenotes.html" `
