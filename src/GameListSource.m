@@ -34,19 +34,18 @@
     int row;
     struct grpfile const *fg = GroupsFound();
 
-    for (row = 0; row < rowIndex && fg; fg = fg->next) {
-        if (fg->ref) row++;
+    for (row = 0; fg; fg = fg->next) {
+        if (fg->ref) {
+            if (row == rowIndex) break;
+            row++;
+        }
     }
     if (!fg) {
         return nil;
     }
     switch ([[aTableColumn identifier] intValue]) {
         case 0:	// name column
-            if (fg->ref) {
-                return [NSString stringWithUTF8String: fg->ref->name];
-            } else {
-                return @"Unknown game";
-            }
+            return [NSString stringWithUTF8String: fg->ref->name];
         case 1:	// grp column
             return [NSString stringWithUTF8String: fg->name];
         case 2: // hidden column pointing to the grpfile entry.
