@@ -197,7 +197,7 @@ static void populate_game_list(BOOL firstTime)
         ListView_DeleteAllItems(hwnd);
     }
 
-    for (fg = GroupsFound(), i = 0; fg; fg = fg->next, i++) {
+    for (fg = GroupsFound(), i = 0; fg; fg = fg->next) {
         if (!fg->ref) continue;
 
         lvi.mask = LVIF_PARAM | LVIF_TEXT;
@@ -212,6 +212,7 @@ static void populate_game_list(BOOL firstTime)
         if (fg == settings->selectedgrp) {
             ListView_SetItemState(hwnd, i, LVIS_SELECTED, LVIS_SELECTED);
         }
+        i++;
     }
 }
 
