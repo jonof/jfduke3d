@@ -38,19 +38,32 @@ extern "C" {
 
 #include "version.h"
 
-extern int conversion, gametype;
-extern const char *gameeditionname;
+extern int conversion, gametype, gameid;
+extern char gameeditionname[];
 
 enum {
-    GAMEGRP_GAME_DUKE = 0,
-    GAMEGRP_GAME_DUKESW = 1,
-    GAMEGRP_GAME_NAM = 2,
+    GAMETYPE_UNKNOWN = 0, // == STARTWIN_DATASET_UNIDENTIFIED
+    GAMETYPE_SHAREWARE = 1,
+    GAMETYPE_REGISTERED,
+    GAMETYPE_NAM,
+    GAMETYPE_ADDON,
+
+    GAMEID_REG15 = 1,
+    GAMEID_REG14,
+    GAMEID_REG13,
+    GAMEID_REG20,
+    GAMEID_SHARE,
+    GAMEID_SHAREMAC,
+    GAMEID_NAM,
+    GAMEID_DUKEDC,
+    GAMEID_NWINTER,
+    GAMEID_VACATION,
 };
 
-#define VOLUMEALL (gametype == GAMEGRP_GAME_DUKE || gametype == GAMEGRP_GAME_NAM)
+#define VOLUMEALL (gametype >= GAMETYPE_REGISTERED || gametype == GAMETYPE_UNKNOWN)
 #define PLUTOPAK (conversion==14)
-#define VOLUMEONE (gametype == GAMEGRP_GAME_DUKESW)
-#define NAM (gametype == GAMEGRP_GAME_NAM)
+#define VOLUMEONE (gametype == GAMETYPE_SHAREWARE)
+#define NAM (gametype == GAMETYPE_NAM)
 
 // #define TEN
 // #define BETA

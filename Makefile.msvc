@@ -34,7 +34,7 @@ OURCFLAGS=/nologo /MD /Zl
 OURCXXFLAGS=/nologo /MD /Zl /EHsc
 OURCPPFLAGS=/I$(SRC) /I$(ENGINEINC) /I$(MACTROOT) /I$(AUDIOLIBROOT)\include
 OURLINKFLAGS=/opt:ref /nologo
-OURRFLAGS=/nologo /i$(SRC) /i$(ENGINEINC)
+OURRFLAGS=/nologo /i$(SRC) /i$(RSRC) /i$(ENGINEINC)
 OURLIBS=msvcrt.lib ole32.lib
 
 !if $(RELEASE)
@@ -77,9 +77,7 @@ GAMEOBJS=$(SRC)\game.$o \
 	$(SRC)\config.$o \
 	$(SRC)\osdfuncs.$o \
 	$(SRC)\osdcmds.$o \
-	$(SRC)\grpscan.$o \
-	$(SRC)\gameres.$(res) \
-	$(SRC)\startwin_game.$o
+	$(SRC)\gameres.$(res)
 
 GAMEOBJS=$(GAMEOBJS) \
 	$(MACTROOT)\util_lib.$o \

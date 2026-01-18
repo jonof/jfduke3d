@@ -4,6 +4,8 @@
 <dict>
 	<key>NSHumanReadableCopyright</key>
 	<string>See GPL.TXT for license terms.</string>
+	<key>NSSupportsAutomaticGraphicsSwitching</key>
+	<true/>
 	<key>NSHighResolutionCapable</key>
 	<true/>
 	<key>LSMinimumSystemVersionByArchitecture</key>

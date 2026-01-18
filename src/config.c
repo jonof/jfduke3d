@@ -226,7 +226,7 @@ void CONFIG_SetDefaults( void )
     ud.m_ffire = 1;
     ud.levelstats = 0;
     ShowOpponentWeapons = 0;
-    Bstrcpy(ud.rtsname, "DUKE.RTS");
+    Bstrcpy(ud.rtsname, "duke.rts");
     Bstrcpy(myname, "Duke");
 
     Bstrcpy(ud.ridecule[0], "An inspiration for birth control.");

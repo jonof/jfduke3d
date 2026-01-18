@@ -1,6 +1,6 @@
 duke3d_h=$(SRC)/duke3d.h $(ENGINEINC)/build.h $(ENGINEINC)/compat.h $(ENGINEINC)/cache1d.h $(ENGINEINC)/pragmas.h $(ENGINEINC)/mmulti.h $(ENGINEINC)/baselayer.h $(MACTROOT)/types.h $(MACTROOT)/file_lib.h $(MACTROOT)/util_lib.h $(MACTROOT)/keyboard.h $(MACTROOT)/control.h $(SRC)/develop.h $(SRC)/gamedefs.h $(SRC)/function.h $(SRC)/config.h $(SRC)/sounds.h $(SRC)/rts.h $(SRC)/_rts.h $(SRC)/soundefs.h $(AUDIOLIBROOT)/include/fx_man.h $(AUDIOLIBROOT)/include/music.h $(SRC)/names.h $(SRC)/funct.h $(SRC)/version.h
 
-$(SRC)/game.$o: $(SRC)/game.c $(MACTROOT)/scriplib.h $(duke3d_h) $(ENGINEINC)/osd.h $(SRC)/osdfuncs.h $(SRC)/osdcmds.h $(SRC)/grpscan.h $(SRC)/startwin.h
+$(SRC)/game.$o: $(SRC)/game.c $(MACTROOT)/scriplib.h $(duke3d_h) $(ENGINEINC)/osd.h $(SRC)/osdfuncs.h $(SRC)/osdcmds.h $(ENGINEINC)/startwin.h
 $(SRC)/actors.$o: $(SRC)/actors.c $(duke3d_h)
 $(SRC)/gamedef.$o: $(SRC)/gamedef.c $(duke3d_h)
 $(SRC)/global.$o: $(SRC)/global.c $(duke3d_h)
@@ -19,19 +19,16 @@ $(SRC)/astub.$o: $(SRC)/astub.c $(ENGINEINC)/build.h $(ENGINEINC)/compat.h $(ENG
 $(SRC)/version.$o: $(SRC)/version.c
 $(SRC)/version-auto.$o: $(SRC)/version-auto.c
 
-$(SRC)/grpscan.$o: $(SRC)/grpscan.c $(ENGINEINC)/compat.h $(ENGINEINC)/baselayer.h $(ENGINEINC)/scriptfile.h $(ENGINEINC)/cache1d.h $(ENGINEINC)/crc32.h $(ENGINEINC)/build.h $(SRC)/grpscan.h
-$(SRC)/gameres.$(res): $(SRC)/gameres.rc $(SRC)/gameres.h $(SRC)/version.h $(RSRC)/startwin_game.bmp $(RSRC)/game_icon.ico $(RSRC)/game_icon2.ico
-$(SRC)/buildres.$(res): $(SRC)/buildres.rc $(ENGINEINC)/buildres.h $(RSRC)/startwin_build.bmp $(RSRC)/build_icon.ico
-$(SRC)/startwin_game.$o: $(SRC)/startwin_game.c $(ENGINEINC)/compat.h $(ENGINEINC)/winlayer.h $(ENGINEINC)/build.h $(SRC)/startwin.h $(SRC)/grpscan.h $(SRC)/gameres.h $(SRC)/version.h
-$(SRC)/startgtk_game.$o: $(SRC)/startgtk_game.c $(ENGINEINC)/compat.h $(ENGINEINC)/baselayer.h $(ENGINEINC)/build.h $(SRC)/startwin.h $(SRC)/grpscan.h
+$(SRC)/buildres.$(res): $(SRC)/buildres.rc $(ENGINEINC)/startwin_win.rc $(ENGINEINC)/startwin_win.h $(RSRC)/startwin_build.bmp $(RSRC)/build_icon.ico
+$(SRC)/gameres.$(res): $(SRC)/gameres.rc $(ENGINEINC)/startwin_win.rc $(ENGINEINC)/startwin_win.h $(RSRC)/startwin_game.bmp $(RSRC)/game_icon.ico $(RSRC)/game_icon2.ico
 
 # Derived source files from art assets
-$(RSRC)/startgtk_game_gresource.c $(RSRC)/startgtk_game_gresource.h: $(RSRC)/startgtk_game.gresource.xml $(RSRC)/game.png $(RSRC)/startgtk_game.glade
-$(RSRC)/startgtk_build_gresource.c $(RSRC)/startgtk_build_gresource.h: $(RSRC)/startgtk_build.gresource.xml $(RSRC)/build.png $(RSRC)/startgtk_build.glade
-$(RSRC)/game_bmp.c: $(RSRC)/game.bmp
-$(RSRC)/game_bmp.$o: $(RSRC)/game_bmp.c
-$(RSRC)/build_bmp.c: $(RSRC)/build.bmp
 $(RSRC)/build_bmp.$o: $(RSRC)/build_bmp.c
+$(RSRC)/build_bmp.c: $(RSRC)/build.bmp
+$(RSRC)/build_startwin_gtk_gresource.c $(RSRC)/build_startwin_gtk_gresource.h: $(RSRC)/build_startwin_gtk.gresource.xml $(RSRC)/build.png $(ENGINERSRC)/startwin_gtk.glade $(RSRC)/build_startwin_gtk_appname.txt $(RSRC)/startwin_gtk_website.txt $(RSRC)/startwin_gtk_version.txt
+$(RSRC)/game_bmp.$o: $(RSRC)/game_bmp.c
+$(RSRC)/game_bmp.c: $(RSRC)/game.bmp
+$(RSRC)/game_startwin_gtk_gresource.c $(RSRC)/game_startwin_gtk_gresource.h: $(RSRC)/game_startwin_gtk.gresource.xml $(RSRC)/game.png $(ENGINERSRC)/startwin_gtk.glade $(RSRC)/game_startwin_gtk_appname.txt $(RSRC)/startwin_gtk_website.txt $(RSRC)/startwin_gtk_version.txt
 
 # jMACT objects
 $(MACTROOT)/animlib.$o: $(MACTROOT)/animlib.c $(MACTROOT)/types.h $(MACTROOT)/develop.h $(MACTROOT)/util_lib.h $(MACTROOT)/animlib.h $(ENGINEINC)/compat.h

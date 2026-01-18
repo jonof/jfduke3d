@@ -33,8 +33,8 @@ Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
 
 #include "osd.h"
 #include "osdcmds.h"
+#include "osdfuncs.h"
 #include "startwin.h"
-#include "grpscan.h"
 
 #include "util_lib.h"
 
@@ -54,13 +54,15 @@ static char const *CommandName = NULL;
 int32 CommandWeaponChoice = 0;
 static struct strllist {
     struct strllist *next;
-    char *str;
+    char str[];
 } *CommandPaths = NULL, *CommandGrps = NULL;
 static int CommandFakeMulti = 0;
 
 char duke3dgrp[BMAX_PATH+1] = "duke3d.grp";
 char defaultconfilename[BMAX_PATH] = "game.con";
 char const *confilename = defaultconfilename;
+int gametype = GAMETYPE_UNKNOWN, gameid = 0;
+char gameeditionname[256] = "Duke Nukem 3D";
 
 char boardfilename[BMAX_PATH] = {0};
 unsigned char waterpal[768], slimepal[768], titlepal[768], drealms[768], endingpal[768];
@@ -69,6 +71,140 @@ char firstdemofile[80] = { '\0' };
 static int netparam = 0;    // Index into argv of the first -net argument
 static int endnetparam = 0; // Index into argv following the final -net parameter.
 static int netsuccess = 0;  // Outcome of calling initmultiplayersparms().
+
+struct startwin_settings startwin_settings = {
+    .features = {
+        .video = 1,
+        .audio = 1,
+        .input = 1,
+        .network = 1,
+        .game = 1,
+    },
+    .game = {
+        .gamedatafilepatterns = (const char *[]) { "*.grp", "*.rts", "*.con", NULL },
+        .gamedata = (struct startwin_dataset []) {
+            {
+                .name = "Duke Nukem 3D (Atomic Edition, v1.5)",
+                .id = GAMEID_REG15,
+                .type = GAMETYPE_REGISTERED,
+                .filespec = (struct startwin_datasetfilespec []) {
+                    { .name = "duke3d.grp", .size = 44356548, .crc = 0xfd3dcff1, .presence = STARTWIN_PRESENCE_GROUP },
+                    { .name = "duke.rts",   .size = 188954,   .crc = 0x504086c1, .presence = STARTWIN_PRESENCE_OPTIONAL },
+                    { 0 }
+                }
+            },
+            {
+                .name = "Duke Nukem 3D (20th Anniversary)",
+                .id = GAMEID_REG20,
+                .type = GAMETYPE_REGISTERED,
+                .filespec = (struct startwin_datasetfilespec []) {
+                    { .name = "duke3d.grp", .size = 44356548, .crc = 0x982afe4a, .presence = STARTWIN_PRESENCE_GROUP, .storename = "duke3d20th.grp" },
+                    { .name = "duke.rts",   .size = 188954,   .crc = 0x504086c1, .presence = STARTWIN_PRESENCE_OPTIONAL },
+                    { 0 }
+                }
+            },
+            {
+                .name = "Duke Nukem 3D (Atomic Edition, v1.4)",
+                .id = GAMEID_REG14,
+                .type = GAMETYPE_REGISTERED,
+                .filespec = (struct startwin_datasetfilespec []) {
+                    { .name = "duke3d.grp", .size = 44348015, .crc = 0xf514a6ac, .presence = STARTWIN_PRESENCE_GROUP, .storename = "duke3d14.grp" },
+                    { .name = "duke.rts",   .size = 188954,   .crc = 0x504086c1, .presence = STARTWIN_PRESENCE_OPTIONAL },
+                    { 0 }
+                }
+            },
+            {
+                .name = "Duke Nukem 3D (Registered, v1.3D)",
+                .id = GAMEID_REG13,
+                .type = GAMETYPE_REGISTERED,
+                .filespec = (struct startwin_datasetfilespec []) {
+                    { .name = "duke3d.grp", .size = 26524524, .crc = 0xbbc9ce44, .presence = STARTWIN_PRESENCE_GROUP, .storename = "duke3d13.grp" },
+                    { .name = "duke.rts",   .size = 188954,   .crc = 0x504086c1, .presence = STARTWIN_PRESENCE_OPTIONAL },
+                    { 0 }
+                }
+            },
+            {
+                .name = "Duke Nukem 3D (Shareware)",
+                .id = GAMEID_SHARE,
+                .type = GAMETYPE_SHAREWARE,
+                .filespec = (struct startwin_datasetfilespec []) {
+                    { .name = "duke3d.grp", .size = 11035779, .crc = 0x983ad923, .presence = STARTWIN_PRESENCE_GROUP, .storename = "duke3dshare.grp" },
+                    { .name = "duke.rts",   .size = 188954,   .crc = 0x504086c1, .presence = STARTWIN_PRESENCE_OPTIONAL },
+                    { 0 }
+                }
+            },
+            {
+                .name = "Duke Nukem 3D (Mac Shareware)",
+                .id = GAMEID_SHAREMAC,
+                .type = GAMETYPE_SHAREWARE,
+                .filespec = (struct startwin_datasetfilespec []) {
+                    { .name = "Duke3D Group", .size = 10444391, .crc = 0xc5f71561, .presence = STARTWIN_PRESENCE_GROUP, .storename = "duke3dmacshare.grp" },
+                    { 0 }
+                }
+            },
+            {
+                .name = "NAM",
+                .id = GAMEID_NAM,
+                .type = GAMETYPE_NAM,
+                .filespec = (struct startwin_datasetfilespec []) {
+                    { .name = "nam.grp", .size = 43448927, .crc = 0x75c1f07b, .presence = STARTWIN_PRESENCE_GROUP },
+                    { .name = "game.con", .size = 142803,  .crc = 0x75ef92bd, .presence = STARTWIN_PRESENCE_REQUIRED, .storename = "nam.con" },
+                    { .name = "nam.rts", .size = 564926,   .crc = 0x12505172, .presence = STARTWIN_PRESENCE_OPTIONAL },
+                    { 0 }
+                }
+            },
+            {
+                .name = "Addon: Duke It Out In D.C.",
+                .id = GAMEID_DUKEDC,
+                .type = GAMETYPE_ADDON,
+                .filespec = (struct startwin_datasetfilespec []) {
+                    { .name = "dukedc.grp", .size = 8410183, .crc = 0xa8cf80da, .presence = STARTWIN_PRESENCE_GROUP },
+                    { 0 }
+                }
+            },
+            {
+                .name = "Addon: Duke: Nuclear Winter",
+                .id = GAMEID_NWINTER,
+                .type = GAMETYPE_ADDON,
+                .filespec = (struct startwin_datasetfilespec []) {
+                    { .name = "nwinter.grp", .size = 16169365, .crc = 0xf1cae8e4, .presence = STARTWIN_PRESENCE_GROUP },
+                    { 0 }
+                }
+            },
+            {
+                .name = "Addon: Duke Caribbean: Life's a Beach",
+                .id = GAMEID_VACATION,
+                .type = GAMETYPE_ADDON,
+                .filespec = (struct startwin_datasetfilespec []) {
+                    { .name = "vacation.grp", .size = 22213819, .crc = 0x18f01c5b, .presence = STARTWIN_PRESENCE_GROUP },
+                    { 0 }
+                }
+            },
+            { 0 }
+        },
+        .demourl = "https://www.jonof.id.au/files/jfduke3d/dn3dsw13.zip",
+        .moreinfobrief = "JFDuke3D can scan locations of your choosing for Duke Nukem 3D game data",
+        .moreinfodetail = "Click the 'Choose a location...' button, then locate a folder to scan.\n\n"
+            #ifdef _WIN32
+            # define BUL " \x95 "
+            #else
+            # define BUL " • "
+            #endif
+            "Common locations to check include:\n"
+            BUL "CD/DVD drives\n"
+            #ifdef __APPLE__
+            BUL "GOG-managed .app bundles\n"
+            #endif
+            #ifdef _WIN32
+            BUL "GOG.com installation folders\n"
+            #endif
+            BUL "Steam library folders\n\n"
+            "To play the Shareware version, download the shareware data (dn3dsw13.zip), unzip the file, "
+            "then select the DUKE3D.GRP file with the 'Choose a location...' option.",
+            #undef BUL
+    },
+};
+
 
 void setstatusbarscale(int sc)
 {
@@ -7062,8 +7198,8 @@ void checkcommandline(int argc, char const * const *argv)
 
                         {
                             struct strllist *s;
-                            s = (struct strllist *)calloc(1,sizeof(struct strllist));
-                            s->str = strdup(buf);
+                            s = (struct strllist *)calloc(1,sizeof(struct strllist) + 1 + strlen(buf));
+                            strcpy(s->str, buf);
                             if (CommandGrps) {
                                 struct strllist *t;
                                 for (t = CommandGrps; t->next; t=t->next) ;
@@ -7093,8 +7229,8 @@ void checkcommandline(int argc, char const * const *argv)
                         if(!*c) break;
                         {
                             struct strllist *s;
-                            s = (struct strllist *)calloc(1,sizeof(struct strllist));
-                            s->str = strdup(c);
+                            s = (struct strllist *)calloc(1,sizeof(struct strllist) + 1 + strlen(c));
+                            strcpy(s->str, c);
                             if (CommandPaths) {
                                 struct strllist *t;
                                 for (t = CommandPaths; t->next; t=t->next) ;
@@ -7565,6 +7701,7 @@ void Startup(void)
     for(i=0;i<MAXPLAYERS;i++) playerreadyflag[i] = 0;
 
     if (netsuccess) {
+        grabmouse(0);
         buildprintf("Waiting for players...\n");
         while (initmultiplayerscycle()) {
             handleevents();
@@ -7573,6 +7710,7 @@ void Startup(void)
                 return;
             }
         }
+        grabmouse(1);
     } else {
         initsingleplayers();
     }
@@ -7657,30 +7795,11 @@ void backtomenu(void)
     KB_FlushKeyboardQueue();
 }
 
-#include "osdfuncs.h"
-#include "osdcmds.h"
-#include "grpscan.h"
-
-int gametype = GAMEGRP_GAME_DUKE;
-const char *gameeditionname = "Unknown edition";
-
-#if defined(RENDERTYPEWIN)
-# define HAVE_STARTWIN
-#elif defined(RENDERTYPESDL) && defined(__APPLE__) && defined(HAVE_OSX_FRAMEWORKS)
-# define HAVE_STARTWIN
-#elif defined(RENDERTYPESDL) && defined(HAVE_GTK)
-# define HAVE_STARTWIN
-#endif
 
 int app_main(int argc, char const * const argv[])
 {
     int i, j;
     int configloaded;
-    struct grpfile const *gamegrp = NULL;
-
-#ifndef HAVE_STARTWIN
-    (void)configloaded;
-#endif
 
 #if defined(DATADIR)
     {
@@ -7718,7 +7837,6 @@ int app_main(int argc, char const * const argv[])
             s = CommandPaths->next;
             addsearchpath(CommandPaths->str);
 
-            free(CommandPaths->str);
             free(CommandPaths);
             CommandPaths = s;
         }
@@ -7780,117 +7898,152 @@ int app_main(int argc, char const * const argv[])
         strncpy(duke3dgrp, getenv("DUKE3DGRP"), BMAX_PATH);
     }
 
-    ScanGroups();
-    gamegrp = IdentifyGroup(duke3dgrp);
+    if (startwin_scan_gamedata()) {
+        const struct startwin_datasetfound *df = startwin_find_filename(duke3dgrp);
+        if (df) startwin_settings.game.gamedataid = df->dataset->id;
+    }
 
     if (netparam) { // -net parameter on command line.
         netsuccess = initmultiplayersparms(endnetparam - netparam, &argv[netparam]);
     }
 
-#ifdef HAVE_STARTWIN
-    {
-        struct startwin_settings settings;
+    startwin_settings.video.fullscreen = ScreenMode;
+    startwin_settings.video.display = ScreenDisplay;
+    startwin_settings.video.xdim = ScreenWidth;
+    startwin_settings.video.ydim = ScreenHeight;
+    startwin_settings.video.bpp = ScreenBPP;
+    startwin_settings.audio.samplerate = MixRate;
+    startwin_settings.audio.channels = NumChannels;
+    startwin_settings.audio.bitspersample = NumBits;
+    startwin_settings.input.mouse = UseMouse;
+    startwin_settings.input.controller = UseJoystick;
+    startwin_settings.network.netoverride = netparam > 0;
+    startwin_settings.alwaysshow = ForceSetup;
 
-        memset(&settings, 0, sizeof(settings));
-        settings.fullscreen = ScreenMode;
-        settings.display = ScreenDisplay;
-        settings.xdim3d = ScreenWidth;
-        settings.ydim3d = ScreenHeight;
-        settings.bpp3d = ScreenBPP;
-        settings.forcesetup = ForceSetup;
-        settings.usemouse = UseMouse;
-        settings.usejoy = UseJoystick;
-        settings.samplerate = MixRate;
-        settings.bitspersample = NumBits;
-        settings.channels = NumChannels;
-        settings.selectedgrp = gamegrp;
-        settings.netoverride = netparam > 0;
+    if (configloaded < 0 || (ForceSetup && CommandSetup == 0) || (CommandSetup > 0)) {
+        if (startwin_run() == STARTWIN_CANCEL) {
+            uninitengine();
+            exit(0);
+        } else {
+            ScreenMode = startwin_settings.video.fullscreen;
+            ScreenDisplay = startwin_settings.video.display;
+            ScreenWidth = startwin_settings.video.xdim;
+            ScreenHeight = startwin_settings.video.ydim;
+            ScreenBPP = startwin_settings.video.bpp;
+            UseMouse = startwin_settings.input.mouse;
+            UseJoystick = startwin_settings.input.controller;
+            MixRate = startwin_settings.audio.samplerate;
+            NumChannels = startwin_settings.audio.channels;
+            NumBits = startwin_settings.audio.bitspersample;
+            ForceSetup = startwin_settings.alwaysshow;
 
-        if (configloaded < 0 || (ForceSetup && CommandSetup == 0) || (CommandSetup > 0)) {
-            if (startwin_run(&settings) == STARTWIN_CANCEL) {
-                uninitengine();
-                exit(0);
+            if (startwin_settings.game.gamedataid) {
+                const struct startwin_datasetfound *df;
+                const struct startwin_datasetfoundfile *dff;
+                int needregdata = 1; // Desired.
+                if ((df = startwin_find_id(startwin_settings.game.gamedataid))) {
+                    if ((dff = startwin_find_dataset_group(df))) {
+                        switch (df->dataset->type) {
+                            case GAMETYPE_REGISTERED:
+                            case GAMETYPE_SHAREWARE:
+                            case GAMETYPE_NAM:
+                                strcpy(duke3dgrp, dff->name);
+                                strcpy(gameeditionname, df->dataset->name);
+                                gametype = df->dataset->type;
+                                gameid = df->dataset->id;
+                                needregdata = 0; // Unneeded.
+                                break;
+                            case GAMETYPE_ADDON:
+                                strcpy(gameeditionname, df->dataset->name);
+                                gametype = df->dataset->type;
+                                gameid = df->dataset->id;
+                                needregdata = 2; // Required.
+                                // Fall-through to add the addon grp to the CommandGrps list.
+                            default: { // GAMETYPE_UNKNOWN.
+                                struct strllist *s = (struct strllist *)calloc(1,sizeof(struct strllist) + 1 + strlen(dff->name));
+                                strcpy(s->str, dff->name);
+                                if (CommandGrps) {
+                                    struct strllist *t;
+                                    for (t = CommandGrps; t->next; t=t->next) ;
+                                    t->next = s;
+                                } else {
+                                    CommandGrps = s;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (needregdata) {
+                    const struct startwin_datasetfoundfile *rdff;
+                    rdff = startwin_find_type_group(GAMETYPE_REGISTERED);
+                    if (rdff) strcpy(duke3dgrp, rdff->name);
+                    else if (needregdata == 2) {
+                        wm_msgbox("Registered version required",
+                            "\"%s\" requires registered Duke Nukem 3D game data to be present.",
+                            df->dataset->type == GAMETYPE_ADDON ?
+                                dff->name : df->dataset->name);
+                        exit(1);
+                    }
+                }
             }
         }
+    }
 
-        ScreenMode = settings.fullscreen;
-        ScreenDisplay = settings.display;
-        ScreenWidth = settings.xdim3d;
-        ScreenHeight = settings.ydim3d;
-        ScreenBPP = settings.bpp3d;
-        ForceSetup = settings.forcesetup;
-        UseMouse = settings.usemouse;
-        UseJoystick = settings.usejoy;
-        MixRate = settings.samplerate;
-        NumBits = settings.bitspersample;
-        NumChannels = settings.channels;
-        gamegrp = settings.selectedgrp;
+    if (!netparam) {
+        char modeparm[8];
+        const char *parmarr[3] = { modeparm, NULL, NULL };
+        int parmc = 0;
 
-        if (!netparam) {
-            char modeparm[8];
-            const char *parmarr[3] = { modeparm, NULL, NULL };
-            int parmc = 0;
+        if (startwin_settings.network.joinhost) {
+            strcpy(modeparm, "-nm");
+            parmarr[1] = startwin_settings.network.joinhost;
+            parmc = 2;
+        } else if (startwin_settings.network.numplayers > 1 && startwin_settings.network.numplayers <= MAXPLAYERS) {
+            sprintf(modeparm, "-nm:%d", startwin_settings.network.numplayers);
+            parmc = 1;
+        }
 
-            if (settings.joinhost) {
-                strcpy(modeparm, "-nm");
-                parmarr[1] = settings.joinhost;
-                parmc = 2;
-            } else if (settings.numplayers > 1 && settings.numplayers <= MAXPLAYERS) {
-                sprintf(modeparm, "-nm:%d", settings.numplayers);
-                parmc = 1;
-            }
+        if (parmc > 0) {
+            netsuccess = initmultiplayersparms(parmc, parmarr);
+        }
 
-            if (parmc > 0) {
-                netsuccess = initmultiplayersparms(parmc, parmarr);
-            }
-
-            if (settings.joinhost) {
-                free(settings.joinhost);
-            }
+        if (startwin_settings.network.joinhost) {
+            free(startwin_settings.network.joinhost);
         }
     }
-#endif
 
-    if (gamegrp) {
-        Bstrcpy(duke3dgrp, gamegrp->name);
-        gametype = gamegrp->game;
-        gameeditionname = gamegrp->ref->name;  // Points to static data, so won't be lost in FreeGroups().
-    }
-    if (gametype == GAMEGRP_GAME_NAM) {
-        strcpy(defaultconfilename, "nam.con");
-    }
-
-    FreeGroups();
+    startwin_free_gamedata();
 
     buildprintf("GRP file: %s\n", duke3dgrp);
     initgroupfile(duke3dgrp);
 
-    if (!gamegrp) {
+    if (gameid == GAMEID_NAM) {
+        strcpy(defaultconfilename, "nam.con");
+    } else if (gameid == GAMEID_NWINTER) {
+        strcpy(defaultconfilename, "nwinter.con");
+    }
+    if (gametype == GAMETYPE_UNKNOWN) {
         // Couldn't identify the game by checksum of known released
         // content, so guess at registered/shareware state by probing
         // for DOS end screens.
         i = kopen4load("DUKESW.BIN",1);
         if (i >= 0) {
-            gametype = GAMEGRP_GAME_DUKESW;
+            gametype = GAMETYPE_SHAREWARE;
             kclose(i);
         }
     }
 
-    {
-        struct strllist *s;
-        while (CommandGrps) {
-            s = CommandGrps->next;
-            j = initgroupfile(CommandGrps->str);
-            if( j == -1 ) buildprintf("Warning: could not find group file %s.\n",CommandGrps->str);
-            else {
-                groupfile = j;
-                buildprintf("Using group file %s.\n",CommandGrps->str);
-            }
-
-            free(CommandGrps->str);
-            free(CommandGrps);
-            CommandGrps = s;
+    while (CommandGrps) {
+        struct strllist *s = CommandGrps->next;
+        j = initgroupfile(CommandGrps->str);
+        if( j == -1 ) buildprintf("Warning: could not find group file %s.\n",CommandGrps->str);
+        else {
+            groupfile = j;
+            buildprintf("Using group file %s.\n",CommandGrps->str);
         }
+        free(CommandGrps);
+        CommandGrps = s;
     }
 
     RegisterShutdownFunction( Shutdown );

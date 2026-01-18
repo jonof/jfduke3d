@@ -1089,8 +1089,8 @@ int getfilenames(char *path, char kind[])
     CACHE1D_FIND_REC *r;
 
     clearfilenames();
-    finddirs = klistpath(path,"*",CACHE1D_FIND_DIR);
-    findfiles = klistpath(path,kind,CACHE1D_FIND_FILE);
+    finddirs = klistpath(path,KLISTPATH_MASK("*"),CACHE1D_FIND_DIR,0);
+    findfiles = klistpath(path,KLISTPATH_MASK(kind),CACHE1D_FIND_FILE,0);
     for (r = finddirs; r; r=r->next) numdirs++;
     for (r = findfiles; r; r=r->next) numfiles++;
 
