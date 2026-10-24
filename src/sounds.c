@@ -211,6 +211,7 @@ void MusicPause( int onf )
 void MusicSetVolume(int volume)
 {
    if (MusicIsWaveform && MusicVoice >= 0) {
+      FX_SetPan(MusicVoice, volume, volume, volume);
       //FX_SetVoiceVolume(MusicVoice, volume);
    } else if (!MusicIsWaveform) {
       MUSIC_SetVolume(volume);
@@ -294,6 +295,12 @@ void playmusic(char *fn)
 
     MusicLen = kfilelength( fp );
     MusicPtr = (char *) malloc(MusicLen);
+    if (!MusicPtr) {
+       buildprintf("Couldn't allocate %d KB for %s\n", MusicLen / 1024, fn);
+       kclose( fp );
+       MusicLen = 0;
+       return;
+    }
     kread( fp, MusicPtr, MusicLen);
     kclose( fp );
     
