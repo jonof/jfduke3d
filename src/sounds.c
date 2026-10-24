@@ -301,7 +301,7 @@ void playmusic(char *fn)
        MUSIC_PlaySong( MusicPtr, MusicLen, MUSIC_LoopSong );
        MusicIsWaveform = 0;
     } else {
-       MusicVoice = FX_PlayLoopedAuto(MusicPtr, MusicLen, 0, 0, 0,
+       MusicVoice = FX_PlayLoopedAuto(MusicPtr, MusicLen, 0, -1, 0,
                                       MusicVolume, MusicVolume, MusicVolume,
 				      FX_MUSIC_PRIORITY, MUSIC_ID);
        MusicIsWaveform = 1;
