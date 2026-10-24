@@ -7981,7 +7981,8 @@ int app_main(int argc, char const * const argv[])
         SoundStartup();
         buildprintf("Checking music inits.\n");
         MusicStartup();
-        loadtmb();
+        // the timbre bank is only used by an OPL driver, which jfaudiolib doesn't have
+        //loadtmb();
     }
 
 if (VOLUMEONE) {
