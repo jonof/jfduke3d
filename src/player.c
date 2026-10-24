@@ -3237,7 +3237,7 @@ void processinput(short snum)
                 {
                     case 0:
 
-                        if(lz >= 0 && (lz&(MAXSPRITES-1))==49152 )
+                        if(lz >= 0 && (lz&49152)==49152 )
                             j = sprite[lz&(MAXSPRITES-1)].picnum;
                         else j = sector[psect].floorpicnum;
 

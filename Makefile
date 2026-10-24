@@ -4,6 +4,10 @@
 # for configurable values
 -include Makefile.user
 
+# Makefile.user settings are not visible to the engine and audio library makes otherwise
+SUBMAKEVARS:=$(foreach v,CC CXX AR RANLIB HOSTCXX HOSTCXXFLAGS CFLAGS CXXFLAGS CPPFLAGS LDFLAGS SDL2CONFIG PKGCONFIG WITHOUT_GTK,\
+	$(if $(filter file,$(origin $(v))),$(v)='$($(v))'))
+
 ##
 ##
 ## CONFIGURABLE OPTIONS
@@ -159,11 +163,12 @@ $(ENGINEROOT)/%:
 		USE_POLYMOST=$(USE_POLYMOST) \
 		USE_OPENGL=$(USE_OPENGL) \
 		USE_ASM=$(USE_ASM) \
-		RELEASE=$(RELEASE) $(@F)
+		EXESUFFIX=$(EXESUFFIX) \
+		RELEASE=$(RELEASE) $(SUBMAKEVARS) $(@F)
 
 $(AUDIOLIBROOT)/%:
 	$(MAKE) -C $(@D) \
-		RELEASE=$(RELEASE) $(@F)
+		RELEASE=$(RELEASE) $(SUBMAKEVARS) $(@F)
 
 duke3d$(EXESUFFIX): $(GAMEOBJS) $(ENGINEROOT)/$(ENGINELIB) $(AUDIOLIBROOT)/$(JFAUDIOLIB)
 	$(CXX) $(CPPFLAGS) $(OURCPPFLAGS) $(CXXFLAGS) $(OURCXXFLAGS) -o $@ $^ $(LDFLAGS) $(OURLDFLAGS)
