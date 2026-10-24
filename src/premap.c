@@ -65,10 +65,12 @@ static void tloadtile(short tilenume, char type)
 void cachespritenum(short i)
 {
     char maxc;
-    short j;
+    short j, first;
 
     if(ud.monsters_off && badguy(&sprite[i])) return;
 
+    // variants show frames from their base actor's range, so caching starts there
+    first = PN;
     maxc = 1;
 
     switch(PN)
@@ -102,11 +104,14 @@ void cachespritenum(short i)
             break;
         case LIZTROOP:
         case LIZTROOPRUNNING:
+        case LIZTROOPSTAYPUT:
         case LIZTROOPSHOOT:
         case LIZTROOPJETPACK:
         case LIZTROOPONTOILET:
+        case LIZTROOPJUSTSIT:
         case LIZTROOPDUCKING:
-            for(j = LIZTROOP; j < (LIZTROOP+72); j++) {
+            // the last one is shown by troopers shrinking away to teleport
+            for(j = LIZTROOP; j < (LIZTROOP+76); j++) {
                 tloadtile(j,1);
         }
             for(j=HEADJIB1;j<LEGJIB1+3;j++) {
@@ -116,50 +121,97 @@ void cachespritenum(short i)
             break;
         case WOODENHORSE:
             maxc = 5;
-            for(j = HORSEONSIDE; j < (HORSEONSIDE+4); j++) {
+            for(j = HORSEONSIDE; j < (HORSEONSIDE+5); j++) {
                 tloadtile(j,1);
         }
             break;
+        case HORSEONSIDE:
+            maxc = 5;
+            break;
         case NEWBEAST:
         case NEWBEASTSTAYPUT:
-            maxc = 90;
+        case NEWBEASTHANG:
+        case NEWBEASTHANGDEAD:
+        case NEWBEASTJUMP:
+            first = NEWBEAST;
+            maxc = 95;
             break;
         case BOSS1:
+        case BOSS1STAYPUT:
+            first = BOSS1;
+            maxc = 56;
+            break;
         case BOSS2:
         case BOSS3:
-            maxc = 30;
+            maxc = 49;
+            break;
+        case BOSS4:
+        case BOSS4STAYPUT:
+            first = BOSS4;
+            maxc = 65;
+            // its eggs hatch into NEWBEASTs
+            for(j = NEWBEAST; j < (NEWBEAST+95); j++) {
+                tloadtile(j,1);
+        }
             break;
         case OCTABRAIN:
         case OCTABRAINSTAYPUT:
+            first = OCTABRAIN;
+            maxc = 36;
+            break;
         case COMMANDER:
         case COMMANDERSTAYPUT:
-            maxc = 38;
+            first = COMMANDER-5;    // spinning frames
+            maxc = 43;
             break;
         case RECON:
             maxc = 13;
+            // a PIGCOP jumps out when it's destroyed
+            for(j = PIGCOP; j < (PIGCOP+61); j++) {
+                tloadtile(j,1);
+        }
+            break;
+        case TANK:
+            maxc = 21;
+            // a PIGCOP may jump out when it's destroyed
+            for(j = PIGCOP; j < (PIGCOP+61); j++) {
+                tloadtile(j,1);
+        }
             break;
         case PIGCOP:
+        case PIGCOPSTAYPUT:
         case PIGCOPDIVE:
+            first = PIGCOP;
             maxc = 61;
             break;
         case SHARK:
-            maxc = 30;
+            maxc = 40;
             break;
         case LIZMAN:
+        case LIZMANSTAYPUT:
         case LIZMANSPITTING:
         case LIZMANFEEDING:
         case LIZMANJUMP:
             for(j=LIZMANHEAD1;j<LIZMANLEG1+3;j++) {
                 tloadtile(j,1);
         }
-            maxc = 80;
+            first = LIZMAN;
+            maxc = 78;
             break;
         case APLAYER:
             maxc = 0;
-            if(ud.multimode > 1)
+            // other players, or yourself in a mirror
+            if(ud.multimode > 1 || mirrorcnt > 0)
             {
                 maxc = 5;
                 for(j = 1420;j < 1420+106; j++) {
+                    tloadtile(j,1);
+        }
+            }
+            if(ud.multimode > 1)
+            {
+                // swimming
+                for(j = 1780;j < 1780+20; j++) {
                     tloadtile(j,1);
         }
             }
@@ -193,7 +245,7 @@ void cachespritenum(short i)
         case DEVISTATORSPRITE: for (j=DEVISTATOR; j<=DEVISTATOR+1; j++) tloadtile(j,1); break;
     }
 
-    for(j = PN; j < (PN+maxc); j++) {
+    for(j = first; j < (first+maxc); j++) {
         tloadtile(j,1);
     }
 }
@@ -210,9 +262,10 @@ void cachegoodsprites(void)
 
     for(i=STARTALPHANUM;i<ENDALPHANUM+1;i++) tloadtile(i,1);
     for(i=BIGALPHANUM; i<BIGALPHANUM+82; i++) tloadtile(i,1);
-    for(i=MINIFONT;i<MINIFONT+63;i++) tloadtile(i,1);
+    for(i=MINIFONT;i<MINIFONT+94;i++) tloadtile(i,1);
 
-    for(i=FOOTPRINTS;i<FOOTPRINTS+3;i++) tloadtile(i,1);
+    tloadtile(FOOTPRINTS,1);
+    for(i=FOOTPRINTS2;i<FOOTPRINTS4+1;i++) tloadtile(i,1);
 
     for( i = BURNING; i < BURNING+14; i++) tloadtile(i,1);
     for( i = BURNING2; i < BURNING2+14; i++) tloadtile(i,1);
@@ -228,6 +281,7 @@ void cachegoodsprites(void)
     for( i = SMALLSMOKE; i < (SMALLSMOKE+4); i++) tloadtile(i,1);
 
     for( i = JIBS1; i < (JIBS5+5); i++) tloadtile(i,1);
+    for( i = JIBS6; i < (JIBS6+8); i++) tloadtile(i,1);
     for( i = SCRAP1; i < (SCRAP1+19); i++) tloadtile(i,1);
 
     for (i=RPG; i<RPG+7; i++) tloadtile(i,1);
